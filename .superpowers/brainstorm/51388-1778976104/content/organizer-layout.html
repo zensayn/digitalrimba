@@ -1,0 +1,203 @@
+<h2>Organizer QR Setup Page — Structure</h2>
+<p class="subtitle">How should the dashboard/checkin-qr page be organized? (Ivory Editorial palette throughout)</p>
+
+<div class="cards">
+
+  <!-- Option A: Dashboard Card Grid -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#faf8f5;padding:16px;border-bottom:1px solid #e8e4df;min-height:260px;">
+
+      <!-- Page title -->
+      <div style="margin-bottom:12px;">
+        <div style="font-family:Poppins,sans-serif;font-size:14px;font-weight:700;color:#212121;">Check-in Setup</div>
+        <div style="font-family:Poppins,sans-serif;font-size:9px;color:#93939f;">Sinta & Budi · 14 June 2026</div>
+      </div>
+
+      <!-- Status banner -->
+      <div style="background:#edfce9;border:1px solid #c8edcc;border-radius:8px;padding:6px 10px;display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+        <div style="width:6px;height:6px;border-radius:50%;background:#346739;"></div>
+        <span style="font-family:Poppins,sans-serif;font-size:8px;color:#346739;font-weight:500;">Check-in active · 42 / 248 arrived</span>
+      </div>
+
+      <!-- 2-col card grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <!-- Event code card -->
+        <div style="background:#fff;border-radius:12px;border:1px solid #e8e4df;padding:10px;">
+          <div style="font-family:Poppins,sans-serif;font-size:7px;font-weight:600;text-transform:uppercase;color:#93939f;letter-spacing:0.3px;margin-bottom:5px;">Event Code</div>
+          <div style="font-family:Poppins,sans-serif;font-size:12px;font-weight:700;color:#212121;margin-bottom:5px;">SINTA01</div>
+          <div style="background:#346739;color:#fff;font-family:Poppins,sans-serif;font-size:7px;font-weight:500;padding:3px 8px;border-radius:999px;display:inline-block;">Copy URL</div>
+        </div>
+        <!-- PIN card -->
+        <div style="background:#fff;border-radius:12px;border:1px solid #e8e4df;padding:10px;">
+          <div style="font-family:Poppins,sans-serif;font-size:7px;font-weight:600;text-transform:uppercase;color:#93939f;letter-spacing:0.3px;margin-bottom:5px;">Operator PIN</div>
+          <div style="display:flex;gap:2px;margin-bottom:5px;">
+            <div style="width:8px;height:11px;background:#212121;border-radius:2px;"></div>
+            <div style="width:8px;height:11px;background:#212121;border-radius:2px;"></div>
+            <div style="width:8px;height:11px;background:#212121;border-radius:2px;"></div>
+            <div style="width:8px;height:11px;background:#212121;border-radius:2px;"></div>
+            <div style="width:8px;height:11px;background:#212121;border-radius:2px;"></div>
+            <div style="width:8px;height:11px;background:#212121;border-radius:2px;"></div>
+          </div>
+          <div style="background:#fff;color:#212121;font-family:Poppins,sans-serif;font-size:7px;font-weight:500;padding:3px 8px;border-radius:999px;display:inline-block;border:1px solid #ddd;">Reveal</div>
+        </div>
+      </div>
+
+      <!-- QR codes full-width card -->
+      <div style="background:#fff;border-radius:12px;border:1px solid #e8e4df;padding:10px;display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <div style="width:36px;height:36px;background:#faf8f5;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="#346739" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="#346739" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="#346739" stroke-width="1.5"/><rect x="14" y="14" width="3" height="3" fill="#346739"/><rect x="18" y="14" width="3" height="3" fill="#346739"/><rect x="14" y="18" width="3" height="3" fill="#346739"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="font-family:Poppins,sans-serif;font-size:9px;font-weight:700;color:#212121;">Guest QR Codes</div>
+          <div style="font-family:Poppins,sans-serif;font-size:7px;color:#93939f;">248 unique codes generated</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <div style="background:#212121;color:#fff;font-family:Poppins,sans-serif;font-size:7px;font-weight:500;padding:3px 8px;border-radius:999px;">PDF</div>
+          <div style="background:#fff;color:#212121;font-family:Poppins,sans-serif;font-size:7px;font-weight:500;padding:3px 8px;border-radius:999px;border:1px solid #ddd;">Email</div>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div style="display:flex;gap:6px;">
+        <div style="flex:1;background:#fff;border-radius:8px;border:1px solid #f2f2f2;padding:6px;text-align:center;">
+          <div style="font-family:Poppins,sans-serif;font-size:12px;font-weight:700;color:#346739;">42</div>
+          <div style="font-family:Poppins,sans-serif;font-size:6px;color:#93939f;">Arrived</div>
+        </div>
+        <div style="flex:1;background:#fff;border-radius:8px;border:1px solid #f2f2f2;padding:6px;text-align:center;">
+          <div style="font-family:Poppins,sans-serif;font-size:12px;font-weight:700;color:#212121;">206</div>
+          <div style="font-family:Poppins,sans-serif;font-size:6px;color:#93939f;">Pending</div>
+        </div>
+        <div style="flex:1;background:#fff;border-radius:8px;border:1px solid #f2f2f2;padding:6px;text-align:center;">
+          <div style="font-family:Poppins,sans-serif;font-size:12px;font-weight:700;color:#ff7759;">31</div>
+          <div style="font-family:Poppins,sans-serif;font-size:6px;color:#93939f;">Souvenir</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Dashboard Grid (Recommended)</h3>
+      <p>All key info visible at once: event code, PIN, QR distribution, and live stats. Scannable at a glance, no scrolling needed.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Wizard / Stepper -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#faf8f5;padding:16px;border-bottom:1px solid #e8e4df;min-height:260px;">
+
+      <!-- Page title -->
+      <div style="margin-bottom:12px;">
+        <div style="font-family:Poppins,sans-serif;font-size:14px;font-weight:700;color:#212121;">Setup Check-in</div>
+        <div style="font-family:Poppins,sans-serif;font-size:9px;color:#93939f;">3 steps to go live</div>
+      </div>
+
+      <!-- Stepper -->
+      <div style="display:flex;align-items:center;gap:0;margin-bottom:14px;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+          <div style="width:16px;height:16px;border-radius:50%;background:#346739;display:flex;align-items:center;justify-content:center;">
+            <span style="font-family:Poppins,sans-serif;font-size:7px;color:#fff;font-weight:700;">✓</span>
+          </div>
+          <span style="font-family:Poppins,sans-serif;font-size:6px;color:#346739;font-weight:600;margin-top:2px;">Code</span>
+        </div>
+        <div style="flex:1;height:1px;background:#346739;margin-bottom:10px;"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+          <div style="width:16px;height:16px;border-radius:50%;background:#346739;display:flex;align-items:center;justify-content:center;">
+            <span style="font-family:Poppins,sans-serif;font-size:7px;color:#fff;font-weight:700;">✓</span>
+          </div>
+          <span style="font-family:Poppins,sans-serif;font-size:6px;color:#346739;font-weight:600;margin-top:2px;">PIN</span>
+        </div>
+        <div style="flex:1;height:1px;background:#e8e4df;margin-bottom:10px;"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+          <div style="width:16px;height:16px;border-radius:50%;background:#fff;border:1.5px solid #346739;display:flex;align-items:center;justify-content:center;">
+            <span style="font-family:Poppins,sans-serif;font-size:7px;color:#346739;font-weight:700;">3</span>
+          </div>
+          <span style="font-family:Poppins,sans-serif;font-size:6px;color:#93939f;margin-top:2px;">Share</span>
+        </div>
+      </div>
+
+      <!-- Current step card -->
+      <div style="background:#fff;border-radius:12px;border:1px solid #e8e4df;padding:12px;margin-bottom:8px;">
+        <div style="font-family:Poppins,sans-serif;font-size:10px;font-weight:700;color:#212121;margin-bottom:3px;">Step 3 — Share QR Codes</div>
+        <div style="font-family:Poppins,sans-serif;font-size:8px;color:#93939f;margin-bottom:10px;">Distribute unique QR codes to your 248 guests</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="background:#212121;color:#fff;font-family:Poppins,sans-serif;font-size:8px;font-weight:500;padding:6px 12px;border-radius:999px;text-align:center;">Download PDF (248 guests)</div>
+          <div style="background:#fff;color:#212121;font-family:Poppins,sans-serif;font-size:8px;font-weight:500;padding:6px 12px;border-radius:999px;text-align:center;border:1px solid #ddd;">Send emails to all guests</div>
+        </div>
+      </div>
+
+      <!-- Progress note -->
+      <div style="display:flex;align-items:center;gap:4px;">
+        <div style="width:4px;height:4px;border-radius:50%;background:#346739;"></div>
+        <span style="font-family:Poppins,sans-serif;font-size:7px;color:#93939f;">2 of 3 steps complete</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Wizard / Stepper</h3>
+      <p>Linear 3-step setup: Generate code → Set PIN → Share. Guides first-time organizers but can feel slow once already set up.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Two-panel with live preview -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#faf8f5;padding:16px;border-bottom:1px solid #e8e4df;min-height:260px;">
+
+      <!-- Page title -->
+      <div style="margin-bottom:10px;">
+        <div style="font-family:Poppins,sans-serif;font-size:14px;font-weight:700;color:#212121;">Check-in Setup</div>
+        <div style="font-family:Poppins,sans-serif;font-size:9px;color:#93939f;">Configure and preview</div>
+      </div>
+
+      <!-- Two-panel layout (stacked at mobile) -->
+      <div style="display:flex;gap:8px;">
+        <!-- Left: settings -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+          <div style="background:#fff;border-radius:10px;border:1px solid #e8e4df;padding:8px;">
+            <div style="font-family:Poppins,sans-serif;font-size:7px;font-weight:600;text-transform:uppercase;color:#93939f;letter-spacing:0.3px;margin-bottom:4px;">Event Code</div>
+            <div style="font-family:Poppins,sans-serif;font-size:10px;font-weight:700;color:#212121;">SINTA01</div>
+          </div>
+          <div style="background:#fff;border-radius:10px;border:1px solid #e8e4df;padding:8px;">
+            <div style="font-family:Poppins,sans-serif;font-size:7px;font-weight:600;text-transform:uppercase;color:#93939f;letter-spacing:0.3px;margin-bottom:4px;">PIN</div>
+            <div style="display:flex;gap:2px;">
+              <div style="width:7px;height:10px;background:#212121;border-radius:1px;"></div>
+              <div style="width:7px;height:10px;background:#212121;border-radius:1px;"></div>
+              <div style="width:7px;height:10px;background:#212121;border-radius:1px;"></div>
+              <div style="width:7px;height:10px;background:#212121;border-radius:1px;"></div>
+              <div style="width:7px;height:10px;background:#212121;border-radius:1px;"></div>
+              <div style="width:7px;height:10px;background:#212121;border-radius:1px;"></div>
+            </div>
+          </div>
+          <div style="background:#fff;border-radius:10px;border:1px solid #e8e4df;padding:8px;">
+            <div style="font-family:Poppins,sans-serif;font-size:7px;font-weight:600;text-transform:uppercase;color:#93939f;letter-spacing:0.3px;margin-bottom:4px;">Distribute</div>
+            <div style="background:#212121;color:#fff;font-family:Poppins,sans-serif;font-size:6px;font-weight:500;padding:3px 7px;border-radius:999px;display:inline-block;margin-bottom:2px;">PDF</div>
+            <div style="background:#fff;color:#212121;font-family:Poppins,sans-serif;font-size:6px;font-weight:500;padding:3px 7px;border-radius:999px;display:inline-block;border:1px solid #ddd;">Email</div>
+          </div>
+        </div>
+        <!-- Right: live QR preview -->
+        <div style="width:80px;display:flex;flex-direction:column;gap:6px;">
+          <div style="background:#fff;border-radius:10px;border:1px solid #e8e4df;padding:8px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <div style="font-family:Poppins,sans-serif;font-size:6px;font-weight:600;text-transform:uppercase;color:#93939f;margin-bottom:5px;">Preview</div>
+            <!-- Mock QR code -->
+            <div style="width:44px;height:44px;background:#f5f5f5;border-radius:4px;padding:4px;display:grid;grid-template-columns:repeat(5,1fr);gap:1px;">
+              <div style="background:#212121;border-radius:1px;grid-column:1/3;grid-row:1/3;"></div>
+              <div style="background:#faf8f5;border-radius:1px;"></div>
+              <div style="background:#212121;border-radius:1px;grid-column:4/6;grid-row:1/3;"></div>
+              <div style="background:#212121;border-radius:1px;"></div>
+              <div style="background:#faf8f5;border-radius:1px;"></div>
+              <div style="background:#212121;border-radius:1px;"></div>
+              <div style="background:#faf8f5;border-radius:1px;"></div>
+              <div style="background:#212121;border-radius:1px;"></div>
+              <div style="background:#212121;border-radius:1px;grid-column:1/3;grid-row:4/6;"></div>
+              <div style="background:#212121;border-radius:1px;"></div>
+              <div style="background:#faf8f5;border-radius:1px;"></div>
+              <div style="background:#212121;border-radius:1px;"></div>
+            </div>
+            <div style="font-family:Poppins,sans-serif;font-size:6px;color:#93939f;margin-top:4px;">Andi S.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Two-Panel with Preview</h3>
+      <p>Settings left, live QR preview right. Organizer sees exactly what the guest's QR looks like as they configure. More complex layout.</p>
+    </div>
+  </div>
+
+</div>

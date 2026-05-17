@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check-in QR Redesign — Full Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Poppins, sans-serif; background: #f5f5f5; color: #212121; padding: 24px 16px 80px; }
+
+  .page-title { font-size: 22px; font-weight: 700; color: #212121; margin-bottom: 4px; }
+  .page-sub { font-size: 13px; color: #93939f; margin-bottom: 32px; }
+
+  /* Section headers */
+  .section-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; color: #93939f; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: #f2f2f2; }
+
+  /* Screen wrapper */
+  .screen-wrap { display: flex; flex-wrap: wrap; gap: 32px; margin-bottom: 48px; }
+
+  /* Device frame */
+  .device { border-radius: 16px; overflow: hidden; box-shadow: 0 2px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.06); background: #fff; }
+  .device-label { font-size: 11px; font-weight: 600; color: #93939f; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px; }
+
+  /* ── ORGANIZER PAGE ── */
+  .org-device { width: 100%; max-width: 780px; }
+
+  /* Shell nav */
+  .shell-nav {
+    height: 56px; background: #fff; border-bottom: 1px solid #f2f2f2;
+    display: flex; align-items: center; padding: 0 20px; gap: 12px;
+  }
+  .shell-logo { font-size: 14px; font-weight: 700; color: #212121; }
+  .shell-breadcrumb { display: flex; align-items: center; gap: 6px; margin-left: 8px; }
+  .shell-breadcrumb span { font-size: 12px; color: #93939f; }
+  .shell-breadcrumb .current { color: #212121; font-weight: 500; }
+  .shell-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  .icon-btn { width: 32px; height: 32px; border-radius: 999px; border: none; background: #f5f5f5; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+  /* Org page body */
+  .org-body { padding: 28px 24px; background: #faf8f5; min-height: 520px; }
+  .org-header { margin-bottom: 20px; }
+  .org-h1 { font-size: 26px; font-weight: 700; color: #212121; line-height: 1.2; }
+  .org-sub { font-size: 13px; color: #93939f; margin-top: 3px; }
+
+  /* Status banner */
+  .status-banner {
+    background: #edfce9; border: 1px solid #c5e8c9; border-radius: 10px;
+    padding: 10px 14px; display: flex; align-items: center; gap: 8px;
+    margin-bottom: 20px;
+  }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #346739; flex-shrink: 0; }
+  .status-text { font-size: 12px; font-weight: 500; color: #346739; }
+  .status-count { margin-left: auto; font-size: 12px; font-weight: 700; color: #346739; }
+
+  /* Card grid */
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .card-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+
+  /* Base card */
+  .card {
+    background: #fff; border-radius: 16px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.07);
+    padding: 16px;
+  }
+  .card-full { grid-column: 1 / -1; }
+
+  .card-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.4px; color: #93939f; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .card-label svg { opacity: 0.5; }
+  .card-value { font-size: 18px; font-weight: 700; color: #212121; margin-bottom: 10px; font-family: Poppins, monospace; }
+  .card-value-sm { font-size: 14px; font-weight: 600; color: #212121; margin-bottom: 10px; background: #f5f3f0; padding: 6px 10px; border-radius: 8px; font-size: 12px; word-break: break-all; }
+
+  /* Buttons */
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(to bottom, #427d49, #346739);
+    color: #fff; font-family: Poppins, sans-serif; font-size: 12px; font-weight: 600;
+    padding: 8px 16px; border-radius: 999px; border: none; cursor: pointer;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+  .btn-outline {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fff; color: #212121; font-family: Poppins, sans-serif;
+    font-size: 12px; font-weight: 500; padding: 7px 14px; border-radius: 999px;
+    border: none; cursor: pointer; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+  }
+  .btn-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* PIN dots */
+  .pin-dots { display: flex; gap: 5px; margin-bottom: 10px; }
+  .pin-dot { width: 11px; height: 15px; background: #212121; border-radius: 3px; }
+  .pin-dot-revealed { width: 11px; height: 15px; background: #346739; border-radius: 3px; display: flex; align-items: center; justify-content: center; }
+
+  /* QR distribution card */
+  .qr-card { display: flex; align-items: center; gap: 14px; }
+  .qr-icon { width: 44px; height: 44px; background: #f5f3f0; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .qr-info { flex: 1; }
+  .qr-title { font-size: 14px; font-weight: 700; color: #212121; }
+  .qr-sub { font-size: 11px; color: #93939f; margin-top: 1px; }
+  .qr-actions { display: flex; flex-direction: column; gap: 5px; }
+
+  /* Stat mini cards */
+  .stat-card { text-align: center; padding: 12px 8px; }
+  .stat-value { font-size: 22px; font-weight: 700; }
+  .stat-value.green { color: #346739; }
+  .stat-value.muted { color: #212121; }
+  .stat-value.coral { color: #ff7759; }
+  .stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #93939f; margin-top: 2px; }
+
+  /* ── OPERATOR PAGE ── */
+  .op-device { width: 340px; flex-shrink: 0; }
+  .op-screen { background: #fff; min-height: 620px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+
+  /* Operator top bar */
+  .op-topbar {
+    padding: 14px 16px 10px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #f2f2f2;
+    background: #fff;
+  }
+  .op-topbar-left { display: flex; flex-direction: column; }
+  .op-event { font-size: 14px; font-weight: 700; color: #212121; }
+  .op-wedding { font-size: 11px; color: #93939f; }
+  .op-counter {
+    background: #edfce9; border-radius: 999px; padding: 4px 10px;
+    font-size: 11px; font-weight: 600; color: #346739;
+  }
+
+  /* Camera area */
+  .op-camera {
+    flex: 1; background: linear-gradient(160deg, #181818 0%, #252525 100%);
+    position: relative; display: flex; align-items: center; justify-content: center;
+    min-height: 280px;
+  }
+  .qr-frame { width: 140px; height: 140px; position: relative; }
+  .qr-corner {
+    position: absolute; width: 24px; height: 24px;
+    border-color: #fff; border-style: solid;
+  }
+  .qr-corner.tl { top: 0; left: 0; border-width: 2.5px 0 0 2.5px; border-radius: 4px 0 0 0; }
+  .qr-corner.tr { top: 0; right: 0; border-width: 2.5px 2.5px 0 0; border-radius: 0 4px 0 0; }
+  .qr-corner.bl { bottom: 0; left: 0; border-width: 0 0 2.5px 2.5px; border-radius: 0 0 0 4px; }
+  .qr-corner.br { bottom: 0; right: 0; border-width: 0 2.5px 2.5px 0; border-radius: 0 0 4px 0; }
+  .scan-line {
+    position: absolute; left: 0; right: 0; height: 2px;
+    background: linear-gradient(to right, transparent, #346739, transparent);
+    top: 50%; animation: scan 2s ease-in-out infinite;
+  }
+  @keyframes scan { 0%,100% { top: 10%; opacity: 0.8; } 50% { top: 90%; opacity: 1; } }
+  .camera-hint {
+    position: absolute; bottom: 14px; left: 0; right: 0; text-align: center;
+    font-size: 11px; color: rgba(255,255,255,0.55);
+  }
+
+  /* Search bar */
+  .op-search {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f2f2f2;
+    background: #fff;
+  }
+  .search-input {
+    width: 100%; height: 38px; background: #f5f3f0; border: none;
+    border-radius: 999px; padding: 0 14px 0 38px; font-family: Poppins, sans-serif;
+    font-size: 12px; color: #212121; outline: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='11' cy='11' r='7' stroke='%2393939f' stroke-width='2'/%3E%3Cpath d='m16 16 4 4' stroke='%2393939f' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: 12px center;
+  }
+  .search-input::placeholder { color: #93939f; }
+
+  /* Bottom sheet — success state */
+  .op-sheet {
+    background: #fff; border-top-left-radius: 20px; border-top-right-radius: 20px;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+    padding: 10px 16px 20px;
+  }
+  .sheet-handle { width: 36px; height: 4px; background: #e8e4df; border-radius: 2px; margin: 0 auto 14px; }
+
+  /* Guest card in sheet */
+  .guest-card { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .guest-avatar {
+    width: 44px; height: 44px; border-radius: 999px;
+    background: #edfce9; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #346739; flex-shrink: 0;
+  }
+  .guest-name { font-size: 15px; font-weight: 700; color: #212121; }
+  .guest-meta { font-size: 11px; color: #93939f; margin-top: 1px; }
+  .guest-badge {
+    margin-left: auto; background: #edfce9; color: #346739;
+    font-size: 10px; font-weight: 700; padding: 3px 10px;
+    border-radius: 999px; text-transform: uppercase; letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  .guest-badge.already { background: #fef2f2; color: #b30000; }
+
+  /* Info row */
+  .info-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .info-chip {
+    flex: 1; background: #faf8f5; border-radius: 10px; padding: 8px 10px;
+    text-align: center;
+  }
+  .info-chip-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #93939f; margin-bottom: 2px; }
+  .info-chip-value { font-size: 13px; font-weight: 700; color: #212121; }
+
+  /* Souvenir toggle */
+  .souvenir-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #faf8f5; border-radius: 12px; padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+  .souvenir-label { font-size: 13px; font-weight: 600; color: #212121; }
+  .souvenir-sub { font-size: 10px; color: #93939f; }
+  .toggle { width: 40px; height: 22px; background: #346739; border-radius: 999px; position: relative; flex-shrink: 0; }
+  .toggle-knob { position: absolute; top: 3px; right: 3px; width: 16px; height: 16px; background: #fff; border-radius: 50%; }
+
+  /* CTA button full-width */
+  .btn-full {
+    width: 100%; padding: 13px; border-radius: 999px;
+    font-family: Poppins, sans-serif; font-size: 14px; font-weight: 600;
+    border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-full.success { background: linear-gradient(to bottom, #427d49, #346739); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); }
+  .btn-full.already { background: #fef2f2; color: #b30000; }
+
+  /* Annotations */
+  .annotation { font-size: 11px; color: #75758a; font-style: italic; margin-top: 6px; padding-left: 4px; }
+
+  /* Selection bar */
+  #selection-indicator {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    background: #212121; color: #fff; padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: Poppins, sans-serif; font-size: 13px; font-weight: 500;
+    transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
+  }
+  #selection-indicator.visible { transform: translateY(0); }
+  #selection-indicator button { background: #346739; color: #fff; border: none; padding: 8px 18px; border-radius: 999px; font-family: Poppins; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+  .selected { outline: 2px solid #346739; outline-offset: 2px; }
+  .clickable { cursor: pointer; transition: opacity 0.15s; }
+  .clickable:hover { opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<div class="page-title">Check-in QR — Full Design Preview</div>
+<div class="page-sub">Matching your existing dashboard design system. Both pages shown side by side.</div>
+
+<!-- ── PAGE 1: ORGANIZER ── -->
+<div class="section-label">Page 1 — Organizer Setup (dashboard/checkin-qr)</div>
+<div class="screen-wrap">
+  <div style="flex:1;min-width:300px;">
+    <div class="device-label">Dashboard · Desktop</div>
+    <div class="device org-device">
+
+      <!-- Shell nav -->
+      <div class="shell-nav">
+        <div class="shell-logo">rimba</div>
+        <div class="shell-breadcrumb">
+          <span>Dashboard</span>
+          <span style="color:#d9d9dd">/</span>
+          <span class="current">Check-in Setup</span>
+        </div>
+        <div class="shell-actions">
+          <div class="icon-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 22c1.1 0 2-.9 2-2H10c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="#93939f"/></svg>
+          </div>
+          <div style="width:28px;height:28px;border-radius:999px;background:#edfce9;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#346739;">SA</div>
+        </div>
+      </div>
+
+      <!-- Page body -->
+      <div class="org-body">
+        <!-- Header -->
+        <div class="org-header">
+          <div class="org-h1">Check-in Setup</div>
+          <div class="org-sub">Sinta & Budi · 14 June 2026</div>
+        </div>
+
+        <!-- Live status banner -->
+        <div class="status-banner">
+          <div class="status-dot"></div>
+          <div class="status-text">Check-in is active — operators can scan now</div>
+          <div class="status-count">42 / 248 arrived</div>
+        </div>
+
+        <!-- Row 1: Event code + PIN -->
+        <div class="card-grid">
+          <!-- Event code -->
+          <div class="card">
+            <div class="card-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="#93939f" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="#93939f" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="#93939f" stroke-width="2"/><rect x="14" y="14" width="3" height="3" fill="#93939f"/></svg>
+              Event Code
+            </div>
+            <div class="card-value">SINTA01</div>
+            <div class="card-value-sm" style="margin-bottom:12px;">rimba.app/checkin/<strong>SINTA01</strong></div>
+            <div class="btn-row">
+              <button class="btn-primary">Copy URL</button>
+              <button class="btn-outline">Regenerate</button>
+            </div>
+          </div>
+
+          <!-- Operator PIN -->
+          <div class="card">
+            <div class="card-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" stroke="#93939f" stroke-width="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#93939f" stroke-width="2" stroke-linecap="round"/></svg>
+              Operator PIN
+            </div>
+            <div class="pin-dots">
+              <div class="pin-dot"></div><div class="pin-dot"></div>
+              <div class="pin-dot"></div><div class="pin-dot"></div>
+              <div class="pin-dot"></div><div class="pin-dot"></div>
+            </div>
+            <div style="font-size:11px;color:#93939f;margin-bottom:12px;">6-digit PIN for operator login</div>
+            <div class="btn-row">
+              <button class="btn-primary">Reveal &amp; Copy</button>
+              <button class="btn-outline">Regenerate</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: QR distribution full-width -->
+        <div class="card card-full" style="margin-bottom:12px;">
+          <div class="card-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#93939f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            QR Code Distribution
+          </div>
+          <div class="qr-card">
+            <div class="qr-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="#346739" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="#346739" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="#346739" stroke-width="1.5"/><rect x="5" y="5" width="3" height="3" fill="#346739"/><rect x="16" y="5" width="3" height="3" fill="#346739"/><rect x="5" y="16" width="3" height="3" fill="#346739"/><rect x="14" y="14" width="3" height="3" fill="#346739"/><rect x="18" y="14" width="3" height="3" fill="#346739"/><rect x="14" y="18" width="3" height="3" fill="#346739"/><rect x="18" y="18" width="3" height="3" fill="#346739"/></svg>
+            </div>
+            <div class="qr-info">
+              <div class="qr-title">248 unique QR codes ready</div>
+              <div class="qr-sub">Each guest has a personal QR token linked to their record</div>
+            </div>
+            <div class="qr-actions">
+              <button class="btn-primary">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Download PDF
+              </button>
+              <button class="btn-outline">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2"/><polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2"/></svg>
+                Email All Guests
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3: Live stats -->
+        <div class="card card-full">
+          <div class="card-label">Live Statistics</div>
+          <div class="card-grid-3" style="margin-bottom:0;">
+            <div class="stat-card">
+              <div class="stat-value green">42</div>
+              <div class="stat-label">Arrived</div>
+            </div>
+            <div class="stat-card" style="border-left:1px solid #f2f2f2;border-right:1px solid #f2f2f2;">
+              <div class="stat-value muted">206</div>
+              <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value coral">31</div>
+              <div class="stat-label">Souvenirs</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <p class="annotation">✦ Cards use <code>ring-1 ring-foreground/10</code>, TextureButton gradient for primary CTAs, and your existing spacing scale.</p>
+  </div>
+</div>
+
+<!-- ── PAGE 2: OPERATOR ── -->
+<div class="section-label">Page 2 — Operator Scan (checkin/[eventCode]) · Mobile 375px</div>
+<div class="screen-wrap">
+
+  <!-- State A: Scanning -->
+  <div>
+    <div class="device-label">State 1 — Scanning</div>
+    <div class="device op-device">
+      <div class="op-screen">
+        <div class="op-topbar">
+          <div class="op-topbar-left">
+            <div class="op-event">SINTA01</div>
+            <div class="op-wedding">Sinta &amp; Budi · June 2026</div>
+          </div>
+          <div class="op-counter">42 / 248</div>
+        </div>
+
+        <div class="op-camera">
+          <div class="qr-frame">
+            <div class="qr-corner tl"></div>
+            <div class="qr-corner tr"></div>
+            <div class="qr-corner bl"></div>
+            <div class="qr-corner br"></div>
+            <div class="scan-line"></div>
+          </div>
+          <div class="camera-hint">Align guest QR code inside the frame</div>
+        </div>
+
+        <div class="op-search">
+          <input class="search-input" type="text" placeholder="Search guest by name…" readonly>
+        </div>
+
+        <!-- Empty bottom area before scan -->
+        <div style="padding:20px 16px;text-align:center;">
+          <div style="font-size:12px;color:#93939f;">Point camera at a guest's QR code to check them in</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- State B: Guest found — check in -->
+  <div>
+    <div class="device-label">State 2 — Guest Found (slide-up)</div>
+    <div class="device op-device">
+      <div class="op-screen">
+        <div class="op-topbar">
+          <div class="op-topbar-left">
+            <div class="op-event">SINTA01</div>
+            <div class="op-wedding">Sinta &amp; Budi · June 2026</div>
+          </div>
+          <div class="op-counter">42 / 248</div>
+        </div>
+
+        <div class="op-camera" style="min-height:200px;">
+          <div class="qr-frame" style="width:100px;height:100px;">
+            <div class="qr-corner tl"></div>
+            <div class="qr-corner tr"></div>
+            <div class="qr-corner bl"></div>
+            <div class="qr-corner br"></div>
+          </div>
+          <!-- Subtle success pulse on camera -->
+          <div style="position:absolute;inset:0;background:rgba(52,103,57,0.08);pointer-events:none;border-radius:2px;"></div>
+        </div>
+
+        <div class="op-search">
+          <input class="search-input" type="text" placeholder="Search guest by name…" readonly>
+        </div>
+
+        <!-- Bottom sheet slides up -->
+        <div class="op-sheet">
+          <div class="sheet-handle"></div>
+
+          <div class="guest-card">
+            <div class="guest-avatar">AS</div>
+            <div>
+              <div class="guest-name">Andi Santoso</div>
+              <div class="guest-meta">Table 12 · Party of 2</div>
+            </div>
+            <div class="guest-badge">VIP</div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-chip">
+              <div class="info-chip-label">Table</div>
+              <div class="info-chip-value">12</div>
+            </div>
+            <div class="info-chip">
+              <div class="info-chip-label">Party</div>
+              <div class="info-chip-value">×2</div>
+            </div>
+            <div class="info-chip">
+              <div class="info-chip-label">RSVP</div>
+              <div class="info-chip-value" style="color:#346739;">✓</div>
+            </div>
+          </div>
+
+          <div class="souvenir-row">
+            <div>
+              <div class="souvenir-label">Souvenir claimed</div>
+              <div style="font-size:10px;color:#93939f;">Toggle after handing out</div>
+            </div>
+            <div class="toggle"><div class="toggle-knob"></div></div>
+          </div>
+
+          <button class="btn-full success">✓ Check In</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- State C: Already checked in -->
+  <div>
+    <div class="device-label">State 3 — Already Checked In</div>
+    <div class="device op-device">
+      <div class="op-screen">
+        <div class="op-topbar">
+          <div class="op-topbar-left">
+            <div class="op-event">SINTA01</div>
+            <div class="op-wedding">Sinta &amp; Budi · June 2026</div>
+          </div>
+          <div class="op-counter">43 / 248</div>
+        </div>
+
+        <div class="op-camera" style="min-height:200px;">
+          <div class="qr-frame" style="width:100px;height:100px;">
+            <div class="qr-corner tl" style="border-color:#ff7759;"></div>
+            <div class="qr-corner tr" style="border-color:#ff7759;"></div>
+            <div class="qr-corner bl" style="border-color:#ff7759;"></div>
+            <div class="qr-corner br" style="border-color:#ff7759;"></div>
+          </div>
+          <div style="position:absolute;inset:0;background:rgba(179,0,0,0.05);pointer-events:none;"></div>
+        </div>
+
+        <div class="op-search">
+          <input class="search-input" type="text" placeholder="Search guest by name…" readonly>
+        </div>
+
+        <div class="op-sheet">
+          <div class="sheet-handle"></div>
+
+          <div class="guest-card">
+            <div class="guest-avatar" style="background:#fef2f2;color:#b30000;">AS</div>
+            <div>
+              <div class="guest-name">Andi Santoso</div>
+              <div class="guest-meta">Arrived at 10:42 AM</div>
+            </div>
+            <div class="guest-badge already">Already in</div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-chip">
+              <div class="info-chip-label">Table</div>
+              <div class="info-chip-value">12</div>
+            </div>
+            <div class="info-chip">
+              <div class="info-chip-label">Party</div>
+              <div class="info-chip-value">×2</div>
+            </div>
+            <div class="info-chip">
+              <div class="info-chip-label">Arrived</div>
+              <div class="info-chip-value" style="font-size:10px;color:#93939f;">10:42</div>
+            </div>
+          </div>
+
+          <div class="souvenir-row">
+            <div>
+              <div class="souvenir-label">Souvenir claimed</div>
+              <div style="font-size:10px;color:#93939f;">Toggle after handing out</div>
+            </div>
+            <div class="toggle" style="background:#346739;"><div class="toggle-knob"></div></div>
+          </div>
+
+          <button class="btn-full already">⚠ Already checked in — scan another</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="background:#fff;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.07);padding:20px 24px;max-width:780px;margin-bottom:40px;">
+  <div style="font-size:13px;font-weight:700;color:#212121;margin-bottom:10px;">Backend changes included in scope</div>
+  <div style="display:flex;flex-direction:column;gap:7px;">
+    <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#212121;">
+      <span style="color:#346739;font-weight:700;flex-shrink:0;">+</span>
+      <span><strong>New DB migration</strong> — creates <code>checkin_events</code> table (event_code, wedding_id, pin_hash, created_at)</span>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#212121;">
+      <span style="color:#346739;font-weight:700;flex-shrink:0;">+</span>
+      <span><strong>New API routes</strong> — <code>POST /api/checkin/events</code> (create), <code>GET /api/checkin/events/:weddingId</code> (fetch config)</span>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#212121;">
+      <span style="color:#346739;font-weight:700;flex-shrink:0;">+</span>
+      <span><strong>QR generation</strong> — server-side per-guest QR PNG from <code>guests.qr_token</code>, bundled into PDF</span>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#212121;">
+      <span style="color:#346739;font-weight:700;flex-shrink:0;">+</span>
+      <span><strong>Email dispatch</strong> — trigger per-guest email with embedded QR code image</span>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#212121;">
+      <span style="color:#346739;font-weight:700;flex-shrink:0;">~</span>
+      <span><strong>OperatorCheckIn.tsx</strong> — full redesign: camera-first + slide-up sheet replacing current vertical scroll</span>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#212121;">
+      <span style="color:#346739;font-weight:700;flex-shrink:0;">~</span>
+      <span><strong>CheckinQrPage.tsx</strong> — full redesign: dashboard grid replacing placeholder layout</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
