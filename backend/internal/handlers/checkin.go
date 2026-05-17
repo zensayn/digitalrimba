@@ -94,6 +94,7 @@ type CheckinStore interface {
 	MarkGuestArrived(context.Context, string, bool, time.Time) (CheckinGuest, bool, CheckinCounts, error)
 	GetCheckinCounts(context.Context, string) (CheckinCounts, error)
 	SearchGuestsByName(ctx context.Context, weddingID, query string) ([]CheckinGuest, error)
+	LookupGuestByQRToken(ctx context.Context, weddingID, qrToken string) (CheckinGuest, error)
 	UpdateGuestSouvenir(ctx context.Context, guestID, weddingID string, collected bool) (CheckinGuest, error)
 	GetCheckinEventByWeddingID(ctx context.Context, weddingID string) (CheckinEvent, error)
 	CreateCheckinEvent(ctx context.Context, weddingID, eventCode, pinHash string) (CheckinEvent, error)
@@ -478,6 +479,21 @@ func (h *CheckinHandler) Search(w http.ResponseWriter, r *http.Request) {
 	claims, ok := h.authorize(r)
 	if !ok {
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// QR token lookup: preview guest without marking arrival (for pre-check-in flow).
+	if qr := strings.TrimSpace(r.URL.Query().Get("qr")); qr != "" {
+		g, err := h.store.LookupGuestByQRToken(r.Context(), claims.WeddingID, qr)
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				writeJSON(w, http.StatusOK, []CheckinGuest{})
+				return
+			}
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		writeJSON(w, http.StatusOK, []CheckinGuest{g})
 		return
 	}
 

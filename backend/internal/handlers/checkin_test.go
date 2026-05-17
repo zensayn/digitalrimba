@@ -480,6 +480,16 @@ func (s *memoryCheckinStore) SearchGuestsByName(_ context.Context, weddingID, qu
 	return results, nil
 }
 
+func (s *memoryCheckinStore) LookupGuestByQRToken(_ context.Context, weddingID, qrToken string) (CheckinGuest, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	g, ok := s.guests[qrToken]
+	if !ok || g.WeddingID != weddingID {
+		return CheckinGuest{}, pgx.ErrNoRows
+	}
+	return g, nil
+}
+
 func (s *memoryCheckinStore) UpdateGuestSouvenir(_ context.Context, guestID, weddingID string, collected bool) (CheckinGuest, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

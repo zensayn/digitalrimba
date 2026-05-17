@@ -118,6 +118,26 @@ func (s *PostgresCheckinStore) SearchGuestsByName(ctx context.Context, weddingID
 	return guests, rows.Err()
 }
 
+// LookupGuestByQRToken returns the guest with the given qr_token without
+// marking arrival — used by the frontend for a preview-before-check-in flow.
+func (s *PostgresCheckinStore) LookupGuestByQRToken(ctx context.Context, weddingID, qrToken string) (CheckinGuest, error) {
+	var g CheckinGuest
+	var arrivedAt *time.Time
+	err := s.db.QueryRow(ctx, `
+		SELECT g.id::text, g.wedding_id::text, g.qr_token::text, g.name, COALESCE(g.guest_group, ''),
+		       c.checked_in_at, COALESCE(c.souvenir_claimed, false)
+		FROM guests g
+		LEFT JOIN checkin c ON c.guest_id = g.id
+		WHERE g.wedding_id = $1::uuid
+		  AND g.qr_token::text = $2
+	`, weddingID, qrToken).Scan(&g.ID, &g.WeddingID, &g.QRToken, &g.Name, &g.Tag, &arrivedAt, &g.SouvenirGiven)
+	if err != nil {
+		return CheckinGuest{}, err
+	}
+	g.ArrivedAt = arrivedAt
+	return g, nil
+}
+
 // GuestQRData holds fields needed to generate a guest's QR code PDF.
 type GuestQRData struct {
 	Name       string
