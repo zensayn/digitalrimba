@@ -14,17 +14,13 @@ import {
   Settings,
   Logout,
   Bell,
-  Widget,
-  UserCircle,
   Chart2,
-  Compass,
-  Notes,
   AltArrowRight,
   AltArrowDown,
   AddCircle,
   ChatDots,
 } from '@solar-icons/react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import type { IconProps } from '@solar-icons/react';
 import {
   Sidebar,
@@ -40,12 +36,11 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarRail,
-  SidebarSeparator,
   SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { TextureButton } from '@/components/ui/texture-button';
+import WeddingProfileGate from '@/components/dashboard/WeddingProfileGate';
 
 type NavItem = {
   href: string;
@@ -272,7 +267,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           </header>
 
           <main className="flex-1 overflow-auto bg-neutral-50/30">
-            {children}
+            <WeddingProfileGate>{children}</WeddingProfileGate>
           </main>
         </SidebarInset>
       </SidebarProvider>
