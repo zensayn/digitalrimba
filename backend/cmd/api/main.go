@@ -48,7 +48,10 @@ func main() {
 		log.Fatal("CHECKIN_SESSION_KEY is required")
 	}
 	checkinStore := internalhandlers.NewPostgresCheckinStore(pool)
-	checkinHandler := internalhandlers.NewCheckinHandler(checkinStore, checkinKey)
+	checkinResolver := &internalhandlers.PgCheckinWeddingResolver{DB: pool}
+	checkinHandler := internalhandlers.NewCheckinHandler(checkinStore, checkinKey, checkinResolver)
+	// TODO: wire a real EmailSender (e.g. Resend/SendGrid) via checkinHandler.SetEmailSender(sender)
+	// when an email service is configured in this project.
 
 	allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
 
@@ -100,6 +103,12 @@ func main() {
 		r.Delete("/api/invitations/{id}", invHandler.Delete)
 		guestHandler.RegisterRoutes(r)
 		internalhandlers.RegisterBudgetRoutes(r, pool)
+
+		// Organizer check-in management routes.
+		r.Post("/api/checkin/events", checkinHandler.CreateEvent)
+		r.Get("/api/checkin/events", checkinHandler.GetEvent)
+		r.Get("/api/checkin/events/qr/pdf", checkinHandler.GetGuestQRPdf)
+		r.Post("/api/checkin/events/qr/email", checkinHandler.EmailGuestQRCodes)
 	})
 
 	port := os.Getenv("PORT")

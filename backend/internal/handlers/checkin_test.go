@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -13,6 +14,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -105,6 +107,87 @@ func TestCheckinHandlers(t *testing.T) {
 			},
 		},
 		{
+			name: "CreateEvent returns eventCode and 6-digit PIN",
+			run: func(t *testing.T, h *CheckinHandler, _ *memoryCheckinStore) {
+				req := httptest.NewRequest(http.MethodPost, "/api/checkin/events", strings.NewReader(`{}`))
+				req.Header.Set("Content-Type", "application/json")
+				req = req.WithContext(WithUserID(req.Context(), "user-1"))
+				rec := httptest.NewRecorder()
+				checkinEventsRouter(h).ServeHTTP(rec, req)
+				assertStatus(t, rec.Code, http.StatusCreated)
+				var resp struct {
+					EventCode string `json:"eventCode"`
+					PIN       string `json:"pin"`
+				}
+				decodeBody(t, rec, &resp)
+				if len(resp.EventCode) != 6 {
+					t.Fatalf("expected 6-char event code, got %q", resp.EventCode)
+				}
+				if len(resp.PIN) != 6 {
+					t.Fatalf("expected 6-digit PIN, got %q", resp.PIN)
+				}
+				for _, c := range resp.PIN {
+					if c < '0' || c > '9' {
+						t.Fatalf("PIN must be all digits, got %q", resp.PIN)
+					}
+				}
+			},
+		},
+		{
+			name: "GetEvent returns config without PIN",
+			run: func(t *testing.T, h *CheckinHandler, store *memoryCheckinStore) {
+				store.events["wed-1"] = CheckinEvent{EventCode: "ABC123", WeddingID: "wed-1", PINHash: "hash"}
+				req := httptest.NewRequest(http.MethodGet, "/api/checkin/events", nil)
+				req = req.WithContext(WithUserID(req.Context(), "user-1"))
+				rec := httptest.NewRecorder()
+				checkinEventsRouter(h).ServeHTTP(rec, req)
+				assertStatus(t, rec.Code, http.StatusOK)
+				var resp map[string]interface{}
+				decodeBody(t, rec, &resp)
+				if resp["eventCode"] != "ABC123" {
+					t.Fatalf("expected ABC123, got %v", resp["eventCode"])
+				}
+				if _, ok := resp["pin"]; ok {
+					t.Error("GET must not return pin")
+				}
+			},
+		},
+		{
+			name: "GetGuestQRPdf returns PDF content-type",
+			run: func(t *testing.T, h *CheckinHandler, store *memoryCheckinStore) {
+				store.events["wed-1"] = CheckinEvent{EventCode: "ABC123", WeddingID: "wed-1"}
+				req := httptest.NewRequest(http.MethodGet, "/api/checkin/events/qr/pdf", nil)
+				req = req.WithContext(WithUserID(req.Context(), "user-1"))
+				rec := httptest.NewRecorder()
+				checkinEventsRouter(h).ServeHTTP(rec, req)
+				assertStatus(t, rec.Code, http.StatusOK)
+				if ct := rec.Header().Get("Content-Type"); ct != "application/pdf" {
+					t.Fatalf("want application/pdf, got %q", ct)
+				}
+				if rec.Body.Len() < 100 {
+					t.Error("PDF body suspiciously small")
+				}
+			},
+		},
+		{
+			name: "EmailGuestQRCodes returns 202 with queued count",
+			run: func(t *testing.T, h *CheckinHandler, store *memoryCheckinStore) {
+				store.events["wed-1"] = CheckinEvent{EventCode: "ABC123", WeddingID: "wed-1"}
+				req := httptest.NewRequest(http.MethodPost, "/api/checkin/events/qr/email", nil)
+				req = req.WithContext(WithUserID(req.Context(), "user-1"))
+				rec := httptest.NewRecorder()
+				checkinEventsRouter(h).ServeHTTP(rec, req)
+				assertStatus(t, rec.Code, http.StatusAccepted)
+				var resp struct {
+					Queued int `json:"queued"`
+				}
+				decodeBody(t, rec, &resp)
+				if resp.Queued != 2 {
+					t.Fatalf("expected 2 queued, got %d", resp.Queued)
+				}
+			},
+		},
+		{
 			name: "SSE emits within 200ms of scan",
 			run: func(t *testing.T, h *CheckinHandler, _ *memoryCheckinStore) {
 				token := mustToken(t, h)
@@ -170,7 +253,8 @@ func TestCheckinHandlers(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			store := newMemoryCheckinStore(t, eventDate)
-			handler := NewCheckinHandler(store, []byte("test-secret"))
+			resolver := &memoryWeddingResolver{weddingID: "wed-1"}
+			handler := NewCheckinHandler(store, []byte("test-secret"), resolver)
 			handler.now = func() time.Time { return now }
 
 			tt.run(t, handler, store)
@@ -185,7 +269,7 @@ func TestCheckinHandlers(t *testing.T) {
 // to give headroom for slow-network clients where Flush() takes 1–10ms).
 func TestCheckin_BroadcastDropsWhenBufferFull(t *testing.T) {
 	store := newMemoryCheckinStore(t, time.Now())
-	h := NewCheckinHandler(store, []byte("key"))
+	h := NewCheckinHandler(store, []byte("key"), &memoryWeddingResolver{weddingID: "wed-1"})
 	ch := h.subscribe("wed-1")
 
 	const total = 10
@@ -207,7 +291,7 @@ func TestCheckin_10RapidScansAllEmit(t *testing.T) {
 	now := time.Date(2026, 5, 15, 10, 0, 0, 0, time.UTC)
 	eventDate := time.Date(2026, 5, 15, 0, 0, 0, 0, time.UTC)
 	store := newMemoryCheckinStore(t, eventDate)
-	handler := NewCheckinHandler(store, []byte("test-secret"))
+	handler := NewCheckinHandler(store, []byte("test-secret"), &memoryWeddingResolver{weddingID: "wed-1"})
 	handler.now = func() time.Time { return now }
 
 	server := httptest.NewServer(checkinRouter(handler))
@@ -327,6 +411,7 @@ type memoryCheckinStore struct {
 	event    CheckinEvent
 	guests   map[string]CheckinGuest
 	scanRows int
+	events   map[string]CheckinEvent // keyed by weddingID
 }
 
 func newMemoryCheckinStore(t *testing.T, eventDate time.Time) *memoryCheckinStore {
@@ -346,6 +431,7 @@ func newMemoryCheckinStore(t *testing.T, eventDate time.Time) *memoryCheckinStor
 			"qr-1": {ID: "guest-1", WeddingID: "wed-1", Name: "Alya Mahendra", Tag: "VIP", QRToken: "qr-1"},
 			"qr-2": {ID: "guest-2", WeddingID: "wed-1", Name: "Bima Santoso", Tag: "Family", QRToken: "qr-2"},
 		},
+		events: make(map[string]CheckinEvent),
 	}
 }
 
@@ -418,4 +504,91 @@ func (s *memoryCheckinStore) countsLocked() CheckinCounts {
 		}
 	}
 	return counts
+}
+
+func (s *memoryCheckinStore) GetCheckinEventByWeddingID(_ context.Context, weddingID string) (CheckinEvent, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	e, ok := s.events[weddingID]
+	if !ok {
+		return CheckinEvent{}, pgx.ErrNoRows
+	}
+	return e, nil
+}
+
+func (s *memoryCheckinStore) CreateCheckinEvent(_ context.Context, weddingID, eventCode, pinHash string) (CheckinEvent, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	e := CheckinEvent{EventCode: eventCode, WeddingID: weddingID, PINHash: pinHash}
+	s.events[weddingID] = e
+	return e, nil
+}
+
+func (s *memoryCheckinStore) UpdateEventPINHash(_ context.Context, weddingID, pinHash string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	e, ok := s.events[weddingID]
+	if !ok {
+		return pgx.ErrNoRows
+	}
+	e.PINHash = pinHash
+	s.events[weddingID] = e
+	return nil
+}
+
+func (s *memoryCheckinStore) GetGuestsForQR(_ context.Context, weddingID string) ([]GuestQRData, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	var out []GuestQRData
+	for _, g := range s.guests {
+		if g.WeddingID == weddingID {
+			out = append(out, GuestQRData{Name: g.Name, QRToken: g.QRToken, GuestGroup: g.Tag})
+		}
+	}
+	return out, nil
+}
+
+func (s *memoryCheckinStore) GetGuestsWithEmail(_ context.Context, weddingID string) ([]GuestEmailData, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	var out []GuestEmailData
+	for _, g := range s.guests {
+		if g.WeddingID == weddingID {
+			out = append(out, GuestEmailData{Name: g.Name, Email: fmt.Sprintf("%s@example.com", g.ID), QRToken: g.QRToken})
+		}
+	}
+	return out, nil
+}
+
+func (s *memoryCheckinStore) GetCheckinStats(_ context.Context, weddingID string) (CheckinStats, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	var stats CheckinStats
+	for _, g := range s.guests {
+		if g.WeddingID == weddingID {
+			stats.Total++
+			if g.ArrivedAt != nil {
+				stats.Arrived++
+			}
+			if g.SouvenirGiven {
+				stats.Souvenirs++
+			}
+		}
+	}
+	return stats, nil
+}
+
+type memoryWeddingResolver struct{ weddingID string }
+
+func (r *memoryWeddingResolver) WeddingIDForUser(_ context.Context, _ string) (string, error) {
+	return r.weddingID, nil
+}
+
+func checkinEventsRouter(h *CheckinHandler) http.Handler {
+	r := chi.NewRouter()
+	r.Post("/api/checkin/events", h.CreateEvent)
+	r.Get("/api/checkin/events", h.GetEvent)
+	r.Get("/api/checkin/events/qr/pdf", h.GetGuestQRPdf)
+	r.Post("/api/checkin/events/qr/email", h.EmailGuestQRCodes)
+	return r
 }

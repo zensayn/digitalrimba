@@ -118,6 +118,111 @@ func (s *PostgresCheckinStore) SearchGuestsByName(ctx context.Context, weddingID
 	return guests, rows.Err()
 }
 
+// GuestQRData holds fields needed to generate a guest's QR code PDF.
+type GuestQRData struct {
+	Name       string
+	QRToken    string
+	GuestGroup string
+}
+
+// GuestEmailData holds fields needed to email a guest their QR code.
+type GuestEmailData struct {
+	Name    string
+	Email   string
+	QRToken string
+}
+
+// CheckinStats holds live counts for the organizer dashboard.
+type CheckinStats struct {
+	Total     int
+	Arrived   int
+	Souvenirs int
+}
+
+func (s *PostgresCheckinStore) GetCheckinEventByWeddingID(ctx context.Context, weddingID string) (CheckinEvent, error) {
+	var e CheckinEvent
+	err := s.db.QueryRow(ctx,
+		`SELECT event_code, wedding_id::text, pin_hash
+		 FROM checkin_events WHERE wedding_id = $1`,
+		weddingID,
+	).Scan(&e.EventCode, &e.WeddingID, &e.PINHash)
+	return e, err // pgx.ErrNoRows when not found
+}
+
+func (s *PostgresCheckinStore) CreateCheckinEvent(ctx context.Context, weddingID, eventCode, pinHash string) (CheckinEvent, error) {
+	var e CheckinEvent
+	err := s.db.QueryRow(ctx,
+		`INSERT INTO checkin_events (wedding_id, event_code, pin_hash)
+		 VALUES ($1, $2, $3)
+		 RETURNING event_code, wedding_id::text, pin_hash`,
+		weddingID, eventCode, pinHash,
+	).Scan(&e.EventCode, &e.WeddingID, &e.PINHash)
+	return e, err
+}
+
+func (s *PostgresCheckinStore) UpdateEventPINHash(ctx context.Context, weddingID, pinHash string) error {
+	var dummy string
+	return s.db.QueryRow(ctx,
+		`UPDATE checkin_events SET pin_hash = $1, updated_at = now()
+		 WHERE wedding_id = $2 RETURNING event_code`,
+		pinHash, weddingID,
+	).Scan(&dummy)
+}
+
+func (s *PostgresCheckinStore) GetGuestsForQR(ctx context.Context, weddingID string) ([]GuestQRData, error) {
+	rows, err := s.db.Query(ctx,
+		`SELECT name, qr_token::text, COALESCE(guest_group, '')
+		 FROM guests WHERE wedding_id = $1 ORDER BY name`,
+		weddingID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var result []GuestQRData
+	for rows.Next() {
+		var g GuestQRData
+		if err := rows.Scan(&g.Name, &g.QRToken, &g.GuestGroup); err != nil {
+			return nil, err
+		}
+		result = append(result, g)
+	}
+	return result, rows.Err()
+}
+
+func (s *PostgresCheckinStore) GetGuestsWithEmail(ctx context.Context, weddingID string) ([]GuestEmailData, error) {
+	rows, err := s.db.Query(ctx,
+		`SELECT name, COALESCE(email, ''), qr_token::text
+		 FROM guests WHERE wedding_id = $1 AND email IS NOT NULL AND email != '' ORDER BY name`,
+		weddingID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var result []GuestEmailData
+	for rows.Next() {
+		var g GuestEmailData
+		if err := rows.Scan(&g.Name, &g.Email, &g.QRToken); err != nil {
+			return nil, err
+		}
+		result = append(result, g)
+	}
+	return result, rows.Err()
+}
+
+func (s *PostgresCheckinStore) GetCheckinStats(ctx context.Context, weddingID string) (CheckinStats, error) {
+	var stats CheckinStats
+	err := s.db.QueryRow(ctx,
+		`SELECT
+			(SELECT COUNT(*) FROM guests  WHERE wedding_id = $1),
+			(SELECT COUNT(*) FROM checkin WHERE wedding_id = $1),
+			(SELECT COUNT(*) FROM checkin WHERE wedding_id = $1 AND souvenir_claimed = true)`,
+		weddingID,
+	).Scan(&stats.Total, &stats.Arrived, &stats.Souvenirs)
+	return stats, err
+}
+
 func (s *PostgresCheckinStore) UpdateGuestSouvenir(ctx context.Context, guestID, weddingID string, collected bool) (CheckinGuest, error) {
 	var g CheckinGuest
 	var arrivedAt *time.Time
