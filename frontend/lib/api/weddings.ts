@@ -61,6 +61,7 @@ async function authedFetch(url: string, options?: RequestInit): Promise<Response
 
 export async function fetchWeddingProfile(): Promise<WeddingProfile | null> {
   const res = await authedFetch(`${BASE}/api/weddings/profile`);
+  if (res.status === 404) return null;
   if (!res.ok) throw new Error(`Wedding profile fetch failed: ${res.status}`);
   const body = (await res.json()) as WeddingProfileResponse;
   return body.wedding ?? null;
