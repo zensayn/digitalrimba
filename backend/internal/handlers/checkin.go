@@ -1,19 +1,26 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
+	cryptorand "crypto/rand"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/big"
+	"math/rand"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5"
+	"github.com/phpdave11/gofpdf"
+	qrcode "github.com/skip2/go-qrcode"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -22,6 +29,43 @@ var (
 	ErrCheckinGuestNotFound = errors.New("checkin guest not found")
 	ErrCheckinUnauthorized  = errors.New("checkin unauthorized")
 )
+
+const eventCodeChars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+
+func generateEventCode() string {
+	b := make([]byte, 6)
+	for i := range b {
+		b[i] = eventCodeChars[rand.Intn(len(eventCodeChars))]
+	}
+	return string(b)
+}
+
+func generatePIN() (string, error) {
+	n, err := cryptorand.Int(cryptorand.Reader, big.NewInt(1_000_000))
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%06d", n.Int64()), nil
+}
+
+// CheckinWeddingResolver maps an authenticated user ID to their wedding ID.
+type CheckinWeddingResolver interface {
+	WeddingIDForUser(ctx context.Context, userID string) (string, error)
+}
+
+// PgCheckinWeddingResolver looks up the wedding for a given user ID.
+type PgCheckinWeddingResolver struct {
+	DB CheckinDB
+}
+
+func (r *PgCheckinWeddingResolver) WeddingIDForUser(ctx context.Context, userID string) (string, error) {
+	var id string
+	err := r.DB.QueryRow(ctx,
+		`SELECT id FROM weddings WHERE owner_user_id = $1 LIMIT 1`,
+		userID,
+	).Scan(&id)
+	return id, err
+}
 
 type CheckinEvent struct {
 	EventCode   string
@@ -51,12 +95,29 @@ type CheckinStore interface {
 	GetCheckinCounts(context.Context, string) (CheckinCounts, error)
 	SearchGuestsByName(ctx context.Context, weddingID, query string) ([]CheckinGuest, error)
 	UpdateGuestSouvenir(ctx context.Context, guestID, weddingID string, collected bool) (CheckinGuest, error)
+	GetCheckinEventByWeddingID(ctx context.Context, weddingID string) (CheckinEvent, error)
+	CreateCheckinEvent(ctx context.Context, weddingID, eventCode, pinHash string) (CheckinEvent, error)
+	UpdateEventPINHash(ctx context.Context, weddingID, pinHash string) error
+	GetGuestsForQR(ctx context.Context, weddingID string) ([]GuestQRData, error)
+	GetGuestsWithEmail(ctx context.Context, weddingID string) ([]GuestEmailData, error)
+	GetCheckinStats(ctx context.Context, weddingID string) (CheckinStats, error)
 }
 
+// EmailSender sends a QR code email to one guest.
+type EmailSender interface {
+	SendGuestQR(ctx context.Context, toEmail, guestName string, qrPNG []byte) error
+}
+
+type noopEmailSender struct{}
+
+func (noopEmailSender) SendGuestQR(_ context.Context, _, _ string, _ []byte) error { return nil }
+
 type CheckinHandler struct {
-	store      CheckinStore
-	sessionKey []byte
-	now        func() time.Time
+	store       CheckinStore
+	sessionKey  []byte
+	now         func() time.Time
+	resolver    CheckinWeddingResolver
+	emailSender EmailSender
 
 	mu        sync.Mutex
 	failures  map[string]int
@@ -64,15 +125,221 @@ type CheckinHandler struct {
 	streams   map[string]map[chan CheckinCounts]struct{}
 }
 
-func NewCheckinHandler(store CheckinStore, sessionKey []byte) *CheckinHandler {
+func NewCheckinHandler(store CheckinStore, sessionKey []byte, resolver CheckinWeddingResolver) *CheckinHandler {
 	return &CheckinHandler{
-		store:      store,
-		sessionKey: sessionKey,
-		now:        time.Now,
-		failures:   make(map[string]int),
-		lockedTil:  make(map[string]time.Time),
-		streams:    make(map[string]map[chan CheckinCounts]struct{}),
+		store:       store,
+		sessionKey:  sessionKey,
+		now:         time.Now,
+		resolver:    resolver,
+		emailSender: noopEmailSender{},
+		failures:    make(map[string]int),
+		lockedTil:   make(map[string]time.Time),
+		streams:     make(map[string]map[chan CheckinCounts]struct{}),
 	}
+}
+
+func (h *CheckinHandler) SetEmailSender(s EmailSender) { h.emailSender = s }
+
+// CreateEvent handles POST /api/checkin/events.
+// Resolves the caller's wedding, creates or updates the event, returns plain PIN once.
+func (h *CheckinHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
+	userID, ok := UserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+	weddingID, err := h.resolver.WeddingIDForUser(r.Context(), userID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			http.Error(w, "no wedding found", http.StatusNotFound)
+		} else {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	pin, err := generatePIN()
+	if err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	pinHash, err := bcrypt.GenerateFromPassword([]byte(pin), bcrypt.DefaultCost)
+	if err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	existing, err := h.store.GetCheckinEventByWeddingID(r.Context(), weddingID)
+	var eventCode string
+	if err == nil {
+		// Already exists — rotate PIN only
+		if err := h.store.UpdateEventPINHash(r.Context(), weddingID, string(pinHash)); err != nil {
+			http.Error(w, "update error", http.StatusInternalServerError)
+			return
+		}
+		eventCode = existing.EventCode
+	} else if errors.Is(err, pgx.ErrNoRows) {
+		// First-time setup
+		created, err := h.store.CreateCheckinEvent(r.Context(), weddingID, generateEventCode(), string(pinHash))
+		if err != nil {
+			http.Error(w, "create error", http.StatusInternalServerError)
+			return
+		}
+		eventCode = created.EventCode
+	} else {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]string{
+		"eventCode": eventCode,
+		"pin":       pin,
+	})
+}
+
+// GetEvent handles GET /api/checkin/events.
+// Returns event config and live stats. Does NOT return the PIN.
+func (h *CheckinHandler) GetEvent(w http.ResponseWriter, r *http.Request) {
+	userID, ok := UserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+	weddingID, err := h.resolver.WeddingIDForUser(r.Context(), userID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			http.Error(w, "no wedding found", http.StatusNotFound)
+		} else {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	event, err := h.store.GetCheckinEventByWeddingID(r.Context(), weddingID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			http.Error(w, "not configured", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "store error", http.StatusInternalServerError)
+		return
+	}
+
+	stats, err := h.store.GetCheckinStats(r.Context(), weddingID)
+	if err != nil {
+		http.Error(w, "stats error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{
+		"eventCode":     event.EventCode,
+		"operatorUrl":   "/checkin/" + event.EventCode,
+		"totalGuests":   stats.Total,
+		"arrivedGuests": stats.Arrived,
+		"souvenirCount": stats.Souvenirs,
+	})
+}
+
+// GetGuestQRPdf handles GET /api/checkin/events/qr/pdf.
+// Streams a PDF with one page per guest: name, group label, and QR code.
+// The QR code encodes the guest's raw qr_token UUID.
+func (h *CheckinHandler) GetGuestQRPdf(w http.ResponseWriter, r *http.Request) {
+	userID, ok := UserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+	weddingID, err := h.resolver.WeddingIDForUser(r.Context(), userID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			http.Error(w, "no wedding found", http.StatusNotFound)
+		} else {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	guests, err := h.store.GetGuestsForQR(r.Context(), weddingID)
+	if err != nil {
+		http.Error(w, "store error", http.StatusInternalServerError)
+		return
+	}
+
+	pdf := gofpdf.New("P", "mm", "A4", "")
+	pdf.SetMargins(20, 20, 20)
+
+	for _, guest := range guests {
+		pdf.AddPage()
+
+		pdf.SetFont("Helvetica", "B", 20)
+		pdf.CellFormat(0, 12, guest.Name, "", 1, "C", false, 0, "")
+
+		if guest.GuestGroup != "" {
+			pdf.SetFont("Helvetica", "", 12)
+			pdf.SetTextColor(100, 100, 100)
+			pdf.CellFormat(0, 8, guest.GuestGroup, "", 1, "C", false, 0, "")
+			pdf.SetTextColor(0, 0, 0)
+		}
+		pdf.Ln(8)
+
+		pngBytes, err := qrcode.Encode(guest.QRToken, qrcode.High, 256)
+		if err != nil {
+			http.Error(w, "qr error", http.StatusInternalServerError)
+			return
+		}
+		imgOpts := gofpdf.ImageOptions{ImageType: "PNG", ReadDpi: true}
+		pdf.RegisterImageOptionsReader(guest.QRToken, imgOpts, bytes.NewReader(pngBytes))
+		// A4 width=210mm, margins 20mm each → 170mm content. 80mm QR centred: x=65
+		pdf.ImageOptions(guest.QRToken, 65, pdf.GetY(), 80, 80, false, imgOpts, 0, "")
+	}
+
+	w.Header().Set("Content-Type", "application/pdf")
+	w.Header().Set("Content-Disposition", `attachment; filename="guest-qr-codes.pdf"`)
+	_ = pdf.Output(w)
+}
+
+// EmailGuestQRCodes handles POST /api/checkin/events/qr/email.
+// Sends each guest (with email) their personal QR code PNG.
+func (h *CheckinHandler) EmailGuestQRCodes(w http.ResponseWriter, r *http.Request) {
+	userID, ok := UserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+	weddingID, err := h.resolver.WeddingIDForUser(r.Context(), userID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			http.Error(w, "no wedding found", http.StatusNotFound)
+		} else {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	guests, err := h.store.GetGuestsWithEmail(r.Context(), weddingID)
+	if err != nil {
+		http.Error(w, "store error", http.StatusInternalServerError)
+		return
+	}
+
+	queued := 0
+	for _, g := range guests {
+		png, err := qrcode.Encode(g.QRToken, qrcode.High, 256)
+		if err != nil {
+			continue
+		}
+		if err := h.emailSender.SendGuestQR(r.Context(), g.Email, g.Name, png); err != nil {
+			continue
+		}
+		queued++
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(w).Encode(map[string]int{"queued": queued})
 }
 
 func (h *CheckinHandler) RegisterRoutes(r chi.Router) {
