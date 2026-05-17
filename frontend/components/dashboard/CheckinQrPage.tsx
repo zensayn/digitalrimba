@@ -1,99 +1,299 @@
-"use client";
+'use client'
 
-import { useState } from 'react';
-import { QrCode, Copy, Link, Key, CheckCircle } from '@solar-icons/react';
+import { useEffect, useState, useTransition } from 'react'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { TextureButton } from '@/components/ui/texture-button'
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+  createCheckinEvent,
+  fetchQRPdfBlob,
+  getCheckinEvent,
+  triggerQREmail,
+  type CheckinEventConfig,
+} from '@/lib/api/checkin-events'
 
 export default function CheckinQrPage() {
-  const [copied, setCopied] = useState<'url' | 'pin' | null>(null);
+  const [config, setConfig] = useState<CheckinEventConfig | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [plainPin, setPlainPin] = useState<string | null>(null)
+  const [emailStatus, setEmailStatus] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
 
-  const eventCode = 'TEST01';
-  const operatorUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/checkin/${eventCode}`;
-  const pin = '••••••';
+  useEffect(() => {
+    getCheckinEvent()
+      .then(setConfig)
+      .catch((err: unknown) => setError(err instanceof Error ? err.message : 'Failed to load check-in config'))
+      .finally(() => setLoading(false))
+  }, [])
 
-  function copyToClipboard(text: string, type: 'url' | 'pin') {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(type);
-      setTimeout(() => setCopied(null), 2000);
-    });
+  function handleSetupOrRegeneratePin() {
+    setError(null)
+    startTransition(async () => {
+      try {
+        const result = await createCheckinEvent()
+        setPlainPin(result.pin)
+        const updated = await getCheckinEvent()
+        setConfig(updated)
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Failed to set up check-in')
+      }
+    })
+  }
+
+  function handleCopyUrl() {
+    if (config) {
+      const full = (typeof window !== 'undefined' ? window.location.origin : '') + config.operatorUrl
+      navigator.clipboard.writeText(full)
+    }
+  }
+
+  function handleCopyPin() {
+    if (plainPin) navigator.clipboard.writeText(plainPin)
+  }
+
+  async function handleDownloadPdf() {
+    setError(null)
+    try {
+      const objectUrl = await fetchQRPdfBlob()
+      const a = document.createElement('a')
+      a.href = objectUrl
+      a.download = 'guest-qr-codes.pdf'
+      a.click()
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 10_000)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'PDF download failed')
+    }
+  }
+
+  function handleEmailAll() {
+    setError(null)
+    startTransition(async () => {
+      try {
+        const { queued } = await triggerQREmail()
+        setEmailStatus(`Sent to ${queued} guests`)
+        setTimeout(() => setEmailStatus(null), 4000)
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Failed to send emails')
+      }
+    })
+  }
+
+  if (loading) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 md:px-8 pt-8 space-y-4">
+        <Skeleton className="h-9 w-52" />
+        <Skeleton className="h-4 w-80" />
+        <Skeleton className="h-12 rounded-2xl w-full" />
+        <div className="grid grid-cols-2 gap-3">
+          <Skeleton className="h-36 rounded-2xl" />
+          <Skeleton className="h-36 rounded-2xl" />
+        </div>
+        <Skeleton className="h-20 rounded-2xl" />
+        <Skeleton className="h-20 rounded-2xl" />
+      </div>
+    )
   }
 
   return (
-    <div className="flex-1 p-6 md:p-8 max-w-3xl">
-      <div className="mb-8">
-        <h1 className="font-amoria text-4xl text-clay-ink tracking-tight mb-1">Check-in Setup</h1>
-        <p className="font-poppins text-sm text-clay-ink/40">
-          Share the operator link and PIN with your check-in team.
+    <div className="max-w-3xl mx-auto px-4 md:px-8 pt-8 pb-24 space-y-3">
+      {/* Page header */}
+      <div className="mb-5">
+        <h1 className="text-3xl md:text-4xl font-bold text-[#212121] tracking-tight">
+          Check-in Setup
+        </h1>
+        <p className="text-sm text-[#93939f] mt-1">
+          Configure operator login and distribute guest QR codes
         </p>
       </div>
 
-      <div className="space-y-4">
-        {/* Operator URL card */}
-        <div className="rounded-2xl border border-black/8 bg-white p-5 shadow-[0_4px_24px_rgba(27,27,23,0.05)]">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="w-9 h-9 rounded-full bg-clay-teal/10 flex items-center justify-center">
-              <Link size={18} weight="Bold" className="text-clay-teal" />
-            </span>
-            <div>
-              <p className="font-poppins text-sm font-semibold text-clay-ink">Operator Check-in URL</p>
-              <p className="font-poppins text-xs text-clay-ink/40">Share this link with your check-in operators</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 bg-clay-canvas rounded-xl px-4 py-3">
-            <span className="font-mono text-xs text-clay-ink/70 flex-1 truncate">/checkin/{eventCode}</span>
-            <button
-              onClick={() => copyToClipboard(operatorUrl, 'url')}
-              className="shrink-0 flex items-center gap-1.5 text-xs font-semibold text-clay-teal hover:text-clay-teal/80 transition-colors"
-            >
-              {copied === 'url' ? (
-                <><CheckCircle size={14} weight="Bold" /> Copied</>
-              ) : (
-                <><Copy size={14} weight="Linear" /> Copy</>
-              )}
-            </button>
-          </div>
+      {/* Error banner */}
+      {error && (
+        <div className="flex items-center gap-2 bg-[#fef2f2] border border-red-200 rounded-xl px-4 py-2.5">
+          <span className="text-xs font-medium text-[#b30000]">{error}</span>
+          <button
+            className="ml-auto text-[10px] font-semibold text-[#b30000] underline"
+            onClick={() => setError(null)}
+          >
+            Dismiss
+          </button>
         </div>
+      )}
 
-        {/* PIN card */}
-        <div className="rounded-2xl border border-black/8 bg-white p-5 shadow-[0_4px_24px_rgba(27,27,23,0.05)]">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="w-9 h-9 rounded-full bg-clay-ochre/10 flex items-center justify-center">
-              <Key size={18} weight="Bold" className="text-clay-ochre" />
-            </span>
-            <div>
-              <p className="font-poppins text-sm font-semibold text-clay-ink">Operator PIN</p>
-              <p className="font-poppins text-xs text-clay-ink/40">6-digit PIN for operator authentication</p>
+      {/* First-time setup prompt */}
+      {!config && !error && (
+        <Card className="rounded-2xl ring-1 ring-foreground/10">
+          <CardContent className="p-6 flex flex-col items-center gap-4 text-center">
+            <div className="w-12 h-12 rounded-xl bg-[#edfce9] flex items-center justify-center">
+              <QrIcon className="w-6 h-6 text-[#346739]" />
             </div>
-          </div>
-          <div className="flex items-center gap-2 bg-clay-canvas rounded-xl px-4 py-3">
-            <span className="font-mono text-2xl tracking-[0.32em] text-clay-ink/40 flex-1">{pin}</span>
-            <button className="shrink-0 text-xs font-semibold text-clay-ochre hover:text-clay-ochre/80 transition-colors">
-              Reveal & Copy
-            </button>
-          </div>
-          <p className="mt-2 text-xs text-clay-ink/30 font-poppins">
-            PIN is set by your administrator. Contact support to rotate it.
-          </p>
-        </div>
+            <div>
+              <p className="text-sm font-semibold text-[#212121]">Check-in not set up yet</p>
+              <p className="text-xs text-[#93939f] mt-1">
+                Generate an event code and PIN for your operators
+              </p>
+            </div>
+            <TextureButton variant="primary" onClick={handleSetupOrRegeneratePin} disabled={isPending}>
+              {isPending ? 'Setting up…' : 'Set Up Check-in'}
+            </TextureButton>
+          </CardContent>
+        </Card>
+      )}
 
-        {/* QR code card */}
-        <div className="rounded-2xl border border-black/8 bg-white p-5 shadow-[0_4px_24px_rgba(27,27,23,0.05)]">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="w-9 h-9 rounded-full bg-clay-lavender/20 flex items-center justify-center">
-              <QrCode size={18} weight="Bold" className="text-clay-lavender" />
+      {config && (
+        <>
+          {/* Live status banner */}
+          <div className="flex items-center gap-2 bg-[#edfce9] border border-[#c5e8c9] rounded-xl px-4 py-2.5">
+            <span className="w-2 h-2 rounded-full bg-[#346739] animate-pulse flex-shrink-0" />
+            <span className="text-xs font-medium text-[#346739]">
+              Check-in active — operators can scan now
             </span>
-            <div>
-              <p className="font-poppins text-sm font-semibold text-clay-ink">QR Code</p>
-              <p className="font-poppins text-xs text-clay-ink/40">Print or display to let operators scan-to-open</p>
-            </div>
+            <span className="ml-auto text-xs font-bold text-[#346739]">
+              {config.arrivedGuests} / {config.totalGuests} arrived
+            </span>
           </div>
-          <div className="w-40 h-40 rounded-xl bg-clay-canvas border border-black/8 flex items-center justify-center">
-            <QrCode size={80} weight="Linear" className="text-clay-ink/20" />
+
+          {/* Event code + PIN */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <Card className="rounded-2xl ring-1 ring-foreground/10">
+              <CardHeader className="pb-0 pt-4 px-4">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-[#93939f]">
+                  Event Code
+                </p>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 space-y-3">
+                <p className="text-2xl font-bold text-[#212121] font-mono tracking-widest">
+                  {config.eventCode}
+                </p>
+                <div className="bg-[#faf8f5] rounded-lg px-3 py-1.5 text-xs text-[#346739] break-all">
+                  {typeof window !== 'undefined' ? window.location.origin : ''}{config.operatorUrl}
+                </div>
+                <TextureButton variant="primary" size="sm" onClick={handleCopyUrl}>
+                  Copy URL
+                </TextureButton>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-2xl ring-1 ring-foreground/10">
+              <CardHeader className="pb-0 pt-4 px-4">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-[#93939f]">
+                  Operator PIN
+                </p>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 space-y-3">
+                <div className="flex gap-1.5">
+                  {plainPin
+                    ? plainPin.split('').map((d, i) => (
+                        <div
+                          key={i}
+                          className="w-8 h-10 bg-[#edfce9] rounded-md flex items-center justify-center text-sm font-bold text-[#346739]"
+                        >
+                          {d}
+                        </div>
+                      ))
+                    : Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="w-8 h-10 bg-[#212121] rounded-md" />
+                      ))}
+                </div>
+                {!plainPin && (
+                  <p className="text-[11px] text-[#93939f]">
+                    PIN hidden — regenerate to reveal a new one
+                  </p>
+                )}
+                <div className="flex gap-2 flex-wrap">
+                  {plainPin && (
+                    <TextureButton variant="primary" size="sm" onClick={handleCopyPin}>
+                      Copy PIN
+                    </TextureButton>
+                  )}
+                  <TextureButton
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSetupOrRegeneratePin}
+                    disabled={isPending}
+                  >
+                    {isPending ? '…' : 'Regenerate PIN'}
+                  </TextureButton>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-          <p className="mt-3 text-xs text-clay-ink/30 font-poppins">
-            QR code generation coming soon.
-          </p>
-        </div>
-      </div>
+
+          {/* QR distribution */}
+          <Card className="rounded-2xl ring-1 ring-foreground/10">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="w-11 h-11 rounded-xl bg-[#faf8f5] flex items-center justify-center flex-shrink-0">
+                <QrIcon className="w-5 h-5 text-[#346739]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-[#212121]">
+                  {config.totalGuests} unique QR codes ready
+                </p>
+                <p className="text-xs text-[#93939f]">
+                  Each guest has a personal token linked to their record
+                </p>
+                {emailStatus && (
+                  <p className="text-xs text-[#346739] mt-0.5 font-medium">{emailStatus}</p>
+                )}
+              </div>
+              <div className="flex flex-col gap-2 flex-shrink-0">
+                <TextureButton variant="primary" size="sm" onClick={handleDownloadPdf}>
+                  Download PDF
+                </TextureButton>
+                <TextureButton
+                  variant="outline"
+                  size="sm"
+                  onClick={handleEmailAll}
+                  disabled={isPending}
+                >
+                  {isPending ? 'Sending…' : 'Email All'}
+                </TextureButton>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Live stats */}
+          <Card className="rounded-2xl ring-1 ring-foreground/10">
+            <CardContent className="p-0">
+              <div className="grid grid-cols-3 divide-x divide-[#f2f2f2]">
+                {[
+                  { label: 'Arrived', value: config.arrivedGuests, color: 'text-[#346739]' },
+                  {
+                    label: 'Pending',
+                    value: config.totalGuests - config.arrivedGuests,
+                    color: 'text-[#212121]',
+                  },
+                  { label: 'Souvenirs', value: config.souvenirCount, color: 'text-[#ff7759]' },
+                ].map(({ label, value, color }) => (
+                  <div key={label} className="py-4 text-center">
+                    <p className={`text-2xl font-bold ${color}`}>{value}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-[#93939f] mt-0.5">
+                      {label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
-  );
+  )
+}
+
+function QrIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="5" y="5" width="3" height="3" fill="currentColor" />
+      <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="16" y="5" width="3" height="3" fill="currentColor" />
+      <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="5" y="16" width="3" height="3" fill="currentColor" />
+      <rect x="14" y="14" width="3" height="3" fill="currentColor" />
+      <rect x="18" y="14" width="3" height="3" fill="currentColor" />
+      <rect x="14" y="18" width="3" height="3" fill="currentColor" />
+      <rect x="18" y="18" width="3" height="3" fill="currentColor" />
+    </svg>
+  )
 }
