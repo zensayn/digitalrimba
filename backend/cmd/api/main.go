@@ -50,6 +50,8 @@ func main() {
 	checkinStore := internalhandlers.NewPostgresCheckinStore(pool)
 	checkinResolver := &internalhandlers.PgCheckinWeddingResolver{DB: pool}
 	checkinHandler := internalhandlers.NewCheckinHandler(checkinStore, checkinKey, checkinResolver)
+	// TODO: wire a real EmailSender (e.g. Resend/SendGrid) via checkinHandler.SetEmailSender(sender)
+	// when an email service is configured in this project.
 
 	allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
 

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -124,6 +125,11 @@ func TestCheckinHandlers(t *testing.T) {
 				}
 				if len(resp.PIN) != 6 {
 					t.Fatalf("expected 6-digit PIN, got %q", resp.PIN)
+				}
+				for _, c := range resp.PIN {
+					if c < '0' || c > '9' {
+						t.Fatalf("PIN must be all digits, got %q", resp.PIN)
+					}
 				}
 			},
 		},
@@ -548,7 +554,7 @@ func (s *memoryCheckinStore) GetGuestsWithEmail(_ context.Context, weddingID str
 	var out []GuestEmailData
 	for _, g := range s.guests {
 		if g.WeddingID == weddingID {
-			out = append(out, GuestEmailData{Name: g.Name, Email: "test@example.com", QRToken: g.QRToken})
+			out = append(out, GuestEmailData{Name: g.Name, Email: fmt.Sprintf("%s@example.com", g.ID), QRToken: g.QRToken})
 		}
 	}
 	return out, nil

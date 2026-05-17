@@ -3,12 +3,14 @@ package handlers
 import (
 	"bytes"
 	"context"
+	cryptorand "crypto/rand"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/big"
 	"math/rand"
 	"net/http"
 	"strings"
@@ -38,8 +40,12 @@ func generateEventCode() string {
 	return string(b)
 }
 
-func generatePIN() string {
-	return fmt.Sprintf("%06d", rand.Intn(1_000_000))
+func generatePIN() (string, error) {
+	n, err := cryptorand.Int(cryptorand.Reader, big.NewInt(1_000_000))
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%06d", n.Int64()), nil
 }
 
 // CheckinWeddingResolver maps an authenticated user ID to their wedding ID.
@@ -144,11 +150,19 @@ func (h *CheckinHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 	}
 	weddingID, err := h.resolver.WeddingIDForUser(r.Context(), userID)
 	if err != nil {
-		http.Error(w, "no wedding found", http.StatusNotFound)
+		if errors.Is(err, pgx.ErrNoRows) {
+			http.Error(w, "no wedding found", http.StatusNotFound)
+		} else {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
 		return
 	}
 
-	pin := generatePIN()
+	pin, err := generatePIN()
+	if err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
 	pinHash, err := bcrypt.GenerateFromPassword([]byte(pin), bcrypt.DefaultCost)
 	if err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)
@@ -164,7 +178,7 @@ func (h *CheckinHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		eventCode = existing.EventCode
-	} else {
+	} else if errors.Is(err, pgx.ErrNoRows) {
 		// First-time setup
 		created, err := h.store.CreateCheckinEvent(r.Context(), weddingID, generateEventCode(), string(pinHash))
 		if err != nil {
@@ -172,6 +186,9 @@ func (h *CheckinHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		eventCode = created.EventCode
+	} else {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -192,7 +209,11 @@ func (h *CheckinHandler) GetEvent(w http.ResponseWriter, r *http.Request) {
 	}
 	weddingID, err := h.resolver.WeddingIDForUser(r.Context(), userID)
 	if err != nil {
-		http.Error(w, "no wedding found", http.StatusNotFound)
+		if errors.Is(err, pgx.ErrNoRows) {
+			http.Error(w, "no wedding found", http.StatusNotFound)
+		} else {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -233,7 +254,11 @@ func (h *CheckinHandler) GetGuestQRPdf(w http.ResponseWriter, r *http.Request) {
 	}
 	weddingID, err := h.resolver.WeddingIDForUser(r.Context(), userID)
 	if err != nil {
-		http.Error(w, "no wedding found", http.StatusNotFound)
+		if errors.Is(err, pgx.ErrNoRows) {
+			http.Error(w, "no wedding found", http.StatusNotFound)
+		} else {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -286,7 +311,11 @@ func (h *CheckinHandler) EmailGuestQRCodes(w http.ResponseWriter, r *http.Reques
 	}
 	weddingID, err := h.resolver.WeddingIDForUser(r.Context(), userID)
 	if err != nil {
-		http.Error(w, "no wedding found", http.StatusNotFound)
+		if errors.Is(err, pgx.ErrNoRows) {
+			http.Error(w, "no wedding found", http.StatusNotFound)
+		} else {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
 		return
 	}
 
