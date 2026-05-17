@@ -89,17 +89,53 @@ test("wedding profile API rejects invalid token response", async () => {
   assert.equal(calls[0]?.url, "/api/auth/token");
 });
 
-function mockFetch(calls: FetchCall[], responses: Record<string, unknown>) {
+test("wedding profile API treats profile 404 as not onboarded", async () => {
+  const calls: FetchCall[] = [];
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = mockFetch(calls, {
+    "/api/auth/token": { token: "jwt-token" },
+    "/api/weddings/profile": { status: 404, body: { error: "not found" } },
+  });
+
+  try {
+    const { fetchWeddingProfile } = await import(`./weddings.ts?weddings-not-onboarded-${Date.now()}`);
+    const profile = await fetchWeddingProfile();
+    assert.equal(profile, null);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+
+  assert.equal(calls[1]?.url, "/api/weddings/profile");
+});
+
+function mockFetch(calls: FetchCall[], responses: Record<string, unknown | { status: number; body: unknown }>) {
   return async (input: string | URL | Request, init?: RequestInit) => {
     const url = input.toString();
     calls.push({ url, init });
     if (!(url in responses)) {
       throw new Error(`Unexpected fetch: ${url}`);
     }
+    const response = responses[url];
+    if (isMockResponse(response)) {
+      return new Response(JSON.stringify(response.body), {
+        status: response.status,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
-    return new Response(JSON.stringify(responses[url]), {
+    return new Response(JSON.stringify(response), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   };
+}
+
+function isMockResponse(value: unknown): value is { status: number; body: unknown } {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      "status" in value &&
+      typeof value.status === "number" &&
+      "body" in value,
+  );
 }

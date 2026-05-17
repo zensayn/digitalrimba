@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { auth } from '@/lib/auth';
 import DashboardShell from '@/components/dashboard/DashboardShell';
+import WeddingProfileGate from '@/components/dashboard/WeddingProfileGate';
 
 export default async function DashboardLayout({
   children,
@@ -20,7 +21,9 @@ export default async function DashboardLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <DashboardShell>{children}</DashboardShell>
+      <WeddingProfileGate>
+        <DashboardShell>{children}</DashboardShell>
+      </WeddingProfileGate>
     </NextIntlClientProvider>
   );
 }

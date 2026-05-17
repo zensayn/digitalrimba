@@ -40,7 +40,6 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import WeddingProfileGate from '@/components/dashboard/WeddingProfileGate';
 
 type NavItem = {
   href: string;
@@ -266,9 +265,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             </div>
           </header>
 
-          <main className="flex-1 overflow-auto bg-neutral-50/30">
-            <WeddingProfileGate>{children}</WeddingProfileGate>
-          </main>
+          <main className="flex-1 overflow-auto bg-neutral-50/30">{children}</main>
         </SidebarInset>
       </SidebarProvider>
     </TooltipProvider>

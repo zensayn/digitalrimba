@@ -2,19 +2,9 @@ import createIntlMiddleware from "next-intl/middleware";
 import { type NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 import { routing } from "./i18n/routing";
+import { isNonLocalizedAppRoute, isProtectedRoute } from "./lib/proxy-route-matching";
 
 const intl = createIntlMiddleware(routing);
-
-const isProtectedRoute = (pathname: string) =>
-  pathname.startsWith("/dashboard") ||
-  pathname.startsWith("/invitation") ||
-  /^\/[a-z]{2}\/dashboard/.test(pathname) ||
-  /^\/[a-z]{2}\/invitation/.test(pathname);
-
-// Routes owned by the (dashboard) route group — next-intl must not intercept
-// them or it re-adds the locale prefix and creates an infinite redirect loop.
-const isDashboardRoute = (pathname: string) =>
-  pathname === "/dashboard" || pathname.startsWith("/dashboard/");
 
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -31,8 +21,8 @@ export default function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/id/auth", request.url));
   }
 
-  // 3. /dashboard/** — bypass next-intl to avoid locale↔non-locale redirect loop.
-  if (isDashboardRoute(pathname)) {
+  // 3. Non-localized app routes — bypass next-intl to avoid locale redirect loops.
+  if (isNonLocalizedAppRoute(pathname)) {
     return NextResponse.next();
   }
 
