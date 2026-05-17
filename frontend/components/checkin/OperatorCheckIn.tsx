@@ -42,7 +42,7 @@ declare global {
   }
 }
 
-// ── API helpers (client-side, operator HMAC token auth) ────────────────────────
+// ── API helpers ────────────────────────────────────────────────────────────────
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
 const SCANNER_ID = "operator-checkin-reader";
@@ -69,6 +69,22 @@ async function apiAuthOperator(eventCode: string, pin: string) {
   };
 }
 
+/** Read-only QR lookup — does NOT mark the guest as arrived. */
+async function apiLookupByQR(
+  token: string,
+  qrToken: string
+): Promise<CheckInGuest | null> {
+  const res = await fetch(
+    `${BASE}/api/checkin/guests?qr=${encodeURIComponent(qrToken)}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  if (!res.ok) return null;
+  const data = (await res.json()) as unknown[];
+  if (!Array.isArray(data) || data.length === 0) return null;
+  return normalizeGuest(data[0] as Record<string, unknown>);
+}
+
+/** Write — marks the guest as arrived. Call only on explicit Check In tap. */
 async function apiScanGuest(token: string, qrToken: string) {
   const res = await fetch(`${BASE}/api/checkin/scan`, {
     method: "POST",
@@ -152,29 +168,58 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
   const [busy, setBusy] = useState(false);
   const scannerRef = useRef<HTMLDivElement>(null);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  // Prevent scans from firing while the guest sheet is open.
+  const sheetOpenRef = useRef(false);
 
-  // SSE live counter
+  // ── SSE live counter (authenticated fetch — avoids token in URL) ────────────
   useEffect(() => {
     if (!token) return;
-    const es = new EventSource(`${BASE}/api/checkin/stream?token=${token}`);
-    es.onmessage = (e) => {
+    const controller = new AbortController();
+
+    async function streamCounts() {
       try {
-        const d = JSON.parse(e.data as string) as {
-          arrived?: number;
-          arrived_count?: number;
-          total?: number;
-          total_count?: number;
-        };
-        setCounts({
-          arrived: d.arrived ?? d.arrived_count ?? 0,
-          total: d.total ?? d.total_count ?? 0,
+        const res = await fetch(`${BASE}/api/checkin/stream`, {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal,
         });
-      } catch {}
-    };
-    return () => es.close();
+        if (!res.ok || !res.body) return;
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? "";
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue;
+            try {
+              const d = JSON.parse(line.slice(6)) as {
+                arrived?: number;
+                arrived_count?: number;
+                total?: number;
+                total_count?: number;
+              };
+              setCounts({
+                arrived: d.arrived ?? d.arrived_count ?? 0,
+                total: d.total ?? d.total_count ?? 0,
+              });
+            } catch {}
+          }
+        }
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") return;
+        // Reconnect after a short delay on unexpected disconnect.
+        setTimeout(streamCounts, 2000);
+      }
+    }
+
+    void streamCounts();
+    return () => controller.abort();
   }, [token]);
 
-  // QR scanner
+  // ── QR scanner ─────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!token || !scannerRef.current) return;
     if (!window.Html5Qrcode) return;
@@ -187,14 +232,19 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
         { facingMode: "environment" },
         { fps: 10, qrbox: { width: 220, height: 220 } },
         async (text) => {
-          if (!active || busy) return;
+          // Guard: skip if another scan is in-flight or sheet is already open.
+          if (!active || busy || sheetOpenRef.current) return;
           active = false;
           setBusy(true);
           try {
-            const result = await apiScanGuest(token, text);
-            setGuest(result.guest);
-            setAlreadyIn(result.alreadyArrived);
-            setSheetOpen(true);
+            // Read-only lookup — does NOT mark arrival yet.
+            const found = await apiLookupByQR(token, text);
+            if (found) {
+              sheetOpenRef.current = true;
+              setGuest(found);
+              setAlreadyIn(!!found.arrivedAt);
+              setSheetOpen(true);
+            }
           } finally {
             setBusy(false);
             setTimeout(() => {
@@ -211,7 +261,7 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
     };
   }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Debounced search
+  // ── Debounced search ────────────────────────────────────────────────────────
   useEffect(() => {
     clearTimeout(searchTimer.current);
     if (!searchQuery.trim() || !token) {
@@ -224,6 +274,8 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
     }, 300);
     return () => clearTimeout(searchTimer.current);
   }, [searchQuery, token]);
+
+  // ── Handlers ────────────────────────────────────────────────────────────────
 
   async function handleAuth(e: React.FormEvent) {
     e.preventDefault();
@@ -240,13 +292,19 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
     }
   }
 
+  /** Explicit Check In — this is the only place that calls the write endpoint. */
   async function handleCheckIn() {
     if (!guest || !token) return;
     setBusy(true);
     try {
-      await apiScanGuest(token, guest.qrToken);
-      setSheetOpen(false);
-      setGuest(null);
+      const result = await apiScanGuest(token, guest.qrToken);
+      setGuest(result.guest);
+      setAlreadyIn(result.alreadyArrived);
+      if (!result.alreadyArrived) {
+        sheetOpenRef.current = false;
+        setSheetOpen(false);
+        setGuest(null);
+      }
     } finally {
       setBusy(false);
     }
@@ -260,11 +318,18 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
   }
 
   function handleSearchSelect(g: CheckInGuest) {
+    sheetOpenRef.current = true;
     setGuest(g);
     setAlreadyIn(!!g.arrivedAt);
     setSheetOpen(true);
     setSearchQuery("");
     setSearchResults([]);
+  }
+
+  function handleSheetOpenChange(open: boolean) {
+    sheetOpenRef.current = open;
+    setSheetOpen(open);
+    if (!open) setGuest(null);
   }
 
   // ── PIN auth screen ────────────────────────────────────────────────────────
@@ -408,13 +473,7 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
       </div>
 
       {/* Guest sheet */}
-      <Sheet
-        open={sheetOpen}
-        onOpenChange={(o) => {
-          setSheetOpen(o);
-          if (!o) setGuest(null);
-        }}
-      >
+      <Sheet open={sheetOpen} onOpenChange={handleSheetOpenChange}>
         <SheetContent
           side="bottom"
           className="rounded-t-2xl px-5 pb-8 pt-3 max-h-[65vh] overflow-y-auto"
