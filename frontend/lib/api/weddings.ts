@@ -33,9 +33,23 @@ async function getToken(): Promise<string> {
   const res = await fetch("/api/auth/token");
   if (!res.ok) throw new Error("Not signed in");
 
-  const { token } = (await res.json()) as { token: string };
+  const body = (await res.json()) as unknown;
+  const token = extractToken(body);
   _cachedToken = { value: token, expiresAt: now + 13 * 60 * 1000 };
   return token;
+}
+
+function extractToken(body: unknown): string {
+  if (
+    body &&
+    typeof body === "object" &&
+    "token" in body &&
+    typeof body.token === "string" &&
+    body.token.length > 0
+  ) {
+    return body.token;
+  }
+  throw new Error("Invalid token response");
 }
 
 async function authedFetch(url: string, options?: RequestInit): Promise<Response> {

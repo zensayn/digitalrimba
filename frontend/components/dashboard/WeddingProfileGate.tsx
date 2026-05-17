@@ -13,6 +13,7 @@ export default function WeddingProfileGate({ children }: { children: React.React
   const [eventDate, setEventDate] = useState("");
   const [venueName, setVenueName] = useState("");
   const [venueAddress, setVenueAddress] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
 
   const profileQuery = useQuery({
     queryKey: ["wedding", "profile"],
@@ -46,12 +47,23 @@ export default function WeddingProfileGate({ children }: { children: React.React
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    await saveMutation.mutateAsync({
-      couple_name: coupleName,
-      event_date: eventDate,
-      venue_name: venueName,
-      venue_address: venueAddress,
-    });
+    const trimmedCoupleName = coupleName.trim();
+    if (!trimmedCoupleName) {
+      setFormError("Couple name required.");
+      return;
+    }
+
+    setFormError(null);
+    try {
+      await saveMutation.mutateAsync({
+        couple_name: trimmedCoupleName,
+        event_date: eventDate.trim(),
+        venue_name: venueName.trim(),
+        venue_address: venueAddress.trim(),
+      });
+    } catch {
+      // Error is already reflected via saveMutation.isError UI state.
+    }
   }
 
   return (
@@ -126,9 +138,10 @@ export default function WeddingProfileGate({ children }: { children: React.React
             </label>
           </div>
 
-          {saveMutation.isError && (
+          {(formError || saveMutation.isError) && (
             <p className="mt-4 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {saveMutation.error instanceof Error ? saveMutation.error.message : "Unable to save wedding profile."}
+              {formError ??
+                (saveMutation.error instanceof Error ? saveMutation.error.message : "Unable to save wedding profile.")}
             </p>
           )}
 

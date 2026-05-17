@@ -71,6 +71,24 @@ test("save wedding profile sends JSON payload with Better Auth JWT", async () =>
   });
 });
 
+test("wedding profile API rejects invalid token response", async () => {
+  const calls: FetchCall[] = [];
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = mockFetch(calls, {
+    "/api/auth/token": {},
+  });
+
+  try {
+    const { fetchWeddingProfile } = await import(`./weddings.ts?weddings-invalid-token-${Date.now()}`);
+    await assert.rejects(fetchWeddingProfile(), /Invalid token response/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0]?.url, "/api/auth/token");
+});
+
 function mockFetch(calls: FetchCall[], responses: Record<string, unknown>) {
   return async (input: string | URL | Request, init?: RequestInit) => {
     const url = input.toString();

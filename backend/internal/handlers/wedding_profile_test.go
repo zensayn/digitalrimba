@@ -10,6 +10,16 @@ import (
 )
 
 func TestWeddingProfileRoutes(t *testing.T) {
+	t.Run("unauthenticated request is rejected", func(t *testing.T) {
+		store := newMemoryWeddingProfileStore()
+		req := httptest.NewRequest(http.MethodGet, "/api/weddings/profile", nil)
+		rec := httptest.NewRecorder()
+
+		weddingProfileRouter(NewWeddingProfileHandler(store)).ServeHTTP(rec, req)
+
+		assertStatus(t, rec.Code, http.StatusUnauthorized)
+	})
+
 	t.Run("get returns null wedding when authenticated user has no profile", func(t *testing.T) {
 		store := newMemoryWeddingProfileStore()
 		req := requestWithUser(http.MethodGet, "/api/weddings/profile", "", "user-1")
