@@ -43,6 +43,9 @@ func main() {
 	dashboardStore := internalhandlers.NewPostgresDashboardStore(pool)
 	dashboardHandler := internalhandlers.NewDashboardHandler(dashboardStore)
 
+	weddingProfileStore := internalhandlers.NewPostgresWeddingProfileStore(pool)
+	weddingProfileHandler := internalhandlers.NewWeddingProfileHandler(weddingProfileStore)
+
 	checkinKey := []byte(os.Getenv("CHECKIN_SESSION_KEY"))
 	if len(checkinKey) == 0 {
 		log.Fatal("CHECKIN_SESSION_KEY is required")
@@ -98,6 +101,7 @@ func main() {
 		})
 
 		dashboardHandler.RegisterRoutes(r)
+		weddingProfileHandler.RegisterRoutes(r)
 		r.Post("/api/invitations", invHandler.Create)
 		r.Patch("/api/invitations/{id}", invHandler.Update)
 		r.Delete("/api/invitations/{id}", invHandler.Delete)
