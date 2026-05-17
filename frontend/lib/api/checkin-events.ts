@@ -27,11 +27,15 @@ async function getToken(): Promise<string> {
 
 async function authedFetch(url: string, options?: RequestInit): Promise<Response> {
   const token = await getToken();
-  const headers: Record<string, string> = {
-    ...(options?.headers as Record<string, string> | undefined),
-    Authorization: `Bearer ${token}`,
-  };
-  if (options?.body !== undefined) headers['Content-Type'] = 'application/json';
+  const headers = new Headers(options?.headers);
+  headers.set('Authorization', `Bearer ${token}`);
+  if (
+    options?.body !== undefined &&
+    !(options.body instanceof FormData) &&
+    !headers.has('Content-Type')
+  ) {
+    headers.set('Content-Type', 'application/json');
+  }
   return fetch(url, { ...options, headers });
 }
 
