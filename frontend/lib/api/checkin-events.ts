@@ -57,7 +57,13 @@ export async function triggerQREmail(): Promise<{ queued: number }> {
   return res.json();
 }
 
-/** Returns absolute URL for the QR PDF — use with anchor click or window.open. */
-export function getQRPdfUrl(): string {
-  return `${BASE}/api/checkin/events/qr/pdf`;
+/**
+ * Downloads the guest QR code PDF via authenticated fetch and returns an object URL.
+ * Caller must call URL.revokeObjectURL() when done to avoid memory leaks.
+ */
+export async function fetchQRPdfBlob(): Promise<string> {
+  const res = await authedFetch(`${BASE}/api/checkin/events/qr/pdf`);
+  if (!res.ok) throw new Error(`PDF download failed: ${res.status}`);
+  const blob = await res.blob();
+  return URL.createObjectURL(blob);
 }

@@ -6,15 +6,16 @@ import { TextureButton } from '@/components/ui/texture-button'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   createCheckinEvent,
+  fetchQRPdfBlob,
   getCheckinEvent,
   triggerQREmail,
-  getQRPdfUrl,
   type CheckinEventConfig,
 } from '@/lib/api/checkin-events'
 
 export default function CheckinQrPage() {
   const [config, setConfig] = useState<CheckinEventConfig | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [plainPin, setPlainPin] = useState<string | null>(null)
   const [emailStatus, setEmailStatus] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -22,15 +23,21 @@ export default function CheckinQrPage() {
   useEffect(() => {
     getCheckinEvent()
       .then(setConfig)
+      .catch((err: unknown) => setError(err instanceof Error ? err.message : 'Failed to load check-in config'))
       .finally(() => setLoading(false))
   }, [])
 
   function handleSetupOrRegeneratePin() {
+    setError(null)
     startTransition(async () => {
-      const result = await createCheckinEvent()
-      setPlainPin(result.pin)
-      const updated = await getCheckinEvent()
-      setConfig(updated)
+      try {
+        const result = await createCheckinEvent()
+        setPlainPin(result.pin)
+        const updated = await getCheckinEvent()
+        setConfig(updated)
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Failed to set up check-in')
+      }
     })
   }
 
@@ -45,18 +52,30 @@ export default function CheckinQrPage() {
     if (plainPin) navigator.clipboard.writeText(plainPin)
   }
 
-  function handleDownloadPdf() {
-    const a = document.createElement('a')
-    a.href = getQRPdfUrl()
-    a.download = 'guest-qr-codes.pdf'
-    a.click()
+  async function handleDownloadPdf() {
+    setError(null)
+    try {
+      const objectUrl = await fetchQRPdfBlob()
+      const a = document.createElement('a')
+      a.href = objectUrl
+      a.download = 'guest-qr-codes.pdf'
+      a.click()
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 10_000)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'PDF download failed')
+    }
   }
 
   function handleEmailAll() {
+    setError(null)
     startTransition(async () => {
-      const { queued } = await triggerQREmail()
-      setEmailStatus(`Sent to ${queued} guests`)
-      setTimeout(() => setEmailStatus(null), 4000)
+      try {
+        const { queued } = await triggerQREmail()
+        setEmailStatus(`Sent to ${queued} guests`)
+        setTimeout(() => setEmailStatus(null), 4000)
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Failed to send emails')
+      }
     })
   }
 
@@ -88,8 +107,21 @@ export default function CheckinQrPage() {
         </p>
       </div>
 
+      {/* Error banner */}
+      {error && (
+        <div className="flex items-center gap-2 bg-[#fef2f2] border border-red-200 rounded-xl px-4 py-2.5">
+          <span className="text-xs font-medium text-[#b30000]">{error}</span>
+          <button
+            className="ml-auto text-[10px] font-semibold text-[#b30000] underline"
+            onClick={() => setError(null)}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* First-time setup prompt */}
-      {!config && (
+      {!config && !error && (
         <Card className="rounded-2xl ring-1 ring-foreground/10">
           <CardContent className="p-6 flex flex-col items-center gap-4 text-center">
             <div className="w-12 h-12 rounded-xl bg-[#edfce9] flex items-center justify-center">
