@@ -10,7 +10,7 @@ const MOCK_INVITATIONS = [
   {
     id: '1',
     name: 'Heartwood Elegance',
-    tier: 'Heartwood',
+  tier: 'Heartwood',
     tierColor: 'bg-clay-ochre',
     status: 'draft',
     guests: 0,
