@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Heartwood Series - Kategori Adat | Rimba Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0A0A08;--surface:#121210;--surface-2:#1A1A17;--gold:#C9A84C;--gold-light:#E8D5A0;--gold-dim:#7A6330;--text:#F0EDE6;--text-muted:#9A9A8E;--text-dim:#5A5A50}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:Inter,sans-serif;font-weight:300}
+.font-display{font-family:Cormorant Garamond,serif}
+@keyframes shimmer{0%{background-position:-200%}100%{background-position:200%}}
+.text-gold-shimmer{background:linear-gradient(90deg,#C9A84C,#E8D5A0,#C9A84C,#E8D5A0,#C9A84C);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 4s linear infinite}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.fade-in-up{animation:fadeInUp 0.8s ease-out forwards;opacity:0}
+.d1{animation-delay:0.2s}.d2{animation-delay:0.4s}.d3{animation-delay:0.6s}.d4{animation-delay:0.8s}.d5{animation-delay:1s}.d6{animation-delay:1.2s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.btn-gold{padding:12px 40px;background:transparent;border:1px solid var(--gold);color:var(--gold-light);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden}
+.btn-gold::before{content:"";position:absolute;inset:0;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform 0.3s;z-index:-1}
+.btn-gold:hover::before{transform:scaleX(1)}.btn-gold:hover{color:var(--bg)}
+.nav-dots{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:12px}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:rgba(201,168,76,0.4);border:none;cursor:pointer;transition:all 0.3s}
+.nav-dot:hover{background:var(--gold);transform:scale(1.5)}
+.music-player{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:100;display:flex;align-items:center;gap:12px;padding:12px 24px;background:rgba(18,18,16,0.9);backdrop-filter:blur(12px);border:1px solid rgba(201,168,76,0.15);border-radius:100px}
+.music-btn{width:32px;height:32px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--bg)}
+.countdown{display:flex;gap:24px;margin:32px 0}
+.countdown-item{display:flex;flex-direction:column;align-items:center;gap:8px}
+.countdown-value{font-family:Cormorant Garamond,serif;font-size:36px;font-weight:300;color:var(--gold);min-width:2ch;text-align:center}
+.countdown-label{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim)}
+.section{min-height:100vh;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;overflow:hidden}
+.section-label{font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold-dim)}
+.photo-frame{width:120px;height:120px;border-radius:50%;border:1px solid rgba(201,168,76,0.4);box-shadow:0 0 40px rgba(201,168,76,0.1);display:flex;align-items:center;justify-content:center;background:var(--surface-2)}
+.photo-placeholder{font-family:Cormorant Garamond,serif;font-size:40px;color:var(--gold-dim)}
+.input-gold{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(201,168,76,0.15);color:var(--text);padding:12px 0;font-size:14px;outline:none}
+.input-gold:focus{border-bottom-color:var(--gold)}.input-gold::placeholder{color:var(--text-dim)}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-label{font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-dim)}
+.toggle-group{display:flex;gap:8px}
+.toggle-btn{flex:1;padding:12px;text-align:center;border:1px solid rgba(201,168,76,0.15);background:transparent;color:var(--text-dim);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer}
+.toggle-btn.active{border-color:var(--gold);color:var(--gold-light);background:rgba(201,168,76,0.08)}
+.gallery-scroll{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:20px 0}
+.gallery-item{min-width:280px;height:380px;background:var(--surface-2);border:1px solid rgba(201,168,76,0.2);flex-shrink:0;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;position:relative}
+.bank-card{background:var(--surface);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:20px;display:flex;justify-content:space-between;align-items:center}
+.copy-btn{padding:8px 16px;border:1px solid rgba(201,168,76,0.15);background:transparent;color:var(--text-dim);font-size:11px;cursor:pointer}
+.gold-divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.noise{position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:1;mix-blend-mode:overlay}
+.vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,0.7) 100%);pointer-events:none;z-index:1}
+</style>
+</head>
+<body>
+<div class="nav-dots">
+  <button class="nav-dot" onclick="s('cover')"></button>
+  <button class="nav-dot" onclick="s('greeting')"></button>
+  <button class="nav-dot" onclick="s('couple')"></button>
+  <button class="nav-dot" onclick="s('akad')"></button>
+  <button class="nav-dot" onclick="s('resepsi')"></button>
+  <button class="nav-dot" onclick="s('gallery')"></button>
+  <button class="nav-dot" onclick="s('rsvp')"></button>
+  <button class="nav-dot" onclick="s('gift')"></button>
+  <button class="nav-dot" onclick="s('closing')"></button>
+</div>
+<div class="music-player">
+  <div style="display:flex;align-items:end;gap:3px;height:16px">
+    <div style="width:2px;height:6px;background:var(--gold);border-radius:2px"></div>
+    <div style="width:2px;height:12px;background:var(--gold);border-radius:2px"></div>
+    <div style="width:2px;height:8px;background:var(--gold);border-radius:2px"></div>
+    <div style="width:2px;height:14px;background:var(--gold);border-radius:2px"></div>
+  </div>
+  <span style="font-size:12px;color:var(--text-muted)">Jatuh Cinta...</span>
+  <button class="music-btn">&#9658;</button>
+</div>
+
+<section id="cover" class="section" style="background:var(--bg)">
+  <div class="noise"></div><div class="vignette"></div>
+  <div style="position:absolute;top:20px;left:20px;width:60px;height:60px">
+    <svg viewBox="0 0 60 60" fill="none"><path d="M1 1 L1 28" stroke="#C9A84C" stroke-width="0.8" opacity="0.4"/><path d="M1 1 L28 1" stroke="#C9A84C" stroke-width="0.8" opacity="0.4"/><circle cx="1" cy="1" r="2" fill="#C9A84C" opacity="0.6"/></svg>
+  </div>
+  <div style="position:relative;z-index:10;text-align:center;max-width:400px">
+    <p class="fade-in-up d1 section-label" style="margin-bottom:24px">Rimba Digital</p>
+    <h1 class="font-display text-gold-shimmer fade-in-up d2" style="font-size:clamp(48px,16vw,88px);font-weight:300;line-height:0.95">Pangky</h1>
+    <div class="fade-in-up d3" style="display:flex;align-items:center;justify-content:center;gap:16px;margin:12px 0"><div class="gold-divider"></div><span class="font-display" style="color:var(--gold-dim);font-size:20px">&</span><div class="gold-divider"></div></div>
+    <h1 class="font-display text-gold-shimmer fade-in-up d3" style="font-size:clamp(48px,16vw,88px);font-weight:300;line-height:0.95">Radit</h1>
+    <p class="font-display fade-in-up d4" style="color:var(--text-muted);letter-spacing:0.1em;margin-top:16px;font-size:16px;font-style:italic">14 VI 2026</p>
+    <div class="countdown fade-in-up d5"><div class="countdown-item"><span class="countdown-value">29</span><span class="countdown-label">Hari</span></div><div class="countdown-item"><span class="countdown-value">08</span><span class="countdown-label">Jam</span></div><div class="countdown-item"><span class="countdown-value">42</span><span class="countdown-label">Menit</span></div><div class="countdown-item"><span class="countdown-value">17</span><span class="countdown-label">Detik</span></div></div>
+    <button class="btn-gold fade-in-up d6" onclick="s('greeting')">Buka Undangan</button>
+  </div>
+  <div style="position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;animation:float 2s ease-in-out infinite"><span style="color:var(--text-dim);font-size:8px;letter-spacing:0.2em;text-transform:uppercase">Gulir</span><div style="width:1px;height:24px;background:linear-gradient(to bottom,var(--gold),transparent)"></div></div>
+</section>
+
+<section id="greeting" class="section" style="background:var(--surface)">
+  <div class="noise"></div>
+  <div style="position:absolute;left:24px;top:50%;transform:translateY(-50%);width:1px;height:160px;background:linear-gradient(to bottom,transparent,var(--gold),transparent);opacity:0.4"></div>
+  <div style="position:absolute;right:24px;top:50%;transform:translateY(-50%);width:1px;height:160px;background:linear-gradient(to bottom,transparent,var(--gold),transparent);opacity:0.4"></div>
+  <div style="position:relative;z-index:10;text-align:center;max-width:380px">
+    <p class="fade-in-up d1 section-label">Undangan</p>
+    <p class="font-display fade-in-up d1" style="color:var(--gold-light);font-size:26px;margin-bottom:24px">Bismillah</p>
+    <div class="gold-divider fade-in-up d2" style="margin:0 auto 24px"></div>
+    <p class="fade-in-up d2" style="color:var(--text-muted);font-size:14px;margin-bottom:8px">Kepada Yth.</p>
+    <p class="font-display fade-in-up d3" style="color:var(--gold-light);font-size:26px;font-weight:400;margin-bottom:24px">Bapak/Ibu Tamu</p>
+    <p class="fade-in-up d4" style="color:var(--text-muted);font-size:14px;line-height:1.9">Tanpa mengurangi rasa hormat, kami mengundang Anda untuk hadir.</p>
+    <div class="fade-in-up d5" style="margin-top:32px"><div class="gold-divider" style="margin:0 auto 16px"></div><p class="font-display" style="color:var(--gold);font-size:20px;font-weight:300;font-style:italic">Pangky & Radit</p></div>
+  </div>
+</section>
+
+<section id="couple" class="section" style="background:var(--bg)">
+  <div class="noise"></div><div class="vignette"></div>
+  <div style="position:absolute;top:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0.3"></div>
+  <div style="position:relative;z-index:10;text-align:center;max-width:400px">
+    <p class="fade-in-up d1 section-label">Mempelai</p>
+    <div class="fade-in-up d2" style="margin-bottom:24px"><div class="photo-frame" style="margin:0 auto 16px"><span class="photo-placeholder">P</span></div><h2 class="font-display" style="color:var(--gold-light);font-size:24px;font-weight:400;margin-bottom:4px">Pangky Pratama Putra</h2><p style="color:var(--text-dim);font-size:12px">Putra Bapak H. Ahmad & Ibu Siti Rahmawati</p></div>
+    <div class="fade-in-up d3" style="display:flex;align-items:center;justify-content:center;gap:16px;margin:16px 0"><div class="gold-divider"></div><span class="font-display" style="color:var(--gold);font-size:20px;font-style:italic">&</span><div class="gold-divider"></div></div>
+    <div class="fade-in-up d4" style="margin-bottom:32px"><div class="photo-frame" style="margin:0 auto 16px"><span class="photo-placeholder">R</span></div><h2 class="font-display" style="color:var(--gold-light);font-size:24px;font-weight:400;margin-bottom:4px">Radit Kusuma Wardana</h2><p style="color:var(--text-dim);font-size:12px">Putra Bapak Drs. Budi Santoso & Ibu Dewi Kusumawati</p></div>
+    <p class="font-display fade-in-up d5" style="color:var(--text-muted);font-size:16px;font-style:italic;font-weight:300">"Dua jiwa, satu akar."</p>
+  </div>
+  <div style="position:absolute;bottom:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0.3"></div>
+</section>
+
+<section id="akad" class="section" style="background:var(--surface)">
+  <div class="noise"></div>
+  <span class="font-display" style="position:absolute;top:20%;left:50%;transform:translateX(-50%);font-size:150px;color:rgba(201,168,76,0.03);font-weight:300;z-index:0">I</span>
+  <div style="position:relative;z-index:10;text-align:center;max-width:400px;padding:40px 20px">
+    <p class="fade-in-up d1 section-label">Akad Nikah</p>
+    <h2 class="font-display fade-in-up d2" style="color:var(--gold-light);font-size:40px;font-weight:300;margin-bottom:16px">Akad Nikah</h2>
+    <div class="gold-divider fade-in-up d2" style="margin:0 auto 24px"></div>
+    <div class="fade-in-up d3" style="display:flex;flex-direction:column;gap:12px;margin-bottom:32px">
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px"><span style="color:var(--gold)">&#9678;</span><span style="color:var(--text-muted)">Sabtu, 14 Juni 2026</span></div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px"><span style="color:var(--gold)">&#9678;</span><span style="color:var(--text-muted)">08.00 - 10.00 WIB</span></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:8px"><span style="color:var(--gold)">&#9678;</span><span style="color:var(--text)">Masjid Agung Al-Falah</span><span style="color:var(--text-dim);font-size:12px">Jl. Merdeka No. 1, Jakarta Selatan</span></div>
+    </div>
+    <div class="fade-in-up d4" style="width:100%;height:200px;border:1px solid rgba(201,168,76,0.15);background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:12px">Google Maps</div>
+    <a href="#" class="fade-in-up d5" style="display:inline-flex;align-items:center;gap:6px;color:var(--gold-dim);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;margin-top:16px;text-decoration:none">Buka di Google Maps</a>
+  </div>
+</section>
+
+<section id="resepsi" class="section" style="background:var(--bg)">
+  <div class="noise"></div>
+  <span class="font-display" style="position:absolute;top:20%;left:50%;transform:translateX(-50%);font-size:150px;color:rgba(201,168,76,0.03);font-weight:300;z-index:0">II</span>
+  <div style="position:relative;z-index:10;text-align:center;max-width:400px;padding:40px 20px">
+    <p class="fade-in-up d1 section-label">Resepsi</p>
+    <h2 class="font-display fade-in-up d2" style="color:var(--gold-light);font-size:40px;font-weight:300;margin-bottom:16px">Resepsi</h2>
+    <div class="gold-divider fade-in-up d2" style="margin:0 auto 24px"></div>
+    <div class="fade-in-up d3" style="display:flex;flex-direction:column;gap:12px;margin-bottom:32px">
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px"><span style="color:var(--gold)">&#9678;</span><span style="color:var(--text-muted)">Sabtu, 14 Juni 2026</span></div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px"><span style="color:var(--gold)">&#9678;</span><span style="color:var(--text-muted)">11.00 - 15.00 WIB</span></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:8px"><span style="color:var(--gold)">&#9678;</span><span style="color:var(--text)">The Rimba Garden Hall</span><span style="color:var(--text-dim);font-size:12px">Jl. Sudirman Kav. 22, Jakarta Pusat</span></div>
+    </div>
+    <div class="fade-in-up d4" style="width:100%;height:200px;border:1px solid rgba(201,168,76,0.15);background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:12px">Google Maps</div>
+    <a href="#" class="fade-in-up d5" style="display:inline-flex;align-items:center;gap:6px;color:var(--gold-dim);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;margin-top:16px;text-decoration:none">Buka di Google Maps</a>
+  </div>
+</section>
+
+<section id="gallery" class="section" style="background:var(--surface-2)">
+  <div class="noise"></div>
+  <p class="fade-in-up d1 section-label" style="position:absolute;top:40px">Galeri</p>
+  <div class="gallery-scroll fade-in-up d2" style="width:100%;padding:0 20px">
+    <div class="gallery-item"><span class="photo-placeholder" style="font-size:48px">P & R</span><span style="color:var(--text-dim);font-size:14px;font-style:italic">Momen Pertama</span><span style="color:rgba(201,168,76,0.2);font-family:Cormorant Garamond,serif;font-size:36px;position:absolute;bottom:16px;right:16px">01</span></div>
+    <div class="gallery-item"><span class="photo-placeholder" style="font-size:48px">*</span><span style="color:var(--text-dim);font-size:14px;font-style:italic">Kebersamaan</span><span style="color:rgba(201,168,76,0.2);font-family:Cormorant Garamond,serif;font-size:36px;position:absolute;bottom:16px;right:16px">02</span></div>
+    <div class="gallery-item"><span class="photo-placeholder" style="font-size:48px">P</span><span style="color:var(--text-dim);font-size:14px;font-style:italic">Senyum Pangky</span><span style="color:rgba(201,168,76,0.2);font-family:Cormorant Garamond,serif;font-size:36px;position:absolute;bottom:16px;right:16px">03</span></div>
+    <div class="gallery-item"><span class="photo-placeholder" style="font-size:48px">R</span><span style="color:var(--text-dim);font-size:14px;font-style:italic">Senyum Radit</span><span style="color:rgba(201,168,76,0.2);font-family:Cormorant Garamond,serif;font-size:36px;position:absolute;bottom:16px;right:16px">04</span></div>
+    <div class="gallery-item"><span class="photo-placeholder" style="font-size:48px">+</span><span style="color:var(--text-dim);font-size:14px;font-style:italic">Kasih Sayang</span><span style="color:rgba(201,168,76,0.2);font-family:Cormorant Garamond,serif;font-size:36px;position:absolute;bottom:16px;right:16px">05</span></div>
+  </div>
+  <div style="position:absolute;bottom:40px;display:flex;gap:8px"><button style="width:24px;height:2px;background:var(--gold);border:none"></button><button style="width:6px;height:2px;background:var(--gold-dim);border:none;opacity:0.5"></button><button style="width:6px;height:2px;background:var(--gold-dim);border:none;opacity:0.5"></button><button style="width:6px;height:2px;background:var(--gold-dim);border:none;opacity:0.5"></button><button style="width:6px;height:2px;background:var(--gold-dim);border:none;opacity:0.5"></button></div>
+</section>
+
+<section id="rsvp" class="section" style="background:var(--surface)">
+  <div class="noise"></div>
+  <div style="position:absolute;top:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0.3"></div>
+  <div style="position:relative;z-index:10;max-width:400px;width:100%;padding:40px 20px;overflow-y:auto;max-height:100vh">
+    <p class="fade-in-up d1 section-label" style="text-align:center">Konfirmasi Kehadiran</p>
+    <h2 class="font-display fade-in-up d2" style="color:var(--gold-light);font-size:40px;font-weight:300;text-align:center;margin-bottom:32px">RSVP</h2>
+    <form style="display:flex;flex-direction:column;gap:24px">
+      <div class="form-group fade-in-up d3"><label class="form-label">Nama Tamu</label><input type="text" class="input-gold" placeholder="Nama lengkap Anda"></div>
+      <div class="form-group fade-in-up d4"><label class="form-label">Konfirmasi</label><div class="toggle-group"><button type="button" class="toggle-btn">Hadir</button><button type="button" class="toggle-btn">Tidak Hadir</button></div></div>
+      <div class="form-group fade-in-up d5"><label class="form-label">Ucapan (opsional)</label><textarea class="input-gold" rows="3" placeholder="Tuliskan ucapan..."></textarea></div>
+      <button type="submit" class="btn-gold fade-in-up d6" style="align-self:center;margin-top:8px">Kirim Konfirmasi</button>
+    </form>
+  </div>
+</section>
+
+<section id="gift" class="section" style="background:var(--bg)">
+  <div class="noise"></div><div class="vignette"></div>
+  <div style="position:relative;z-index:10;text-align:center;max-width:400px;padding:40px 20px">
+    <p class="fade-in-up d1 section-label">Amplop Digital</p>
+    <h2 class="font-display fade-in-up d2" style="color:var(--gold-light);font-size:40px;font-weight:300;margin-bottom:12px">Hadiah</h2>
+    <p class="fade-in-up d3" style="color:var(--text-dim);font-size:14px;line-height:1.9;margin-bottom:32px">Doa dan kehadiran Anda adalah hadiah terbesar bagi kami.</p>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="bank-card fade-in-up d4"><div style="text-align:left"><span style="color:var(--gold);font-size:10px;letter-spacing:0.2em;text-transform:uppercase">BCA</span><p style="color:var(--text);font-size:14px;margin:4px 0">1234 5678 9012</p><p style="color:var(--text-dim);font-size:12px">a.n. Pangky Pratama Putra</p></div><button class="copy-btn">Copy</button></div>
+      <div class="bank-card fade-in-up d5"><div style="text-align:left"><span style="color:var(--gold);font-size:10px;letter-spacing:0.2em;text-transform:uppercase">Mandiri</span><p style="color:var(--text);font-size:14px;margin:4px 0">9876 5432 1098</p><p style="color:var(--text-dim);font-size:12px">a.n. Radit Kusuma Wardana</p></div><button class="copy-btn">Copy</button></div>
+    </div>
+  </div>
+</section>
+
+<section id="closing" class="section" style="background:var(--surface)">
+  <div class="noise"></div>
+  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none"><div style="width:500px;height:500px;border:1px solid var(--gold);border-radius:50%;opacity:0.05"></div><div style="position:absolute;width:320px;height:320px;border:1px solid var(--gold);border-radius:50%;opacity:0.1"></div></div>
+  <div style="position:relative;z-index:10;text-align:center;max-width:400px;padding:40px 20px">
+    <p class="fade-in-up d1 section-label">Terima Kasih</p>
+    <h2 class="font-display fade-in-up d2" style="background:linear-gradient(135deg,var(--gold),var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:56px;font-weight:300;line-height:1">Pangky</h2>
+    <div class="fade-in-up d3" style="display:flex;align-items:center;justify-content:center;gap:16px;margin:12px 0"><div class="gold-divider"></div><span class="font-display" style="color:var(--gold-dim);font-size:20px">&</span><div class="gold-divider"></div></div>
+    <h2 class="font-display fade-in-up d3" style="background:linear-gradient(135deg,var(--gold),var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:56px;font-weight:300;line-height:1;margin-bottom:32px">Radit</h2>
+    <p class="font-display fade-in-up d4" style="font-style:italic;color:var(--text-muted);text-align:center;line-height:1.9;max-width:340px">"Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu."<br><br><span style="color:var(--text-dim);font-size:12px">- QS. Ar-Rum: 21</span></p>
+    <div class="gold-divider fade-in-up d5" style="margin:32px auto"></div>
+    <p class="fade-in-up d5" style="color:var(--gold-dim);font-size:12px;letter-spacing:0.2em">#PangkyRaditForever</p>
+  </div>
+  <div style="position:absolute;bottom:32px;left:0;right:0;text-align:center"><div style="width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0.3;margin-bottom:16px"></div><p style="color:var(--text-dim);font-size:9px;letter-spacing:0.3em">RIMBA DIGITAL - HEARTWOOD SERIES</p><p style="color:var(--text-dim);font-size:9px;opacity:0.5;margin-top:4px">Deeply Rooted in Your Moments</p></div>
+</section>
+
+<script>
+function s(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}
+const observer=new IntersectionObserver(e=>{e.forEach(t=>{if(t.isIntersecting)t.target.style.animationPlayState='running'})},{threshold:0.1});
+document.querySelectorAll('.fade-in-up').forEach(e=>{e.style.animationPlayState='paused';observer.observe(e)});
+</script>
+</body>
+</html>
