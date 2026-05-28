@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: rimba_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rimba
+      POSTGRES_PASSWORD: rimba_secret
+      POSTGRES_DB: rimba_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - rimba_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rimba -d rimba_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  rimba_postgres_data:
