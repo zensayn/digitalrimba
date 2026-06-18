@@ -16,7 +16,7 @@ import { TextureButton } from "@/components/ui/texture-button";
 const EASE_OUT_STRONG: [number, number, number, number] = [0.23, 1, 0.32, 1];
 
 // Hero subject (couple + composited UI) — hosted on the allowlisted contents.rimba.app.
-const HERO_PHOTO = "https://contents.rimba.app/assets/hero-exclusive-order.webp";
+const HERO_PHOTO = "https://contents.rimba.app/assets/hero-exclusive-order-2.webp";
 
 const HERO_STATS = [
   { valueKey: "heroStat1Value", labelKey: "heroStat1Label" },
@@ -61,7 +61,7 @@ export default function ExclusiveOrderPage() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.15, ease: EASE_OUT_STRONG }}
-          className="pointer-events-none absolute bottom-0 right-0 z-[5] h-[46%] w-[88%] sm:h-[60%] sm:w-[62%] lg:h-[96%] lg:w-[52%]"
+          className="pointer-events-none absolute bottom-0 right-0 sm:right-[4%] lg:right-[12%] z-[5] h-[46%] w-[88%] sm:h-[60%] sm:w-[62%] lg:h-[96%] lg:w-[52%]"
         >
           <Image
             src={HERO_PHOTO}
