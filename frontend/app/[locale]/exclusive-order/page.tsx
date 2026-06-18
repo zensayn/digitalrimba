@@ -49,7 +49,7 @@ export default function ExclusiveOrderPage() {
   return (
     <main className="bg-white font-poppins text-[#212121]">
       {/* ── 1. Hero band (distinct deep-green, split layout) ─────────── */}
-      <section className="relative overflow-hidden bg-[#003c33] text-white">
+      <section className="relative overflow-hidden bg-[#003c33] text-white min-h-screen lg:h-screen rounded-b-[32px] md:rounded-b-[48px]">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 opacity-70"
@@ -58,7 +58,7 @@ export default function ExclusiveOrderPage() {
               "radial-gradient(55% 70% at 85% 0%, rgba(52,103,57,0.55), transparent 60%), radial-gradient(45% 55% at 0% 100%, rgba(237,252,233,0.10), transparent 60%)",
           }}
         />
-        <div className="relative max-w-[1200px] mx-auto px-6 md:px-10 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,42%)] gap-10 lg:gap-14 items-center">
+        <div className="relative h-full max-w-[1200px] mx-auto px-6 md:px-10 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,42%)] gap-10 lg:gap-14 items-center">
           {/* Left: copy + CTAs + proof */}
           <div className="flex flex-col">
             <motion.span
@@ -134,7 +134,7 @@ export default function ExclusiveOrderPage() {
             transition={{ duration: 0.7, delay: 0.15, ease: EASE_OUT_STRONG }}
             className="relative w-full"
           >
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[24px] ring-1 ring-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.35)]">
+            <div className="relative h-[56vh] lg:h-[70vh] w-full overflow-hidden rounded-[24px] ring-1 ring-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.35)]">
               <Image
                 src={HERO_PHOTO}
                 alt={t("heroPhotoAlt")}
