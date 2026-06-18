@@ -521,7 +521,7 @@ export default function ProductInteractive({
 
           <div
             ref={reviewsTrackRef}
-            className="overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none -mx-6 px-6 md:mx-0 md:px-0 scroll-pl-6 md:scroll-pl-0"
+            className="overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none -mx-6 px-6 md:mx-0 md:px-0"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             <div className="flex gap-4 pb-4">
