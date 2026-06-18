@@ -16,14 +16,19 @@ import {
 } from "@tabler/icons-react";
 import { TextureButton } from "@/components/ui/texture-button";
 import ProductImageDialog from "./ProductImageDialog";
-import { MOCK_PRODUCT_IMAGES } from "./mockImages";
 
 const EASE = "cubic-bezier(0.23, 1, 0.32, 1)";
 
+export interface ProductView {
+  id: string;
+  src: string;
+  alt: string;
+}
+
 interface Props {
-  templateId: string;
   templateName: string;
   categoryLabel: string;
+  images: ProductView[];
   features: string[];
   reviews: Array<{ body: string; author: string }>;
   labels: {
@@ -53,9 +58,9 @@ interface Props {
 }
 
 export default function ProductInteractive({
-  templateId,
   templateName,
   categoryLabel,
+  images,
   features,
   reviews,
   labels,
@@ -105,7 +110,16 @@ export default function ProductInteractive({
   };
 
 
-  const views = MOCK_PRODUCT_IMAGES;
+  const views = images;
+
+  const MAX_VISIBLE_THUMBNAILS = 5;
+  const visibleThumbnails = views.slice(0, MAX_VISIBLE_THUMBNAILS);
+  const hiddenCount = Math.max(0, views.length - MAX_VISIBLE_THUMBNAILS);
+
+  const openOverflow = (index: number) => {
+    setActiveView(index);
+    setIsDialogOpen(true);
+  };
 
   const dec = () => setQty((q) => Math.max(1, q - 1));
   const inc = () => setQty((q) => Math.min(99, q + 1));
@@ -120,28 +134,38 @@ export default function ProductInteractive({
           
           {/* Thumbnails */}
           <div className="hidden lg:flex flex-col gap-3 w-[80px] shrink-0">
-            {views.map((view, i) => (
-              <button
-                key={view.id}
-                type="button"
-                onClick={() => setActiveView(i)}
-                aria-label={`View ${i + 1}`}
-                aria-current={activeView === i}
-                className="relative aspect-[3/4] w-full overflow-hidden rounded-[12px] border"
-                style={{
-                  borderColor: activeView === i ? "#346739" : "#f2f2f2",
-                  transition: `border-color 200ms ${EASE}`,
-                }}
-              >
-                <Image
-                  src={view.src}
-                  alt={view.alt}
-                  fill
-                  sizes="80px"
-                  className="object-cover"
-                />
-              </button>
-            ))}
+            {visibleThumbnails.map((view, i) => {
+              const isOverflowTile = i === visibleThumbnails.length - 1 && hiddenCount > 0;
+              return (
+                <button
+                  key={view.id}
+                  type="button"
+                  onClick={() => (isOverflowTile ? openOverflow(i) : setActiveView(i))}
+                  aria-label={isOverflowTile ? `View ${hiddenCount} more images` : `View ${i + 1}`}
+                  aria-current={activeView === i}
+                  className="relative aspect-[3/4] w-full overflow-hidden rounded-[12px] border"
+                  style={{
+                    borderColor: activeView === i ? "#346739" : "#f2f2f2",
+                    transition: `border-color 200ms ${EASE}`,
+                  }}
+                >
+                  <Image
+                    src={view.src}
+                    alt={view.alt}
+                    fill
+                    sizes="80px"
+                    className="object-cover"
+                  />
+                  {isOverflowTile && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/55">
+                      <span className="font-poppins text-sm font-medium text-white">
+                        +{hiddenCount}
+                      </span>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           {/* Main preview */}
@@ -497,7 +521,7 @@ export default function ProductInteractive({
 
           <div
             ref={reviewsTrackRef}
-            className="overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none -mx-6 px-6 md:mx-0 md:px-0"
+            className="overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none -mx-6 px-6 md:mx-0 md:px-0 scroll-pl-6 md:scroll-pl-0"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             <div className="flex gap-4 pb-4">
