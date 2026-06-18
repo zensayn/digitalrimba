@@ -61,16 +61,18 @@ export default function ExclusiveOrderPage() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.15, ease: EASE_OUT_STRONG }}
-          className="pointer-events-none absolute bottom-0 right-0 sm:right-[4%] lg:right-[12%] z-[5] h-[46%] w-[88%] sm:h-[60%] sm:w-[62%] lg:h-[96%] lg:w-[52%]"
+          className="pointer-events-none absolute bottom-0 right-0 sm:right-[2%] lg:right-[8%] z-[5] h-[52%] w-[94%] sm:h-[66%] sm:w-[70%] lg:h-[100%] lg:w-[62%]"
         >
-          <Image
-            src={HERO_PHOTO}
-            alt={t("heroPhotoAlt")}
-            fill
-            sizes="(min-width: 1024px) 52vw, 88vw"
-            className="object-contain object-right-bottom"
-            priority
-          />
+        <Image
+          src={HERO_PHOTO}
+          alt={t("heroPhotoAlt")}
+          fill
+          // Highlight-start: Increased viewport allocations
+          sizes="(min-width: 1200px) 120vw, 120vw" 
+          // Highlight-end
+          className="object-contain object-right-bottom"
+          priority
+        />
         </motion.div>
 
         <div className="relative z-10 h-full max-w-[1200px] mx-auto px-6 md:px-10 py-16 md:py-24 flex items-center">
