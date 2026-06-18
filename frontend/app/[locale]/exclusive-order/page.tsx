@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 import {
   IconBrandWhatsapp,
   IconBolt,
-  IconClock,
   IconMessageCircle,
   IconFileText,
   IconTruckDelivery,
@@ -16,9 +15,8 @@ import { TextureButton } from "@/components/ui/texture-button";
 
 const EASE_OUT_STRONG: [number, number, number, number] = [0.23, 1, 0.32, 1];
 
-// Wedding-stationery photo for the hero (Unsplash host is allowlisted in next.config).
-const HERO_PHOTO =
-  "https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=1200&auto=format&fit=crop";
+// Hero subject (couple + composited UI) — hosted on the allowlisted contents.rimba.app.
+const HERO_PHOTO = "https://contents.rimba.app/assets/hero-exclusive-order.webp";
 
 const HERO_STATS = [
   { valueKey: "heroStat1Value", labelKey: "heroStat1Label" },
@@ -58,9 +56,26 @@ export default function ExclusiveOrderPage() {
               "radial-gradient(55% 70% at 85% 0%, rgba(52,103,57,0.55), transparent 60%), radial-gradient(45% 55% at 0% 100%, rgba(237,252,233,0.10), transparent 60%)",
           }}
         />
-        <div className="relative h-full max-w-[1200px] mx-auto px-6 md:px-10 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,42%)] gap-10 lg:gap-14 items-center">
+        {/* Subject image — bleeds from the bottom-right of the band (Hers-style) */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.15, ease: EASE_OUT_STRONG }}
+          className="pointer-events-none absolute bottom-0 right-0 z-[5] h-[46%] w-[88%] sm:h-[60%] sm:w-[62%] lg:h-[96%] lg:w-[52%]"
+        >
+          <Image
+            src={HERO_PHOTO}
+            alt={t("heroPhotoAlt")}
+            fill
+            sizes="(min-width: 1024px) 52vw, 88vw"
+            className="object-contain object-right-bottom"
+            priority
+          />
+        </motion.div>
+
+        <div className="relative z-10 h-full max-w-[1200px] mx-auto px-6 md:px-10 py-16 md:py-24 flex items-center">
           {/* Left: copy + CTAs + proof */}
-          <div className="flex flex-col">
+          <div className="flex flex-col max-w-[560px] pb-[42vh] lg:pb-0">
             <motion.span
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
@@ -126,33 +141,6 @@ export default function ExclusiveOrderPage() {
               ))}
             </motion.dl>
           </div>
-
-          {/* Right: rounded photo with floating lead-time chip */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.15, ease: EASE_OUT_STRONG }}
-            className="relative w-full"
-          >
-            <div className="relative h-[56vh] lg:h-[70vh] w-full overflow-hidden rounded-[24px] ring-1 ring-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.35)]">
-              <Image
-                src={HERO_PHOTO}
-                alt={t("heroPhotoAlt")}
-                fill
-                sizes="(min-width: 1024px) 460px, 100vw"
-                className="object-cover"
-                priority
-              />
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 bg-gradient-to-t from-[#003c33]/55 via-transparent to-transparent"
-              />
-              <span className="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full bg-white/90 backdrop-blur px-3.5 py-2 text-[12.5px] font-medium text-[#003c33] shadow-sm">
-                <IconClock size={14} />
-                {t("photoChip")}
-              </span>
-            </div>
-          </motion.div>
         </div>
       </section>
 
