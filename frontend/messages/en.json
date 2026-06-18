@@ -39,7 +39,15 @@
     "closingTitle": "Short on time? Your invitations can still make it.",
     "closingCta": "Chat on WhatsApp",
     "waGeneric": "Hi Rimba, I'm interested in Exclusive Order to speed up my wedding invitations. My event date: ___.",
-    "waTier": "Hi Rimba, I'd like the Exclusive Order {tier} package. My event date: ___."
+    "waTier": "Hi Rimba, I'd like the Exclusive Order {tier} package. My event date: ___.",
+    "heroPhotoAlt": "Rimba Fisik wedding invitation",
+    "photoChip": "Delivered sooner",
+    "heroStat1Value": "15 days",
+    "heroStat1Label": "Fastest production",
+    "heroStat2Value": "+15%",
+    "heroStat2Label": "Surcharge from",
+    "heroStat3Value": "Priority",
+    "heroStat3Label": "Production queue"
   },
   "Hero": {
     "tagline": "Est. 2001 — Premium Physical Card Invitations",

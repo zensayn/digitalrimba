@@ -39,7 +39,15 @@
     "closingTitle": "Waktu mepet? Undangan tetap bisa tepat waktu.",
     "closingCta": "Chat via WhatsApp",
     "waGeneric": "Halo Rimba, saya tertarik dengan Exclusive Order untuk mempercepat undangan pernikahan saya. Tanggal acara saya: ___.",
-    "waTier": "Halo Rimba, saya mau Exclusive Order paket {tier}. Tanggal acara saya: ___."
+    "waTier": "Halo Rimba, saya mau Exclusive Order paket {tier}. Tanggal acara saya: ___.",
+    "heroPhotoAlt": "Undangan pernikahan Rimba Fisik",
+    "photoChip": "Dikirim lebih cepat",
+    "heroStat1Value": "15 hari",
+    "heroStat1Label": "Produksi tercepat",
+    "heroStat2Value": "+15%",
+    "heroStat2Label": "Biaya mulai dari",
+    "heroStat3Value": "Prioritas",
+    "heroStat3Label": "Antrian produksi"
   },
   "Hero": {
     "tagline": "Est. 2001 — Undangan Cetak Premium",

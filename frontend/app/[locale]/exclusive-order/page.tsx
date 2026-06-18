@@ -1,10 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import {
   IconBrandWhatsapp,
   IconBolt,
+  IconClock,
   IconMessageCircle,
   IconFileText,
   IconTruckDelivery,
@@ -13,6 +15,16 @@ import {
 import { TextureButton } from "@/components/ui/texture-button";
 
 const EASE_OUT_STRONG: [number, number, number, number] = [0.23, 1, 0.32, 1];
+
+// Wedding-stationery photo for the hero (Unsplash host is allowlisted in next.config).
+const HERO_PHOTO =
+  "https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=1200&auto=format&fit=crop";
+
+const HERO_STATS = [
+  { valueKey: "heroStat1Value", labelKey: "heroStat1Label" },
+  { valueKey: "heroStat2Value", labelKey: "heroStat2Label" },
+  { valueKey: "heroStat3Value", labelKey: "heroStat3Label" },
+] as const;
 
 // Site-wide WhatsApp number (matches the existing CTA pattern in AboutCTA/BottomCTA).
 const WA_NUMBER = "1234567890";
@@ -36,69 +48,110 @@ export default function ExclusiveOrderPage() {
 
   return (
     <main className="bg-white font-poppins text-[#212121]">
-      {/* ── 1. Hero band (distinct deep-green) ───────────────────────── */}
+      {/* ── 1. Hero band (distinct deep-green, split layout) ─────────── */}
       <section className="relative overflow-hidden bg-[#003c33] text-white">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 opacity-60"
+          className="pointer-events-none absolute inset-0 opacity-70"
           style={{
             background:
-              "radial-gradient(60% 80% at 80% 10%, rgba(52,103,57,0.55), transparent 60%), radial-gradient(50% 60% at 0% 100%, rgba(237,252,233,0.10), transparent 60%)",
+              "radial-gradient(55% 70% at 85% 0%, rgba(52,103,57,0.55), transparent 60%), radial-gradient(45% 55% at 0% 100%, rgba(237,252,233,0.10), transparent 60%)",
           }}
         />
-        <div className="relative max-w-[1200px] mx-auto px-6 md:px-10 py-20 md:py-28">
-          <motion.span
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: EASE_OUT_STRONG }}
-            className="inline-block text-[12px] font-medium uppercase text-[#edfce9]/80"
-          >
-            {t("eyebrow")}
-          </motion.span>
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.05, ease: EASE_OUT_STRONG }}
-            className="mt-3 font-medium leading-[1.05] tracking-[-0.02em] text-[2.5rem] md:text-[4rem]"
-          >
-            {t("heroTitle")}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.12, ease: EASE_OUT_STRONG }}
-            className="mt-5 max-w-[560px] text-[15px] md:text-base leading-relaxed text-white/80"
-          >
-            {t("heroIntro")}
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.18, ease: EASE_OUT_STRONG }}
-            className="mt-7"
-          >
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#edfce9]/12 border border-[#edfce9]/20 px-3.5 py-1.5 text-[12.5px] text-[#edfce9]">
+        <div className="relative max-w-[1200px] mx-auto px-6 md:px-10 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,42%)] gap-10 lg:gap-14 items-center">
+          {/* Left: copy + CTAs + proof */}
+          <div className="flex flex-col">
+            <motion.span
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: EASE_OUT_STRONG }}
+              className="inline-flex items-center gap-2 self-start rounded-full bg-[#edfce9]/12 border border-[#edfce9]/20 px-3.5 py-1.5 text-[12px] font-medium text-[#edfce9]"
+            >
               <IconBolt size={14} />
               {t("urgencyChip")}
-            </span>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.24, ease: EASE_OUT_STRONG }}
-            className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
-          >
-            <a href={waLink(t("waGeneric"))} target="_blank" rel="noopener noreferrer">
-              <TextureButton variant="primary" size="lg" className="w-full sm:w-auto font-medium">
-                <IconBrandWhatsapp className="w-5 h-5" />
-                {t("heroCtaPrimary")}
-              </TextureButton>
-            </a>
-            <a href="#priority" className="sm:self-center">
-              <span className="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-3 text-sm font-medium text-white hover:bg-white/10 active:scale-[0.98] transition-[background-color,transform] duration-150 ease-out">
-                {t("heroCtaSecondary")}
+            </motion.span>
+            <motion.h1
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.05, ease: EASE_OUT_STRONG }}
+              className="mt-5 font-medium leading-[1.02] tracking-[-0.02em] text-[2.75rem] md:text-[4.25rem]"
+            >
+              {t("heroTitle").split(" ")[0]}{" "}
+              <span className="text-[#bfe3b4]">
+                {t("heroTitle").split(" ").slice(1).join(" ")}
               </span>
-            </a>
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.12, ease: EASE_OUT_STRONG }}
+              className="mt-5 max-w-[520px] text-[15px] md:text-base leading-relaxed text-white/80"
+            >
+              {t("heroIntro")}
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.18, ease: EASE_OUT_STRONG }}
+              className="mt-7 flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
+            >
+              <a href={waLink(t("waGeneric"))} target="_blank" rel="noopener noreferrer">
+                <TextureButton variant="primary" size="lg" className="w-full sm:w-auto font-medium">
+                  <IconBrandWhatsapp className="w-5 h-5" />
+                  {t("heroCtaPrimary")}
+                </TextureButton>
+              </a>
+              <a href="#priority" className="sm:self-center">
+                <span className="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-3 text-sm font-medium text-white hover:bg-white/10 active:scale-[0.98] transition-[background-color,transform] duration-150 ease-out">
+                  {t("heroCtaSecondary")}
+                </span>
+              </a>
+            </motion.div>
+            {/* Proof row (derived from the real Priority tiers) */}
+            <motion.dl
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.26, ease: EASE_OUT_STRONG }}
+              className="mt-10 grid grid-cols-3 gap-4 max-w-[460px] border-t border-white/10 pt-6"
+            >
+              {HERO_STATS.map((stat) => (
+                <div key={stat.valueKey} className="flex flex-col">
+                  <dt className="order-2 text-[12px] text-white/55 leading-tight mt-1">
+                    {t(stat.labelKey)}
+                  </dt>
+                  <dd className="order-1 text-[1.5rem] font-medium tracking-[-0.02em] text-white">
+                    {t(stat.valueKey)}
+                  </dd>
+                </div>
+              ))}
+            </motion.dl>
+          </div>
+
+          {/* Right: rounded photo with floating lead-time chip */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.15, ease: EASE_OUT_STRONG }}
+            className="relative w-full"
+          >
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[24px] ring-1 ring-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.35)]">
+              <Image
+                src={HERO_PHOTO}
+                alt={t("heroPhotoAlt")}
+                fill
+                sizes="(min-width: 1024px) 460px, 100vw"
+                className="object-cover"
+                priority
+              />
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-gradient-to-t from-[#003c33]/55 via-transparent to-transparent"
+              />
+              <span className="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full bg-white/90 backdrop-blur px-3.5 py-2 text-[12.5px] font-medium text-[#003c33] shadow-sm">
+                <IconClock size={14} />
+                {t("photoChip")}
+              </span>
+            </div>
           </motion.div>
         </div>
       </section>
