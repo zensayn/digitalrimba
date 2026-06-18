@@ -196,28 +196,38 @@ export default function ProductInteractive({
 
             {/* Mobile thumbnail strip */}
             <div className="flex lg:hidden gap-2 mt-3">
-              {views.map((view, i) => (
-                <button
-                  key={view.id}
-                  type="button"
-                  onClick={() => setActiveView(i)}
-                  aria-label={`View ${i + 1}`}
-                  aria-current={activeView === i}
-                  className="relative flex-1 aspect-[3/4] overflow-hidden rounded-[10px] border"
-                  style={{
-                    borderColor: activeView === i ? "#346739" : "#f2f2f2",
-                    transition: `border-color 200ms ${EASE}`,
-                  }}
-                >
-                  <Image
-                    src={view.src}
-                    alt={view.alt}
-                    fill
-                    sizes="(max-width: 640px) 33vw, 25vw"
-                    className="object-cover"
-                  />
-                </button>
-              ))}
+              {visibleThumbnails.map((view, i) => {
+                const isOverflowTile = i === visibleThumbnails.length - 1 && hiddenCount > 0;
+                return (
+                  <button
+                    key={view.id}
+                    type="button"
+                    onClick={() => (isOverflowTile ? openOverflow(i) : setActiveView(i))}
+                    aria-label={isOverflowTile ? `View ${hiddenCount} more images` : `View ${i + 1}`}
+                    aria-current={activeView === i}
+                    className="relative flex-1 aspect-[3/4] overflow-hidden rounded-[10px] border"
+                    style={{
+                      borderColor: activeView === i ? "#346739" : "#f2f2f2",
+                      transition: `border-color 200ms ${EASE}`,
+                    }}
+                  >
+                    <Image
+                      src={view.src}
+                      alt={view.alt}
+                      fill
+                      sizes="(max-width: 640px) 33vw, 25vw"
+                      className="object-cover"
+                    />
+                    {isOverflowTile && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/55">
+                        <span className="font-poppins text-xs font-medium text-white">
+                          +{hiddenCount}
+                        </span>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
