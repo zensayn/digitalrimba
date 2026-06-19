@@ -45,7 +45,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 flex items-center justify-between py-3 px-6 md:px-10 w-full z-[100] bg-white/80 backdrop-blur-md border-b border-[#d9d9dd]">
+    <nav data-site-nav className="sticky top-0 flex items-center justify-between py-3 px-6 md:px-10 w-full z-[100] bg-white/80 backdrop-blur-md border-b border-[#d9d9dd] will-change-transform">
       {/* Left Side: Logo */}
       <Link href="/" className="flex-1 flex items-center gap-4">
          <span className="font-poppins font-bold tracking-tight text-xl text-[#212121]">

@@ -1,7 +1,8 @@
 "use client";
 
-import Hero from "@/components/Hero";
+import HeroMorph from "@/components/HeroMorph";
 import Navbar from "@/components/Navbar";
+import BentoSection from "@/components/BentoSection";
 import FeaturesSection from "@/components/FeaturesSection";
 import MemoriesSection from "@/components/MemoriesSection";
 import ThreeCardsSection from "@/components/ThreeCardsSection";
@@ -14,9 +15,10 @@ import Footer from "@/components/Footer";
 
 export default function App() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen">
       <Navbar />
-      <Hero />
+      <HeroMorph />
+      <BentoSection />
       <FeaturesSection />
       <MemoriesSection />
       <ThreeCardsSection />

@@ -118,15 +118,15 @@ dashboard-hierarchy:
     h1: 
       desktop: 40px
       mobile: 32px
-      weight: 700 (Bold)
+      weight: 700 (Medium)
       role: Main page title
     h2:
       size: 24px
-      weight: 700 (Bold)
+      weight: 700 (Medium)
       role: Section heading
     h3:
       size: 18px
-      weight: 700 (Bold)
+      weight: 700 (Medium)
       role: Card/Group heading
   descriptions:
     lead: 16px (Regular)
@@ -303,9 +303,9 @@ Cohere does not use gradients as a generic UI fill. Gradients and color fields a
 - Use massive type sparingly; Cohere pages often have one oversized headline and then settle into restrained 16px-24px UI copy.
 - Keep display type tight. Hero copy should feel compact and carved, not airy.
 - **Editorial Restraint**: Do not use `tracking-wide`, `tracking-wider`, `tracking-widest`, or custom letter spacing. Avoid excessive letter spacing that makes text artificially wider; tracking should remain at 0 (regular) for all text levels.
-- **Weight Hierarchy**: Maintain a strict weight hierarchy (Regular, Medium, Bold). Do not use "Black" (900) weights. Bold (700) is the maximum weight and should be used only for primary headings and important UI anchors. For regular copy and secondary labels, use Regular (400) or Medium (500) to ensure a sophisticated editorial hierarchy.
+- **Weight Hierarchy**: Maintain a strict weight hierarchy (Regular, Medium). Do not use "Black" (900) weights. Medium (500) is the maximum weight and should be used only for primary headings and important UI anchors. For regular copy and secondary labels, use Regular (400) or light to ensure a sophisticated editorial hierarchy.
 - **Color Constraint**: Do not use `text-black` or absolute black (#000000) for text. Use the `text-bold` token (which maps to a slightly softer, high-fidelity ink) for primary headlines and emphasis. The maximum permissible contrast level for text is defined by the `bold` color token.
-- Use uppercase mono labels for category and system markers, especially on product and research pages, but keep them compact.
+- Use uppercase for category and system markers, especially on product and research pages, but keep them compact.
 - Editorial pages can use coral chips and blue links, but the base typography remains "bold" and measured.
 
 ## Layout
