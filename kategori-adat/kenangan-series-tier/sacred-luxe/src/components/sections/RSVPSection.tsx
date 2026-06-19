@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Copy, Check } from "lucide-react";
-import { bankAccounts } from "@/data/invitation";
 
 export default function RSVPSection() {
   const ref = useRef(null);

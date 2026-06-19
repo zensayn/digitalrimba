@@ -2,17 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { weddingDate, couple } from "@/data/invitation";
+import { useInvitationConfig } from "@/components/RimbaConfigProvider";
 
 export default function CoverSection() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [loaded, setLoaded] = useState(false);
+  const { couple, weddingDate: weddingDateStr } = useInvitationConfig();
 
   useEffect(() => {
     setLoaded(true);
     const tick = () => {
       const now = new Date();
-      const diff = weddingDate.getTime() - now.getTime();
+      const diff = new Date(weddingDateStr).getTime() - now.getTime();
       if (diff <= 0) { setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 }); return; }
       setTimeLeft({
         days: Math.floor(diff / 86400000),
@@ -24,7 +25,7 @@ export default function CoverSection() {
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [weddingDateStr]);
 
   const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -64,7 +65,7 @@ export default function CoverSection() {
           initial={{ opacity: 0, scale: 0.95 }} animate={loaded ? { opacity: 1, scale: 1 } : {}}
           transition={{ delay: 0.6, duration: 1.2, ease: "easeOut" }}
           className="font-display text-gold-shimmer leading-none"
-          style={{ fontSize: "clamp(56px, 18vw, 96px)", fontWeight: 300 }}
+          style={{ fontSize: "clamp(56px, 18vw, 96px)", fontWeight: 300, paddingBottom: "0.15em" }}
         >
           {couple.groom.name}
         </motion.h1>
@@ -83,7 +84,7 @@ export default function CoverSection() {
           initial={{ opacity: 0, scale: 0.95 }} animate={loaded ? { opacity: 1, scale: 1 } : {}}
           transition={{ delay: 1.1, duration: 1.2, ease: "easeOut" }}
           className="font-display text-gold-shimmer leading-none"
-          style={{ fontSize: "clamp(56px, 18vw, 96px)", fontWeight: 300 }}
+          style={{ fontSize: "clamp(56px, 18vw, 96px)", fontWeight: 300, paddingBottom: "0.15em" }}
         >
           {couple.bride.name}
         </motion.h1>

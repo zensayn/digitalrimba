@@ -1,20 +1,28 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import InfiniteMenu from "@/components/InfiniteMenu";
-import { gallery } from "@/data/invitation";
-
-const menuItems = gallery.map(item => ({
-  image: item.src,
-  link: "",
-  title: item.alt,
-  description: "",
-}));
+import { useInvitationConfig } from "@/components/RimbaConfigProvider";
 
 export default function GallerySection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-15%" });
+  const [isPreview, setIsPreview] = useState(false);
+  const { gallery } = useInvitationConfig();
+
+  useEffect(() => {
+    setIsPreview(window.location.search.includes("preview=1"));
+  }, []);
+
+  const menuItems = useMemo(() => {
+    return gallery.map(item => ({
+      image: item.src,
+      link: "",
+      title: item.alt,
+      description: "",
+    }));
+  }, [gallery]);
 
   return (
     <section id="gallery" className="snap-section" style={{ background: "var(--surface-2)" }}>
@@ -68,8 +76,17 @@ export default function GallerySection() {
             position: "relative",
             overflow: "hidden",
             boxShadow: "0 0 60px rgba(201,168,76,0.06), inset 0 0 40px rgba(0,0,0,0.3)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
+          {isPreview ? (
+            <div style={{ color: "var(--gold-dim)", fontSize: "12px", letterSpacing: "0.2em", textAlign: "center" }}>
+              <div style={{ fontSize: "24px", marginBottom: "8px", opacity: 0.4 }}>◈</div>
+              GALLERY
+            </div>
+          ) : null}
           {/* Corner ornaments */}
           {(["top-0 left-0", "top-0 right-0", "bottom-0 left-0", "bottom-0 right-0"] as const).map((pos, i) => (
             <div
@@ -87,7 +104,7 @@ export default function GallerySection() {
             />
           ))}
 
-          <InfiniteMenu items={menuItems} scale={1.4} />
+          {!isPreview && <InfiniteMenu items={menuItems} scale={1.4} />}
         </motion.div>
 
         {/* Caption */}

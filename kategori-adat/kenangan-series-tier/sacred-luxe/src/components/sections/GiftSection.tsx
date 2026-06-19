@@ -3,12 +3,13 @@
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Copy, Check } from "lucide-react";
-import { bankAccounts } from "@/data/invitation";
+import { useInvitationConfig } from "@/components/RimbaConfigProvider";
 
 export default function GiftSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-15%" });
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const { bankAccounts } = useInvitationConfig();
 
   const handleCopy = (text: string, idx: number) => {
     const clean = text.replace(/\s/g, "");
@@ -92,8 +93,9 @@ export default function GiftSection() {
               variants={fadeUp}
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
-              className="flex items-center justify-between px-5 py-4"
+              className="flex items-center justify-between"
               style={{
+                padding: "18px 22px",
                 border: "1px solid var(--border)",
                 background: "var(--surface)",
                 borderRadius: "2px",

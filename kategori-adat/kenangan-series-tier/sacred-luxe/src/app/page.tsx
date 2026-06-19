@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useInvitationConfig } from "@/components/RimbaConfigProvider";
 
 import CoverSection from "@/components/sections/CoverSection";
 import GreetingSection from "@/components/sections/GreetingSection";
@@ -13,9 +14,9 @@ import RSVPSection from "@/components/sections/RSVPSection";
 import GiftSection from "@/components/sections/GiftSection";
 import ClosingSection from "@/components/sections/ClosingSection";
 import MusicPlayer from "@/components/MusicPlayer";
-import { events } from "@/data/invitation";
+import type { EventConfig } from "@/lib/config-types";
 
-// ─── Smooth scroll with easeOutQuint easing ──────────────────────────────────
+// ─── Smooth scroll with easeOutCubic easing ──────────────────────────────────
 function smoothScrollTo(container: HTMLElement, targetY: number, onDone?: () => void) {
   const startY = container.scrollTop;
   const delta = targetY - startY;
@@ -48,6 +49,8 @@ function useScrollController(sectionIds: string[]) {
     let locked = false;
     let cancelPrev: (() => void) | undefined;
     let lockTimer: ReturnType<typeof setTimeout> | undefined;
+    let wheelResetTimer: ReturnType<typeof setTimeout> | undefined;
+    let prevDeltaY = 0;
 
     // Keep idxRef in sync via IntersectionObserver
     const io = new IntersectionObserver(
@@ -77,13 +80,10 @@ function useScrollController(sectionIds: string[]) {
       clearTimeout(lockTimer);
 
       const targetY = clamped * container.clientHeight;
-      cancelPrev = smoothScrollTo(container, targetY, () => {
-        locked = false;
-        clearTimeout(lockTimer);
-      }) ?? undefined;
+      cancelPrev = smoothScrollTo(container, targetY) ?? undefined;
 
-      // Safety unlock in case animation is interrupted
-      lockTimer = setTimeout(() => { locked = false; }, 800);
+      // Unlock after 900ms
+      lockTimer = setTimeout(() => { locked = false; }, 900);
     };
 
     // ── Wheel (desktop) ──────────────────────────────────────────────────────
@@ -97,14 +97,33 @@ function useScrollController(sectionIds: string[]) {
         el = el.parentElement;
       }
       e.preventDefault();
-      goto(idxRef.current + (e.deltaY > 0 ? 1 : -1));
+
+      if (wheelResetTimer) clearTimeout(wheelResetTimer);
+      wheelResetTimer = setTimeout(() => {
+        prevDeltaY = 0;
+      }, 150);
+
+      const delta = e.deltaY;
+      const absDelta = Math.abs(delta);
+      const prevAbsDelta = Math.abs(prevDeltaY);
+
+      prevDeltaY = delta;
+
+      if (locked) return;
+
+      // Filter inersia: Tolak jika kecepatan scroll menurun (decelerating)
+      if (prevAbsDelta > 0 && absDelta <= prevAbsDelta) {
+        return;
+      }
+
+      goto(idxRef.current + (delta > 0 ? 1 : -1));
     };
 
     // ── Touch (mobile) ───────────────────────────────────────────────────────
     let y0 = 0, x0 = 0;
     let scrollTop0 = 0;
     let isTouchDragging = false;
-    let touchStartIdx = 0; // snapshot saat touch mulai, bukan idxRef yang bisa berubah di tengah drag
+    let touchStartIdx = 0;
 
     const onTouchStart = (e: TouchEvent) => {
       let el = e.target as Element | null;
@@ -114,7 +133,6 @@ function useScrollController(sectionIds: string[]) {
         if ((oy === "auto" || oy === "scroll") && el.scrollHeight > el.clientHeight) return;
         el = el.parentElement;
       }
-
       y0 = e.touches[0].clientY;
       x0 = e.touches[0].clientX;
       scrollTop0 = container.scrollTop;
@@ -149,7 +167,6 @@ function useScrollController(sectionIds: string[]) {
         goto(touchStartIdx, true);
         return;
       }
-      // Pakai touchStartIdx bukan idxRef.current — IO bisa sudah update idxRef di tengah drag
       goto(touchStartIdx + (dy > 0 ? 1 : -1), true);
     };
 
@@ -168,6 +185,8 @@ function useScrollController(sectionIds: string[]) {
     return () => {
       io.disconnect();
       cancelPrev?.();
+      clearTimeout(lockTimer);
+      if (wheelResetTimer) clearTimeout(wheelResetTimer);
       container.removeEventListener("wheel", onWheel);
       document.removeEventListener("keydown", onKey);
       container.removeEventListener("touchstart", onTouchStart);
@@ -179,15 +198,32 @@ function useScrollController(sectionIds: string[]) {
   return idxRef;
 }
 
+// ─── Section renderer ──────────────────────────────────────────────────────────
+function renderSection(
+  id: string,
+  events: { akad: EventConfig; resepsi: EventConfig },
+  guestName?: string
+) {
+  switch (id) {
+    case "cover":     return <CoverSection key="cover" />;
+    case "greeting":  return <GreetingSection key="greeting" guestName={guestName} />;
+    case "couple":    return <CoupleSection key="couple" />;
+    case "lovestory": return <LoveStorySection key="lovestory" />;
+    case "akad":      return <EventSection key="akad" event={events.akad} index={0} sectionId="akad" />;
+    case "resepsi":   return <EventSection key="resepsi" event={events.resepsi} index={1} sectionId="resepsi" />;
+    case "dresscode": return <DressCodeSection key="dresscode" />;
+    case "gallery":   return <GallerySection key="gallery" />;
+    case "rsvp":      return <RSVPSection key="rsvp" />;
+    case "gift":      return <GiftSection key="gift" />;
+    case "closing":   return <ClosingSection key="closing" />;
+    default:          return null;
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
-const SECTION_IDS = [
-  "cover", "greeting", "couple", "lovestory",
-  "akad", "resepsi", "dresscode",
-  "gallery", "rsvp", "gift", "closing",
-];
-
 function InvitationContent() {
+  const config = useInvitationConfig();
   const [guestName, setGuestName] = useState<string | undefined>();
 
   useEffect(() => {
@@ -196,24 +232,14 @@ function InvitationContent() {
     if (name) setGuestName(name);
   }, []);
 
-  useScrollController(SECTION_IDS);
+  const sectionIds = config.sections.order.filter((id) => config.sections.enabled[id]);
+  useScrollController(sectionIds);
 
   return (
     <>
       <MusicPlayer />
-
       <div className="snap-container">
-        <CoverSection />
-        <GreetingSection guestName={guestName} />
-        <CoupleSection />
-        <LoveStorySection />
-        <EventSection event={events.akad} index={0} sectionId="akad" />
-        <EventSection event={events.resepsi} index={1} sectionId="resepsi" />
-        <DressCodeSection />
-        <GallerySection />
-        <RSVPSection />
-        <GiftSection />
-        <ClosingSection />
+        {sectionIds.map((id) => renderSection(id, config.events, guestName))}
       </div>
     </>
   );

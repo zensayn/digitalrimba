@@ -1,0 +1,131 @@
+{
+  "couple": {
+    "groom": {
+      "name": "Aryan",
+      "fullName": "Aryan Budi Santoso",
+      "parents": "Putra Bapak Drs. Hendra Santoso & Ibu Wulandari",
+      "photo": "/images/groom.jpg",
+      "instagram": "@aryan.budi"
+    },
+    "bride": {
+      "name": "Sekar",
+      "fullName": "Sekar Ayu Pradipta",
+      "parents": "Putri Bapak H. Pradipta Utama & Ibu Siti Aminah",
+      "photo": "/images/bride.jpg",
+      "instagram": "@sekar.ayu"
+    },
+    "hashtag": "#AryanSekarForever",
+    "quote": "\"Cintaku padamu seperti lembaran kisah — tiap halamannya bercerita tentang kamu.\""
+  },
+  "events": {
+    "akad": {
+      "title": "Akad Nikah",
+      "day": "Sabtu",
+      "date": "21 Maret 2026",
+      "time": "08.00 – 10.00 WIB",
+      "venue": "Masjid Agung Al-Ikhlas",
+      "address": "Jl. Pahlawan No. 5, Yogyakarta",
+      "mapsUrl": "https://maps.google.com/?q=-7.7956,110.3695",
+      "embedUrl": "https://maps.google.com/maps?q=-7.7956,110.3695&z=16&output=embed",
+      "startISO": "20260321T010000Z",
+      "endISO": "20260321T030000Z"
+    },
+    "resepsi": {
+      "title": "Resepsi",
+      "day": "Sabtu",
+      "date": "21 Maret 2026",
+      "time": "11.00 – 15.00 WIB",
+      "venue": "The Grand Puri Ballroom",
+      "address": "Jl. Malioboro No. 123, Yogyakarta",
+      "mapsUrl": "https://maps.google.com/?q=-7.7929,110.3665",
+      "embedUrl": "https://maps.google.com/maps?q=-7.7929,110.3665&z=16&output=embed",
+      "startISO": "20260321T040000Z",
+      "endISO": "20260321T080000Z"
+    }
+  },
+  "weddingDate": "2026-03-21T08:00:00",
+  "gallery": [
+    { "src": "https://picsum.photos/seed/wn1/600/800", "alt": "Momen bersama" },
+    { "src": "https://picsum.photos/seed/wn2/600/400", "alt": "Senyum bahagia" },
+    { "src": "https://picsum.photos/seed/wn3/600/600", "alt": "Kasih sayang" },
+    { "src": "https://picsum.photos/seed/wn4/600/900", "alt": "Perjalanan cinta" },
+    { "src": "https://picsum.photos/seed/wn5/600/500", "alt": "Kenangan indah" },
+    { "src": "https://picsum.photos/seed/wn6/600/700", "alt": "Bersama selamanya" }
+  ],
+  "bankAccounts": [
+    { "bank": "BCA", "name": "Aryan Budi Santoso", "number": "1234 5678 9012" },
+    { "bank": "BRI", "name": "Sekar Ayu Pradipta", "number": "0098 7654 3210" }
+  ],
+  "loveStory": [
+    {
+      "chapter": "Pertemuan Pertama",
+      "year": "2021",
+      "description": "Sebuah sore di sebuah kelas seni. Ia duduk dua baris di depanku, dan tiba-tiba dunia terasa lebih berwarna.",
+      "image": "https://picsum.photos/seed/ws1/400/400"
+    },
+    {
+      "chapter": "Persahabatan",
+      "year": "2022",
+      "description": "Dari teman biasa menjadi teman hati. Tiap percakapan menambah satu bab baru dalam kisah kita.",
+      "image": "https://picsum.photos/seed/ws2/400/400"
+    },
+    {
+      "chapter": "Jatuh Cinta",
+      "year": "2023",
+      "description": "Perasaan itu tak bisa lagi disembunyikan. Seperti tinta yang meresap ke lembaran kertas — dalam dan tak bisa dihapus.",
+      "image": "https://picsum.photos/seed/ws3/400/400"
+    },
+    {
+      "chapter": "Lamaran",
+      "year": "2025",
+      "description": "Di bawah sinar senja Prambanan, dengan gemetar dan penuh harap, aku membuka bab terindah dalam kisah kita.",
+      "image": "https://picsum.photos/seed/ws4/400/400"
+    }
+  ],
+  "dressCode": {
+    "theme": "Warm Earth Tones",
+    "description": "Kami mengundang Anda hadir dengan nuansa hangat dan elegan. Kenakan busana bernuansa tanah, krem, dan emas yang mencerminkan kehangatan hari istimewa ini.",
+    "colors": [
+      { "hex": "#FAF7F2", "name": "Parchment" },
+      { "hex": "#C07830", "name": "Copper Gold" },
+      { "hex": "#D4A056", "name": "Warm Amber" },
+      { "hex": "#6B5E4E", "name": "Warm Brown" },
+      { "hex": "#E8E0D4", "name": "Linen" },
+      { "hex": "#2A2218", "name": "Dark Walnut" }
+    ],
+    "avoid": ["Putih murni", "Hitam pekat", "Merah terang"]
+  },
+  "theme": {
+    "colors": {
+      "bg":        "#FAF7F2",
+      "surface":   "#F2EDE4",
+      "surface2":  "#E8E0D4",
+      "gold":      "#C07830",
+      "goldLight": "#D4A056",
+      "goldDim":   "#A0917E",
+      "text":      "#2A2218",
+      "textMuted": "#6B5E4E",
+      "textDim":   "#A0917E"
+    },
+    "typography": {
+      "displayFont": "Playfair Display",
+      "bodyFont":    "Source Serif 4"
+    }
+  },
+  "sections": {
+    "order": ["cover", "greeting", "couple", "lovestory", "akad", "resepsi", "dresscode", "gallery", "rsvp", "gift", "closing"],
+    "enabled": {
+      "cover":     true,
+      "greeting":  true,
+      "couple":    true,
+      "lovestory": true,
+      "akad":      true,
+      "resepsi":   true,
+      "dresscode": true,
+      "gallery":   true,
+      "rsvp":      true,
+      "gift":      true,
+      "closing":   true
+    }
+  }
+}

@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { useInvitationConfig } from "@/components/RimbaConfigProvider";
 
 interface GreetingSectionProps {
   guestName?: string;
@@ -10,6 +11,7 @@ interface GreetingSectionProps {
 export default function GreetingSection({ guestName }: GreetingSectionProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-15%" });
+  const { couple } = useInvitationConfig();
 
   const fade = (delay: number) => ({
     hidden: { opacity: 0, y: 20 },
@@ -188,7 +190,7 @@ export default function GreetingSection({ guestName }: GreetingSectionProps) {
               letterSpacing: "0.04em",
             }}
           >
-            Pangky &amp; Radit
+            {couple.groom.name} &amp; {couple.bride.name}
           </p>
         </motion.div>
       </div>

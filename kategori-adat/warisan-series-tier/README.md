@@ -19,8 +19,8 @@ Setiap subfolder di bawah ini adalah tema desain yang mandiri (Next.js app terse
 ## Cara Menjalankan Tema
 
 ```bash
-cd sacred-heritage
-npm run dev
+cd <nama-tema>
+bun dev
 # → http://localhost:3000
 ```
 
@@ -29,6 +29,6 @@ npm run dev
 ## Panduan Menambah Tema Baru
 
 1. Buat folder baru: `mkdir nama-tema`
-2. Init Next.js: `cd nama-tema && npx create-next-app@latest ./`
+2. Init Next.js: `cd nama-tema && bun x create-next-app@latest ./`
 3. Salin `DESIGN_SPEC.md` sebagai referensi
 4. Tambahkan baris baru di tabel di atas

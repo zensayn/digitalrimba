@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { loveStory } from "@/data/invitation";
+import { useInvitationConfig } from "@/components/RimbaConfigProvider";
 
 const ROMAN = ["I", "II", "III", "IV", "V"];
 const INTERVAL_MS = 5000;
@@ -14,6 +14,7 @@ export default function LoveStorySection() {
   const [active, setActive] = useState(0);
   const activeRef = useRef(0);
   const isPausedRef = useRef(false);
+  const { loveStory } = useInvitationConfig();
 
   // Mouse drag-to-scroll refs
   const isDragging = useRef(false);
@@ -39,7 +40,7 @@ export default function LoveStorySection() {
       scrollRef.current?.scrollTo({ left: next * (scrollRef.current.clientWidth || 0), behavior: "smooth" });
     }, INTERVAL_MS);
     return () => clearInterval(id);
-  }, []);
+  }, [loveStory.length]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     isPausedRef.current = true;

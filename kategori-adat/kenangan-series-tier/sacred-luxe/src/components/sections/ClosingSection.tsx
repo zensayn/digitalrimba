@@ -2,11 +2,12 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { couple } from "@/data/invitation";
+import { useInvitationConfig } from "@/components/RimbaConfigProvider";
 
 export default function ClosingSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-15%" });
+  const { couple } = useInvitationConfig();
 
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
