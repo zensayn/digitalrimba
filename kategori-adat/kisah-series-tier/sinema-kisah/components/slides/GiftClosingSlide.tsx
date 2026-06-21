@@ -44,12 +44,14 @@ export default function GiftClosingSlide() {
         ref={ref}
         data-prevent-snap="true"
         className="overflow-y-auto"
-        style={{ width: "100%", height: "100dvh", paddingBottom: "clamp(80px,15vh,120px)" }}
+        style={{ width: "100%", height: "100dvh", scrollSnapType: "y proximity" }}
       >
         {/* ── Gift section ── */}
         <div
           style={{
-            padding: "clamp(40px,8vh,64px) 28px clamp(32px,6vh,48px)",
+            minHeight: "100dvh",
+            scrollSnapAlign: "start",
+            padding: "var(--pt-slide) var(--gutter) clamp(32px,6vh,48px)",
             borderBottom: "1px solid var(--border)",
           }}
         >
@@ -90,7 +92,7 @@ export default function GiftClosingSlide() {
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
             className="font-body"
-            style={{ fontStyle: "italic", fontSize: 13, color: "var(--text-dim)", lineHeight: 1.9, marginBottom: 24 }}
+            style={{ fontStyle: "italic", fontSize: 14, color: "var(--text-dim)", lineHeight: 1.8, marginBottom: 24 }}
           >
             Doa dan kehadiran Anda adalah hadiah terbesar bagi kami.
           </motion.p>
@@ -148,11 +150,14 @@ export default function GiftClosingSlide() {
         {/* ── Closing section ── */}
         <div
           style={{
-            padding: "clamp(32px,6vh,48px) 28px",
+            minHeight: "100dvh",
+            scrollSnapAlign: "start",
+            padding: "clamp(40px,8vh,60px) var(--gutter) var(--pb-safe)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             textAlign: "center",
+            justifyContent: "center",
           }}
         >
           {/* Intersecting rings */}
@@ -247,8 +252,8 @@ export default function GiftClosingSlide() {
             style={{
               fontStyle: "italic",
               color: "var(--text-muted)",
-              fontSize: 13,
-              lineHeight: 1.9,
+              fontSize: 14,
+              lineHeight: 1.8,
               marginBottom: 8,
             }}
           >

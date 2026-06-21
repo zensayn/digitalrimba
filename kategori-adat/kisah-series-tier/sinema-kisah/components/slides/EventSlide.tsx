@@ -61,9 +61,9 @@ export default function EventSlide({ event, index, sectionId }: EventSlideProps)
         ref={ref}
         data-prevent-snap="true"
         className="overflow-y-auto"
-        style={{ width: "100%", height: "100dvh", paddingBottom: "clamp(80px,15vh,120px)" }}
+        style={{ width: "100%", height: "100dvh", paddingBottom: "var(--pb-safe)" }}
       >
-        <div style={{ padding: "clamp(40px,8vh,64px) 28px 0" }}>
+        <div style={{ padding: "var(--pt-slide) var(--gutter) 0" }}>
           <motion.p
             custom={0}
             variants={fadeUp}
@@ -147,7 +147,7 @@ export default function EventSlide({ event, index, sectionId }: EventSlideProps)
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
             className="font-body"
-            style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.7, marginBottom: 24 }}
+            style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.75, marginBottom: 24 }}
           >
             {event.address}
           </motion.p>

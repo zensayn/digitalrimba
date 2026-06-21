@@ -116,6 +116,39 @@ function useScrollController(sectionIds: string[]) {
         return;
       }
 
+      // Intersep untuk Lovestory horizontal scrolling
+      const activeId = sectionIds[idxRef.current];
+      if (activeId === "lovestory") {
+        const carousel = document.getElementById("lovestory-carousel");
+        if (carousel) {
+          const { scrollLeft, clientWidth, scrollWidth } = carousel;
+          const maxScrollLeft = scrollWidth - clientWidth;
+          if (delta > 0) {
+            // Scroll down -> scroll right
+            if (scrollLeft < maxScrollLeft - 10) {
+              const currentIdx = Math.round(scrollLeft / clientWidth);
+              const nextIdx = currentIdx + 1;
+              carousel.scrollTo({ left: nextIdx * clientWidth, behavior: "smooth" });
+              locked = true;
+              clearTimeout(lockTimer);
+              lockTimer = setTimeout(() => { locked = false; }, 500);
+              return;
+            }
+          } else {
+            // Scroll up -> scroll left
+            if (scrollLeft > 10) {
+              const currentIdx = Math.round(scrollLeft / clientWidth);
+              const prevIdx = currentIdx - 1;
+              carousel.scrollTo({ left: prevIdx * clientWidth, behavior: "smooth" });
+              locked = true;
+              clearTimeout(lockTimer);
+              lockTimer = setTimeout(() => { locked = false; }, 500);
+              return;
+            }
+          }
+        }
+      }
+
       goto(idxRef.current + (delta > 0 ? 1 : -1));
     };
 
@@ -150,6 +183,21 @@ function useScrollController(sectionIds: string[]) {
         isTouchDragging = false;
         return;
       }
+
+      // Intersep untuk mencegah goyangan vertikal di Lovestory
+      const activeId = sectionIds[idxRef.current];
+      if (activeId === "lovestory") {
+        const carousel = document.getElementById("lovestory-carousel");
+        if (carousel) {
+          const { scrollLeft, clientWidth, scrollWidth } = carousel;
+          const maxScrollLeft = scrollWidth - clientWidth;
+          if ((dy > 0 && scrollLeft < maxScrollLeft - 10) || (dy < 0 && scrollLeft > 10)) {
+            e.preventDefault();
+            return;
+          }
+        }
+      }
+
       e.preventDefault();
       container.scrollTop = scrollTop0 + dy;
     };
@@ -167,6 +215,36 @@ function useScrollController(sectionIds: string[]) {
         goto(touchStartIdx, true);
         return;
       }
+
+      // Intersep untuk Lovestory horizontal scrolling pada swipe
+      const activeId = sectionIds[idxRef.current];
+      if (activeId === "lovestory") {
+        const carousel = document.getElementById("lovestory-carousel");
+        if (carousel) {
+          const { scrollLeft, clientWidth, scrollWidth } = carousel;
+          const maxScrollLeft = scrollWidth - clientWidth;
+          if (dy > 0) {
+            // Swipe up (scroll down) -> scroll right
+            if (scrollLeft < maxScrollLeft - 10) {
+              const currentIdx = Math.round(scrollLeft / clientWidth);
+              const nextIdx = currentIdx + 1;
+              carousel.scrollTo({ left: nextIdx * clientWidth, behavior: "smooth" });
+              goto(touchStartIdx, true); // Snap back to stay on lovestory section
+              return;
+            }
+          } else {
+            // Swipe down (scroll up) -> scroll left
+            if (scrollLeft > 10) {
+              const currentIdx = Math.round(scrollLeft / clientWidth);
+              const prevIdx = currentIdx - 1;
+              carousel.scrollTo({ left: prevIdx * clientWidth, behavior: "smooth" });
+              goto(touchStartIdx, true); // Snap back to stay on lovestory section
+              return;
+            }
+          }
+        }
+      }
+
       goto(touchStartIdx + (dy > 0 ? 1 : -1), true);
     };
 

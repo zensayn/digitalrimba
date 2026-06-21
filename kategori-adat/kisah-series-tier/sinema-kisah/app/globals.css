@@ -17,6 +17,11 @@
   --shadow-card: 0 4px 24px rgba(0,0,0,0.6);
   --grain-opacity: 0.045;
   --font-label:  'Jost', sans-serif;
+
+  /* Layout system */
+  --gutter:    clamp(28px, 8vw, 48px);
+  --pt-slide:  clamp(52px, 10vh, 72px);
+  --pb-safe:   calc(env(safe-area-inset-bottom, 0px) + 108px);
 }
 
 /* ─── Base ───────────────────────────────────────────────────────────────── */

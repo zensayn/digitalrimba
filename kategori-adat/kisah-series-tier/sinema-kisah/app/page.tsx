@@ -15,102 +15,204 @@ import RSVPSlide from "@/components/slides/RSVPSlide";
 import GiftClosingSlide from "@/components/slides/GiftClosingSlide";
 
 const TOTAL_SLIDES = 13;
+const SNAP_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
+const SNAP_DURATION = "680ms";
+const SNAP_TRANSITION = `transform ${SNAP_DURATION} ${SNAP_EASING}`;
+const LOCK_MS = 900;
+const DRAG_THRESHOLD = 40;     // min px to commit a swipe
+const FLICK_VELOCITY = 0.35;   // px/ms — flick overrides distance threshold
+const RUBBER_BAND = 0.22;      // resistance factor at edge
 
 const CHAPTERS = [
-  { numeral: "I" as const,   title: "Pembukaan",   slides: [0, 1] },
-  { numeral: "II" as const,  title: "Mereka",       slides: [2, 3] },
-  { numeral: "III" as const, title: "Kisah Cinta",  slides: [4, 5] },
-  { numeral: "IV" as const,  title: "Hari Itu",     slides: [6, 7, 8] },
-  { numeral: "V" as const,   title: "Selamanya",    slides: [9, 10, 11, 12] },
+  { numeral: "I"   as const, title: "Pembukaan",  slides: [0, 1] },
+  { numeral: "II"  as const, title: "Mereka",      slides: [2, 3] },
+  { numeral: "III" as const, title: "Kisah Cinta", slides: [4, 5] },
+  { numeral: "IV"  as const, title: "Hari Itu",    slides: [6, 7, 8] },
+  { numeral: "V"   as const, title: "Selamanya",   slides: [9, 10, 11, 12] },
 ];
 
 function useHorizontalScrollController() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const slideRef = useRef(0);
+  const slideRef    = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    const el = containerRef.current;
+    if (!el) return;
+
+    // ── Helpers ────────────────────────────────────────────────────────────
+    const setTransform = (px: number, animate: boolean) => {
+      el.style.transition = animate ? SNAP_TRANSITION : "none";
+      el.style.transform  = `translateX(${px}px)`;
+    };
+
+    const slideToX = (idx: number) => -(idx * window.innerWidth);
+
+    const commit = (target: number) => {
+      const clamped = Math.max(0, Math.min(target, TOTAL_SLIDES - 1));
+      slideRef.current = clamped;
+      setCurrentSlide(clamped);
+      setTransform(slideToX(clamped), true);
+    };
+
+    // Init
+    setTransform(0, false);
 
     let locked = false;
     let lockTimer: ReturnType<typeof setTimeout>;
-    let prevDelta = 0;
-    let wheelResetTimer: ReturnType<typeof setTimeout>;
 
-    const goto = (next: number) => {
+    const lock = () => {
+      locked = true;
+      clearTimeout(lockTimer);
+      lockTimer = setTimeout(() => { locked = false; }, LOCK_MS);
+    };
+
+    const tryGoto = (next: number) => {
       if (locked) return;
       const clamped = Math.max(0, Math.min(next, TOTAL_SLIDES - 1));
       if (clamped === slideRef.current) return;
-      locked = true;
-      slideRef.current = clamped;
-      setCurrentSlide(clamped);
-      clearTimeout(lockTimer);
-      lockTimer = setTimeout(() => { locked = false; }, 900);
+      lock();
+      commit(clamped);
     };
 
+    // ── Wheel ──────────────────────────────────────────────────────────────
+    let prevDelta = 0;
+    let wheelResetTimer: ReturnType<typeof setTimeout>;
+
     const onWheel = (e: WheelEvent) => {
-      let el = e.target as Element | null;
-      while (el && el !== container) {
-        if (el.getAttribute("data-prevent-snap") === "true") return;
-        el = el.parentElement;
+      const isH = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+      const delta = isH ? e.deltaX : e.deltaY;
+
+      let node = e.target as Element | null;
+      while (node && node !== el) {
+        if (node.getAttribute("data-prevent-snap") === "true") {
+          if (!isH) return;
+          break;
+        }
+        node = node.parentElement;
       }
+
       e.preventDefault();
 
-      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      const absDelta = Math.abs(delta);
+      const abs = Math.abs(delta);
       const prevAbs = Math.abs(prevDelta);
-
       clearTimeout(wheelResetTimer);
       wheelResetTimer = setTimeout(() => { prevDelta = 0; }, 150);
       prevDelta = delta;
 
       if (locked) return;
-      if (prevAbs > 0 && absDelta <= prevAbs) return;
-      goto(slideRef.current + (delta > 0 ? 1 : -1));
+      if (prevAbs > 0 && abs <= prevAbs) return;
+      tryGoto(slideRef.current + (delta > 0 ? 1 : -1));
     };
 
-    let x0 = 0, y0 = 0, touchStartSlide = 0, isTouchActive = false;
+    // ── Touch — live drag ──────────────────────────────────────────────────
+    let x0 = 0, y0 = 0, startSlide = 0;
+    let dragActive  = false;   // committed to horizontal drag
+    let movedAtAll  = false;
+    let velX        = 0;
+    let lastT       = 0;
+    let lastX       = 0;
 
     const onTouchStart = (e: TouchEvent) => {
-      let el = e.target as Element | null;
-      while (el && el !== container) {
-        if (el.getAttribute("data-prevent-snap") === "true") return;
-        const oy = getComputedStyle(el).overflowY;
-        if ((oy === "auto" || oy === "scroll") && el.scrollHeight > el.clientHeight) return;
-        el = el.parentElement;
+      x0         = e.touches[0].clientX;
+      y0         = e.touches[0].clientY;
+      startSlide = slideRef.current;
+      dragActive = false;
+      movedAtAll = false;
+      velX       = 0;
+      lastT      = e.timeStamp;
+      lastX      = x0;
+      // Kill any in-flight animation immediately so the next frame shows
+      // the exact current visual position (no jump).
+      const current = new DOMMatrix(getComputedStyle(el).transform).m41;
+      el.style.transition = "none";
+      el.style.transform  = `translateX(${current}px)`;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      const dx = e.touches[0].clientX - x0;
+      const dy = e.touches[0].clientY - y0;
+
+      // Velocity tracking (px / ms)
+      const now = e.timeStamp;
+      if (now > lastT) {
+        velX  = (e.touches[0].clientX - lastX) / (now - lastT);
+        lastT = now;
+        lastX = e.touches[0].clientX;
       }
-      x0 = e.touches[0].clientX;
-      y0 = e.touches[0].clientY;
-      touchStartSlide = slideRef.current;
-      isTouchActive = true;
+
+      movedAtAll = true;
+
+      if (!dragActive) {
+        if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;            // dead zone
+        if (Math.abs(dy) > Math.abs(dx) * 0.85) return;              // clearly vertical — let scroll happen
+        dragActive = true;
+      }
+
+      e.preventDefault(); // own horizontal drag — stop page scroll
+
+      // Rubber-band resistance beyond first/last slide
+      const raw = slideToX(startSlide) + dx;
+      const minX = slideToX(TOTAL_SLIDES - 1);
+      const maxX = 0;
+      const clamped =
+        raw > maxX ? maxX + (raw - maxX) * RUBBER_BAND :
+        raw < minX ? minX + (raw - minX) * RUBBER_BAND :
+        raw;
+
+      el.style.transform = `translateX(${clamped}px)`;
     };
 
     const onTouchEnd = (e: TouchEvent) => {
-      if (!isTouchActive) return;
-      isTouchActive = false;
-      const dx = x0 - e.changedTouches[0].clientX;
-      const dy = y0 - e.changedTouches[0].clientY;
-      if (Math.abs(dy) > Math.abs(dx) * 0.7) return;
-      if (Math.abs(dx) < 40) return;
-      goto(touchStartSlide + (dx > 0 ? 1 : -1));
+      if (!movedAtAll || !dragActive) return;
+      dragActive = false;
+
+      const dx = e.changedTouches[0].clientX - x0;
+      const dy = e.changedTouches[0].clientY - y0;
+
+      // Vertical-dominant swipe — snap back without navigating
+      if (Math.abs(dy) > Math.abs(dx) * 0.85) {
+        setTransform(slideToX(slideRef.current), true);
+        return;
+      }
+
+      const isFlick = Math.abs(velX) > FLICK_VELOCITY;
+      if (Math.abs(dx) < DRAG_THRESHOLD && !isFlick) {
+        setTransform(slideToX(slideRef.current), true);
+        return;
+      }
+
+      // Negative dx = swiped left = go forward
+      const direction = (dx < 0 || (isFlick && velX < 0)) ? 1 : -1;
+      const target = Math.max(0, Math.min(TOTAL_SLIDES - 1, startSlide + direction));
+
+      if (target === slideRef.current) {
+        setTransform(slideToX(slideRef.current), true);
+        return;
+      }
+
+      lock();
+      commit(target);
     };
 
+    // ── Keyboard ───────────────────────────────────────────────────────────
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); goto(slideRef.current + 1); }
-      if (e.key === "ArrowLeft"  || e.key === "PageUp")   { e.preventDefault(); goto(slideRef.current - 1); }
+      if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); tryGoto(slideRef.current + 1); }
+      if (e.key === "ArrowLeft"  || e.key === "PageUp")   { e.preventDefault(); tryGoto(slideRef.current - 1); }
     };
 
-    container.addEventListener("wheel",      onWheel,      { passive: false });
-    container.addEventListener("touchstart", onTouchStart, { passive: true });
-    container.addEventListener("touchend",   onTouchEnd,   { passive: true });
-    document.addEventListener("keydown",     onKey);
+    el.addEventListener("wheel",      onWheel,      { passive: false });
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove",  onTouchMove,  { passive: false });
+    el.addEventListener("touchend",   onTouchEnd,   { passive: true });
+    document.addEventListener("keydown", onKey);
 
     return () => {
-      container.removeEventListener("wheel",      onWheel);
-      container.removeEventListener("touchstart", onTouchStart);
-      container.removeEventListener("touchend",   onTouchEnd);
-      document.removeEventListener("keydown",     onKey);
+      el.removeEventListener("wheel",      onWheel);
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove",  onTouchMove);
+      el.removeEventListener("touchend",   onTouchEnd);
+      document.removeEventListener("keydown", onKey);
       clearTimeout(lockTimer);
       clearTimeout(wheelResetTimer);
     };
@@ -140,69 +242,20 @@ function InvitationContent() {
 
   const renderSlide = (index: number) => {
     switch (index) {
-      case 0:
-        return (
-          <ChapterCoverSlide
-            numeral="I"
-            title="Pembukaan"
-            coverImage={coverImages[0]}
-            isActive={currentSlide === 0}
-          />
-        );
-      case 1:
-        return <GreetingSlide guestName={guestName} />;
-      case 2:
-        return (
-          <ChapterCoverSlide
-            numeral="II"
-            title="Mereka"
-            coverImage={coverImages[1]}
-            isActive={currentSlide === 2}
-          />
-        );
-      case 3:
-        return <CoupleSlide />;
-      case 4:
-        return (
-          <ChapterCoverSlide
-            numeral="III"
-            title="Kisah Cinta"
-            coverImage={coverImages[2]}
-            isActive={currentSlide === 4}
-          />
-        );
-      case 5:
-        return <LoveStorySlide />;
-      case 6:
-        return (
-          <ChapterCoverSlide
-            numeral="IV"
-            title="Hari Itu"
-            coverImage={coverImages[3]}
-            isActive={currentSlide === 6}
-          />
-        );
-      case 7:
-        return <EventSlide event={config.events.akad}    index={0} sectionId="akad" />;
-      case 8:
-        return <EventSlide event={config.events.resepsi} index={1} sectionId="resepsi" />;
-      case 9:
-        return (
-          <ChapterCoverSlide
-            numeral="V"
-            title="Selamanya"
-            coverImage={coverImages[4]}
-            isActive={currentSlide === 9}
-          />
-        );
-      case 10:
-        return <GallerySlide />;
-      case 11:
-        return <RSVPSlide />;
-      case 12:
-        return <GiftClosingSlide />;
-      default:
-        return null;
+      case 0:  return <ChapterCoverSlide numeral="I"   title="Pembukaan"  coverImage={coverImages[0]} isActive={currentSlide === 0} />;
+      case 1:  return <GreetingSlide guestName={guestName} />;
+      case 2:  return <ChapterCoverSlide numeral="II"  title="Mereka"      coverImage={coverImages[1]} isActive={currentSlide === 2} />;
+      case 3:  return <CoupleSlide />;
+      case 4:  return <ChapterCoverSlide numeral="III" title="Kisah Cinta" coverImage={coverImages[2]} isActive={currentSlide === 4} />;
+      case 5:  return <LoveStorySlide />;
+      case 6:  return <ChapterCoverSlide numeral="IV"  title="Hari Itu"    coverImage={coverImages[3]} isActive={currentSlide === 6} />;
+      case 7:  return <EventSlide event={config.events.akad}    index={0} sectionId="akad" />;
+      case 8:  return <EventSlide event={config.events.resepsi} index={1} sectionId="resepsi" />;
+      case 9:  return <ChapterCoverSlide numeral="V"   title="Selamanya"   coverImage={coverImages[4]} isActive={currentSlide === 9} />;
+      case 10: return <GallerySlide />;
+      case 11: return <RSVPSlide />;
+      case 12: return <GiftClosingSlide />;
+      default: return null;
     }
   };
 
@@ -214,11 +267,7 @@ function InvitationContent() {
         <div
           ref={containerRef}
           className="slide-container"
-          style={{
-            width: `${TOTAL_SLIDES * 100}vw`,
-            transform: `translateX(-${currentSlide * 100}vw)`,
-            transition: "transform 680ms cubic-bezier(0.22, 1, 0.36, 1)",
-          }}
+          style={{ width: `${TOTAL_SLIDES * 100}vw` }}
         >
           {Array.from({ length: TOTAL_SLIDES }, (_, i) => (
             <div key={i} style={{ width: "100vw", height: "100dvh", flexShrink: 0, overflow: "hidden", position: "relative" }}>

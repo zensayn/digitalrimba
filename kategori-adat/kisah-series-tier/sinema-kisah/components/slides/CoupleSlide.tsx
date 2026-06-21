@@ -51,9 +51,9 @@ export default function CoupleSlide() {
         <div
           style={{
             position: "absolute",
-            bottom: "clamp(24px,5vh,40px)",
-            left: "clamp(16px,4vw,24px)",
-            right: 8,
+            bottom: "clamp(28px,5vh,44px)",
+            left: "clamp(20px,5.5vw,32px)",
+            right: 10,
           }}
         >
           <p
@@ -145,9 +145,9 @@ export default function CoupleSlide() {
         <div
           style={{
             position: "absolute",
-            bottom: "clamp(24px,5vh,40px)",
-            right: "clamp(16px,4vw,24px)",
-            left: 8,
+            bottom: "clamp(28px,5vh,44px)",
+            right: "clamp(20px,5.5vw,32px)",
+            left: 10,
             textAlign: "right",
           }}
         >

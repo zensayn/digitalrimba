@@ -43,12 +43,12 @@ Website harus mencerminkan kesan **Premium, Eksklusif, dan "Misterius namun Hang
                   ╱──────────────╲
                  ╱   KISAH        ╲
                 ╱    (Tier 2)      ╲
-               ╱──────────────────╲
+               ╱────────────────────╲
               ╱                      ╲
              ╱────────────────────────╲
-            ╱     KENANGAN (Tier 1)     ╲
-           ╱     Budget-Conscious      ╲
-          ╱════════════════════════════╲
+            ╱     KENANGAN (Tier 1)    ╲
+           ╱     Budget-Conscious       ╲
+          ╱══════════════════════════════╲
 ```
 
 | Tier | Series | Nama | Narasi | Target | Price |

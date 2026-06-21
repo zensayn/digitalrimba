@@ -28,8 +28,7 @@ export default function GreetingSlide({ guestName }: GreetingSlideProps) {
     <div className="slide-page" style={{ background: "var(--bg)" }}>
       <div
         ref={ref}
-        className="relative z-10 flex flex-col items-center text-center"
-        style={{ maxWidth: 300, padding: "0 24px", gap: "clamp(16px, 3vh, 24px)", display: "flex", flexDirection: "column", alignItems: "center" }}
+        style={{ width: "100%", padding: "0 clamp(32px, 9vw, 52px)", gap: "clamp(16px, 3vh, 24px)", display: "flex", flexDirection: "column", alignItems: "center" }}
       >
         {/* Bismillah */}
         <motion.p
@@ -61,9 +60,9 @@ export default function GreetingSlide({ guestName }: GreetingSlideProps) {
           className="font-body"
           style={{
             fontStyle: "italic",
-            fontSize: "clamp(12px, 3vw, 14px)",
+            fontSize: "clamp(13px, 3.5vw, 15px)",
             color: "var(--text-muted)",
-            lineHeight: 1.9,
+            lineHeight: 1.85,
             textAlign: "center",
           }}
         >

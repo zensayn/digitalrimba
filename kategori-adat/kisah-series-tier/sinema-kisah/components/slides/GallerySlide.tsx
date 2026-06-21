@@ -19,7 +19,7 @@ export default function GallerySlide() {
           top: 0,
           left: 0,
           right: 0,
-          padding: "clamp(32px,6vh,48px) 20px 16px",
+          padding: "var(--pt-slide) var(--gutter) 16px",
           background: "linear-gradient(to bottom, var(--bg) 60%, transparent)",
           zIndex: 20,
         }}
@@ -58,9 +58,9 @@ export default function GallerySlide() {
           width: "100%",
           height: "100dvh",
           paddingTop: "clamp(100px,18vh,130px)",
-          paddingBottom: "clamp(100px,18vh,140px)",
-          paddingLeft: 12,
-          paddingRight: 12,
+          paddingBottom: "var(--pb-safe)",
+          paddingLeft: 10,
+          paddingRight: 10,
         }}
       >
         <motion.div

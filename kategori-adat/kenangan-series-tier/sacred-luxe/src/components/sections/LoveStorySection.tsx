@@ -120,6 +120,7 @@ export default function LoveStorySection() {
 
       {/* Horizontal snap carousel */}
       <div
+        id="lovestory-carousel"
         ref={scrollRef}
         onScroll={handleScroll}
         onPointerDown={handlePointerDown}

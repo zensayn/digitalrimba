@@ -51,7 +51,7 @@ export default function ChapterCoverSlide({ numeral, title, coverImage, isActive
         className="font-label"
         style={{
           position: "absolute",
-          top: "calc(env(safe-area-inset-top) + 20px)",
+          top: "calc(env(safe-area-inset-top, 0px) + 36px)",
           left: "50%",
           transform: "translateX(-50%)",
           fontSize: 9,

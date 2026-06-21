@@ -40,9 +40,9 @@ export default function RSVPSlide() {
         ref={ref}
         data-prevent-snap="true"
         className="overflow-y-auto"
-        style={{ width: "100%", height: "100dvh", paddingBottom: "clamp(80px,15vh,120px)" }}
+        style={{ width: "100%", height: "100dvh", paddingBottom: "var(--pb-safe)" }}
       >
-        <div style={{ maxWidth: 320, margin: "0 auto", padding: "clamp(40px,8vh,64px) 28px 0" }}>
+        <div style={{ padding: "var(--pt-slide) clamp(32px, 9vw, 52px) 0" }}>
           <motion.p
             custom={0}
             variants={fadeUp}
