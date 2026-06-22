@@ -1,3 +1,4 @@
+-- +goose Up
 CREATE TABLE IF NOT EXISTS checkin_events (
     id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
     wedding_id  UUID        NOT NULL UNIQUE REFERENCES weddings(id) ON DELETE CASCADE,
@@ -9,6 +10,7 @@ CREATE TABLE IF NOT EXISTS checkin_events (
 
 CREATE INDEX IF NOT EXISTS idx_checkin_events_event_code ON checkin_events(event_code);
 
+-- +goose StatementBegin
 DO $$ BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM pg_constraint
@@ -18,3 +20,7 @@ DO $$ BEGIN
     ALTER TABLE checkin_events ADD CONSTRAINT checkin_events_wedding_id_key UNIQUE (wedding_id);
   END IF;
 END $$;
+-- +goose StatementEnd
+
+-- +goose Down
+DROP TABLE IF EXISTS checkin_events;

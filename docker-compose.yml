@@ -1,0 +1,48 @@
+name: rimba-digital
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: rimba-digital-database
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rimba
+      POSTGRES_PASSWORD: rimba_secret
+      POSTGRES_DB: rimba_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - rimba_digital_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rimba -d rimba_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    container_name: rimba-digital-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://rimba:rimba_secret@postgres:5432/rimba_db
+      JWKS_URL: http://host.docker.internal:3000/api/auth/jwks
+      CHECKIN_SESSION_KEY: rimba-checkin-dev-secret-change-in-prod
+      ALLOWED_ORIGIN: http://localhost:3000
+      S3_API: https://bbfe2e9f8f01720f3ec3d64b880d77b8.r2.cloudflarestorage.com/rimba
+      PORT: "8080"
+    ports:
+      - "8080:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  rimba_digital_data:

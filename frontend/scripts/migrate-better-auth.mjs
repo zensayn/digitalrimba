@@ -9,7 +9,7 @@ const { Pool } = pg;
 const pool = new Pool({
   connectionString:
     process.env.DATABASE_URL ||
-    "postgresql://rimba:rimba_secret@localhost:5432/rimba_db",
+    "postgresql://rimba:rimba_secret@localhost:5433/rimba_db",
 });
 
 const migration = `

@@ -1,0 +1,44 @@
+- generic [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]: Rimba.
+        - generic [ref=e8]: Step 3 of 3
+      - generic [ref=e9]:
+        - generic [ref=e10]:
+          - img [ref=e11]
+          - img [ref=e14]
+          - img [ref=e17]
+          - img [ref=e20]
+          - text: Together with their families
+          - paragraph [ref=e23]: Alya & Bima
+          - img [ref=e26]
+          - generic [ref=e29]:
+            - paragraph [ref=e30]: 12 December 2026
+            - paragraph [ref=e66]: 174 days to go
+            - paragraph [ref=e31]: Venue to be revealed
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - text: Finally, the place
+            - heading "Where will you gather?" [level=1] [ref=e69]
+            - paragraph [ref=e70]: So every guest finds their way to you.
+          - generic [ref=e71]:
+            - generic [ref=e72]:
+              - generic [ref=e73]: Venue
+              - textbox "Venue" [active] [ref=e74]:
+                - /placeholder: Rimba Glass House
+            - generic [ref=e75]:
+              - generic [ref=e76]: Address
+              - textbox "Address" [ref=e77]:
+                - /placeholder: Jakarta, Indonesia
+      - generic [ref=e40]:
+        - button "Back" [ref=e63]:
+          - img [ref=e64]
+          - text: Back
+        - button "Create wedding" [ref=e78]:
+          - generic [ref=e42]:
+            - text: Create wedding
+            - img [ref=e43]
+  - button "Open Next.js Dev Tools" [ref=e50] [cursor=pointer]:
+    - img [ref=e51]
+  - alert [ref=e54]

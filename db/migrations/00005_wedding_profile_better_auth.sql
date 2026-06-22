@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS public."user" (
     "updatedAt" timestamptz NOT NULL DEFAULT now()
 );
 
+-- +goose StatementBegin
 DO $$
 BEGIN
     IF to_regclass('public.users') IS NOT NULL
@@ -16,7 +17,9 @@ BEGIN
         ALTER TABLE public.users RENAME TO clerk_users_backup;
     END IF;
 END $$;
+-- +goose StatementEnd
 
+-- +goose StatementBegin
 DO $$
 BEGIN
     IF to_regclass('public.clerk_users_backup') IS NOT NULL THEN
@@ -83,12 +86,14 @@ BEGIN
         END IF;
     END IF;
 END $$;
+-- +goose StatementEnd
 
 ALTER TABLE public.weddings DROP CONSTRAINT IF EXISTS weddings_owner_user_id_fkey;
 ALTER TABLE public.weddings
     ADD CONSTRAINT weddings_owner_user_id_fkey
     FOREIGN KEY (owner_user_id) REFERENCES public."user"(id) ON DELETE CASCADE;
 
+-- +goose StatementBegin
 DO $$
 BEGIN
     IF to_regclass('public.invitations') IS NOT NULL THEN
@@ -98,7 +103,9 @@ BEGIN
             FOREIGN KEY (owner_id) REFERENCES public."user"(id) ON DELETE CASCADE;
     END IF;
 END $$;
+-- +goose StatementEnd
 
+-- +goose StatementBegin
 DO $$
 BEGIN
     IF to_regclass('public.operators') IS NOT NULL THEN
@@ -108,7 +115,9 @@ BEGIN
             FOREIGN KEY (user_id) REFERENCES public."user"(id) ON DELETE CASCADE;
     END IF;
 END $$;
+-- +goose StatementEnd
 
+-- +goose StatementBegin
 DO $$
 BEGIN
     IF to_regclass('public.checkin') IS NOT NULL THEN
@@ -118,6 +127,7 @@ BEGIN
             FOREIGN KEY (checked_in_by) REFERENCES public."user"(id) ON DELETE SET NULL;
     END IF;
 END $$;
+-- +goose StatementEnd
 
 CREATE TABLE IF NOT EXISTS public.wedding_members (
     wedding_id uuid NOT NULL REFERENCES public.weddings(id) ON DELETE CASCADE,
@@ -135,6 +145,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS weddings_owner_user_id_unique
 DROP INDEX IF EXISTS public.weddings_owner_user_id_unique;
 DROP TABLE IF EXISTS public.wedding_members;
 
+-- +goose StatementBegin
 DO $$
 BEGIN
     IF to_regclass('public.clerk_users_backup') IS NOT NULL THEN
@@ -219,7 +230,9 @@ BEGIN
         END IF;
     END IF;
 END $$;
+-- +goose StatementEnd
 
+-- +goose StatementBegin
 DO $$
 BEGIN
     IF to_regclass('public."user"') IS NOT NULL
@@ -232,3 +245,4 @@ BEGIN
         DROP TABLE public."user";
     END IF;
 END $$;
+-- +goose StatementEnd

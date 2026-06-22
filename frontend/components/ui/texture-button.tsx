@@ -7,17 +7,18 @@ import { cva } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariantsOuter = cva(
-  "relative inline-flex transition-all duration-200 ease-out active:scale-[0.97] hover:scale-[1.01] p-px overflow-hidden",
+  "relative inline-flex transition-all duration-200 ease-out active:scale-[0.97] hover:scale-[1.01] p-px overflow-hidden outline-none focus:outline-none focus-visible:outline-none",
   {
     variants: {
       variant: {
-        primary: "bg-[#1a3a1d]",
+        primary: "bg-[#346739]",
         accent: "bg-indigo-900/20",
         destructive: "bg-red-600",
         secondary: "bg-[#d9d9dd]",
         minimal: "bg-[#e5e5e5]",
         outline: "bg-neutral-200",
         icon: "rounded-full border dark:border-neutral-950 border-white/10 dark:bg-neutral-600/50 bg-white/50",
+        dark: "bg-[#000000]",
       },
       size: {
         sm: "rounded-[8px]",
@@ -45,6 +46,7 @@ const innerBackgroundVariants = cva(
         minimal: "bg-white hover:bg-neutral-50 active:bg-[#e5e5e5]",
         outline: "bg-white hover:bg-[#fafafa] active:bg-neutral-100",
         icon: "bg-gradient-to-b from-white to-neutral-50/50 dark:from-neutral-800 dark:to-neutral-700/50 hover:brightness-105",
+        dark: "bg-gradient-to-b from-[#2a2a2a] to-[#151515] shadow-[inset_0px_1px_0px_0px_rgba(255,255,255,0.15)] hover:from-[#333333] hover:to-[#1a1a1a] hover:brightness-[1.03]",
       },
       size: {
         sm: "rounded-[7px]",
@@ -72,6 +74,7 @@ const contentVariants = cva(
         minimal: "text-[#737373]",
         outline: "text-neutral-600 hover:text-black",
         icon: "",
+        dark: "text-white",
       },
       size: {
         sm: "text-xs px-4 py-1.5",
@@ -89,7 +92,7 @@ const contentVariants = cva(
 
 export interface UnifiedButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "accent" | "destructive" | "minimal" | "icon" | "outline"
+  variant?: "primary" | "secondary" | "accent" | "destructive" | "minimal" | "icon" | "outline" | "dark"
   size?: "default" | "sm" | "lg" | "icon"
   asChild?: boolean
 }
