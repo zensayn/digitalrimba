@@ -5,12 +5,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
 
 	"rimba-api/handlers"
+	"rimba-api/internal/cache"
 	"rimba-api/internal/db"
 	internalhandlers "rimba-api/internal/handlers"
 )
@@ -28,7 +30,27 @@ func main() {
 	}
 	defer pool.Close()
 
-	catalogStore := internalhandlers.NewPostgresCatalogStore(pool)
+	var catalogStore internalhandlers.CatalogStore = internalhandlers.NewPostgresCatalogStore(pool)
+
+	// Optional Redis cache for the read-only catalog. Static data, so wrap the
+	// store in a caching decorator when REDIS_URL is configured. The cache is
+	// best-effort: if Redis is missing or unreachable, we serve from Postgres.
+	rdb, err := cache.New(ctx)
+	if err != nil {
+		log.Printf("redis unavailable, serving without cache: %v", err)
+	}
+	if rdb != nil {
+		// The API boots right after the entrypoint's seed step, so startup is a
+		// reliable post-seed hook to drop any stale catalog entries. This Redis
+		// is dedicated to the fisik catalog, so a full flush is safe.
+		if err := rdb.FlushDB(ctx).Err(); err != nil {
+			log.Printf("redis flush on boot: %v", err)
+		}
+		catalogStore = internalhandlers.NewCachingCatalogStore(catalogStore, rdb, time.Hour)
+		defer rdb.Close()
+		log.Println("catalog cache enabled (redis)")
+	}
+
 	catalogHandler := internalhandlers.NewCatalogHandler(catalogStore)
 
 	allowedOrigin := os.Getenv("ALLOWED_ORIGIN")

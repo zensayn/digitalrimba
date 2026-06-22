@@ -1,9 +1,9 @@
-name: rimba-digital
+name: rimba
 
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: rimba-digital-database
+    container_name: database
     restart: unless-stopped
     environment:
       POSTGRES_USER: rimba
@@ -43,6 +43,43 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  # Dedicated 256MB Redis cache for the fisik catalog (static, read-heavy data).
+  # No host port: only fisik-backend talks to it. allkeys-lru self-trims at the
+  # cap instead of erroring if it ever fills.
+  fisik-redis:
+    image: redis:7-alpine
+    container_name: rimba-fisik-redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Physical catalog backend. Shares the single postgres above (rimba_db) —
+  # its entrypoint runs goose up (catalog migration 00006) + seeds, then serves.
+  # Build context is ./fisik so the image can bundle db/migrations + db/seed.
+  fisik-backend:
+    build:
+      context: ./fisik
+      dockerfile: backend/Dockerfile
+    container_name: rimba-fisik-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      fisik-redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://rimba:rimba_secret@postgres:5432/rimba_db
+      REDIS_URL: redis://fisik-redis:6379
+      ALLOWED_ORIGIN: http://localhost:3000
+      PORT: "8080"
+    # Host 8081 (digital backend already owns 8080); container stays on 8080.
+    ports:
+      - "8081:8080"
 
 volumes:
   rimba_digital_data:
