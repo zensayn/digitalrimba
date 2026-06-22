@@ -1,0 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital@0;1&family=Jost:wght@300;400;500&display=swap');
+
+@import "tailwindcss";
+
+/* ─── Design Tokens — Ink & Amber ─────────────────────────────────────────── */
+:root {
+  --bg:          #0E0C0A;
+  --surface:     #181410;
+  --surface-2:   #221D18;
+  --gold:        #C8915A;
+  --gold-light:  #E0A96A;
+  --gold-dim:    #7A5538;
+  --text:        #F2EBE1;
+  --text-muted:  #B8AA9A;
+  --text-dim:    #7A6E64;
+  --border:      rgba(200,145,90,0.18);
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.6);
+  --grain-opacity: 0.045;
+  --font-label:  'Jost', sans-serif;
+
+  /* Layout system */
+  --gutter:    clamp(28px, 8vw, 48px);
+  --pt-slide:  clamp(52px, 10vh, 72px);
+  --pb-safe:   calc(env(safe-area-inset-bottom, 0px) + 108px);
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { height: 100%; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body, 'Lora', serif);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  height: 100dvh;
+}
+
+/* ─── Font helpers ───────────────────────────────────────────────────────── */
+.font-display { font-family: var(--font-display, 'DM Serif Display', serif); }
+.font-body    { font-family: var(--font-body, 'Lora', serif); }
+.font-label   { font-family: var(--font-label, 'Jost', sans-serif); }
+
+/* ─── Horizontal slide viewport ─────────────────────────────────────────── */
+.slide-viewport {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  width: 100vw;
+  height: 100dvh;
+}
+
+.slide-container {
+  display: flex;
+  height: 100dvh;
+  will-change: transform;
+}
+
+.slide-page {
+  width: 100vw;
+  height: 100dvh;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── Film grain overlay ─────────────────────────────────────────────────── */
+.film-grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  opacity: var(--grain-opacity);
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: overlay;
+}
+
+/* ─── Amber gradient text ────────────────────────────────────────────────── */
+.text-amber-gradient {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 40%, var(--gold) 70%, var(--gold-dim) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Amber shimmer ──────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.text-amber-shimmer {
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 25%, var(--gold) 50%, var(--gold-light) 75%, var(--gold) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+/* ─── Dividers ───────────────────────────────────────────────────────────── */
+.amber-divider {
+  width: 48px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  flex-shrink: 0;
+}
+
+.amber-divider-full {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.25;
+}
+
+.amber-divider-vertical {
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--gold-dim), transparent);
+  flex-shrink: 0;
+}
+
+/* ─── Form elements — editorial borderless ───────────────────────────────── */
+.input-amber {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 0;
+  font-family: var(--font-body, 'Lora', serif);
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input-amber::placeholder { color: var(--text-dim); }
+.input-amber:focus { border-bottom-color: var(--gold); }
+textarea.input-amber { resize: none; line-height: 1.6; }
+
+/* ─── Scrollbar hide ─────────────────────────────────────────────────────── */
+.overflow-y-auto::-webkit-scrollbar { display: none; }
+.overflow-y-auto { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ─── Music player ───────────────────────────────────────────────────────── */
+.music-player-bar {
+  position: fixed;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  right: 20px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: rgba(14,12,10,0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+/* ─── Vignette ───────────────────────────────────────────────────────────── */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.65) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+@keyframes pulse-hint {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 0.7; }
+}
