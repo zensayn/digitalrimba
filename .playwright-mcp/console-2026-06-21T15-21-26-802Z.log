@@ -1,0 +1,30 @@
+[     409ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/en/preview-onboarding:0
+[     665ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[     918ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   84821ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   84914ms] [LOG] [Fast Refresh] done in 122ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   85019ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   85019ms] [LOG] [Fast Refresh] done in 102ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   85076ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/en/preview-onboarding?_rsc=kw9md:0
+[   85214ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/en/preview-onboarding?_rsc=kw9md:0
+[   85279ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/en/preview-onboarding:0
+[   85492ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   85517ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   85639ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   85901ms] [LOG] [Fast Refresh] done in 365ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   86003ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   86583ms] [LOG] [Fast Refresh] done in 682ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   86800ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   87215ms] [LOG] [Fast Refresh] done in 516ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   92150ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   92753ms] [LOG] [Fast Refresh] done in 43ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   92947ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   93157ms] [LOG] [Fast Refresh] done in 311ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   93426ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   93455ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   93660ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   93785ms] [LOG] [Fast Refresh] done in 226ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   93886ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   94035ms] [LOG] [Fast Refresh] done in 249ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   94137ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[   94464ms] [LOG] [Fast Refresh] done in 427ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297

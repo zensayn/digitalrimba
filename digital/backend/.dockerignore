@@ -1,0 +1,15 @@
+# Stale prebuilt host binary — rebuilt inside the image.
+api
+
+# Secrets / local env — provided via compose environment instead.
+.env
+.env*
+
+# Tests aren't needed in the image.
+*_test.go
+testdata
+
+# Misc local artifacts.
+.DS_Store
+prisma
+node_modules

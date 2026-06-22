@@ -1,0 +1,245 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Rimba Fisik" [ref=e5] [cursor=pointer]:
+        - /url: /id
+        - img "Rimba Fisik" [ref=e6]
+      - list [ref=e7]:
+        - listitem [ref=e8]:
+          - generic [ref=e9] [cursor=pointer]:
+            - generic [ref=e10]: Produk
+            - img [ref=e11]
+        - listitem [ref=e13]:
+          - link "Exclusive Order" [ref=e14] [cursor=pointer]:
+            - /url: /id/exclusive-order
+        - listitem [ref=e15]:
+          - link "Tentang" [ref=e16] [cursor=pointer]:
+            - /url: /id/about
+            - text: Tentang
+            - img [ref=e17]
+      - generic [ref=e19]:
+        - 'button "Change language (current: Indonesia)" [ref=e21] [cursor=pointer]':
+          - img "Indonesia" [ref=e22]
+        - link "Konsultasi Desain Konsultasi Desain" [ref=e23] [cursor=pointer]:
+          - /url: https://wa.me/1234567890
+          - img [ref=e25]
+          - generic [ref=e28]:
+            - generic [ref=e30]: Konsultasi Desain
+            - generic [ref=e32]: Konsultasi Desain
+  - main [ref=e33]:
+    - navigation "breadcrumb" [ref=e36]:
+      - list [ref=e37]:
+        - listitem [ref=e38]:
+          - link "Kembali ke Template" [ref=e39] [cursor=pointer]:
+            - /url: /id/products
+            - img [ref=e40]
+            - text: Kembali ke Template
+        - listitem [ref=e43]: /
+        - listitem [ref=e44]: Whisper
+    - generic [ref=e45]:
+      - generic [ref=e47]:
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - button "View 1" [ref=e50]:
+              - img "Whisper wedding invitation preview 1" [ref=e51]
+            - button "View 2" [ref=e52]:
+              - img "Whisper wedding invitation preview 2" [ref=e53]
+            - button "View 3" [ref=e54]:
+              - img "Whisper wedding invitation preview 3" [ref=e55]
+            - button "View 4" [ref=e56]:
+              - img "Whisper wedding invitation preview 4" [ref=e57]
+            - button "View 6 more images" [ref=e58]:
+              - img "Whisper wedding invitation preview 5" [ref=e59]
+              - generic [ref=e61]: "+6"
+          - generic [ref=e63]:
+            - img "Whisper wedding invitation preview 1" [ref=e65]
+            - generic:
+              - img "Whisper wedding invitation preview 2"
+            - generic:
+              - img "Whisper wedding invitation preview 3"
+            - generic:
+              - img "Whisper wedding invitation preview 4"
+            - generic:
+              - img "Whisper wedding invitation preview 5"
+            - generic:
+              - img "Whisper wedding invitation preview 6"
+            - generic:
+              - img "Whisper wedding invitation preview 7"
+            - generic:
+              - img "Whisper wedding invitation preview 8"
+            - generic:
+              - img "Whisper wedding invitation preview 9"
+            - generic:
+              - img "Whisper wedding invitation preview 10"
+            - generic:
+              - img "Whisper wedding invitation preview 11"
+        - complementary [ref=e66]:
+          - generic [ref=e67]:
+            - generic [ref=e68]: Softcover (RFH)
+            - generic [ref=e69]:
+              - heading "Whisper" [level=1] [ref=e70]
+              - button "Bagikan" [ref=e71] [cursor=pointer]:
+                - img [ref=e72]
+            - paragraph [ref=e78]:
+              - text: Sangat cocok untuk tema pernikahan Softcover (RFH) — mudah diedit & dibagikan. Didesain agar sepenuhnya mencerminkan kepribadian Anda.
+              - button "Selengkapnya" [ref=e79]
+          - generic [ref=e81]:
+            - generic [ref=e82]: Rp16.000
+            - generic [ref=e83]: /pcs
+          - generic [ref=e84]:
+            - generic [ref=e85]: Harga grosir
+            - generic [ref=e86]:
+              - button "50–99 pcs Rp16.000/pcs" [pressed] [ref=e87] [cursor=pointer]:
+                - img [ref=e89]
+                - generic [ref=e91]: 50–99 pcs
+                - generic [ref=e92]: Rp16.000/pcs
+              - button "100–299 pcs Rp14.375/pcs -10%" [ref=e93] [cursor=pointer]:
+                - img [ref=e95]
+                - generic [ref=e97]: 100–299 pcs
+                - generic [ref=e98]: Rp14.375/pcs
+                - generic [ref=e99]: "-10%"
+              - button "300–499 pcs Rp13.563/pcs -15%" [ref=e100] [cursor=pointer]:
+                - img [ref=e102]
+                - generic [ref=e104]: 300–499 pcs
+                - generic [ref=e105]: Rp13.563/pcs
+                - generic [ref=e106]: "-15%"
+              - button "500+ pcs Rp11.750/pcs -27%" [ref=e107] [cursor=pointer]:
+                - img [ref=e109]
+                - generic [ref=e111]: 500+ pcs
+                - generic [ref=e112]: Rp11.750/pcs
+                - generic [ref=e113]: "-27%"
+            - generic [ref=e114]: Minimal pemesanan 50 pcs
+          - generic [ref=e116]:
+            - generic [ref=e117]: Jumlah
+            - generic [ref=e118]:
+              - button "Decrease quantity" [ref=e119] [cursor=pointer]:
+                - img [ref=e120]
+              - textbox "Jumlah" [ref=e121]: "50"
+              - button "Increase quantity" [ref=e122] [cursor=pointer]:
+                - img [ref=e123]
+          - generic [ref=e124]:
+            - generic [ref=e125]:
+              - text: Subtotal
+              - generic [ref=e126]: · 50 pcs
+            - generic [ref=e127]: Rp800.000
+          - button "Pesan via WhatsApp" [ref=e129]:
+            - generic [ref=e132]:
+              - img [ref=e133]
+              - text: Pesan via WhatsApp
+          - generic [ref=e136]:
+            - generic [ref=e137]: Ongkir dihitung saat checkout
+            - button "Kebijakan Pengembalian" [ref=e138] [cursor=pointer]:
+              - generic [ref=e139]: 📄
+              - text: Kebijakan Pengembalian
+              - img [ref=e140]
+      - generic [ref=e143]:
+        - generic [ref=e144]:
+          - generic [ref=e145]:
+            - generic [ref=e146]: Mungkin Anda Suka
+            - heading "Pilihan lain untuk Anda" [level=2] [ref=e147]
+          - link "Lihat semua template" [ref=e148] [cursor=pointer]:
+            - /url: /id/products
+            - text: Lihat semua template
+            - generic [ref=e149]: →
+        - generic [ref=e150]:
+          - link "Populer Meadow Meadow Rp 399K Softcover (RFH)" [ref=e151] [cursor=pointer]:
+            - /url: /id/products/meadow
+            - generic [ref=e152]:
+              - generic:
+                - generic: Populer
+              - generic:
+                - generic:
+                  - img
+              - img "Meadow" [ref=e154]
+            - generic [ref=e155]:
+              - heading "Meadow" [level=3] [ref=e156]
+              - generic [ref=e157]: Rp 399K
+            - paragraph [ref=e158]: Softcover (RFH)
+          - link "Wildgrass Wildgrass Rp 399K Softcover (RFH)" [ref=e159] [cursor=pointer]:
+            - /url: /id/products/wildgrass
+            - generic [ref=e160]:
+              - generic:
+                - generic:
+                  - img
+              - img "Wildgrass" [ref=e162]
+            - generic [ref=e163]:
+              - heading "Wildgrass" [level=3] [ref=e164]
+              - generic [ref=e165]: Rp 399K
+            - paragraph [ref=e166]: Softcover (RFH)
+          - link "Blossom Blossom Rp 399K Softcover (RFH)" [ref=e167] [cursor=pointer]:
+            - /url: /id/products/blossom
+            - generic [ref=e168]:
+              - generic:
+                - generic:
+                  - img
+              - img "Blossom" [ref=e170]
+            - generic [ref=e171]:
+              - heading "Blossom" [level=3] [ref=e172]
+              - generic [ref=e173]: Rp 399K
+            - paragraph [ref=e174]: Softcover (RFH)
+          - link "Pinkie Pinkie Rp 399K Softcover (RFH)" [ref=e175] [cursor=pointer]:
+            - /url: /id/products/pinkie
+            - generic [ref=e176]:
+              - generic:
+                - generic:
+                  - img
+              - img "Pinkie" [ref=e178]
+            - generic [ref=e179]:
+              - heading "Pinkie" [level=3] [ref=e180]
+              - generic [ref=e181]: Rp 399K
+            - paragraph [ref=e182]: Softcover (RFH)
+  - contentinfo [ref=e183]:
+    - generic [ref=e184]:
+      - generic:
+        - img
+      - generic [ref=e186]:
+        - generic [ref=e187]:
+          - link "Rimba Fisik" [ref=e189] [cursor=pointer]:
+            - /url: /id
+            - img "Rimba Fisik" [ref=e190]
+          - generic [ref=e191]:
+            - generic [ref=e192]:
+              - generic [ref=e193]: Produk
+              - generic [ref=e194]:
+                - link "Rimba Fisik" [ref=e195] [cursor=pointer]:
+                  - /url: "#"
+                - link "Rimba Digital" [ref=e196] [cursor=pointer]:
+                  - /url: "#"
+            - generic [ref=e197]:
+              - generic [ref=e198]: Layanan
+              - generic [ref=e199]:
+                - link "Konsultasi Desain" [ref=e200] [cursor=pointer]:
+                  - /url: "#"
+                - link "Cetak & Kirim" [ref=e201] [cursor=pointer]:
+                  - /url: "#"
+                - link "Galeri" [ref=e202] [cursor=pointer]:
+                  - /url: "#"
+            - generic [ref=e203]:
+              - generic [ref=e204]: Legal
+              - generic [ref=e205]:
+                - link "Kebijakan Privasi" [ref=e206] [cursor=pointer]:
+                  - /url: "#"
+                - link "Syarat & Ketentuan" [ref=e207] [cursor=pointer]:
+                  - /url: "#"
+        - generic [ref=e208]:
+          - generic [ref=e209]: © 2026 Rimba Fisik. Seluruh hak cipta dilindungi.
+          - generic [ref=e210]:
+            - link "Facebook" [ref=e211] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e212]
+            - link "Twitter" [ref=e214] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e215]
+            - link "Instagram" [ref=e217] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e218]
+            - link "LinkedIn" [ref=e221] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e222]
+  - link "Contact us on WhatsApp" [ref=e225] [cursor=pointer]:
+    - /url: https://wa.me/628123456789
+    - img [ref=e226]
+    - generic: Hubungi Desainer Rimba (WhatsApp)
+  - button "Open Next.js Dev Tools" [ref=e233] [cursor=pointer]:
+    - img [ref=e234]
+  - alert [ref=e237]

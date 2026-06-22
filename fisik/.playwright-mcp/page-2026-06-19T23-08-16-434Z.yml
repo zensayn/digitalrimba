@@ -1,0 +1,177 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Rimba Fisik" [ref=e5] [cursor=pointer]:
+        - /url: /en
+        - img "Rimba Fisik" [ref=e6]
+      - generic [ref=e7]:
+        - link "Consult Consult" [ref=e8] [cursor=pointer]:
+          - /url: https://wa.me/1234567890
+          - img [ref=e10]
+          - generic [ref=e13]:
+            - generic [ref=e15]: Consult
+            - generic [ref=e17]: Consult
+        - button [active] [ref=e19] [cursor=pointer]
+  - generic [ref=e22]:
+    - generic [ref=e24]:
+      - img "Rimba Flower Keepsake" [ref=e26]
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - paragraph [ref=e29]: Every sacred celebration deserves a timeless beginning. We craft every detail, from the weight of premium paper to the gleam of hot stamp foil.
+          - paragraph [ref=e30]: We help couples orchestrate every layer of that day, from foil-stamped paper to real-time digital RSVPs.
+        - heading "Tactile Elegance." [level=2] [ref=e32]
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - heading "An endless heritage" [level=3] [ref=e37]
+        - paragraph [ref=e39]: "Rimba began in 2001 with a single letterpress and a deep love for the printed word. Twenty-five years on, we are a complete wedding studio: handcrafted paper, premium fabrication, and digital tools, woven into one ecosystem."
+      - generic [ref=e40]:
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - generic [ref=e47]: "2026"
+            - generic [ref=e48]:
+              - heading "Rimba Digital Launches" [level=4] [ref=e49]
+              - paragraph [ref=e50]: Real-time WhatsApp RSVPs and a live QR check-in dashboard, paired with every printed suite.
+            - img "Rimba Digital Launches" [ref=e53]
+          - generic [ref=e54]:
+            - generic [ref=e57]: "2023"
+            - generic [ref=e58]:
+              - heading "Heartwood Series Debut" [level=4] [ref=e59]
+              - paragraph [ref=e60]: 600gsm cotton cards with hand-finished metallic gold edge painting.
+            - img "Heartwood Series Debut" [ref=e63]
+          - generic [ref=e64]:
+            - generic [ref=e67]: "2022"
+            - generic [ref=e68]:
+              - heading "Letterpress Restored" [level=4] [ref=e69]
+              - paragraph [ref=e70]: Our 1950s press returns to service, pressing deep, tactile impressions worth touching.
+            - img "Letterpress Restored" [ref=e73]
+          - generic [ref=e74]:
+            - generic [ref=e77]: "2015"
+            - generic [ref=e78]:
+              - heading "Linen Leaf Embossing" [level=4] [ref=e79]
+              - paragraph [ref=e80]: Botanical debossing on Conqueror laid paper, an organic kind of elegance.
+            - img "Linen Leaf Embossing" [ref=e83]
+          - generic [ref=e84]:
+            - generic [ref=e86]: "2001"
+            - generic [ref=e87]:
+              - heading "Rimba Atelier Founded" [level=4] [ref=e88]
+              - paragraph [ref=e89]: A small Jakarta workshop opens, devoted to calligraphy, lettering, and the printed page.
+            - img "Rimba Atelier Founded" [ref=e92]
+        - generic [ref=e93]:
+          - button "Scroll left" [ref=e94] [cursor=pointer]:
+            - img [ref=e95]
+          - button "Scroll right" [ref=e97] [cursor=pointer]:
+            - img [ref=e98]
+  - generic [ref=e101]:
+    - generic:
+      - img
+    - generic:
+      - img
+    - generic:
+      - img
+    - generic:
+      - img
+    - generic [ref=e102]:
+      - heading "Bring your dream invitations to life" [level=2] [ref=e103]
+      - generic [ref=e104]:
+        - link "Free Consultation" [ref=e105] [cursor=pointer]:
+          - /url: https://wa.me/1234567890?text=Permintaan%20Penawaran%20Rimba%20Fisik%20(About%20Page)%3A%0A---%0AProduk%3A%20Yield%20Aggregator%0AJumlah%3A%20100%20lembar%0ASeri%3A%20Elite%0AKonsep%20Desain%3A%20Institutional%20RIVR%0A---%0AEstimasi%20Total%3A%20Rp%200%0A%0ASaya%20ingin%20berkonsultasi%20mengenai%20desain%20undangan%20pernikahan%20saya.
+          - button "Free Consultation" [ref=e106]:
+            - generic [ref=e108]:
+              - img [ref=e109]
+              - text: Free Consultation
+        - link "View Digital Invitations" [ref=e112] [cursor=pointer]:
+          - /url: /en/dashboard
+          - button "View Digital Invitations" [ref=e113]:
+            - generic [ref=e115]: View Digital Invitations
+    - generic:
+      - img
+    - generic:
+      - img
+    - generic:
+      - img
+  - contentinfo [ref=e116]:
+    - generic [ref=e117]:
+      - generic:
+        - img
+      - generic [ref=e119]:
+        - generic [ref=e120]:
+          - link "Rimba Fisik" [ref=e122] [cursor=pointer]:
+            - /url: /en
+            - img "Rimba Fisik" [ref=e123]
+          - generic [ref=e124]:
+            - generic [ref=e125]:
+              - generic [ref=e126]: Produk
+              - generic [ref=e127]:
+                - link "Rimba Fisik" [ref=e128] [cursor=pointer]:
+                  - /url: "#"
+                - link "Rimba Digital" [ref=e129] [cursor=pointer]:
+                  - /url: "#"
+            - generic [ref=e130]:
+              - generic [ref=e131]: Layanan
+              - generic [ref=e132]:
+                - link "Konsultasi Desain" [ref=e133] [cursor=pointer]:
+                  - /url: "#"
+                - link "Cetak & Kirim" [ref=e134] [cursor=pointer]:
+                  - /url: "#"
+                - link "Galeri" [ref=e135] [cursor=pointer]:
+                  - /url: "#"
+            - generic [ref=e136]:
+              - generic [ref=e137]: Legal
+              - generic [ref=e138]:
+                - link "Kebijakan Privasi" [ref=e139] [cursor=pointer]:
+                  - /url: "#"
+                - link "Syarat & Ketentuan" [ref=e140] [cursor=pointer]:
+                  - /url: "#"
+        - generic [ref=e141]:
+          - generic [ref=e142]: © 2026 Rimba Fisik. Seluruh hak cipta dilindungi.
+          - generic [ref=e143]:
+            - link "Facebook" [ref=e144] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e145]
+            - link "Twitter" [ref=e147] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e148]
+            - link "Instagram" [ref=e150] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e151]
+            - link "LinkedIn" [ref=e154] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e155]
+  - link "Contact us on WhatsApp" [ref=e158] [cursor=pointer]:
+    - /url: https://wa.me/628123456789
+    - img [ref=e159]
+    - generic: Hubungi Admin Rimba (WhatsApp)
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e166] [cursor=pointer]:
+    - img [ref=e167]
+  - alert [ref=e170]
+  - generic [ref=e172]:
+    - link "Rimba Fisik" [ref=e173] [cursor=pointer]:
+      - /url: /en
+      - img "Rimba Fisik" [ref=e174]
+    - button "Close menu" [ref=e175] [cursor=pointer]
+    - img
+    - generic [ref=e179]:
+      - generic [ref=e181]: Products Navigation
+      - navigation [ref=e182]:
+        - button "Products ▶" [ref=e184] [cursor=pointer]:
+          - generic [ref=e185]: Products
+          - generic [ref=e186]: ▶
+        - link "Exclusive Order" [ref=e188] [cursor=pointer]:
+          - /url: /en/exclusive-order
+        - link "About" [ref=e190] [cursor=pointer]:
+          - /url: /en/about
+    - generic [ref=e192]:
+      - generic [ref=e193]:
+        - generic [ref=e194]: Language
+        - generic [ref=e195]:
+          - button "Indonesia Indonesia" [ref=e196]:
+            - img "Indonesia" [ref=e197]
+            - generic [ref=e198]: Indonesia
+          - button "English English" [pressed] [ref=e199]:
+            - img "English" [ref=e200]
+            - generic [ref=e201]: English
+      - button "Book Consultation" [ref=e203]:
+        - generic [ref=e205]:
+          - generic [ref=e206]: Book Consultation
+          - img [ref=e207]
