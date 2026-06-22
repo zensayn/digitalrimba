@@ -1,0 +1,11 @@
+# Build context for the backend image is the repo root (it needs db/migrations
+# + db/seed alongside backend/). Keep the context small by excluding everything
+# the image doesn't need.
+.git
+**/node_modules
+**/.DS_Store
+**/.next
+frontend
+*.md
+backend/.env
+backend/api

@@ -1,0 +1,119 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Rimba Fisik" [ref=e5] [cursor=pointer]:
+        - /url: /id
+        - img "Rimba Fisik" [ref=e6]
+      - list [ref=e7]:
+        - listitem [ref=e8]:
+          - generic [ref=e9] [cursor=pointer]:
+            - generic [ref=e10]: Produk
+            - img [ref=e11]
+        - listitem [ref=e13]:
+          - link "Exclusive Order" [ref=e14] [cursor=pointer]:
+            - /url: /id/exclusive-order
+        - listitem [ref=e15]:
+          - link "Tentang" [ref=e16] [cursor=pointer]:
+            - /url: /id/about
+            - text: Tentang
+            - img [ref=e17]
+      - generic [ref=e19]:
+        - 'button "Change language (current: Indonesia)" [ref=e21] [cursor=pointer]':
+          - img "Indonesia" [ref=e22]
+        - link "Konsultasi Desain Konsultasi Desain" [ref=e23] [cursor=pointer]:
+          - /url: /id/consultation
+          - img [ref=e25]
+          - generic [ref=e28]:
+            - generic [ref=e30]: Konsultasi Desain
+            - generic [ref=e32]: Konsultasi Desain
+  - main [ref=e33]:
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - heading "Mari rancang undangan Anda bersama." [level=1] [ref=e37]
+        - paragraph [ref=e38]: Jadwalkan konsultasi desain gratis. Kami akan memandu Anda memilih material, teknik cetak, dan konsep yang sesuai dengan hari istimewa Anda — lalu menyiapkan waktu khusus untuk Anda.
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - generic [ref=e41]: "01"
+          - heading "Pilih waktu" [level=3] [ref=e42]
+          - paragraph [ref=e43]: Tentukan slot yang paling cocok untuk Anda di kalender di bawah.
+        - generic [ref=e44]:
+          - generic [ref=e45]: "02"
+          - heading "Temui desainer kami" [level=3] [ref=e46]
+          - paragraph [ref=e47]: Sesi 60 menit untuk membentuk konsep dan material Anda.
+        - generic [ref=e48]:
+          - generic [ref=e49]: "03"
+          - heading "Dapatkan konsepnya" [level=3] [ref=e50]
+          - paragraph [ref=e51]: Pulang dengan arah yang jelas dan langkah berikutnya — tanpa kewajiban.
+    - generic [ref=e52]:
+      - generic [ref=e56]:
+        - status "Loading" [ref=e59]
+        - iframe [ref=e72]:
+          - combobox "Timezone Select" [ref=f16e2]
+          - img [ref=f16e3]
+          - img [ref=f16e5] [cursor=pointer]
+      - generic [ref=e73]:
+        - generic [ref=e74]:
+          - img [ref=e76]
+          - generic [ref=e79]:
+            - paragraph [ref=e80]: Masih ragu untuk bertemu langsung?
+            - paragraph [ref=e81]: Tanyakan apa pun lewat WhatsApp dulu — santai, tanpa keharusan memesan.
+        - link "Chat via WhatsApp" [ref=e82] [cursor=pointer]:
+          - /url: https://wa.me/628123456789
+          - img [ref=e83]
+          - text: Chat via WhatsApp
+  - contentinfo [ref=e86]:
+    - generic [ref=e87]:
+      - generic:
+        - img
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - link "Rimba Fisik" [ref=e92] [cursor=pointer]:
+            - /url: /id
+            - img "Rimba Fisik" [ref=e93]
+          - generic [ref=e94]:
+            - generic [ref=e95]:
+              - generic [ref=e96]: Produk
+              - generic [ref=e97]:
+                - link "Rimba Fisik" [ref=e98] [cursor=pointer]:
+                  - /url: "#"
+                - link "Rimba Digital" [ref=e99] [cursor=pointer]:
+                  - /url: "#"
+            - generic [ref=e100]:
+              - generic [ref=e101]: Layanan
+              - generic [ref=e102]:
+                - link "Konsultasi Desain" [ref=e103] [cursor=pointer]:
+                  - /url: "#"
+                - link "Cetak & Kirim" [ref=e104] [cursor=pointer]:
+                  - /url: "#"
+                - link "Galeri" [ref=e105] [cursor=pointer]:
+                  - /url: "#"
+            - generic [ref=e106]:
+              - generic [ref=e107]: Legal
+              - generic [ref=e108]:
+                - link "Kebijakan Privasi" [ref=e109] [cursor=pointer]:
+                  - /url: "#"
+                - link "Syarat & Ketentuan" [ref=e110] [cursor=pointer]:
+                  - /url: "#"
+        - generic [ref=e111]:
+          - generic [ref=e112]: © 2026 Rimba Fisik. Seluruh hak cipta dilindungi.
+          - generic [ref=e113]:
+            - link "Facebook" [ref=e114] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e115]
+            - link "Twitter" [ref=e117] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e118]
+            - link "Instagram" [ref=e120] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e121]
+            - link "LinkedIn" [ref=e124] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e125]
+  - link "Contact us on WhatsApp" [ref=e128] [cursor=pointer]:
+    - /url: https://wa.me/628123456789
+    - img [ref=e129]
+    - generic: Hubungi Admin Rimba (WhatsApp)
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e136] [cursor=pointer]:
+    - img [ref=e137]
+  - alert [ref=e140]

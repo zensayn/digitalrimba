@@ -1,0 +1,16 @@
+[     141ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[     190ms] [LOG] [Fast Refresh] done in 151ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[     539ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://grainy-gradients.vercel.app/noise.svg:0
+[     544ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[     562ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[     659ms] [WARNING] Image with src "https://contents.rimba.app/assets/rimba-logo.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio. @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[  102511ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[  102578ms] [LOG] [Fast Refresh] done in 88ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[  102705ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[  102850ms] [LOG] [Fast Refresh] done in 247ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[  108515ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[  108605ms] [LOG] [Fast Refresh] done in 50ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[  113282ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[  113387ms] [LOG] [Fast Refresh] done in 38ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[  124225ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297
+[  124247ms] [LOG] [Fast Refresh] done in 47ms @ http://localhost:3000/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:2297

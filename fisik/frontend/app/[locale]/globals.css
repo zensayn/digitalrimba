@@ -1,0 +1,69 @@
+@import url('https://fonts.cdnfonts.com/css/amoria');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@font-face {
+    font-family: "Mazzard";
+    src: url("https://db.onlinewebfonts.com/t/53770355153205775153205775153205.eot");
+    src: url("https://db.onlinewebfonts.com/t/53770355153205775153205775153205.eot?#iefix")format("embedded-opentype"),
+    url("https://db.onlinewebfonts.com/t/53770355153205775153205775153205.woff2")format("woff2"),
+    url("https://db.onlinewebfonts.com/t/53770355153205775153205775153205.woff")format("woff"),
+    url("https://db.onlinewebfonts.com/t/53770355153205775153205775153205.ttf")format("truetype"),
+    url("https://db.onlinewebfonts.com/t/53770355153205775153205775153205.svg#Mazzard")format("svg");
+}
+
+@theme {
+  --font-mazzard: "Mazzard", ui-sans-serif, system-ui, sans-serif;
+  --font-poppins: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-amoria: "Amoria", serif;
+  
+  --color-clay-primary: #0a0a0a;
+  --color-clay-canvas: #fffaf0;
+  --color-clay-ink: #0a0a0a;
+  --color-clay-pink: #ff4d8b;
+  --color-clay-teal: #1a3a3a;
+  --color-clay-lavender: #b8a4ed;
+  --color-clay-peach: #ffb084;
+  --color-clay-ochre: #e8b94a;
+  --color-clay-surface-soft: #faf5e8;
+  --color-clay-surface-card: #f5f0e0;
+
+  /* Sidebar tokens — consumed by components/ui/sidebar.tsx */
+  --color-sidebar: #1a3a3a;
+  --color-sidebar-foreground: #fffaf0;
+  --color-sidebar-accent: #243f3f;
+  --color-sidebar-accent-foreground: #fffaf0;
+  --color-sidebar-border: #2d4d4d;
+  --color-sidebar-ring: #e8b94a;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+@layer base {
+  :root {
+    --background: #fffaf0;
+    --foreground: #0a0a0a;
+  }
+
+  body {
+    margin: 0;
+    overflow-x: hidden;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-poppins);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-poppins);
+  }
+
+  .font-amoria {
+    font-family: var(--font-amoria);
+  }
+  
+  .font-poppins {
+    font-family: var(--font-poppins);
+  }
+}
