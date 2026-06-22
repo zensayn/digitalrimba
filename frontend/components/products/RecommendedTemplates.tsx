@@ -12,54 +12,21 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { Eye } from "@solar-icons/react";
 import TemplatePreviewCard from "@/components/TemplatePreviewCard";
-import { TEMPLATE_LIST } from "@/lib/template-catalog-data";
-
-const MAX_RECOMMENDATIONS = 4;
+import type { CatalogProduct } from "@/lib/catalog";
 
 interface Props {
-  /** The currently viewed template — excluded from results. */
-  currentSlug: string;
-  /** Primary category of the current template — used to bias recommendations. */
-  primaryCategory: string;
+  /** Products to recommend (already filtered/ordered by the server). */
+  recommendations: CatalogProduct[];
 }
 
-export default function RecommendedTemplates({
-  currentSlug,
-  primaryCategory,
-}: Props) {
+export default function RecommendedTemplates({ recommendations }: Props) {
   const t = useTranslations("Templates");
   const tp = useTranslations("Products");
-
-  // Same-category matches first, then popular fillers from other categories,
-  // then anything else, excluding the current slug. Capped at MAX_RECOMMENDATIONS.
-  const sameCategory = TEMPLATE_LIST.filter(
-    (tpl) => tpl.id !== currentSlug && tpl.categories.includes(primaryCategory)
-  );
-
-  const popularFiller = TEMPLATE_LIST.filter(
-    (tpl) =>
-      tpl.id !== currentSlug &&
-      !tpl.categories.includes(primaryCategory) &&
-      tpl.popular
-  );
-
-  const otherFiller = TEMPLATE_LIST.filter(
-    (tpl) =>
-      tpl.id !== currentSlug &&
-      !tpl.categories.includes(primaryCategory) &&
-      !tpl.popular
-  );
-
-  const recommendations = [
-    ...sameCategory,
-    ...popularFiller,
-    ...otherFiller,
-  ].slice(0, MAX_RECOMMENDATIONS);
 
   if (recommendations.length === 0) return null;
 
   return (
-    <section className="bg-white -mx-6 md:-mx-10 py-12 md:py-16">
+    <section className="bg-white py-12 md:py-16">
       <div className="w-full">
         {/* Eyebrow + heading */}
         <div className="flex items-end justify-between mb-8">
@@ -86,19 +53,25 @@ export default function RecommendedTemplates({
 
         {/* Card grid — 2 cols on mobile, 4 on lg */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 md:gap-x-5 gap-y-7">
-          {recommendations.map((template) => (
+          {recommendations.map((product) => (
             <Link
-              key={template.id}
-              href={`/products/${template.id}`}
+              key={product.slug}
+              href={`/products/${product.slug}`}
               className="group block text-left"
             >
               {/* Image-only card */}
               <div className="relative w-full aspect-[4/5] bg-[#fdfdfd] rounded-[18px] overflow-hidden border border-[#f2f2f2] shadow-card-lift transition-[box-shadow,border-color] duration-300 ease-out group-hover:shadow-card-lift-hover group-hover:border-[#d9d9dd]">
-                {/* Popular badge (top-left, overlay only — category lives below) */}
-                {template.popular && (
+                {/* Seller badge (top-left) — top seller filled, popular pale */}
+                {(product.top_seller || product.popular) && (
                   <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
-                    <span className="inline-flex items-center bg-[#edfce9] border border-[#346739]/20 text-[#346739] text-[9px] px-2 py-0.5 rounded-full font-poppins font-semibold select-none">
-                      {t("popularLabel")}
+                    <span
+                      className={`inline-flex items-center text-[9px] px-2 py-0.5 rounded-full font-poppins font-semibold select-none ${
+                        product.top_seller
+                          ? "bg-[#346739] text-white"
+                          : "bg-[#edfce9] border border-[#346739]/20 text-[#346739]"
+                      }`}
+                    >
+                      {product.top_seller ? t("topSellerLabel") : t("popularLabel")}
                     </span>
                   </div>
                 )}
@@ -111,7 +84,9 @@ export default function RecommendedTemplates({
                 </div>
 
                 <TemplatePreviewCard
-                  templateId={template.id}
+                  src={product.cover_url}
+                  alt={product.name}
+                  sizes="(min-width: 1024px) 280px, (min-width: 768px) 33vw, 50vw"
                   className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.025]"
                 />
               </div>
@@ -119,7 +94,7 @@ export default function RecommendedTemplates({
               {/* Metadata — outside the card, plain text */}
               <div className="mt-2.5 flex justify-between items-baseline gap-2">
                 <h3 className="font-poppins text-[14px] font-medium text-[#212121] truncate">
-                  {template.name}
+                  {product.name}
                 </h3>
                 <span className="shrink-0 font-poppins text-[12px] font-medium text-[#212121]">
                   {t("priceTag")}
@@ -127,7 +102,7 @@ export default function RecommendedTemplates({
               </div>
 
               <p className="mt-0.5 font-poppins text-[12px] text-[#616161] leading-snug">
-                {t(`categories.${template.categories[0]}`)}
+                {product.collection_name}
               </p>
             </Link>
           ))}

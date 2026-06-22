@@ -1,20 +1,24 @@
 // ─── Product Detail Page ──────────────────────────────────────────────────────
-// Cohere-aligned product detail layout: thumbnail rail · main preview · sticky
-// info panel, then reviews. Header + Footer are mounted in
+// Server Component: fetches the product (with its R2 images) and same-collection
+// recommendations from the catalog API. Header + Footer are mounted in
 // app/[locale]/layout.tsx (MarketingChrome).
 // Route: /[locale]/products/[slug]
 
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { getTemplateBySlug, templateList } from "@/lib/templates";
 import { Link } from "@/i18n/routing";
 import { IconArrowLeft } from "@tabler/icons-react";
 import ProductInteractive from "@/components/products/ProductInteractive";
 import RecommendedTemplates from "@/components/products/RecommendedTemplates";
+import { fetchProductBySlug, fetchProducts } from "@/lib/catalog";
 
-// Pre-render every template page at build time
+const MAX_RECOMMENDATIONS = 4;
+
+// Pre-render every catalog product page at build time (best-effort — falls back
+// to on-demand rendering if the catalog API is unavailable during build).
 export async function generateStaticParams() {
-  return templateList.map((t) => ({ slug: t.slug }));
+  const products = await fetchProducts();
+  return products.map((p) => ({ slug: p.slug }));
 }
 
 export default async function ProductDetailPage({
@@ -26,8 +30,8 @@ export default async function ProductDetailPage({
   const t = await getTranslations("Templates");
   const tp = await getTranslations("Products");
 
-  const template = getTemplateBySlug(slug);
-  if (!template) notFound();
+  const product = await fetchProductBySlug(slug);
+  if (!product) notFound();
 
   const features = [
     tp("feature1"),
@@ -37,29 +41,26 @@ export default async function ProductDetailPage({
     tp("feature5"),
   ];
 
-  const categoryKey = template.categories[0] as
-    | "all"
-    | "hindu"
-    | "christian"
-    | "sikh"
-    | "muslim"
-    | "southIndian"
-    | "saveDate";
-  const categoryLabel = t(`categories.${categoryKey}`);
-
+  const categoryLabel = product.collection_name;
   const description = t("editDescription", { category: categoryLabel });
 
-  const reviews = [
-    { body: tp("review1Body"), author: tp("review1Author") },
-    { body: tp("review2Body"), author: tp("review2Author") },
-    { body: tp("review3Body"), author: tp("review3Author") },
-  ];
+  const images = product.images.map((img) => ({
+    id: String(img.position),
+    src: img.url,
+    alt: img.alt,
+  }));
+
+  // Recommendations: other products from the same collection.
+  const sameCollection = await fetchProducts(product.collection_code);
+  const recommendations = sameCollection
+    .filter((p) => p.slug !== product.slug)
+    .slice(0, MAX_RECOMMENDATIONS);
 
   return (
     <main className="min-h-screen bg-white font-poppins">
       {/* Breadcrumb (page-level — Header sits above this from the layout) */}
-      <div className="border-b border-[#f2f2f2] bg-white font-poppins">
-        <div className="max-w-[1200px] mx-auto px-6 md:px-10 py-4">
+      <div className="bg-white font-poppins">
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-0 py-4">
           <nav aria-label="breadcrumb">
             <ol className="flex flex-wrap items-center gap-3 text-sm">
               <li>
@@ -75,11 +76,8 @@ export default async function ProductDetailPage({
                 /
               </li>
               <li>
-                <span
-                  aria-current="page"
-                  className="text-[#212121] font-medium"
-                >
-                  {template.name}
+                <span aria-current="page" className="text-[#212121] font-medium">
+                  {product.name}
                 </span>
               </li>
             </ol>
@@ -88,44 +86,33 @@ export default async function ProductDetailPage({
       </div>
 
       {/* Main product layout */}
-      <section className="max-w-[1200px] mx-auto px-6 md:px-10 py-10 md:py-14">
+      <section className="max-w-[1200px] mx-auto px-6 lg:px-0 py-10 md:py-14">
         <ProductInteractive
-          templateId={template.id}
-          templateName={template.name}
+          templateName={product.name}
           categoryLabel={categoryLabel}
+          images={images}
           features={features}
-          reviews={reviews}
           labels={{
-            ratingShort: tp("ratingShort"),
-            priceTag: t("priceTag"),
+            volumeTitle: tp("volumeTitle"),
+            perUnit: tp("perUnit"),
+            saveLabel: tp("saveLabel"),
+            subtotal: tp("subtotal"),
+            minOrder: tp("minOrder"),
             shippingNote: tp("shippingNote"),
-            addAddress: tp("addAddress"),
-            variantsLabel: tp("variantsLabel"),
-            variantSimple: tp("variantSimple"),
-            variantPremium: tp("variantPremium"),
             quantityLabel: tp("quantityLabel"),
-            oneTimePurchase: tp("oneTimePurchase"),
-            buyNow: tp("buyNow"),
-            addToCart: tp("addToCart"),
-            subscribeSave: tp("subscribeSave"),
-            saveBadge: tp("saveBadge"),
-            save: tp("save"),
+            orderWhatsApp: tp("orderWhatsApp"),
             share: tp("share"),
+            shareTooltip: tp("shareTooltip"),
+            linkCopied: tp("linkCopied"),
             description,
             viewMore: tp("viewMore"),
             refundPolicy: tp("refundPolicy"),
             whatsIncluded: tp("whatsIncluded"),
-            reviewsTitle: tp("reviewsTitle"),
-            reviewsAvg: tp("reviewsAvg"),
-            reviewsCountFull: tp("reviewsCountFull"),
           }}
         />
 
-        {/* Recommendations grid (server-rendered, sits below Reviews) */}
-        <RecommendedTemplates
-          currentSlug={template.id}
-          primaryCategory={categoryKey}
-        />
+        {/* Recommendations grid */}
+        <RecommendedTemplates recommendations={recommendations} />
       </section>
     </main>
   );

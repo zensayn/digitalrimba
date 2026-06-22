@@ -61,7 +61,9 @@ function useLocaleChanger() {
 
   const change = (next: Locale) => {
     if (next === currentLocale) return;
-    router.replace(pathname, { locale: next });
+    // `scroll: false` keeps the user at their current scroll position instead of
+    // jumping back to the top of the page on the locale-swap navigation.
+    router.replace(pathname, { locale: next, scroll: false });
   };
 
   return { currentLocale, change };

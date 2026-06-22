@@ -49,7 +49,10 @@
 
   body {
     margin: 0;
-    overflow-x: hidden;
+    /* clip (not hidden) prevents horizontal overflow without establishing a
+       scroll container — keeps `position: sticky` (Hero morph) resolving
+       against the viewport. */
+    overflow-x: clip;
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-poppins);

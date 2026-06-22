@@ -9,6 +9,7 @@ import {
   IconBrandLinkedin,
 } from "@tabler/icons-react";
 import Image from "next/image";
+import { Link } from "@/i18n/routing";
 
 const SOCIAL_ICONS = [
   { Icon: IconBrandFacebook, href: "#", label: "Facebook" },
@@ -55,7 +56,7 @@ export default function Footer() {
           className="absolute inset-x-0 bottom-0 h-full pointer-events-none z-20 flex items-end justify-center"
         >
           <Image
-            src="/rimba-newest.webp"
+            src="/rimba_footer_new.webp"
             alt=""
             aria-hidden="true"
             fill
@@ -70,29 +71,25 @@ export default function Footer() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-            className="max-w-[1200px] mx-auto bg-white/95 backdrop-blur-sm shadow-xl rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border border-[#f2f2f2]"
+            className="max-w-[1200px] mx-auto bg-white shadow-xl rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border border-[#f2f2f2]"
           >
             {/* Top half — logo + link groups */}
             <div className="p-8 md:p-12 flex flex-col md:flex-row justify-between gap-12 md:gap-8">
               {/* Logo block */}
-              <div className="flex items-center gap-5">
-                <div className="bg-[#346739] w-10 h-10 md:w-12 md:h-12 rounded-[12px] p-2 flex items-center justify-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15)]">
-                  <svg
-                    viewBox="0 0 256 256"
-                    className="w-full h-full fill-white"
-                    aria-hidden="true"
-                  >
-                    <path d="M 228 0 C 172.772 0 128 44.772 128 100 L 128 0 L 0 0 L 0 28 C 0 83.228 44.772 128 100 128 L 0 128 L 0 256 L 28 256 C 83.228 256 128 211.228 128 156 L 128 256 L 256 256 L 256 228 C 256 172.772 211.228 128 156 128 L 256 128 L 256 0 Z" />
-                  </svg>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[#212121] text-2xl md:text-3xl font-bold tracking-tight uppercase leading-none font-mazzard">
-                    Rimba Fisik
-                  </span>
-                  <span className="text-[10px] uppercase text-[#93939f] mt-1.5 font-medium">
-                    Undangan Cetak Premium
-                  </span>
-                </div>
+              <div className="flex items-center gap-5 -ml-9 md:-ml-16">
+                <Link
+                  href="/"
+                  className="inline-block hover:opacity-85 transition-opacity"
+                >
+                  <Image
+                    src="https://contents.rimba.app/assets/rimba-logo.webp"
+                    alt="Rimba Fisik"
+                    width={340}
+                    height={136}
+                    className="block w-auto h-28 md:h-[136px] object-contain -my-7 md:-my-9"
+                    priority
+                  />
+                </Link>
               </div>
 
               {/* Link groups */}

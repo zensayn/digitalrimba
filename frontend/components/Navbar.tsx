@@ -41,7 +41,7 @@ export default function Navbar() {
     { name: t('ecosystem'), hasDropdown: false },
     { name: t('economics'), hasDropdown: true },
     { name: t('developers'), hasDropdown: false },
-    { name: t('governance'), hasDropdown: true },
+    { name: t('governance'), hasDropdown: false },
   ];
 
   return (

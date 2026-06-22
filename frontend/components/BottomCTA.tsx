@@ -70,7 +70,7 @@ Saya ingin mendiskusikan pesanan undangan cetak ini lebih lanjut.`;
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.24, ease: easeDrawer }}
-          className="flex flex-col sm:flex-row items-center gap-4 mb-10"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10"
         >
           {/* Primary: WhatsApp Consultation — uses TextureButton */}
           <a
@@ -78,7 +78,7 @@ Saya ingin mendiskusikan pesanan undangan cetak ini lebih lanjut.`;
             target="_blank"
             rel="noopener noreferrer"
           >
-            <TextureButton variant="primary" size="lg" className="font-poppins font-medium">
+            <TextureButton variant="primary" size="lg" className="w-full font-poppins font-medium">
               <IconBrandWhatsapp className="w-5 h-5" />
               {t("primaryBtn")}
             </TextureButton>
@@ -86,7 +86,7 @@ Saya ingin mendiskusikan pesanan undangan cetak ini lebih lanjut.`;
 
           {/* Secondary: Digital Invitations — uses TextureButton secondary */}
           <Link href="/dashboard">
-            <TextureButton variant="secondary" size="lg" className="font-poppins font-medium">
+            <TextureButton variant="secondary" size="lg" className="w-full font-poppins font-medium">
               {t("secondaryBtn")}
             </TextureButton>
           </Link>
@@ -100,17 +100,6 @@ Saya ingin mendiskusikan pesanan undangan cetak ini lebih lanjut.`;
           transition={{ duration: 0.6, delay: 0.36, ease: easeDrawer }}
           className="flex items-center justify-center gap-8 text-sm font-poppins text-[#616161]"
         >
-          <div className="flex items-center gap-2">
-            <span className="text-amber-400 text-base">★</span>
-            <span className="font-medium text-[#212121]">4.9</span>
-            <span className="text-[#93939f]">{t("badge1")}</span>
-          </div>
-          <div className="w-px h-4 bg-[#d9d9dd]" />
-          <div className="flex items-center gap-2">
-            <span className="text-amber-400 text-base">★</span>
-            <span className="font-medium text-[#212121]">25+</span>
-            <span className="text-[#93939f]">{t("badge2")}</span>
-          </div>
         </motion.div>
       </div>
     </section>

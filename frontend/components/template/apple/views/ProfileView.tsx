@@ -12,7 +12,7 @@ export default function ProfileView() {
       <div className="w-full flex flex-col md:flex-row min-h-screen">
         {/* Profile 1 */}
         <div className="flex-1 relative group h-[50vh] md:h-screen">
-          <Image 
+          <img 
             src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2787&auto=format&fit=crop" 
             alt="Groom" 
             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
@@ -32,7 +32,7 @@ export default function ProfileView() {
         
         {/* Profile 2 */}
         <div className="flex-1 relative group h-[50vh] md:h-screen">
-          <Image 
+          <img 
             src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=2874&auto=format&fit=crop" 
             alt="Bride" 
             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"

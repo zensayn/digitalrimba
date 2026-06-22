@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.pexels.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'contents.rimba.app',
+      },
     ],
   },
   // @ts-ignore - Required for next-intl Turbopack resolution

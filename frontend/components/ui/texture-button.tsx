@@ -7,11 +7,11 @@ import { cva } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariantsOuter = cva(
-  "relative inline-flex transition-all duration-200 ease-out active:scale-[0.97] hover:scale-[1.01] p-px overflow-hidden",
+  "relative inline-flex transition-all duration-200 ease-out active:scale-[0.97] hover:scale-[1.01] p-px overflow-hidden outline-none focus:outline-none focus-visible:outline-none",
   {
     variants: {
       variant: {
-        primary: "bg-[#1a3a1d]",
+        primary: "bg-[#346739]",
         accent: "bg-indigo-900/20",
         destructive: "bg-red-600",
         secondary: "bg-[#d9d9dd]",

@@ -1,0 +1,123 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Rimba Fisik" [ref=e5] [cursor=pointer]:
+        - /url: /en
+        - img "Rimba Fisik" [ref=e6]
+      - list [ref=e7]:
+        - listitem [ref=e8]:
+          - generic [ref=e9] [cursor=pointer]:
+            - generic [ref=e10]: Products
+            - img [ref=e11]
+        - listitem [ref=e13]:
+          - link "Exclusive Order" [ref=e14] [cursor=pointer]:
+            - /url: /en/exclusive-order
+        - listitem [ref=e15]:
+          - link "About" [ref=e16] [cursor=pointer]:
+            - /url: /en/about
+            - text: About
+            - img [ref=e17]
+      - generic [ref=e19]:
+        - 'button "Change language (current: English)" [ref=e21] [cursor=pointer]':
+          - img "English" [ref=e22]
+        - link "Book Consultation Book Consultation" [ref=e23] [cursor=pointer]:
+          - /url: /en/consultation
+          - img [ref=e25]
+          - generic [ref=e28]:
+            - generic [ref=e30]: Book Consultation
+            - generic [ref=e32]: Book Consultation
+  - main [ref=e33]:
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - generic [ref=e37]: Consultation
+        - heading "Let's plan your invitation together." [level=1] [ref=e38]
+        - paragraph [ref=e39]: Book a free design consultation. We'll walk you through materials, printing techniques, and the concept that fits your day — then hold a time just for you.
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e42]: "01"
+          - heading "Pick a time" [level=3] [ref=e43]
+          - paragraph [ref=e44]: Choose a slot that works for you on the calendar below.
+        - generic [ref=e45]:
+          - generic [ref=e46]: "02"
+          - heading "Meet our designer" [level=3] [ref=e47]
+          - paragraph [ref=e48]: A 60-minute session to shape your concept and materials.
+        - generic [ref=e49]:
+          - generic [ref=e50]: "03"
+          - heading "Get your concept" [level=3] [ref=e51]
+          - paragraph [ref=e52]: Leave with a clear direction and next steps — no obligation.
+    - generic [ref=e54]:
+      - generic [ref=e55]:
+        - heading "Book your consultation." [level=2] [ref=e56]
+        - paragraph [ref=e57]: Pick a time that suits you. Our team will help you choose the materials, printing techniques, and concept that fit your day — no obligation.
+        - list [ref=e58]:
+          - listitem [ref=e59]:
+            - img [ref=e61]
+            - generic [ref=e63]: 60-minute in-person meeting
+          - listitem [ref=e64]:
+            - img [ref=e66]
+            - generic [ref=e68]: Personalized material & technique advice
+          - listitem [ref=e69]:
+            - img [ref=e71]
+            - generic [ref=e73]: Free, with no commitment
+        - link "Prefer to chat first? Message us on WhatsApp" [ref=e76] [cursor=pointer]:
+          - /url: https://wa.me/628123456789
+          - img [ref=e77]
+          - generic [ref=e80]: Prefer to chat first? Message us on WhatsApp
+      - generic [ref=e82]:
+        - heading "Choose a date & time" [level=3] [ref=e83]
+        - paragraph [ref=e84]: In person. You'll get the address by email after booking.
+  - contentinfo [ref=e86]:
+    - generic [ref=e87]:
+      - generic:
+        - img
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - link "Rimba Fisik" [ref=e92] [cursor=pointer]:
+            - /url: /en
+            - img "Rimba Fisik" [ref=e93]
+          - generic [ref=e94]:
+            - generic [ref=e95]:
+              - generic [ref=e96]: Produk
+              - generic [ref=e97]:
+                - link "Rimba Fisik" [ref=e98] [cursor=pointer]:
+                  - /url: "#"
+                - link "Rimba Digital" [ref=e99] [cursor=pointer]:
+                  - /url: "#"
+            - generic [ref=e100]:
+              - generic [ref=e101]: Layanan
+              - generic [ref=e102]:
+                - link "Konsultasi Desain" [ref=e103] [cursor=pointer]:
+                  - /url: "#"
+                - link "Cetak & Kirim" [ref=e104] [cursor=pointer]:
+                  - /url: "#"
+                - link "Galeri" [ref=e105] [cursor=pointer]:
+                  - /url: "#"
+            - generic [ref=e106]:
+              - generic [ref=e107]: Legal
+              - generic [ref=e108]:
+                - link "Kebijakan Privasi" [ref=e109] [cursor=pointer]:
+                  - /url: "#"
+                - link "Syarat & Ketentuan" [ref=e110] [cursor=pointer]:
+                  - /url: "#"
+        - generic [ref=e111]:
+          - generic [ref=e112]: © 2026 Rimba Fisik. Seluruh hak cipta dilindungi.
+          - generic [ref=e113]:
+            - link "Facebook" [ref=e114] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e115]
+            - link "Twitter" [ref=e117] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e118]
+            - link "Instagram" [ref=e120] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e121]
+            - link "LinkedIn" [ref=e124] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e125]
+  - link "Contact us on WhatsApp" [ref=e128] [cursor=pointer]:
+    - /url: https://wa.me/628123456789
+    - img [ref=e129]
+    - generic: Hubungi Admin Rimba (WhatsApp)
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e136] [cursor=pointer]:
+    - img [ref=e137]

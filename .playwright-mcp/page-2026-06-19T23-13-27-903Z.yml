@@ -1,0 +1,477 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e8]:
+      - navigation [ref=e9]:
+        - link "Rimba Fisik" [ref=e11] [cursor=pointer]:
+          - /url: /en
+          - img "Rimba Fisik" [ref=e12]
+        - button [ref=e15] [cursor=pointer]
+      - generic [ref=e18]:
+        - heading "Every invitation, a keepsake." [level=1] [ref=e19]:
+          - generic [ref=e20]: Every invitation,
+          - text: a keepsake.
+        - paragraph [ref=e21]: Karena hari istimewa Anda layak dimulai dengan cara yang indah.
+        - generic [ref=e22]:
+          - link "Konsultasi" [ref=e23] [cursor=pointer]:
+            - /url: https://wa.me/1234567890
+            - button "Konsultasi" [ref=e24]:
+              - generic [ref=e26]:
+                - img [ref=e27]
+                - generic [ref=e30]: Konsultasi
+          - link "Eksklusif" [ref=e31] [cursor=pointer]:
+            - /url: /en/exclusive-order
+            - button "Eksklusif" [ref=e32]:
+              - generic [ref=e34]:
+                - img [ref=e35]
+                - generic [ref=e38]: Eksklusif
+      - link "Katalog Desain Jelajahi seri":
+        - /url: /en/products
+        - generic [ref=e39] [cursor=pointer]:
+          - generic:
+            - img
+          - generic:
+            - img
+          - img [ref=e41]
+          - generic [ref=e43]:
+            - generic [ref=e44]: Katalog Desain
+            - generic [ref=e45]:
+              - generic [ref=e46]: Jelajahi seri
+              - img [ref=e47]
+    - generic [ref=e50]:
+      - generic [ref=e51]:
+        - heading "Two decades of crafted celebrations." [level=2] [ref=e52]
+        - paragraph [ref=e53]: Every figure below is a promise we have kept for couples across Indonesia.
+      - generic [ref=e54]:
+        - generic [ref=e56]: YEARS HERITAGE
+        - generic [ref=e57]:
+          - generic [ref=e58]: HAPPY COUPLES
+          - generic [ref=e60]: +
+        - generic [ref=e61]:
+          - generic [ref=e62]: INVITATIONS SENT
+          - generic [ref=e64]: K+
+        - generic [ref=e65]:
+          - generic [ref=e66]: EXCLUSIVE THEMES
+          - generic [ref=e68]: +
+    - generic [ref=e70]:
+      - generic [ref=e71]:
+        - heading "All invitation needs, one single platform" [level=2] [ref=e73]
+        - paragraph [ref=e75]: From choosing invitation designs to coordinating every wedding accessory detail. Manage all your printing and special day accompaniment needs in one single place.
+      - generic [ref=e76]:
+        - generic [ref=e77] [cursor=pointer]:
+          - heading "One Roof, Every Need" [level=3] [ref=e79]
+          - paragraph [ref=e81]: From print & digital invitations to wedding favors and gift boxes—all customized to your dream theme, completely hassle-free.
+        - generic [ref=e82] [cursor=pointer]:
+          - heading "Guided Consultation" [level=3] [ref=e84]
+          - paragraph [ref=e86]: Consult with our team to map out your invitation, favors, and gift box concepts to match your wedding theme.
+        - generic [ref=e87] [cursor=pointer]:
+          - heading "Design Gallery" [level=3] [ref=e89]
+          - paragraph [ref=e91]: Choose from a collection of exclusive designs ready to match your theme and personality.
+    - generic [ref=e93]:
+      - generic [ref=e94]:
+        - heading "Made to be kept, not thrown away." [level=2] [ref=e95]
+        - paragraph [ref=e96]: Three things you notice the moment one of our invitations is in your hands.
+      - generic [ref=e97]:
+        - generic [ref=e98]:
+          - img "Heavyweight cotton paper invitation with soft grain" [ref=e100]
+          - generic [ref=e101]:
+            - text: "01"
+            - heading "Cotton paper, 300gsm" [level=3] [ref=e102]
+            - paragraph [ref=e103]: Pressed on heavyweight cotton stock with a soft, tactile grain — weight you feel before you read a word.
+        - generic [ref=e104]:
+          - img "Gold foil detail catching the light" [ref=e106]
+          - generic [ref=e107]:
+            - text: "02"
+            - heading "Hand-applied gold foil" [level=3] [ref=e108]
+            - paragraph [ref=e109]: Every line of foil is registered and stamped by hand, catching the light like real gold leaf.
+        - generic [ref=e110]:
+          - img "Hand-painted edges and binding" [ref=e112]
+          - generic [ref=e113]:
+            - text: "03"
+            - heading "Painted edges, bound by hand" [level=3] [ref=e114]
+            - paragraph [ref=e115]: Edges painted and finishing done by hand, so each piece arrives like a small keepsake.
+    - generic [ref=e117]:
+      - generic [ref=e118]:
+        - heading "Find the one" [level=2] [ref=e119]
+        - paragraph [ref=e120]: A curated edit of our most-loved invitation designs — each one ready to make your own. Browse the full collection anytime.
+      - generic [ref=e121]:
+        - generic [ref=e122]:
+          - button "All" [pressed] [ref=e123] [cursor=pointer]: All
+          - button "Softcover (RFH)" [ref=e125] [cursor=pointer]
+          - button "Hardcover (RS)" [ref=e126] [cursor=pointer]
+          - button "Folded Hardcover (RSH)" [ref=e127] [cursor=pointer]
+        - link "View all" [ref=e128] [cursor=pointer]:
+          - /url: /en/products
+          - text: View all
+          - img [ref=e129]
+      - generic [ref=e131]:
+        - link "Whisper Whisper Rp 399K Softcover (RFH)" [ref=e133] [cursor=pointer]:
+          - /url: /en/products/whisper
+          - img "Whisper" [ref=e137]
+          - generic [ref=e138]:
+            - heading "Whisper" [level=3] [ref=e139]
+            - generic [ref=e140]: Rp 399K
+          - paragraph [ref=e141]: Softcover (RFH)
+        - link "Meadow Meadow Rp 399K Popular · Softcover (RFH)" [ref=e143] [cursor=pointer]:
+          - /url: /en/products/meadow
+          - img "Meadow" [ref=e147]
+          - generic [ref=e148]:
+            - heading "Meadow" [level=3] [ref=e149]
+            - generic [ref=e150]: Rp 399K
+          - paragraph [ref=e151]: Popular · Softcover (RFH)
+        - link "Wildgrass Wildgrass Rp 399K Softcover (RFH)" [ref=e153] [cursor=pointer]:
+          - /url: /en/products/wildgrass
+          - img "Wildgrass" [ref=e157]
+          - generic [ref=e158]:
+            - heading "Wildgrass" [level=3] [ref=e159]
+            - generic [ref=e160]: Rp 399K
+          - paragraph [ref=e161]: Softcover (RFH)
+        - link "Blossom Blossom Rp 399K Softcover (RFH)" [ref=e163] [cursor=pointer]:
+          - /url: /en/products/blossom
+          - img "Blossom" [ref=e167]
+          - generic [ref=e168]:
+            - heading "Blossom" [level=3] [ref=e169]
+            - generic [ref=e170]: Rp 399K
+          - paragraph [ref=e171]: Softcover (RFH)
+        - link "Pinkie Pinkie Rp 399K Softcover (RFH)" [ref=e173] [cursor=pointer]:
+          - /url: /en/products/pinkie
+          - img "Pinkie" [ref=e177]
+          - generic [ref=e178]:
+            - heading "Pinkie" [level=3] [ref=e179]
+            - generic [ref=e180]: Rp 399K
+          - paragraph [ref=e181]: Softcover (RFH)
+        - link "Whitewood Whitewood Rp 399K Softcover (RFH)" [ref=e183] [cursor=pointer]:
+          - /url: /en/products/whitewood
+          - img "Whitewood" [ref=e187]
+          - generic [ref=e188]:
+            - heading "Whitewood" [level=3] [ref=e189]
+            - generic [ref=e190]: Rp 399K
+          - paragraph [ref=e191]: Softcover (RFH)
+        - link "Snowdrop Snowdrop Rp 399K Softcover (RFH)" [ref=e193] [cursor=pointer]:
+          - /url: /en/products/snowdrop
+          - img "Snowdrop" [ref=e197]
+          - generic [ref=e198]:
+            - heading "Snowdrop" [level=3] [ref=e199]
+            - generic [ref=e200]: Rp 399K
+          - paragraph [ref=e201]: Softcover (RFH)
+        - link "Tulipe Tulipe Rp 399K Popular · Softcover (RFH)" [ref=e203] [cursor=pointer]:
+          - /url: /en/products/tulipe
+          - img "Tulipe" [ref=e207]
+          - generic [ref=e208]:
+            - heading "Tulipe" [level=3] [ref=e209]
+            - generic [ref=e210]: Rp 399K
+          - paragraph [ref=e211]: Popular · Softcover (RFH)
+      - link "Tulipe Top Seller Tulipe Explore this design" [ref=e213] [cursor=pointer]:
+        - /url: /en/products/tulipe
+        - generic [ref=e214]:
+          - img "Tulipe" [ref=e216]
+          - generic [ref=e218]:
+            - generic [ref=e219]: Top Seller
+            - heading "Tulipe" [level=3] [ref=e220]
+            - generic [ref=e221]:
+              - text: Explore this design
+              - img [ref=e222]
+    - generic [ref=e225]:
+      - generic [ref=e226]:
+        - heading "Loved by couples across Indonesia." [level=2] [ref=e227]
+        - paragraph [ref=e228]: From Bali to Lombok, real celebrations that began with a Rimba invitation. See how couples made theirs their own.
+      - generic [ref=e229]:
+        - figure [ref=e230]:
+          - generic [ref=e231]:
+            - img "Dewi & Arya — Ubud, Bali" [ref=e234]
+            - generic [ref=e235]:
+              - generic [ref=e236]: Dewi & Arya
+              - generic [ref=e237]: Ubud, Bali
+        - figure [ref=e238]:
+          - generic [ref=e239]:
+            - img "Sari & Bagus — Yogyakarta" [ref=e242]
+            - generic [ref=e243]:
+              - generic [ref=e244]: Sari & Bagus
+              - generic [ref=e245]: Yogyakarta
+        - figure [ref=e246]:
+          - generic [ref=e247]:
+            - img "Maya & Rizki — Bandung" [ref=e250]
+            - generic [ref=e251]:
+              - generic [ref=e252]: Maya & Rizki
+              - generic [ref=e253]: Bandung
+        - figure [ref=e254]:
+          - generic [ref=e255]:
+            - img "Putri & Adit — Jakarta" [ref=e258]
+            - generic [ref=e259]:
+              - generic [ref=e260]: Putri & Adit
+              - generic [ref=e261]: Jakarta
+        - figure [ref=e262]:
+          - generic [ref=e263]:
+            - img "Intan & Yoga — Surabaya" [ref=e266]
+            - generic [ref=e267]:
+              - generic [ref=e268]: Intan & Yoga
+              - generic [ref=e269]: Surabaya
+        - figure [ref=e270]:
+          - generic [ref=e271]:
+            - img "Nadia & Reza — Lombok" [ref=e274]
+            - generic [ref=e275]:
+              - generic [ref=e276]: Nadia & Reza
+              - generic [ref=e277]: Lombok
+        - figure [ref=e278]:
+          - generic [ref=e279]:
+            - img "Citra & Bima — Semarang" [ref=e282]
+            - generic [ref=e283]:
+              - generic [ref=e284]: Citra & Bima
+              - generic [ref=e285]: Semarang
+        - figure [ref=e286]:
+          - generic [ref=e287]:
+            - img "Laras & Damar — Malang" [ref=e290]
+            - generic [ref=e291]:
+              - generic [ref=e292]: Laras & Damar
+              - generic [ref=e293]: Malang
+    - generic [ref=e295]:
+      - generic [ref=e296]:
+        - heading "How to order" [level=2] [ref=e298]
+        - paragraph [ref=e299]: Our state-of-the-art print fabrication workflow.
+      - generic [ref=e300]:
+        - list [ref=e301]:
+          - listitem [ref=e302]:
+            - button "01. Order submitted Tell us about your special day! Contact our team and share your wedding details—desired product type, quantity, and your wedding date. Our team will assist you within 24 hours. 🌸" [ref=e303]:
+              - generic [ref=e304]:
+                - generic [ref=e305]: "01."
+                - generic [ref=e306]: Order submitted
+              - paragraph [ref=e308]: Tell us about your special day! Contact our team and share your wedding details—desired product type, quantity, and your wedding date. Our team will assist you within 24 hours. 🌸
+          - listitem [ref=e309]:
+            - button "02. Down payment" [ref=e310]:
+              - generic [ref=e311]:
+                - generic [ref=e312]: "02."
+                - generic [ref=e313]: Down payment
+          - listitem [ref=e314]:
+            - button "03. Designing" [ref=e315]:
+              - generic [ref=e316]:
+                - generic [ref=e317]: "03."
+                - generic [ref=e318]: Designing
+          - listitem [ref=e319]:
+            - button "04. Production" [ref=e320]:
+              - generic [ref=e321]:
+                - generic [ref=e322]: "04."
+                - generic [ref=e323]: Production
+          - listitem [ref=e324]:
+            - button "05. Final payment" [ref=e325]:
+              - generic [ref=e326]:
+                - generic [ref=e327]: "05."
+                - generic [ref=e328]: Final payment
+        - generic [ref=e330]:
+          - generic [ref=e331]:
+            - generic [ref=e332]:
+              - img [ref=e334]
+              - heading "Order submitted" [level=3] [ref=e339]
+            - generic [ref=e342]:
+              - generic [ref=e343]:
+                - img [ref=e345]
+                - generic [ref=e351]:
+                  - paragraph [ref=e352]: Rimba Fisik
+                  - paragraph [ref=e353]: Online now
+              - paragraph [ref=e355]: Hi! Tell us about your event 🌸
+              - generic [ref=e356]:
+                - paragraph [ref=e357]: "I'd like to order invitations for:"
+                - generic [ref=e358]:
+                  - generic [ref=e359]:
+                    - img [ref=e360]
+                    - text: Invitation
+                  - generic [ref=e362]: 150 pcs
+                  - generic [ref=e363]:
+                    - img [ref=e364]
+                    - text: 12.12.26
+              - generic [ref=e373]:
+                - img [ref=e374]
+                - text: Replied < 24 hrs
+          - generic [ref=e376]:
+            - img [ref=e377]
+            - button "Pause" [ref=e380]:
+              - img [ref=e381]
+    - generic [ref=e385]:
+      - generic [ref=e386]:
+        - heading "What our couples say..." [level=2] [ref=e387]
+        - paragraph [ref=e388]: See stories from couples and partners who trusted Rimba for their invitations.
+      - generic [ref=e392]:
+        - figure "A Aditya & Rara Happy Couple, Jakarta" [ref=e393]:
+          - blockquote [ref=e394]: “Rimba Fisik's Heartwood Series invitations completely wowed our guests. The gold hot-stamping foil was flawlessly brilliant, and the 600gsm heavy cotton paper felt extremely luxurious to the touch.”
+          - generic [ref=e395]:
+            - generic [ref=e397]: A
+            - generic [ref=e398]:
+              - generic [ref=e399]: Aditya & Rara
+              - generic [ref=e400]: Happy Couple, Jakarta
+        - figure "S Santi Wijaya Wedding Planner, Surabaya" [ref=e401]:
+          - blockquote [ref=e402]: “As a professional wedding planner, Rimba Fisik's print quality is exceptionally consistent. My clients are always amazed—from deep traditional letterpress to elegant blind debossing, the detail is incredibly precise.”
+          - generic [ref=e403]:
+            - generic [ref=e405]: S
+            - generic [ref=e406]:
+              - generic [ref=e407]: Santi Wijaya
+              - generic [ref=e408]: Wedding Planner, Surabaya
+        - figure "L Larasati & Bima Happy Couple, Bali" [ref=e409]:
+          - blockquote [ref=e410]: “We chose the Leaf Series with organic leaf blind debossing and it surpassed our expectations. Crisp elegant typography over natural textured linen paper—simple, eco-friendly, yet deeply memorable.”
+          - generic [ref=e411]:
+            - generic [ref=e413]: L
+            - generic [ref=e414]:
+              - generic [ref=e415]: Larasati & Bima
+              - generic [ref=e416]: Happy Couple, Bali
+        - figure "A Aditya & Rara Happy Couple, Jakarta" [ref=e417]:
+          - blockquote [ref=e418]: “Rimba Fisik's Heartwood Series invitations completely wowed our guests. The gold hot-stamping foil was flawlessly brilliant, and the 600gsm heavy cotton paper felt extremely luxurious to the touch.”
+          - generic [ref=e419]:
+            - generic [ref=e421]: A
+            - generic [ref=e422]:
+              - generic [ref=e423]: Aditya & Rara
+              - generic [ref=e424]: Happy Couple, Jakarta
+        - figure "S Santi Wijaya Wedding Planner, Surabaya" [ref=e425]:
+          - blockquote [ref=e426]: “As a professional wedding planner, Rimba Fisik's print quality is exceptionally consistent. My clients are always amazed—from deep traditional letterpress to elegant blind debossing, the detail is incredibly precise.”
+          - generic [ref=e427]:
+            - generic [ref=e429]: S
+            - generic [ref=e430]:
+              - generic [ref=e431]: Santi Wijaya
+              - generic [ref=e432]: Wedding Planner, Surabaya
+        - figure "L Larasati & Bima Happy Couple, Bali" [ref=e433]:
+          - blockquote [ref=e434]: “We chose the Leaf Series with organic leaf blind debossing and it surpassed our expectations. Crisp elegant typography over natural textured linen paper—simple, eco-friendly, yet deeply memorable.”
+          - generic [ref=e435]:
+            - generic [ref=e437]: L
+            - generic [ref=e438]:
+              - generic [ref=e439]: Larasati & Bima
+              - generic [ref=e440]: Happy Couple, Bali
+        - figure "A Aditya & Rara Happy Couple, Jakarta" [ref=e441]:
+          - blockquote [ref=e442]: “Rimba Fisik's Heartwood Series invitations completely wowed our guests. The gold hot-stamping foil was flawlessly brilliant, and the 600gsm heavy cotton paper felt extremely luxurious to the touch.”
+          - generic [ref=e443]:
+            - generic [ref=e445]: A
+            - generic [ref=e446]:
+              - generic [ref=e447]: Aditya & Rara
+              - generic [ref=e448]: Happy Couple, Jakarta
+        - figure "S Santi Wijaya Wedding Planner, Surabaya" [ref=e449]:
+          - blockquote [ref=e450]: “As a professional wedding planner, Rimba Fisik's print quality is exceptionally consistent. My clients are always amazed—from deep traditional letterpress to elegant blind debossing, the detail is incredibly precise.”
+          - generic [ref=e451]:
+            - generic [ref=e453]: S
+            - generic [ref=e454]:
+              - generic [ref=e455]: Santi Wijaya
+              - generic [ref=e456]: Wedding Planner, Surabaya
+        - figure "L Larasati & Bima Happy Couple, Bali" [ref=e457]:
+          - blockquote [ref=e458]: “We chose the Leaf Series with organic leaf blind debossing and it surpassed our expectations. Crisp elegant typography over natural textured linen paper—simple, eco-friendly, yet deeply memorable.”
+          - generic [ref=e459]:
+            - generic [ref=e461]: L
+            - generic [ref=e462]:
+              - generic [ref=e463]: Larasati & Bima
+              - generic [ref=e464]: Happy Couple, Bali
+        - figure "A Aditya & Rara Happy Couple, Jakarta" [ref=e465]:
+          - blockquote [ref=e466]: “Rimba Fisik's Heartwood Series invitations completely wowed our guests. The gold hot-stamping foil was flawlessly brilliant, and the 600gsm heavy cotton paper felt extremely luxurious to the touch.”
+          - generic [ref=e467]:
+            - generic [ref=e469]: A
+            - generic [ref=e470]:
+              - generic [ref=e471]: Aditya & Rara
+              - generic [ref=e472]: Happy Couple, Jakarta
+        - figure "S Santi Wijaya Wedding Planner, Surabaya" [ref=e473]:
+          - blockquote [ref=e474]: “As a professional wedding planner, Rimba Fisik's print quality is exceptionally consistent. My clients are always amazed—from deep traditional letterpress to elegant blind debossing, the detail is incredibly precise.”
+          - generic [ref=e475]:
+            - generic [ref=e477]: S
+            - generic [ref=e478]:
+              - generic [ref=e479]: Santi Wijaya
+              - generic [ref=e480]: Wedding Planner, Surabaya
+        - figure "L Larasati & Bima Happy Couple, Bali" [ref=e481]:
+          - blockquote [ref=e482]: “We chose the Leaf Series with organic leaf blind debossing and it surpassed our expectations. Crisp elegant typography over natural textured linen paper—simple, eco-friendly, yet deeply memorable.”
+          - generic [ref=e483]:
+            - generic [ref=e485]: L
+            - generic [ref=e486]:
+              - generic [ref=e487]: Larasati & Bima
+              - generic [ref=e488]: Happy Couple, Bali
+    - generic [ref=e490]:
+      - generic [ref=e491]:
+        - generic [ref=e492]: FAQ
+        - heading "Got questions? We've got answers." [level=2] [ref=e493]
+        - paragraph [ref=e494]: Everything you need to know about our premium physical and digital wedding invitations.
+      - generic [ref=e495]:
+        - button "What is Rimba Digital?" [ref=e497] [cursor=pointer]:
+          - generic [ref=e498]: What is Rimba Digital?
+        - button "How does the automated RSVP system work?" [ref=e503] [cursor=pointer]:
+          - generic [ref=e504]: How does the automated RSVP system work?
+        - button "Can I personalize the guest names on the invitations?" [ref=e509] [cursor=pointer]:
+          - generic [ref=e510]: Can I personalize the guest names on the invitations?
+        - button "What is the purpose of the QR Code Check-in feature?" [ref=e515] [cursor=pointer]:
+          - generic [ref=e516]: What is the purpose of the QR Code Check-in feature?
+        - button "Can I customize the background music and photo gallery?" [ref=e521] [cursor=pointer]:
+          - generic [ref=e522]: Can I customize the background music and photo gallery?
+        - button "Is there a limit to the number of invitations I can send?" [ref=e527] [cursor=pointer]:
+          - generic [ref=e528]: Is there a limit to the number of invitations I can send?
+    - generic [ref=e533]:
+      - generic [ref=e534]:
+        - heading "Book your design consultation." [level=2] [ref=e535]
+        - paragraph [ref=e536]: Pick a time that suits you. Our designers will help you choose the materials, printing techniques, and concept that fit your day — no obligation.
+        - list [ref=e537]:
+          - listitem [ref=e538]:
+            - img [ref=e540]
+            - generic [ref=e542]: 30-minute in-person meeting
+          - listitem [ref=e543]:
+            - img [ref=e545]
+            - generic [ref=e547]: Personalized material & technique advice
+          - listitem [ref=e548]:
+            - img [ref=e550]
+            - generic [ref=e552]: Free, with no commitment
+        - link "Prefer to chat first? Message us on WhatsApp" [ref=e555] [cursor=pointer]:
+          - /url: https://wa.me/628123456789
+          - img [ref=e556]
+          - generic [ref=e559]: Prefer to chat first? Message us on WhatsApp
+      - heading "Choose a date & time" [level=3] [ref=e562]
+    - generic [ref=e565]:
+      - heading "Bring your dream invitations to life" [level=2] [ref=e566]
+      - paragraph [ref=e567]: Consult your custom design with our team. From premium printed invitations to elegant digital experiences.
+      - generic [ref=e568]:
+        - link "Free Consultation" [ref=e569] [cursor=pointer]:
+          - /url: https://wa.me/1234567890?text=Permintaan%20Penawaran%20Rimba%20Fisik%3A%0A---%0AProduk%3A%20Yield%20Aggregator%0AJumlah%3A%20100%20lembar%0ASeri%3A%20Elite%0AKonsep%20Desain%3A%20Institutional%20RIVR%0A---%0AEstimasi%20Total%3A%20Rp%200%0A%0ASaya%20ingin%20mendiskusikan%20pesanan%20undangan%20cetak%20ini%20lebih%20lanjut.
+          - button "Free Consultation" [ref=e570]:
+            - generic [ref=e572]:
+              - img [ref=e573]
+              - text: Free Consultation
+        - link "View Digital Invitations" [ref=e576] [cursor=pointer]:
+          - /url: /en/dashboard
+          - button "View Digital Invitations" [ref=e577]:
+            - generic [ref=e579]: View Digital Invitations
+  - contentinfo [ref=e580]:
+    - generic [ref=e581]:
+      - generic:
+        - img
+      - generic [ref=e583]:
+        - generic [ref=e584]:
+          - link "Rimba Fisik" [ref=e586] [cursor=pointer]:
+            - /url: /en
+            - img "Rimba Fisik" [ref=e587]
+          - generic [ref=e588]:
+            - generic [ref=e589]:
+              - generic [ref=e590]: Produk
+              - generic [ref=e591]:
+                - link "Rimba Fisik" [ref=e592] [cursor=pointer]:
+                  - /url: "#"
+                - link "Rimba Digital" [ref=e593] [cursor=pointer]:
+                  - /url: "#"
+            - generic [ref=e594]:
+              - generic [ref=e595]: Layanan
+              - generic [ref=e596]:
+                - link "Konsultasi Desain" [ref=e597] [cursor=pointer]:
+                  - /url: "#"
+                - link "Cetak & Kirim" [ref=e598] [cursor=pointer]:
+                  - /url: "#"
+                - link "Galeri" [ref=e599] [cursor=pointer]:
+                  - /url: "#"
+            - generic [ref=e600]:
+              - generic [ref=e601]: Legal
+              - generic [ref=e602]:
+                - link "Kebijakan Privasi" [ref=e603] [cursor=pointer]:
+                  - /url: "#"
+                - link "Syarat & Ketentuan" [ref=e604] [cursor=pointer]:
+                  - /url: "#"
+        - generic [ref=e605]:
+          - generic [ref=e606]: © 2026 Rimba Fisik. Seluruh hak cipta dilindungi.
+          - generic [ref=e607]:
+            - link "Facebook" [ref=e608] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e609]
+            - link "Twitter" [ref=e611] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e612]
+            - link "Instagram" [ref=e614] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e615]
+            - link "LinkedIn" [ref=e618] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e619]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e627] [cursor=pointer]:
+    - img [ref=e628]

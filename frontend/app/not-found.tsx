@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { NextIntlClientProvider } from "next-intl";
+import idMessages from "../messages/id.json";
+import PageHeader from "@/components/PageHeader";
 
 // ─── 404 Not Found ────────────────────────────────────────────────────────────
 // Single full-viewport page (no scroll). Server Component — all hover and
@@ -10,70 +13,10 @@ const HEART_GRADIENT_ID = "rf-404-heart-gradient";
 
 export default function NotFound() {
   return (
-    <div className="rf-404 fixed inset-0 z-[9999] overflow-hidden bg-white text-[#212121] font-poppins flex flex-col">
-      {/* ─── Navbar (matches site Header.tsx) ────────────────────────── */}
-      <nav className="rf-404__nav relative w-full">
-        <div className="max-w-[1100px] mx-auto flex items-center justify-between py-7 px-6 md:px-10">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="font-bold tracking-tight text-lg md:text-xl text-[#212121] hover:opacity-85 transition-opacity"
-          >
-            RIMBA FISIK
-          </Link>
-
-          {/* Center menu */}
-          <ul className="hidden md:flex items-center gap-9 text-sm text-[#212121]/65">
-            <li className="cursor-pointer hover:text-[#212121] transition-colors">
-              Produk
-            </li>
-            <li className="cursor-pointer hover:text-[#212121] transition-colors">
-              Harga
-            </li>
-            <li className="cursor-pointer hover:text-[#212121] transition-colors">
-              Galeri
-            </li>
-            <li className="cursor-pointer hover:text-[#212121] transition-colors">
-              Tentang
-            </li>
-          </ul>
-
-          {/* CTA */}
-          <Link
-            href="/"
-            className="hidden md:inline-flex items-center bg-[#212121] text-white rounded-full pl-2 pr-5 py-1.5 gap-2.5 hover:bg-[#346739] transition-colors group"
-          >
-            <span className="bg-white/20 w-6 h-6 rounded-full flex items-center justify-center">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-white -rotate-45 transition-transform duration-200 group-hover:rotate-0"
-              >
-                <path d="M5 12h14M13 5l7 7-7 7" />
-              </svg>
-            </span>
-            <span className="text-sm">Konsultasi</span>
-          </Link>
-        </div>
-
-        {/* Dashed bottom border */}
-        <div
-          aria-hidden="true"
-          className="max-w-[1100px] mx-auto h-px"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, rgba(0,0,0,0.08) 2px, transparent 2px)",
-            backgroundSize: "6px 1px",
-            backgroundRepeat: "repeat-x",
-          }}
-        />
-      </nav>
+    <NextIntlClientProvider locale="id" messages={idMessages}>
+      <div className="rf-404 fixed inset-0 z-[9999] overflow-hidden bg-white text-[#212121] font-poppins flex flex-col">
+        {/* Render the actual site PageHeader */}
+        <PageHeader />
 
       {/* ─── Main content ───────────────────────────────────────────── */}
       <main className="flex-1 flex items-center justify-center w-full px-5 pb-8">
@@ -177,16 +120,16 @@ export default function NotFound() {
             {/* Card 1: Beranda */}
             <Link
               href="/"
-              className="rf-404__card group flex items-center justify-between bg-white border border-[#f2f2f2] rounded-[22px] py-4 px-5 transition-[transform,box-shadow,border-color] duration-200 ease-out hover:-translate-y-1 hover:border-[#346739]/30 shadow-card-lift hover:shadow-card-lift-hover"
+              className="rf-404__card group flex items-center justify-between bg-white border border-[#f2f2f2] rounded-[22px] py-4 px-5 transition-[transform,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-1 hover:border-[#346739]/30 shadow-card-lift hover:shadow-card-lift-hover active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#346739]/35 focus-visible:ring-offset-2"
             >
               <div className="flex items-center gap-3.5">
-                <span className="rf-404__card-icon w-12 h-12 rounded-full bg-[#eaecf0] flex items-center justify-center transition-transform duration-200 ease-out">
+                <span className="rf-404__card-icon w-12 h-12 rounded-full bg-[#eaecf0] text-[#212121] flex items-center justify-center transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:bg-[#edfce9] group-hover:text-[#346739]">
                   <svg
                     width="22"
                     height="22"
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke="#212121"
+                    stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -196,15 +139,15 @@ export default function NotFound() {
                   </svg>
                 </span>
                 <span className="flex flex-col items-start text-left">
-                  <span className="text-[15px] font-semibold text-[#212121] leading-tight">
+                  <span className="text-[15px] font-semibold text-[#212121] leading-tight transition-colors duration-200 group-hover:text-[#346739]">
                     Beranda
                   </span>
-                  <span className="text-xs text-[#93939f] mt-0.5">
+                  <span className="text-xs text-[#93939f] mt-0.5 transition-colors duration-200 group-hover:text-[#616161]">
                     Kembali ke halaman utama
                   </span>
                 </span>
               </div>
-              <span className="rf-404__chevron text-[#93939f] text-[21px] leading-none transition-transform duration-200 ease-out">
+              <span className="rf-404__chevron text-[#93939f] text-[21px] leading-none transition-[transform,color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:text-[#346739]">
                 ›
               </span>
             </Link>
@@ -212,25 +155,25 @@ export default function NotFound() {
             {/* Card 2: Galeri */}
             <Link
               href="/"
-              className="rf-404__card group flex items-center justify-between bg-white border border-[#f2f2f2] rounded-[22px] py-4 px-5 transition-[transform,box-shadow,border-color] duration-200 ease-out hover:-translate-y-1 hover:border-[#346739]/30 shadow-card-lift hover:shadow-card-lift-hover"
+              className="rf-404__card group flex items-center justify-between bg-white border border-[#f2f2f2] rounded-[22px] py-4 px-5 transition-[transform,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-1 hover:border-[#346739]/30 shadow-card-lift hover:shadow-card-lift-hover active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#346739]/35 focus-visible:ring-offset-2"
             >
               <div className="flex items-center gap-3.5">
-                <span className="rf-404__card-icon w-12 h-12 rounded-full bg-[#eaecf0] flex items-center justify-center transition-transform duration-200 ease-out">
+                <span className="rf-404__card-icon w-12 h-12 rounded-full bg-[#eaecf0] text-[#212121] flex items-center justify-center transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:bg-[#edfce9] group-hover:text-[#346739]">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="9" fill="#212121" />
+                    <circle cx="12" cy="12" r="9" fill="currentColor" />
                     <circle cx="12" cy="12" r="3.5" fill="white" />
                   </svg>
                 </span>
                 <span className="flex flex-col items-start text-left">
-                  <span className="text-[15px] font-semibold text-[#212121] leading-tight">
+                  <span className="text-[15px] font-semibold text-[#212121] leading-tight transition-colors duration-200 group-hover:text-[#346739]">
                     Galeri Desain
                   </span>
-                  <span className="text-xs text-[#93939f] mt-0.5">
+                  <span className="text-xs text-[#93939f] mt-0.5 transition-colors duration-200 group-hover:text-[#616161]">
                     Lihat karya cetak terbaru kami
                   </span>
                 </span>
               </div>
-              <span className="rf-404__chevron text-[#93939f] text-[21px] leading-none transition-transform duration-200 ease-out">
+              <span className="rf-404__chevron text-[#93939f] text-[21px] leading-none transition-[transform,color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:text-[#346739]">
                 ›
               </span>
             </Link>
@@ -244,8 +187,12 @@ export default function NotFound() {
         .rf-404__cloud { animation: rf404Float 5s ease-in-out 0.3s infinite; }
         .rf-404__heart { animation: rf404Float 4.5s ease-in-out 1s infinite; }
 
-        .rf-404__card:hover .rf-404__card-icon { transform: scale(1.05); }
-        .rf-404__card:hover .rf-404__chevron { transform: translateX(6px); }
+        /* Movement-on-hover only on devices that truly hover (avoids sticky
+           tap-hover on touch). Color reactions stay via Tailwind group-hover. */
+        @media (hover: hover) and (pointer: fine) {
+          .rf-404__card:hover .rf-404__card-icon { transform: scale(1.05); }
+          .rf-404__card:hover .rf-404__chevron { transform: translateX(6px); }
+        }
 
         @keyframes rf404Float {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
@@ -257,13 +204,16 @@ export default function NotFound() {
           .rf-404__heart {
             animation: none;
           }
-          .rf-404__card,
-          .rf-404__card-icon,
-          .rf-404__chevron {
-            transition: none !important;
+          /* Keep color/opacity transitions (they aid comprehension); strip only
+             movement, per the reduced-motion guideline. */
+          .rf-404__card:hover,
+          .rf-404__card:hover .rf-404__card-icon,
+          .rf-404__card:hover .rf-404__chevron {
+            transform: none !important;
           }
         }
       `}</style>
-    </div>
+      </div>
+    </NextIntlClientProvider>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { motion } from "motion/react";
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "motion/react";
 import { IconBrandWhatsapp, IconArrowRight, IconCheck } from "@tabler/icons-react";
 import { StarsMinimalistic } from "@solar-icons/react";
 import { useAppContext } from "@/context/AppContext";
@@ -19,6 +20,15 @@ export default function WhatsAppCTA({
 }: WhatsAppCTAProps) {
   const t = useTranslations("Cta");
   const { state } = useAppContext();
+  const [visible, setVisible] = useState(false);
+  const { scrollY } = useScroll();
+
+  const handleScroll = useCallback((y: number) => {
+    const threshold = typeof window !== "undefined" ? window.innerHeight + 1200 - 80 : 2000;
+    setVisible(y > threshold);
+  }, []);
+
+  useMotionValueEvent(scrollY, "change", handleScroll);
 
   const generateMessage = () => {
     const text = `Permintaan Penawaran Rimba Fisik:
@@ -166,23 +176,28 @@ Saya ingin mendiskusikan pesanan undangan cetak ini lebih lanjut.`;
       </section>
 
       {/* ── Floating Mini Button ───────────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="fixed bottom-8 right-8 z-[200] hidden md:block"
-      >
-        <a
-          href={generateMessage()}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-16 h-16 bg-[#25D366] text-white flex items-center justify-center shadow-2xl transition-colors hover:bg-[#20ba59] active:scale-95"
-          style={{ borderRadius: "9999px" }}
-        >
-          <IconBrandWhatsapp className="w-8 h-8" />
-        </a>
-      </motion.div>
+      <AnimatePresence>
+        {visible && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="fixed bottom-8 right-8 z-[200] hidden md:block"
+          >
+            <a
+              href={generateMessage()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-16 h-16 bg-[#25D366] text-white flex items-center justify-center shadow-2xl transition-colors hover:bg-[#20ba59] active:scale-95"
+              style={{ borderRadius: "9999px" }}
+            >
+              <IconBrandWhatsapp className="w-8 h-8" />
+            </a>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

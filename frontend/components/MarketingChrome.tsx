@@ -35,7 +35,8 @@ function isMarketingPath(pathname: string): boolean {
 // Landing page uses the scroll-triggered Header; all other marketing pages
 // get the always-visible PageHeader.
 function isLandingPage(pathname: string): boolean {
-  return pathname === "/";
+  const cleanPath = pathname.replace(/^\/(id|en)(\/|$)/, "/");
+  return cleanPath === "/" || cleanPath === "";
 }
 
 export function MarketingHeader() {

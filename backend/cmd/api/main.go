@@ -13,7 +13,6 @@ import (
 	"rimba-api/handlers"
 	"rimba-api/internal/db"
 	internalhandlers "rimba-api/internal/handlers"
-	authmw "rimba-api/internal/middleware"
 )
 
 func main() {
@@ -29,32 +28,8 @@ func main() {
 	}
 	defer pool.Close()
 
-	jwksURL := os.Getenv("JWKS_URL")
-	if jwksURL == "" {
-		log.Fatal("JWKS_URL is required")
-	}
-
-	invStore := internalhandlers.NewPostgresInvitationStore(pool)
-	invHandler := internalhandlers.NewInvitationHandler(invStore)
-
-	guestStore := internalhandlers.NewPostgresGuestStore(pool)
-	guestHandler := internalhandlers.NewGuestHandler(guestStore)
-
-	dashboardStore := internalhandlers.NewPostgresDashboardStore(pool)
-	dashboardHandler := internalhandlers.NewDashboardHandler(dashboardStore)
-
-	weddingProfileStore := internalhandlers.NewPostgresWeddingProfileStore(pool)
-	weddingProfileHandler := internalhandlers.NewWeddingProfileHandler(weddingProfileStore)
-
-	checkinKey := []byte(os.Getenv("CHECKIN_SESSION_KEY"))
-	if len(checkinKey) == 0 {
-		log.Fatal("CHECKIN_SESSION_KEY is required")
-	}
-	checkinStore := internalhandlers.NewPostgresCheckinStore(pool)
-	checkinResolver := &internalhandlers.PgCheckinWeddingResolver{DB: pool}
-	checkinHandler := internalhandlers.NewCheckinHandler(checkinStore, checkinKey, checkinResolver)
-	// TODO: wire a real EmailSender (e.g. Resend/SendGrid) via checkinHandler.SetEmailSender(sender)
-	// when an email service is configured in this project.
+	catalogStore := internalhandlers.NewPostgresCatalogStore(pool)
+	catalogHandler := internalhandlers.NewCatalogHandler(catalogStore)
 
 	allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
 
@@ -66,8 +41,8 @@ func main() {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if allowedOrigin != "" {
 				w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
-				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
-				w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+				w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 				w.Header().Set("Access-Control-Max-Age", "3600")
 			}
 			if r.Method == http.MethodOptions {
@@ -80,40 +55,8 @@ func main() {
 
 	r.Get("/health", handlers.Health)
 
-	// Public invitation read — no auth required.
-	r.Get("/api/invitations/{slug}", invHandler.GetBySlug)
-
-	// Checkin routes — self-contained HMAC auth, no JWT required.
-	checkinHandler.RegisterRoutes(r)
-
-	// Protected routes — JWT required; sub propagated as user ID.
-	r.Group(func(r chi.Router) {
-		r.Use(authmw.AuthMiddleware(jwksURL))
-		r.Use(func(next http.Handler) http.Handler {
-			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				ctx := r.Context()
-				sub, hasSub := authmw.SubjectFromContext(ctx)
-				if hasSub {
-					ctx = internalhandlers.WithUserID(ctx, sub)
-				}
-				next.ServeHTTP(w, r.WithContext(ctx))
-			})
-		})
-
-		dashboardHandler.RegisterRoutes(r)
-		weddingProfileHandler.RegisterRoutes(r)
-		r.Post("/api/invitations", invHandler.Create)
-		r.Patch("/api/invitations/{id}", invHandler.Update)
-		r.Delete("/api/invitations/{id}", invHandler.Delete)
-		guestHandler.RegisterRoutes(r)
-		internalhandlers.RegisterBudgetRoutes(r, pool)
-
-		// Organizer check-in management routes.
-		r.Post("/api/checkin/events", checkinHandler.CreateEvent)
-		r.Get("/api/checkin/events", checkinHandler.GetEvent)
-		r.Get("/api/checkin/events/qr/pdf", checkinHandler.GetGuestQRPdf)
-		r.Post("/api/checkin/events/qr/email", checkinHandler.EmailGuestQRCodes)
-	})
+	// Public product catalog — no auth required.
+	catalogHandler.RegisterRoutes(r)
 
 	port := os.Getenv("PORT")
 	if port == "" {

@@ -122,9 +122,6 @@ export default function OrderProcess() {
         
         {/* Header */}
         <header className="mb-24 text-center max-w-2xl mx-auto flex flex-col items-center">
-          <p className="text-[11px] font-semibold text-[#346739] uppercase tracking-widest mb-3 font-poppins">
-            {t("tagline")}
-          </p>
           <h2 className="font-poppins text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em] text-[#212121] leading-[1.15]">
             {t("title")}
           </h2>

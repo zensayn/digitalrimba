@@ -3,6 +3,8 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { MarketingHeader, MarketingFooter } from '@/components/MarketingChrome';
+import FloatingWhatsApp from '@/components/FloatingWhatsApp';
+import { Toaster } from '@/components/ui/sonner';
 
 export default async function RootLayout({
   children,
@@ -29,6 +31,12 @@ export default async function RootLayout({
       <MarketingHeader />
       {children}
       <MarketingFooter />
+
+      {/* ── Floating WhatsApp Button (Bottom Right) ── */}
+      <FloatingWhatsApp />
+
+      {/* Toasts (share-link copied, etc.) */}
+      <Toaster position="bottom-center" />
     </NextIntlClientProvider>
   );
 }

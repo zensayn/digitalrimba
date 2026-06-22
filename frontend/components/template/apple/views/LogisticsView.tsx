@@ -96,7 +96,7 @@ export default function LogisticsView() {
           {/* Map Side */}
           <div className="flex-1 aspect-square md:aspect-auto rounded-[8px] overflow-hidden bg-[#f5f5f7] relative">
             {/* Placeholder Map Image that looks desaturated */}
-            <Image 
+            <img 
               src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2948&auto=format&fit=crop&sat=-100&bri=20" 
               alt="Map" 
               className="w-full h-full object-cover opacity-80"

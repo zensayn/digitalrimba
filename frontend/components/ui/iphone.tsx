@@ -74,7 +74,7 @@ export function Iphone({
             borderRadius: `${RADIUS_H}% / ${RADIUS_V}%`,
           }}
         >
-          <Image
+          <img
             src={src}
             alt=""
             className="block size-full object-cover object-top"

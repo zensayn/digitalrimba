@@ -19,7 +19,7 @@ export default function GalleryView() {
       <div className="w-full flex flex-col">
         {/* Teaser Video */}
         <div className="w-full h-[70vh] relative group cursor-pointer flex items-center justify-center bg-black">
-          <Image 
+          <img 
             src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=2938&auto=format&fit=crop" 
             alt="Teaser" 
             className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-700"
@@ -55,7 +55,7 @@ export default function GalleryView() {
                 key={idx} 
                 className="relative min-w-[300px] md:min-w-[400px] h-[400px] md:h-[500px] snap-center shrink-0 rounded-[18px] overflow-hidden shadow-[rgba(0,0,0,0.22)_3px_5px_30px_0px]"
               >
-                <Image 
+                <img 
                   src={src} 
                   alt={`Gallery ${idx}`} 
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000"

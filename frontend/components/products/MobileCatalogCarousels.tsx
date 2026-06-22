@@ -8,42 +8,67 @@
 // Filter button → slide-in drawer with category radios + popular toggle + clear,
 // and a sort dropdown. Selecting a category collapses to a single rail.
 
-import { useEffect, useMemo, useRef, useState, useCallback, useId } from "react";
+import { useEffect, useMemo, useRef, useState, useId } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "motion/react";
 import {
   IconChevronLeft,
-  IconChevronRight,
   IconChevronUp,
   IconSearch,
   IconAdjustmentsHorizontal,
   IconX,
 } from "@tabler/icons-react";
-import { Eye } from "@solar-icons/react";
+
 import { Link } from "@/i18n/routing";
+import { TextureButton } from "@/components/ui/texture-button";
 import TemplatePreviewCard from "@/components/TemplatePreviewCard";
-import {
-  TEMPLATE_CATEGORY_IDS,
-  TEMPLATE_LIST,
-  REAL_CATEGORY_IDS,
-  type TemplateMeta,
-} from "@/lib/template-catalog-data";
+import type { CatalogProduct, CatalogCollection } from "@/lib/catalog";
 
 // Strong ease-out per Emil's design principles
 const EASE_OUT_STRONG = [0.23, 1, 0.32, 1] as const;
 
-type SortOrder = "popular" | "nameAsc" | "nameDesc";
+interface MobileCatalogCarouselsProps {
+  products: CatalogProduct[];
+  collections: CatalogCollection[];
+}
 
-export default function MobileCatalogCarousels() {
+export default function MobileCatalogCarousels({
+  products,
+  collections,
+}: MobileCatalogCarouselsProps) {
   const t = useTranslations("Templates");
 
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("popular");
   const [popularOnly, setPopularOnly] = useState<boolean>(false);
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState<boolean>(true);
   const [popularSectionExpanded, setPopularSectionExpanded] = useState<boolean>(true);
+
+  // Push state to browser history when mobile filter opens so that the back button closes it
+  useEffect(() => {
+    if (filterOpen) {
+      window.history.pushState({ filterOpen: true }, "");
+
+      const handlePopState = () => {
+        setFilterOpen(false);
+      };
+
+      window.addEventListener("popstate", handlePopState);
+      return () => {
+        window.removeEventListener("popstate", handlePopState);
+      };
+    }
+  }, [filterOpen]);
+
+  const closeFilterManually = () => {
+    if (filterOpen) {
+      if (window.history.state?.filterOpen) {
+        window.history.back();
+      }
+      setFilterOpen(false);
+    }
+  };
 
   // Lock body scroll while the drawer is open
   useEffect(() => {
@@ -60,16 +85,16 @@ export default function MobileCatalogCarousels() {
   useEffect(() => {
     if (!filterOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setFilterOpen(false);
+      if (e.key === "Escape") closeFilterManually();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [filterOpen]);
 
-  const categories = TEMPLATE_CATEGORY_IDS.map((id) => ({
-    id,
-    label: t(`categories.${id}`),
-  }));
+  const categories = [
+    { id: "all", label: t("categories.all") },
+    ...collections.map((c) => ({ id: c.code, label: c.name })),
+  ];
 
   const hasActiveFilters =
     activeCategory !== "all" || popularOnly || searchQuery.trim().length > 0;
@@ -80,42 +105,35 @@ export default function MobileCatalogCarousels() {
     setSearchQuery("");
   };
 
-  // ─── Apply search + sort + popularOnly to the whole list ──────────────────
+  // ─── Apply search + popularOnly to the whole list (popular-first order) ───
   const filteredList = useMemo(() => {
-    const list = TEMPLATE_LIST.filter((tpl) => {
-      if (popularOnly && !tpl.popular) return false;
+    const list = products.filter((p) => {
+      if (popularOnly && !p.popular) return false;
       if (searchQuery.trim()) {
-        return tpl.name.toLowerCase().includes(searchQuery.trim().toLowerCase());
+        return p.name.toLowerCase().includes(searchQuery.trim().toLowerCase());
       }
       return true;
     });
 
-    const sorted = [...list];
-    if (sortOrder === "nameAsc") {
-      sorted.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortOrder === "nameDesc") {
-      sorted.sort((a, b) => b.name.localeCompare(a.name));
-    } else {
-      sorted.sort((a, b) => Number(Boolean(b.popular)) - Number(Boolean(a.popular)));
-    }
-    return sorted;
-  }, [searchQuery, sortOrder, popularOnly]);
+    const rank = (p: (typeof list)[number]) => (p.top_seller ? 2 : p.popular ? 1 : 0);
+    return [...list].sort((a, b) => rank(b) - rank(a));
+  }, [products, searchQuery, popularOnly]);
 
-  // ─── Group into per-category rails (or single rail if a category is chosen)
+  // ─── Group into per-collection rails (or single rail if a collection is chosen)
   const groups = useMemo(() => {
-    const sourceCategories =
+    const sourceCollections =
       activeCategory === "all"
-        ? REAL_CATEGORY_IDS
-        : ([activeCategory] as string[]);
+        ? collections
+        : collections.filter((c) => c.code === activeCategory);
 
-    return sourceCategories
-      .map((id) => ({
-        id,
-        label: t(`categories.${id}`),
-        items: filteredList.filter((tpl) => tpl.categories.includes(id)),
+    return sourceCollections
+      .map((c) => ({
+        id: c.code,
+        label: c.name,
+        items: filteredList.filter((p) => p.collection_code === c.code),
       }))
       .filter((g) => g.items.length > 0);
-  }, [activeCategory, filteredList, t]);
+  }, [activeCategory, filteredList, collections]);
 
   const totalCount = useMemo(
     () => groups.reduce((sum, g) => sum + g.items.length, 0),
@@ -124,7 +142,7 @@ export default function MobileCatalogCarousels() {
 
   return (
     <section className="w-full bg-white pb-20 px-6 flex flex-col">
-      {/* ── Search + filter + sort bar (same layout as desktop page mode) ── */}
+      {/* ── Search + filter bar (sort is desktop-only) ── */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-6">
         {/* Search */}
         <div className="relative flex-1">
@@ -133,11 +151,11 @@ export default function MobileCatalogCarousels() {
             className="absolute left-4 top-1/2 -translate-y-1/2 text-[#93939f] pointer-events-none"
           />
           <input
-            type="search"
+            type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t("searchPlaceholder")}
-            className="w-full h-11 pl-11 pr-10 rounded-full border border-[#e5e7eb] bg-white text-sm text-[#212121] placeholder:text-[#93939f] font-poppins outline-none transition-[border-color,box-shadow] duration-200 ease-out focus:border-[#346739] focus:shadow-[0_0_0_3px_rgba(76,110,230,0.15)]"
+            className="w-full h-11 pl-11 pr-10 rounded-full border border-[#e5e7eb] bg-white text-sm text-[#212121] placeholder:text-[#93939f] font-poppins outline-none transition-[border-color,box-shadow] duration-200 ease-out focus:border-[#346739] focus:shadow-[0_0_0_3px_rgba(52,103,57,0.15)]"
           />
           {searchQuery && (
             <button
@@ -163,18 +181,6 @@ export default function MobileCatalogCarousels() {
             <span className="w-1.5 h-1.5 rounded-full bg-[#346739]" aria-hidden="true" />
           )}
         </button>
-
-        {/* Sort dropdown */}
-        <SortDropdown
-          value={sortOrder}
-          onChange={setSortOrder}
-          label={t("sortLabel")}
-          options={{
-            popular: t("sortPopular"),
-            nameAsc: t("sortNameAsc"),
-            nameDesc: t("sortNameDesc"),
-          }}
-        />
       </div>
 
       {/* ── Result count ─────────────────────────────────────────── */}
@@ -214,7 +220,7 @@ export default function MobileCatalogCarousels() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2, ease: EASE_OUT_STRONG }}
-              onClick={() => setFilterOpen(false)}
+              onClick={closeFilterManually}
               className="fixed inset-0 z-[100] bg-[#212121]/30 backdrop-blur-sm"
               aria-hidden="true"
             />
@@ -226,17 +232,27 @@ export default function MobileCatalogCarousels() {
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ duration: 0.32, ease: EASE_OUT_STRONG }}
-              className="fixed inset-y-0 left-0 z-[101] w-[88%] max-w-[360px] bg-white shadow-2xl flex flex-col"
+              transition={{ duration: 0.35, ease: EASE_OUT_STRONG }}
+              className="fixed inset-0 z-[101] w-full h-full bg-white flex flex-col"
             >
               {/* Drawer header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-[#f2f2f2]">
-                <h3 className="font-poppins text-base font-medium text-[#212121]">
-                  {t("filterTitle")}
-                </h3>
+              <div className="flex items-center justify-between px-4 py-4 border-b border-[#f2f2f2] shrink-0">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={closeFilterManually}
+                    aria-label="Back"
+                    className="w-9 h-9 rounded-full hover:bg-[#f2f2f2] flex items-center justify-center text-[#212121] active:scale-[0.95] transition-[background-color,transform] duration-150 ease-out"
+                  >
+                    <IconChevronLeft size={20} />
+                  </button>
+                  <h3 className="font-poppins text-base font-medium text-[#212121]">
+                    {t("filterTitle")}
+                  </h3>
+                </div>
                 <button
                   type="button"
-                  onClick={() => setFilterOpen(false)}
+                  onClick={closeFilterManually}
                   aria-label="Close filters"
                   className="w-9 h-9 rounded-full hover:bg-[#f2f2f2] flex items-center justify-center text-[#212121] active:scale-[0.95] transition-[background-color,transform] duration-150 ease-out"
                 >
@@ -275,7 +291,7 @@ export default function MobileCatalogCarousels() {
                 )}
                 <button
                   type="button"
-                  onClick={() => setFilterOpen(false)}
+                  onClick={closeFilterManually}
                   className="flex-1 h-11 rounded-full bg-[#212121] text-white text-sm font-poppins active:scale-[0.97] hover:bg-[#0f0f0f] transition-[background-color,transform] duration-150 ease-out"
                 >
                   {t("filterApply")}
@@ -298,44 +314,10 @@ function CategoryRail({
 }: {
   groupIndex: number;
   label: string;
-  items: TemplateMeta[];
+  items: CatalogProduct[];
   t: ReturnType<typeof useTranslations>;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-
-  const updateScrollState = useCallback(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 4);
-    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
-  }, []);
-
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    updateScrollState();
-    el.addEventListener("scroll", updateScrollState, { passive: true });
-    const ro = new ResizeObserver(updateScrollState);
-    ro.observe(el);
-    return () => {
-      el.removeEventListener("scroll", updateScrollState);
-      ro.disconnect();
-    };
-  }, [updateScrollState, items.length]);
-
-  const scrollByCard = (direction: "left" | "right") => {
-    const el = trackRef.current;
-    if (!el) return;
-    const card = el.querySelector<HTMLElement>("[data-rail-card]");
-    const cardWidth = card?.offsetWidth ?? 240;
-    const gap = 12;
-    el.scrollBy({
-      left: (cardWidth + gap) * (direction === "left" ? -1.5 : 1.5),
-      behavior: "smooth",
-    });
-  };
 
   return (
     <motion.section
@@ -357,44 +339,14 @@ function CategoryRail({
       </header>
 
       <div className="relative">
-        <button
-          type="button"
-          onClick={() => scrollByCard("left")}
-          aria-label="Scroll left"
-          disabled={!canScrollLeft}
-          className="absolute left-2 top-[42%] -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-white border border-[#d9d9dd] shadow-card-lift text-[#212121] active:scale-[0.95] transition-[opacity,transform] duration-200 ease-out disabled:opacity-0 disabled:pointer-events-none"
-        >
-          <IconChevronLeft size={16} />
-        </button>
-        <button
-          type="button"
-          onClick={() => scrollByCard("right")}
-          aria-label="Scroll right"
-          disabled={!canScrollRight}
-          className="absolute right-2 top-[42%] -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-white border border-[#d9d9dd] shadow-card-lift text-[#212121] active:scale-[0.95] transition-[opacity,transform] duration-200 ease-out disabled:opacity-0 disabled:pointer-events-none"
-        >
-          <IconChevronRight size={16} />
-        </button>
-
-        <div
-          aria-hidden="true"
-          className="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-white to-transparent pointer-events-none z-10 transition-opacity duration-200"
-          style={{ opacity: canScrollLeft ? 1 : 0 }}
-        />
-        <div
-          aria-hidden="true"
-          className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-white to-transparent pointer-events-none z-10 transition-opacity duration-200"
-          style={{ opacity: canScrollRight ? 1 : 0 }}
-        />
-
         <div
           ref={trackRef}
-          className="overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none"
+          className="overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none scroll-pl-6"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           <div className="inline-flex gap-3 px-6 py-1">
-            {items.map((tpl) => (
-              <RailCard key={tpl.id} template={tpl} t={t} />
+            {items.map((product) => (
+              <RailCard key={product.slug} product={product} t={t} />
             ))}
           </div>
         </div>
@@ -405,42 +357,46 @@ function CategoryRail({
 
 // ─── RailCard ────────────────────────────────────────────────────────────────
 function RailCard({
-  template,
+  product,
   t,
 }: {
-  template: TemplateMeta;
+  product: CatalogProduct;
   t: ReturnType<typeof useTranslations>;
 }) {
   return (
     <div data-rail-card className="snap-start shrink-0 w-[240px]">
       <Link
-        href={`/products/${template.id}`}
+        href={`/products/${product.slug}`}
         className="group block text-left"
       >
         <div className="relative w-full aspect-[4/5] bg-[#fdfdfd] rounded-[18px] overflow-hidden border border-[#f2f2f2] shadow-card-lift transition-[box-shadow,border-color] duration-300 ease-out group-hover:shadow-card-lift-hover group-hover:border-[#d9d9dd]">
-          {template.popular && (
+          {(product.top_seller || product.popular) && (
             <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
-              <span className="inline-flex items-center bg-[#edfce9] border border-[#346739]/20 text-[#346739] text-[9px] px-2 py-0.5 rounded-full font-poppins font-semibold select-none">
-                {t("popularLabel")}
+              <span
+                className={`inline-flex items-center text-[9px] px-2 py-0.5 rounded-full font-poppins font-semibold select-none ${
+                  product.top_seller
+                    ? "bg-[#346739] text-white"
+                    : "bg-[#edfce9] border border-[#346739]/20 text-[#346739]"
+                }`}
+              >
+                {product.top_seller ? t("topSellerLabel") : t("popularLabel")}
               </span>
             </div>
           )}
 
-          <div className="absolute top-2.5 right-2.5 z-10 pointer-events-none opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-[opacity,transform] duration-300 ease-out">
-            <div className="flex items-center justify-center w-7 h-7 rounded-full bg-white/85 backdrop-blur-md border border-[#d9d9dd] text-[#212121]">
-              <Eye size={13} weight="Linear" />
-            </div>
-          </div>
+
 
           <TemplatePreviewCard
-            templateId={template.id}
+            src={product.cover_url}
+            alt={product.name}
+            sizes="240px"
             className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.025]"
           />
         </div>
 
         <div className="mt-2.5 flex justify-between items-baseline gap-2">
           <h4 className="font-poppins text-[14px] font-medium text-[#212121] truncate">
-            {template.name}
+            {product.name}
           </h4>
           <span className="shrink-0 font-poppins text-[12px] font-medium text-[#212121]">
             {t("priceTag")}
@@ -448,7 +404,7 @@ function RailCard({
         </div>
 
         <p className="mt-0.5 font-poppins text-[12px] text-[#616161] leading-snug">
-          {t(`categories.${template.categories[0]}`)}
+          {product.collection_name}
         </p>
       </Link>
     </div>
@@ -488,75 +444,122 @@ function FilterPanel({
   setPopularSectionExpanded,
 }: FilterPanelProps) {
   return (
-    <div className="flex flex-col gap-2">
-      {!hideHeader && (
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-poppins text-2xl font-medium text-[#212121]">
-            {t("filterTitle")}
-          </h3>
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={onClearAll}
-              className="text-xs text-[#1863dc] hover:underline font-poppins"
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
+        {!hideHeader && (
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-poppins text-2xl font-medium text-[#212121]">
+              {t("filterTitle")}
+            </h3>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={onClearAll}
+                className="text-xs text-[#1863dc] hover:underline font-poppins"
+              >
+                {t("filterClearAll")}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* ── Categories accordion ─────────────────────────────── */}
+        <FilterSection
+          title={t("selectCategory")}
+          expanded={categoriesExpanded}
+          onToggle={() => setCategoriesExpanded(!categoriesExpanded)}
+        >
+          <ul className="flex flex-col">
+            {categories.map((cat) => {
+              const isActive = activeCategory === cat.id;
+              return (
+                <li key={cat.id}>
+                  <label className="flex items-center gap-3 py-2 cursor-pointer group">
+                    <Radio
+                      name="template-category"
+                      checked={isActive}
+                      onChange={() => setActiveCategory(cat.id)}
+                    />
+                    <span
+                      className={`text-sm font-poppins transition-colors ${
+                        isActive
+                          ? "text-[#212121] font-medium"
+                          : "text-[#616161] group-hover:text-[#212121]"
+                      }`}
+                    >
+                      {cat.label}
+                    </span>
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+        </FilterSection>
+
+        {/* ── Popular accordion ──────────────────────────────────── */}
+        <FilterSection
+          title={t("popularLabel")}
+          expanded={popularSectionExpanded}
+          onToggle={() => setPopularSectionExpanded(!popularSectionExpanded)}
+        >
+          <label className="flex items-center gap-3 py-2 cursor-pointer">
+            <Checkbox
+              checked={popularOnly}
+              onChange={() => setPopularOnly(!popularOnly)}
+            />
+            <span
+              className={`text-sm font-poppins transition-colors ${
+                popularOnly ? "text-[#212121] font-medium" : "text-[#616161]"
+              }`}
             >
-              {t("filterClearAll")}
-            </button>
-          )}
+              {t("popularOnly")}
+            </span>
+          </label>
+        </FilterSection>
+      </div>
+
+      {/* ── PDF Catalog Outlined Card ── */}
+      <div className="mt-2 p-3.5 rounded-2xl border border-dashed border-[#d9d9dd] bg-neutral-50/50 hover:bg-[#edfce9]/10 transition-all duration-300 flex flex-col gap-2.5">
+        <div className="flex items-start gap-2.5">
+          <div className="p-2 rounded-xl bg-red-50 text-red-600 border border-red-100 flex items-center justify-center shrink-0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+              <polyline points="14 2 14 8 20 8" />
+              <path d="M12 18v-6" />
+              <path d="m9 15 3 3 3-3" />
+            </svg>
+          </div>
+          <div className="flex flex-col text-left">
+            <span className="text-[9px] font-bold text-[#346739] tracking-wider uppercase font-mono mb-0.5">
+              Booklet
+            </span>
+            <h4 className="text-xs font-semibold text-neutral-800 leading-tight">
+              Katalog Produk PDF
+            </h4>
+            <p className="text-[10px] text-[#616161] leading-relaxed mt-1">
+              Unduh brosur produk cetak & digital Rimba selengkapnya.
+            </p>
+          </div>
         </div>
-      )}
-
-      <FilterSection
-        title={t("selectCategory")}
-        expanded={categoriesExpanded}
-        onToggle={() => setCategoriesExpanded(!categoriesExpanded)}
-      >
-        <ul className="flex flex-col">
-          {categories.map((cat) => {
-            const isActive = activeCategory === cat.id;
-            return (
-              <li key={cat.id}>
-                <label className="flex items-center gap-3 py-2 cursor-pointer group">
-                  <Radio
-                    name="template-category"
-                    checked={isActive}
-                    onChange={() => setActiveCategory(cat.id)}
-                  />
-                  <span
-                    className={`text-sm font-poppins transition-colors ${
-                      isActive
-                        ? "text-[#212121] font-medium"
-                        : "text-[#616161] group-hover:text-[#212121]"
-                    }`}
-                  >
-                    {cat.label}
-                  </span>
-                </label>
-              </li>
-            );
-          })}
-        </ul>
-      </FilterSection>
-
-      <FilterSection
-        title={t("popularLabel")}
-        expanded={popularSectionExpanded}
-        onToggle={() => setPopularSectionExpanded(!popularSectionExpanded)}
-      >
-        <label className="flex items-center gap-3 py-2 cursor-pointer">
-          <Checkbox
-            checked={popularOnly}
-            onChange={() => setPopularOnly(!popularOnly)}
-          />
-          <span
-            className={`text-sm font-poppins transition-colors ${
-              popularOnly ? "text-[#212121] font-medium" : "text-[#616161]"
-            }`}
+        <div className="flex gap-2 w-full mt-1">
+          <TextureButton
+            variant="outline"
+            size="sm"
+            className="flex-1 rounded-full text-[10px] font-bold"
+            onClick={() => window.open("https://drive.google.com/file/d/1810T7RIKDhbgqDU8pDECk48XUEOKo5V2/view", "_blank", "noopener,noreferrer")}
           >
-            {t("popularOnly")}
-          </span>
-        </label>
-      </FilterSection>
+            Lihat PDF
+          </TextureButton>
+          <TextureButton
+            variant="primary"
+            size="sm"
+            className="flex-1 rounded-full text-[10px] font-bold"
+            onClick={() => window.open("https://drive.google.com/uc?export=download&id=1810T7RIKDhbgqDU8pDECk48XUEOKo5V2", "_blank", "noopener,noreferrer")}
+          >
+            Unduh PDF
+          </TextureButton>
+        </div>
+      </div>
     </div>
   );
 }
@@ -692,39 +695,6 @@ function Checkbox({
         </svg>
       )}
     </span>
-  );
-}
-
-function SortDropdown({
-  value,
-  onChange,
-  label,
-  options,
-}: {
-  value: SortOrder;
-  onChange: (v: SortOrder) => void;
-  label: string;
-  options: Record<SortOrder, string>;
-}) {
-  return (
-    <label className="relative inline-flex items-center h-11 rounded-full border border-[#e5e7eb] bg-white pl-4 pr-10 cursor-pointer text-sm font-poppins text-[#212121] focus-within:border-[#346739] transition-colors duration-200 self-start sm:self-auto">
-      <span className="text-[#93939f] mr-2 hidden sm:inline">{label}:</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value as SortOrder)}
-        aria-label={label}
-        className="appearance-none bg-transparent outline-none cursor-pointer pr-1"
-      >
-        <option value="popular">{options.popular}</option>
-        <option value="nameAsc">{options.nameAsc}</option>
-        <option value="nameDesc">{options.nameDesc}</option>
-      </select>
-      <IconChevronUp
-        size={14}
-        aria-hidden="true"
-        className="absolute right-4 top-1/2 -translate-y-1/2 text-[#93939f] pointer-events-none rotate-180"
-      />
-    </label>
   );
 }
 

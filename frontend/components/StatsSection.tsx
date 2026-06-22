@@ -52,20 +52,11 @@ export default function StatsSection() {
       label: t("stat3Label"),
       Icon: Letter,
     },
-    {
-      type: "static",
-      value: t("stat4Static"),
-      label: t("stat4Label"),
-      Icon: Stopwatch,
-    },
   ];
 
   return (
-    <section
-      className="w-full flex justify-center"
-      style={{ background: "#fff", padding: "80px 20px" }}
-    >
-      <div className="w-full max-w-[1100px]">
+    <section className="w-full bg-white px-6 py-20 font-poppins">
+      <div className="max-w-[1200px] mx-auto">
         {/* ── Section Header ──────────────────────────────────────────── */}
         <motion.div
           className="text-center mb-14"
@@ -90,7 +81,7 @@ export default function StatsSection() {
         </motion.div>
 
         {/* ── Stats Grid ──────────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {stats.map((stat, i) => {
             const IconComponent = stat.Icon;
             return (
