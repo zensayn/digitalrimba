@@ -279,3 +279,6 @@ html {
   right: 20px;
 }
 
+.event-action-link:hover {
+  color: var(--gold) !important;
+}

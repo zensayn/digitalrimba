@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
 import type { InvitationConfig } from "@/lib/config-types";
 
 type LoveStoryEntry = InvitationConfig["loveStory"][number];
@@ -128,9 +127,7 @@ function StoryEntry({ entry, index }: { entry: LoveStoryEntry; index: number }) 
 }
 
 // ── Main slide ───────────────────────────────────────────────────────────────
-export default function LoveStorySlide() {
-  const { loveStory } = useInvitationConfig();
-
+export default function LoveStorySlide({ loveStory }: { loveStory: InvitationConfig["loveStory"] }) {
   return (
     <div className="slide-page" style={{ justifyContent: "flex-start" }}>
       <div

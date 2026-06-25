@@ -1,21 +1,15 @@
-"use client";
+import * as motion from "framer-motion/client";
+import type { InvitationConfig } from "@/lib/config-types";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
-
-export default function CoupleSection() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-15%" });
-  const { couple } = useInvitationConfig();
+export default function CoupleSection({ couple }: { couple: InvitationConfig["couple"] }) {
 
   const fadeUp = {
     hidden: { opacity: 0, y: 36 },
-    visible: (i: number) => ({
+    visible: {
       opacity: 1,
       y: 0,
-      transition: { delay: i * 0.18, duration: 1, ease: "easeOut" as const },
-    }),
+      transition: { duration: 1, ease: "easeOut" as const },
+    },
   };
 
   const photoStyle = {
@@ -33,7 +27,7 @@ export default function CoupleSection() {
   };
 
   return (
-    <section id="couple" className="snap-section" style={{ background: "var(--bg)" }}>
+    <section id="couple" className="snap-section" style={{ background: "var(--bg)", justifyContent: "flex-start", paddingTop: "clamp(48px, 10vh, 80px)" }}>
       <div className="paper-overlay" />
 
       {/* Italic watermark */}
@@ -57,15 +51,29 @@ export default function CoupleSection() {
 
       <div className="absolute top-0 left-0 right-0 copper-divider-full" />
 
+      {/* Bunga border as background anchored bottom-left */}
       <div
-        ref={ref}
+        className="absolute bottom-0 left-0 pointer-events-none"
+        style={{ zIndex: 1 }}
+      >
+        <img
+          src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/BungaPutihBorder.webp`}
+          alt=""
+          style={{ width: "clamp(200px, 70vw, 320px)", height: "auto", opacity: 0.2, display: "block" }}
+        />
+      </div>
+
+      <div
         className="relative z-10 flex flex-col items-center text-center px-8 w-full max-w-sm mx-auto"
+        style={{ paddingBottom: "clamp(24px, 6vh, 48px)" }}
       >
         <motion.p
           custom={0}
+          transition={{ delay: 0 * 0.18, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="font-label"
           style={{
             color: "var(--gold-dim)",
@@ -81,15 +89,17 @@ export default function CoupleSection() {
         {/* Groom */}
         <motion.div
           custom={1}
+          transition={{ delay: 1 * 0.18, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="flex flex-col items-center"
           style={{ marginBottom: "clamp(8px, 2.5vh, 20px)" }}
         >
           <div style={{ ...photoStyle, position: "relative" }}>
             <img
-              src="/images/InisialNama.webp"
+              src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/InisialNama.webp`}
               alt="Inisial Nama"
               style={{
                 position: "absolute",
@@ -142,29 +152,17 @@ export default function CoupleSection() {
         {/* & separator with decorative flower border */}
         <motion.div
           custom={2}
+          transition={{ delay: 2 * 0.18, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="flex flex-col items-center w-full"
           style={{
             marginTop: "clamp(8px, 2vh, 16px)",
             marginBottom: "clamp(8px, 2vh, 16px)",
-            gap: "12px",
           }}
         >
-          <img
-            src="/images/BungaPutihBorder.webp"
-            alt="Bunga Putih Border"
-            style={{
-              width: "100vw",
-              maxWidth: "none",
-              height: "auto",
-              objectFit: "contain",
-              opacity: 0.8,
-              marginLeft: "calc(-50vw + 50%)",
-              marginRight: "calc(-50vw + 50%)",
-            }}
-          />
           <span
             className="font-garamond"
             style={{ color: "var(--gold)", fontSize: "clamp(20px, 5vw, 26px)", fontStyle: "italic", lineHeight: 1 }}
@@ -176,15 +174,17 @@ export default function CoupleSection() {
         {/* Bride */}
         <motion.div
           custom={3}
+          transition={{ delay: 3 * 0.18, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="flex flex-col items-center"
           style={{ marginBottom: "clamp(12px, 3vh, 24px)" }}
         >
           <div style={{ ...photoStyle, position: "relative" }}>
             <img
-              src="/images/InisialNama.webp"
+              src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/InisialNama.webp`}
               alt="Inisial Nama"
               style={{
                 position: "absolute",
@@ -237,9 +237,11 @@ export default function CoupleSection() {
         {/* Couple quote */}
         <motion.p
           custom={4}
+          transition={{ delay: 4 * 0.18, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="font-display"
           style={{
             color: "var(--text-muted)",

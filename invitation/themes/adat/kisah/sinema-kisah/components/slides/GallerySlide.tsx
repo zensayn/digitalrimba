@@ -2,12 +2,17 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
+import type { InvitationConfig } from "@/lib/config-types";
 
-export default function GallerySlide() {
+export default function GallerySlide({
+  gallery,
+  dressCode,
+}: {
+  gallery: InvitationConfig["gallery"];
+  dressCode: InvitationConfig["dressCode"];
+}) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, margin: "-5%" });
-  const { gallery, dressCode } = useInvitationConfig();
 
   return (
     <div className="slide-page" style={{ justifyContent: "flex-start" }}>

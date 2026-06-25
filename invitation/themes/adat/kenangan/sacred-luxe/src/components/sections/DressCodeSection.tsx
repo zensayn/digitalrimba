@@ -1,21 +1,15 @@
-"use client";
+import * as motion from "framer-motion/client";
+import type { InvitationConfig } from "@/lib/config-types";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
-
-export default function DressCodeSection() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-15%" });
-  const { dressCode } = useInvitationConfig();
+export default function DressCodeSection({ dressCode }: { dressCode: InvitationConfig["dressCode"] }) {
 
   const fadeUp = {
     hidden: { opacity: 0, y: 24 },
-    visible: (i: number) => ({
+    visible: {
       opacity: 1,
       y: 0,
-      transition: { delay: i * 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
-    }),
+      transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+    },
   };
 
   return (
@@ -29,7 +23,7 @@ export default function DressCodeSection() {
         style={{
           fontSize: "clamp(60px, 20vw, 120px)",
           fontWeight: 300,
-          color: "rgba(201,168,76,0.025)",
+          color: "rgba(201,168,76,0.06)",
           top: "6%",
           left: "50%",
           transform: "translateX(-50%)",
@@ -42,16 +36,17 @@ export default function DressCodeSection() {
       </div>
 
       <div
-        ref={ref}
         className="relative z-10 flex flex-col items-center text-center px-8 w-full max-w-sm mx-auto"
         style={{ gap: "clamp(10px, 2.5vh, 20px)" }}
       >
         {/* Label */}
         <motion.p
           custom={0}
+          transition={{ delay: 0 * 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="text-xs tracking-[0.3em] uppercase"
           style={{ color: "var(--gold-dim)" }}
         >
@@ -61,9 +56,11 @@ export default function DressCodeSection() {
         {/* Theme name */}
         <motion.h2
           custom={1}
+          transition={{ delay: 1 * 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="font-display"
           style={{
             fontSize: "clamp(28px, 8vw, 42px)",
@@ -78,18 +75,22 @@ export default function DressCodeSection() {
         {/* Divider */}
         <motion.div
           custom={2}
+          transition={{ delay: 2 * 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="gold-divider mx-auto"
         />
 
         {/* Description */}
         <motion.p
           custom={3}
+          transition={{ delay: 3 * 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="font-light leading-relaxed"
           style={{
             color: "var(--text-muted)",
@@ -104,9 +105,11 @@ export default function DressCodeSection() {
         {/* Color swatches */}
         <motion.div
           custom={4}
+          transition={{ delay: 4 * 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="flex flex-wrap justify-center"
           style={{ gap: "clamp(12px, 4vw, 20px)", marginTop: "clamp(4px, 1.5vh, 12px)" }}
         >
@@ -144,9 +147,11 @@ export default function DressCodeSection() {
         {/* Avoid section */}
         <motion.div
           custom={5}
+          transition={{ delay: 5 * 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="flex flex-col items-center"
           style={{ gap: 8, marginTop: "clamp(4px, 1vh, 10px)" }}
         >

@@ -1,17 +1,13 @@
-"use client";
-
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
+import * as motion from "framer-motion/client";
+import { Suspense } from "react";
+import GuestName from "@/components/shared/GuestName";
+import type { InvitationConfig } from "@/lib/config-types";
 
 interface GreetingSectionProps {
-  guestName?: string;
+  couple: InvitationConfig["couple"];
 }
 
-export default function GreetingSection({ guestName }: GreetingSectionProps) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-15%" });
-  const { couple } = useInvitationConfig();
+export default function GreetingSection({ couple }: GreetingSectionProps) {
 
   const fade = (delay: number) => ({
     hidden: { opacity: 0, y: 20 },
@@ -51,7 +47,6 @@ export default function GreetingSection({ guestName }: GreetingSectionProps) {
       ))}
 
       <div
-        ref={ref}
         className="relative z-10 flex flex-col items-center text-center w-full max-w-xs mx-auto px-8"
         style={{ gap: 0 }}
       >
@@ -59,7 +54,8 @@ export default function GreetingSection({ guestName }: GreetingSectionProps) {
         <motion.p
           variants={fade(0)}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           style={{
             color: "var(--gold-dim)",
             fontSize: "9px",
@@ -75,7 +71,8 @@ export default function GreetingSection({ guestName }: GreetingSectionProps) {
         <motion.div
           variants={fade(0.1)}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="flex flex-col items-center"
           style={{ marginBottom: "clamp(16px, 4vh, 28px)" }}
         >
@@ -108,7 +105,8 @@ export default function GreetingSection({ guestName }: GreetingSectionProps) {
         <motion.div
           variants={fade(0.25)}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="flex flex-col items-center"
           style={{ marginBottom: "clamp(16px, 4vh, 28px)" }}
         >
@@ -120,33 +118,34 @@ export default function GreetingSection({ guestName }: GreetingSectionProps) {
               textTransform: "uppercase",
               fontFamily: "Inter, sans-serif",
               fontWeight: 300,
-              marginBottom: guestName ? 10 : 0,
+              marginBottom: 10,
             }}
           >
             Kepada Yth.
           </p>
 
-          {guestName && (
-            <p
-              className="font-display"
-              style={{
-                color: "var(--gold-light)",
-                fontSize: "clamp(22px, 6vw, 30px)",
-                fontWeight: 400,
-                letterSpacing: "0.02em",
-                lineHeight: 1.2,
-              }}
-            >
-              {guestName}
-            </p>
-          )}
+          <p
+            className="font-display"
+            style={{
+              color: "var(--gold-light)",
+              fontSize: "clamp(22px, 6vw, 30px)",
+              fontWeight: 400,
+              letterSpacing: "0.02em",
+              lineHeight: 1.2,
+            }}
+          >
+            <Suspense fallback="Tamu Undangan">
+              <GuestName />
+            </Suspense>
+          </p>
         </motion.div>
 
         {/* Divider with diamond */}
         <motion.div
           variants={fade(0.35)}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="flex items-center gap-3"
           style={{ marginBottom: "clamp(16px, 4vh, 28px)" }}
         >
@@ -159,7 +158,8 @@ export default function GreetingSection({ guestName }: GreetingSectionProps) {
         <motion.p
           variants={fade(0.45)}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           style={{
             color: "var(--text-muted)",
             fontSize: "clamp(12px, 3vw, 13px)",
@@ -176,7 +176,8 @@ export default function GreetingSection({ guestName }: GreetingSectionProps) {
         <motion.div
           variants={fade(0.55)}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="flex flex-col items-center"
           style={{ gap: 8 }}
         >

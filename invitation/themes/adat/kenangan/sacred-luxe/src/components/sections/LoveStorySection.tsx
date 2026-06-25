@@ -2,19 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
+import type { InvitationConfig } from "@/lib/config-types";
 
 const ROMAN = ["I", "II", "III", "IV", "V"];
 const INTERVAL_MS = 5000;
 
-export default function LoveStorySection() {
+export default function LoveStorySection({ loveStory }: { loveStory: InvitationConfig["loveStory"] }) {
   const ref = useRef(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-10%" });
   const [active, setActive] = useState(0);
   const activeRef = useRef(0);
   const isPausedRef = useRef(false);
-  const { loveStory } = useInvitationConfig();
 
   // Mouse drag-to-scroll refs
   const isDragging = useRef(false);

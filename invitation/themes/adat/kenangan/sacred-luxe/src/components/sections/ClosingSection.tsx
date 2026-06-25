@@ -1,21 +1,15 @@
-"use client";
+import * as motion from "framer-motion/client";
+import type { InvitationConfig } from "@/lib/config-types";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
-
-export default function ClosingSection() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-15%" });
-  const { couple } = useInvitationConfig();
+export default function ClosingSection({ couple }: { couple: InvitationConfig["couple"] }) {
 
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
-    visible: (i: number) => ({
+    visible: {
       opacity: 1,
       y: 0,
-      transition: { delay: i * 0.2, duration: 1, ease: "easeOut" as const },
-    }),
+      transition: { duration: 1, ease: "easeOut" as const },
+    },
   };
 
   return (
@@ -31,15 +25,16 @@ export default function ClosingSection() {
       </div>
 
       <div
-        ref={ref}
         className="relative z-10 flex flex-col items-center text-center w-full max-w-xs mx-auto px-6"
       >
         {/* Label */}
         <motion.p
           custom={0}
+          transition={{ delay: 0 * 0.2, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="text-xs tracking-[0.3em] uppercase mb-8"
           style={{ color: "var(--gold-dim)" }}
         >
@@ -49,9 +44,11 @@ export default function ClosingSection() {
         {/* Names */}
         <motion.h2
           custom={1}
+          transition={{ delay: 1 * 0.2, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="font-display text-gold-gradient mb-2 leading-tight"
           style={{ fontSize: "clamp(48px, 14vw, 80px)", fontWeight: 300 }}
         >
@@ -60,9 +57,11 @@ export default function ClosingSection() {
 
         <motion.div
           custom={2}
+          transition={{ delay: 2 * 0.2, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="flex items-center gap-4 my-2"
         >
           <div className="gold-divider" />
@@ -72,9 +71,11 @@ export default function ClosingSection() {
 
         <motion.h2
           custom={3}
+          transition={{ delay: 3 * 0.2, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="font-display text-gold-gradient mb-8 leading-tight"
           style={{ fontSize: "clamp(48px, 14vw, 80px)", fontWeight: 300 }}
         >
@@ -84,9 +85,11 @@ export default function ClosingSection() {
         {/* Quote */}
         <motion.p
           custom={4}
+          transition={{ delay: 4 * 0.2, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="font-garamond italic text-base leading-relaxed mb-8"
           style={{ color: "var(--text-muted)", lineHeight: 1.9 }}
         >
@@ -97,18 +100,22 @@ export default function ClosingSection() {
 
         <motion.div
           custom={5}
+          transition={{ delay: 5 * 0.2, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="gold-divider mx-auto mb-6"
         />
 
         {/* Hashtag */}
         <motion.p
           custom={6}
+          transition={{ delay: 6 * 0.2, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="text-xs tracking-widest"
           style={{ color: "var(--gold-dim)", letterSpacing: "0.2em" }}
         >

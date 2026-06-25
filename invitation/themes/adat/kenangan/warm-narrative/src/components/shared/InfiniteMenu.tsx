@@ -396,7 +396,19 @@ class ArcballControl {
   }
 }
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Konversi hex color (#RRGGBB) ke komponen [r, g, b] dalam range [0, 1] */
+function hexToRgb01(hex: string): [number, number, number] {
+  const clean = hex.replace(/^#/, "");
+  const n = parseInt(clean.length === 3
+    ? clean.split("").map(c => c + c).join("")
+    : clean, 16);
+  return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255];
+}
+
 // ─── InfiniteGridMenu (WebGL engine) ─────────────────────────────────────────
+
 
 interface MenuItem {
   image: string;
@@ -428,6 +440,7 @@ class InfiniteGridMenu {
   nearestVertexIndex: number | null = null;
   smoothRotationVelocity = 0;
   scaleFactor = 1.0;
+  bgColor: [number, number, number] = [1, 1, 1];
   movementActive = false;
 
   gl!: WebGL2RenderingContext;
@@ -494,6 +507,17 @@ class InfiniteGridMenu {
     this.gl = this.canvas.getContext("webgl2", { antialias: true, alpha: false })!;
     const gl = this.gl;
     if (!gl) throw new Error("No WebGL 2 context!");
+
+    // Baca warna background dari CSS variable tema (:root)
+    // Dibungkus rAF agar CSS variable sudah fully computed saat dibaca
+    requestAnimationFrame(() => {
+      const themeBg =
+        getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() ||
+        "#FAF7F2";
+      this.bgColor = hexToRgb01(themeBg);
+    });
+    // Set default langsung juga (aman untuk frame pertama)
+    this.bgColor = hexToRgb01("#FAF7F2");
 
     this.viewportSize = vec2.fromValues(this.canvas.clientWidth, this.canvas.clientHeight);
     this.drawBufferSize = vec2.clone(this.viewportSize);
@@ -636,7 +660,7 @@ class InfiniteGridMenu {
     gl.useProgram(this.discProgram);
     gl.enable(gl.CULL_FACE);
     gl.enable(gl.DEPTH_TEST);
-    gl.clearColor(0, 0, 0, 0);
+    gl.clearColor(this.bgColor[0], this.bgColor[1], this.bgColor[2], 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.uniformMatrix4fv(this.discLocations.uWorldMatrix, false, this.worldMatrix);
@@ -733,36 +757,46 @@ export default function InfiniteMenu({ items, scale = 1.0 }: InfiniteMenuProps) 
     const canvas = canvasRef.current;
     if (!canvas || items.length === 0) return;
 
-    const sketch = new InfiniteGridMenu(
-      canvas,
-      items,
-      index => setActiveItem(items[index % items.length]),
-      setIsMoving,
-      null,
-      scale
-    );
+    let sketch: InfiniteGridMenu | null = null;
+    let io: IntersectionObserver | null = null;
+    const handleResize = () => sketch?.resize();
 
-    const handleResize = () => sketch.resize();
-    window.addEventListener("resize", handleResize);
-    handleResize();
+    const handle = requestIdleCallback(() => {
+      sketch = new InfiniteGridMenu(
+        canvas,
+        items,
+        index => setActiveItem(items[index % items.length]),
+        setIsMoving,
+        null,
+        scale
+      );
 
-    // Hanya render saat section ini visible — hemat GPU saat scroll
-    const io = new IntersectionObserver(
-      ([entry]) => { entry.isIntersecting ? sketch.resume() : sketch.pause(); },
-      { threshold: 0.1 }
-    );
-    io.observe(canvas.closest("section") ?? canvas);
+      window.addEventListener("resize", handleResize);
+      handleResize();
+
+      // Hanya render saat section ini visible — hemat GPU saat scroll
+      io = new IntersectionObserver(
+        ([entry]) => { entry.isIntersecting ? sketch!.resume() : sketch!.pause(); },
+        { threshold: 0.1 }
+      );
+      io.observe(canvas.closest("section") ?? canvas);
+    });
 
     return () => {
-      sketch.stop();
+      cancelIdleCallback(handle);
+      sketch?.stop();
       window.removeEventListener("resize", handleResize);
-      io.disconnect();
+      io?.disconnect();
     };
   }, [items, scale]);
 
   return (
     <div data-prevent-snap="true" style={{ position: "relative", width: "100%", height: "100%" }}>
-      <canvas id="infinite-grid-menu-canvas" ref={canvasRef} />
+      <canvas
+        id="infinite-grid-menu-canvas"
+        ref={canvasRef}
+        style={{ background: "var(--surface-2)" }}
+      />
 
       {activeItem?.title && (
         <h2 className={`face-title ${isMoving ? "inactive" : "active"}`}>

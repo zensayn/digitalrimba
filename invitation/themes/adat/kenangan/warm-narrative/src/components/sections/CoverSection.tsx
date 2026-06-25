@@ -7,7 +7,8 @@
 
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
+import FallingFlowers from "@/components/shared/FallingFlowers";
+import type { InvitationConfig } from "@/lib/config-types";
 
 // ── Countdown ──────────────────────────────────────────────────────────────────
 function useCountdown(targetDateString: string) {
@@ -34,11 +35,16 @@ function useCountdown(targetDateString: string) {
 }
 
 // ── Section ───────────────────────────────────────────────────────────────────
-export default function CoverSection() {
-  const config = useInvitationConfig();
-  const { groom, bride } = config.couple;
-  const weddingDate = new Date(config.weddingDate);
-  const countdown = useCountdown(config.weddingDate);
+export default function CoverSection({
+  couple,
+  weddingDate: weddingDateString,
+}: {
+  couple: InvitationConfig["couple"];
+  weddingDate: string;
+}) {
+  const { groom, bride } = couple;
+  const weddingDate = new Date(weddingDateString);
+  const countdown = useCountdown(weddingDateString);
   const sectionRef = useRef<HTMLElement>(null);
 
   // Format tanggal display
@@ -74,8 +80,9 @@ export default function CoverSection() {
     >
       {/* Background Ornaments */}
       <img
-        src="/images/AwanPink.webp"
+        src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/AwanPink.webp`}
         alt="Background Awan"
+        fetchPriority="low"
         style={{
           position: "absolute",
           inset: 0,
@@ -88,8 +95,9 @@ export default function CoverSection() {
         }}
       />
       <img
-        src="/images/BintangBintang.webp"
+        src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/BintangBintang.webp`}
         alt="Background Bintang"
+        fetchPriority="low"
         style={{
           position: "absolute",
           inset: 0,
@@ -102,23 +110,8 @@ export default function CoverSection() {
         }}
       />
 
-      {/* Top Floating Flower Overlay */}
-      <img
-        src="/images/BungaBerjatuhan.webp"
-        alt="Bunga Berjatuhan"
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          width: "100%",
-          maxHeight: "35vh",
-          objectFit: "contain",
-          pointerEvents: "none",
-          zIndex: 3,
-          opacity: 0.75,
-        }}
-      />
+      {/* Falling Flower Animation */}
+      <FallingFlowers count={20} zIndex={1} />
 
       {/* Paper texture */}
       <div className="paper-overlay" />
@@ -209,8 +202,9 @@ export default function CoverSection() {
           }}
         >
           <img
-            src="/images/FrameEmas.webp"
+            src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/FrameEmas.webp`}
             alt="Frame Emas"
+            fetchPriority="high"
             style={{
               position: "absolute",
               inset: 0,

@@ -52,15 +52,6 @@ function libDir(theme: ThemeConfig): string {
   return join(ROOT, theme.path, theme.hasSrc ? "src/lib" : "lib");
 }
 
-// Dari posisi components/shared/RimbaConfigProvider.tsx ke invitation.config.json di root theme:
-// hasSrc=true  → src/components/shared/ → ../../../  (3 levels up)
-// hasSrc=false → components/shared/     → ../../     (2 levels up)
-function configJsonPath(theme: ThemeConfig): string {
-  return theme.hasSrc
-    ? "../../../invitation.config.json"
-    : "../../invitation.config.json";
-}
-
 function syncTheme(theme: ThemeConfig) {
   console.log(`\n→ ${theme.name}`);
 
@@ -77,16 +68,9 @@ function syncTheme(theme: ThemeConfig) {
     join(compShared, "MusicPlayer.tsx")
   );
 
-  // RimbaConfigProvider — transform path JSON import sesuai struktur theme
-  const jsonPath = configJsonPath(theme);
   copyFile(
-    join(SHARED, "components/RimbaConfigProvider.tsx"),
-    join(compShared, "RimbaConfigProvider.tsx"),
-    (src) =>
-      src.replace(
-        /import staticConfig from ".*?invitation\.config\.json"/,
-        `import staticConfig from "${jsonPath}"`
-      )
+    join(SHARED, "components/GuestName.tsx"),
+    join(compShared, "GuestName.tsx")
   );
 
   // InfiniteMenu — hanya untuk theme yang pakai globe gallery

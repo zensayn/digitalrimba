@@ -1,17 +1,13 @@
-"use client";
-
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
+import * as motion from "framer-motion/client";
+import { Suspense } from "react";
+import GuestName from "@/components/shared/GuestName";
+import type { InvitationConfig } from "@/lib/config-types";
 
 interface GreetingSectionProps {
-  guestName?: string;
+  couple: InvitationConfig["couple"];
 }
 
-export default function GreetingSection({ guestName }: GreetingSectionProps) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-15%" });
-  const { couple } = useInvitationConfig();
+export default function GreetingSection({ couple }: GreetingSectionProps) {
 
   const fade = (delay: number) => ({
     hidden: { opacity: 0, y: 20 },
@@ -23,7 +19,7 @@ export default function GreetingSection({ guestName }: GreetingSectionProps) {
   });
 
   return (
-    <section id="greeting" className="snap-section" style={{ background: "var(--surface)" }}>
+    <section id="greeting" className="snap-section" style={{ background: "var(--surface)", paddingBottom: "clamp(60px, 14vh, 110px)" }}>
       <div className="paper-overlay" />
       <span className="corner-ornament tl" />
       <span className="corner-ornament tr" />
@@ -39,176 +35,178 @@ export default function GreetingSection({ guestName }: GreetingSectionProps) {
       />
 
       <div
-        ref={ref}
-        className="relative z-10 flex flex-col items-center text-center w-full max-w-xs mx-auto px-8"
+        className="relative z-10 flex flex-col items-center text-center w-full"
       >
-        <motion.p
-          variants={fade(0)}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="font-label"
-          style={{
-            color: "var(--gold-dim)",
-            fontSize: "9px",
-            letterSpacing: "0.35em",
-            textTransform: "uppercase",
-            marginBottom: "clamp(20px, 5vh, 36px)",
-          }}
-        >
-          Undangan Pernikahan
-        </motion.p>
-
-        {/* Rangka Bunga Decoration */}
-        <motion.img
-          variants={fade(0.05)}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          src="/images/RangkaBunga.webp"
-          alt="Rangka Bunga"
-          style={{
-            width: "120px",
-            height: "auto",
-            objectFit: "contain",
-            marginBottom: "8px",
-            opacity: 0.85
-          }}
-        />
-
-        {/* Bismillah */}
-        <motion.div
-          variants={fade(0.1)}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="flex flex-col items-center"
-          style={{ marginBottom: "clamp(16px, 4vh, 28px)" }}
-        >
-          <p
-            className="font-garamond"
+        {/* Header — label, bunga, bismillah tetap terkontrol */}
+        <div className="flex flex-col items-center w-full max-w-xs px-8">
+          <motion.p
+            variants={fade(0)}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-15%" }}
+            className="font-label"
             style={{
-              fontSize: "clamp(30px, 9vw, 46px)",
-              color: "var(--gold)",
-              lineHeight: 1.6,
-              letterSpacing: "0.04em",
-              fontStyle: "italic",
+              color: "var(--gold-dim)",
+              fontSize: "9px",
+              letterSpacing: "0.35em",
+              textTransform: "uppercase",
+              marginBottom: "clamp(16px, 4vh, 28px)",
             }}
           >
-            بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
-          </p>
-          <div className="copper-divider" style={{ marginTop: "clamp(10px, 2.5vh, 18px)", opacity: 0.6 }} />
-        </motion.div>
+          </motion.p>
 
-        {/* Guest name wrapped in Letter envelope frame */}
+          <motion.img
+            variants={fade(0.05)}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-15%" }}
+            src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Borderbawah.webp`}
+            alt="Border Bawah"
+            style={{
+              width: "80vw",
+              height: "auto",
+              objectFit: "contain",
+              marginBottom: "-55px",
+              opacity: 0.85,
+            }}
+          />
+
+          <motion.div
+            variants={fade(0.1)}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-15%" }}
+            className="flex flex-col items-center"
+            style={{ marginBottom: "clamp(12px, 3vh, 22px)" }}
+          >
+            <p
+              className="font-garamond"
+              style={{
+                fontSize: "clamp(26px, 8vw, 42px)",
+                color: "var(--gold)",
+                lineHeight: 1.5,
+                letterSpacing: "0.04em",
+                fontStyle: "italic",
+              }}
+            >
+              بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
+            </p>
+            <div className="copper-divider" style={{ marginTop: "8px", opacity: 0.6 }} />
+          </motion.div>
+        </div>
+
+        {/* Surat — semua isi di dalam */}
         <motion.div
-          variants={fade(0.25)}
+          variants={fade(0.2)}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="flex flex-col items-center justify-center"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           style={{
             position: "relative",
-            width: "100%",
-            maxWidth: "280px",
-            minHeight: "150px",
-            padding: "36px 20px",
-            marginBottom: "clamp(16px, 4vh, 24px)",
+            aspectRatio: "3 / 4",
+            width: "min(clamp(280px, 88vw, 400px), 43vh)",
+            overflow: "hidden",
           }}
         >
           <img
-            src="/images/Letter.webp"
+            src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Surat.webp`}
             alt="Surat Undangan"
             style={{
               position: "absolute",
               inset: 0,
               width: "100%",
               height: "100%",
-              objectFit: "contain",
-              opacity: 0.95,
+              objectFit: "fill",
+              opacity: 0.97,
               pointerEvents: "none",
-              zIndex: 0,
             }}
           />
-          <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+
+          {/* Isi surat */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              padding: "38% 20% 22%",
+              display: "flex",
+              flexDirection: "column",
+              textAlign: "left",
+            }}
+          >
+            {/* Kepada */}
             <p
               className="font-label"
               style={{
-                color: "var(--text-dim)",
-                fontSize: "10px",
-                letterSpacing: "0.2em",
+                fontSize: "clamp(7px, 2vw, 9px)",
+                letterSpacing: "0.18em",
                 textTransform: "uppercase",
-                marginBottom: guestName ? 8 : 0,
+                color: "var(--text-dim)",
+                marginBottom: 2,
               }}
             >
               Kepada Yth.
             </p>
-            {guestName && (
+            <p
+              className="font-display"
+              style={{
+                fontSize: "clamp(14px, 4vw, 18px)",
+                fontWeight: 400,
+                fontStyle: "italic",
+                color: "var(--gold)",
+                lineHeight: 1.2,
+                marginBottom: "5%",
+              }}
+            >
+              <Suspense fallback="Tamu Undangan">
+                <GuestName />
+              </Suspense>
+            </p>
+
+            {/* Garis */}
+            <div style={{ width: 24, height: 1, background: "var(--gold)", opacity: 0.3, marginBottom: "4%" }} />
+
+            {/* Paragraf undangan */}
+            <p
+              className="font-garamond"
+              style={{
+                fontSize: "clamp(9px, 2.4vw, 11px)",
+                fontStyle: "italic",
+                color: "var(--text-muted)",
+                lineHeight: 1.8,
+                marginBottom: "auto",
+              }}
+            >
+              Assalamu&apos;alaikum Wr. Wb.
+              <br /><br />
+              Tanpa mengurangi rasa hormat, kami mengundang Bapak / Ibu / Saudara/i untuk hadir dan turut mendoakan dalam hari istimewa kami.
+            </p>
+
+            {/* Tanda tangan */}
+            <div style={{ paddingTop: "5%", borderTop: "1px solid rgba(192,120,48,0.2)" }}>
               <p
-                className="font-display"
+                className="font-label"
                 style={{
-                  color: "var(--gold)",
-                  fontSize: "clamp(18px, 5vw, 24px)",
-                  fontWeight: 500,
-                  letterSpacing: "0.02em",
-                  lineHeight: 1.2,
+                  fontSize: "clamp(6px, 1.8vw, 8px)",
+                  letterSpacing: "0.14em",
+                  color: "var(--text-dim)",
+                  marginBottom: 3,
                 }}
               >
-                {guestName}
+                Hormat kami,
               </p>
-            )}
+              <p
+                className="font-garamond"
+                style={{
+                  fontSize: "clamp(12px, 3.2vw, 15px)",
+                  fontStyle: "italic",
+                  color: "var(--gold)",
+                  lineHeight: 1.25,
+                }}
+              >
+                {couple.groom.name} &amp; {couple.bride.name}
+              </p>
+            </div>
           </div>
-        </motion.div>
-
-        {/* Ornament divider */}
-        <motion.div
-          variants={fade(0.35)}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="dot-divider"
-          style={{ width: "100%", marginBottom: "clamp(16px, 4vh, 28px)" }}
-        >
-          <span
-            className="font-garamond"
-            style={{ color: "var(--gold-dim)", fontSize: "16px", opacity: 0.8, lineHeight: 1 }}
-          >
-            ✦
-          </span>
-        </motion.div>
-
-        <motion.p
-          variants={fade(0.45)}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="font-body"
-          style={{
-            color: "var(--text-muted)",
-            fontSize: "clamp(12px, 3vw, 14px)",
-            fontStyle: "italic",
-            lineHeight: 1.95,
-            marginBottom: "clamp(20px, 5vh, 36px)",
-          }}
-        >
-          Tanpa mengurangi rasa hormat, kami mengundang Anda untuk hadir dan berbagi kebahagiaan dalam hari istimewa kami.
-        </motion.p>
-
-        {/* Signature */}
-        <motion.div
-          variants={fade(0.55)}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="flex flex-col items-center"
-          style={{ gap: 8 }}
-        >
-          <div className="copper-divider" style={{ opacity: 0.4 }} />
-          <p
-            className="font-display"
-            style={{
-              color: "var(--gold)",
-              fontSize: "clamp(18px, 5vw, 22px)",
-              fontWeight: 400,
-              fontStyle: "italic",
-              letterSpacing: "0.04em",
-            }}
-          >
-            {couple.groom.name} &amp; {couple.bride.name}
-          </p>
         </motion.div>
       </div>
     </section>

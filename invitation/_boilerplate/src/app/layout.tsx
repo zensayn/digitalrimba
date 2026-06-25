@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { theme, couple } from "@/data/invitation";
 import { buildCssVars } from "@/lib/css-vars";
-import { RimbaConfigProvider } from "@/components/RimbaConfigProvider";
 
 // ── GANTI: Sesuaikan dengan nama pasangan & tanggal ──────────────────────────
 export const metadata: Metadata = {
@@ -22,11 +21,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="id" className="h-full" style={{ colorScheme: "dark" }} suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-        {/* CSS vars dari theme config — di-update live oleh RimbaConfigProvider saat di Studio */}
+        {/* CSS vars statis dari invitation config */}
         <style id="rimba-theme-vars" dangerouslySetInnerHTML={{ __html: cssVars }} />
       </head>
       <body className="h-full antialiased overflow-hidden">
-        <RimbaConfigProvider>{children}</RimbaConfigProvider>
+        {children}
       </body>
     </html>
   );

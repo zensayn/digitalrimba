@@ -733,30 +733,36 @@ export default function InfiniteMenu({ items, scale = 1.0 }: InfiniteMenuProps) 
     const canvas = canvasRef.current;
     if (!canvas || items.length === 0) return;
 
-    const sketch = new InfiniteGridMenu(
-      canvas,
-      items,
-      index => setActiveItem(items[index % items.length]),
-      setIsMoving,
-      null,
-      scale
-    );
+    let sketch: InfiniteGridMenu | null = null;
+    let io: IntersectionObserver | null = null;
+    const handleResize = () => sketch?.resize();
 
-    const handleResize = () => sketch.resize();
-    window.addEventListener("resize", handleResize);
-    handleResize();
+    const handle = requestIdleCallback(() => {
+      sketch = new InfiniteGridMenu(
+        canvas,
+        items,
+        index => setActiveItem(items[index % items.length]),
+        setIsMoving,
+        null,
+        scale
+      );
 
-    // Hanya render saat section ini visible — hemat GPU saat scroll
-    const io = new IntersectionObserver(
-      ([entry]) => { entry.isIntersecting ? sketch.resume() : sketch.pause(); },
-      { threshold: 0.1 }
-    );
-    io.observe(canvas.closest("section") ?? canvas);
+      window.addEventListener("resize", handleResize);
+      handleResize();
+
+      // Hanya render saat section ini visible — hemat GPU saat scroll
+      io = new IntersectionObserver(
+        ([entry]) => { entry.isIntersecting ? sketch!.resume() : sketch!.pause(); },
+        { threshold: 0.1 }
+      );
+      io.observe(canvas.closest("section") ?? canvas);
+    });
 
     return () => {
-      sketch.stop();
+      cancelIdleCallback(handle);
+      sketch?.stop();
       window.removeEventListener("resize", handleResize);
-      io.disconnect();
+      io?.disconnect();
     };
   }, [items, scale]);
 

@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { MapPin, ExternalLink, CalendarPlus } from "lucide-react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import * as motion from "framer-motion/client";
+import { MapPin, ExternalLink, CalendarPlus, X } from "lucide-react";
 
 interface EventCardProps {
   event: {
@@ -22,13 +23,15 @@ interface EventCardProps {
 }
 
 export default function EventSection({ event, index, sectionId }: EventCardProps) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-10%" });
-
   const isAkad = index === 0;
+  const [mapOpen, setMapOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // "14 Juni 2026" → ["14", "Juni", "2026"]
   const [dateNum, dateMonth, dateYear] = event.date.split(" ");
+
+  // Need mounted flag so portal doesn't run on SSR
+  useEffect(() => setMounted(true), []);
 
   const calendarUrl = (() => {
     const params = new URLSearchParams({
@@ -50,12 +53,83 @@ export default function EventSection({ event, index, sectionId }: EventCardProps
     },
   });
 
+  /**
+   * Map modal rendered via React portal directly into document.body.
+   * This means the iframe is NOT inside the snap-scroll container,
+   * so the browser routes all touch/wheel events exclusively to the
+   * iframe's own document — drag and pinch work natively.
+   */
+  const mapModal = mapOpen && mounted
+    ? createPortal(
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9999,
+            display: "flex",
+            flexDirection: "column",
+            background: "#0A0A08",
+          }}
+        >
+          {/* Header bar */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "14px 16px",
+              borderBottom: "1px solid var(--border)",
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <MapPin size={13} color="var(--gold-dim)" />
+              <span style={{ fontFamily: "Inter, sans-serif", fontSize: "11px", letterSpacing: "0.14em", color: "var(--text-muted)", textTransform: "uppercase" }}>
+                {event.venue}
+              </span>
+            </div>
+            <button
+              onClick={() => setMapOpen(false)}
+              aria-label="Tutup peta"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid var(--border)",
+                cursor: "pointer",
+                color: "var(--text-muted)",
+              }}
+            >
+              <X size={14} />
+            </button>
+          </div>
+
+          {/* Full-screen iframe — free to drag/pinch, no scroll container above it */}
+          <iframe
+            src={event.embedUrl}
+            width="100%"
+            style={{ flex: 1, border: 0, display: "block" }}
+            allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
+            title={`Lokasi ${event.title}`}
+          />
+        </div>,
+        document.body
+      )
+    : null;
+
   return (
     <section
       id={sectionId}
       className="snap-section"
       style={{ background: isAkad ? "var(--surface)" : "var(--bg)" }}
     >
+      {mapModal}
+
       <div className="noise-overlay" />
 
       {/* Radial glow */}
@@ -83,7 +157,6 @@ export default function EventSection({ event, index, sectionId }: EventCardProps
       </div>
 
       <div
-        ref={ref}
         className="relative z-10 flex flex-col items-center w-full max-w-xs mx-auto px-8"
         style={{ gap: "clamp(18px, 4vh, 36px)", paddingTop: "clamp(32px, 6vh, 56px)", paddingBottom: "calc(clamp(24px, 4vh, 40px) + 72px)" }}
       >
@@ -92,13 +165,11 @@ export default function EventSection({ event, index, sectionId }: EventCardProps
         <motion.div
           variants={fade(0)}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
           className="flex flex-col items-center gap-2"
         >
-          <p
-            className="text-xs tracking-[0.35em] uppercase"
-            style={{ color: "var(--gold-dim)", fontSize: "9px" }}
-          >
+          <p className="text-xs tracking-[0.35em] uppercase" style={{ color: "var(--gold-dim)", fontSize: "9px" }}>
             {isAkad ? "Akad Nikah" : "Resepsi"}
           </p>
           <div className="gold-divider" style={{ width: 40 }} />
@@ -108,46 +179,18 @@ export default function EventSection({ event, index, sectionId }: EventCardProps
         <motion.div
           variants={fade(0.1)}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
           className="flex flex-col items-center"
           style={{ gap: 0 }}
         >
-          {/* Day name */}
-          <p
-            className="font-display italic"
-            style={{
-              color: "var(--text-dim)",
-              fontSize: "clamp(13px, 3.5vw, 16px)",
-              letterSpacing: "0.12em",
-              marginBottom: 2,
-            }}
-          >
+          <p className="font-display italic" style={{ color: "var(--text-dim)", fontSize: "clamp(13px, 3.5vw, 16px)", letterSpacing: "0.12em", marginBottom: 2 }}>
             {event.day}
           </p>
-
-          {/* Big date number */}
-          <p
-            className="font-display text-gold-gradient leading-none"
-            style={{
-              fontSize: "clamp(72px, 22vw, 110px)",
-              fontWeight: 300,
-              lineHeight: 0.88,
-            }}
-          >
+          <p className="font-display text-gold-gradient leading-none" style={{ fontSize: "clamp(72px, 22vw, 110px)", fontWeight: 300, lineHeight: 0.88 }}>
             {dateNum}
           </p>
-
-          {/* Month · Year */}
-          <p
-            className="font-display tracking-widest"
-            style={{
-              color: "var(--gold-dim)",
-              fontSize: "clamp(11px, 3vw, 14px)",
-              letterSpacing: "0.28em",
-              textTransform: "uppercase",
-              marginTop: 6,
-            }}
-          >
+          <p className="font-display tracking-widest" style={{ color: "var(--gold-dim)", fontSize: "clamp(11px, 3vw, 14px)", letterSpacing: "0.28em", textTransform: "uppercase", marginTop: 6 }}>
             {dateMonth} · {dateYear}
           </p>
         </motion.div>
@@ -156,19 +199,10 @@ export default function EventSection({ event, index, sectionId }: EventCardProps
         <motion.div
           variants={fade(0.2)}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
         >
-          <div
-            style={{
-              padding: "6px 20px",
-              border: "1px solid var(--border)",
-              color: "var(--text-muted)",
-              fontSize: "11px",
-              fontFamily: "Inter, sans-serif",
-              fontWeight: 300,
-              letterSpacing: "0.12em",
-            }}
-          >
+          <div style={{ padding: "6px 20px", border: "1px solid var(--border)", color: "var(--text-muted)", fontSize: "11px", fontFamily: "Inter, sans-serif", fontWeight: 300, letterSpacing: "0.12em" }}>
             {event.time}
           </div>
         </motion.div>
@@ -177,75 +211,66 @@ export default function EventSection({ event, index, sectionId }: EventCardProps
         <motion.div
           variants={fade(0.3)}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
           className="flex flex-col items-center text-center"
           style={{ gap: 6 }}
         >
-          {/* Diamond ornament */}
           <svg width="12" height="12" viewBox="0 0 12 12" style={{ opacity: 0.4 }}>
             <path d="M6 0 L12 6 L6 12 L0 6 Z" fill="var(--gold)" />
           </svg>
-
-          <p
-            className="font-display"
-            style={{
-              color: "var(--text)",
-              fontSize: "clamp(17px, 5vw, 22px)",
-              fontWeight: 300,
-              letterSpacing: "0.04em",
-              lineHeight: 1.2,
-            }}
-          >
+          <p className="font-display" style={{ color: "var(--text)", fontSize: "clamp(17px, 5vw, 22px)", fontWeight: 300, letterSpacing: "0.04em", lineHeight: 1.2 }}>
             {event.venue}
           </p>
-
           <div className="flex items-start justify-center gap-2">
             <MapPin size={11} color="var(--gold-dim)" strokeWidth={1.5} style={{ marginTop: 2, flexShrink: 0 }} />
-            <p
-              style={{
-                color: "var(--text-dim)",
-                fontSize: "11px",
-                fontFamily: "Inter, sans-serif",
-                fontWeight: 300,
-                lineHeight: 1.5,
-              }}
-            >
+            <p style={{ color: "var(--text-dim)", fontSize: "11px", fontFamily: "Inter, sans-serif", fontWeight: 300, lineHeight: 1.5 }}>
               {event.address}
             </p>
           </div>
         </motion.div>
 
-        {/* ── Map ── */}
+        {/* ── Map tap-to-open ── */}
         <motion.div
           variants={fade(0.4)}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
           className="w-full"
-          style={{
-            border: "1px solid var(--border)",
-            position: "relative",
-            overflow: "hidden",
-          }}
+          style={{ border: "1px solid var(--border)", position: "relative", overflow: "hidden" }}
         >
-          {/* Top-left corner accent */}
+          {/* Corner accents */}
           <div style={{ position: "absolute", top: 0, left: 0, width: 20, height: 20, zIndex: 10, pointerEvents: "none" }}>
             <svg width="20" height="20"><path d="M0 20 L0 0 L20 0" stroke="var(--gold)" strokeWidth="1" fill="none" opacity="0.5"/></svg>
           </div>
-          {/* Bottom-right corner accent */}
           <div style={{ position: "absolute", bottom: 0, right: 0, width: 20, height: 20, zIndex: 10, pointerEvents: "none" }}>
             <svg width="20" height="20"><path d="M20 0 L20 20 L0 20" stroke="var(--gold)" strokeWidth="1" fill="none" opacity="0.5"/></svg>
           </div>
 
-          <div style={{ position: "absolute", inset: 0, background: "rgba(10,10,8,0.12)", pointerEvents: "none", zIndex: 5 }} />
+          {/* Static preview iframe — pointer-events none so scroll works normally */}
           <iframe
             src={event.embedUrl}
             width="100%"
             height="150"
-            style={{ border: 0, display: "block", filter: "grayscale(70%) invert(88%) contrast(85%) brightness(75%)" }}
-            allowFullScreen={false}
+            style={{ border: 0, display: "block", filter: "grayscale(70%) invert(88%) contrast(85%) brightness(75%)", pointerEvents: "none" }}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            title={`Lokasi ${event.title}`}
+            title={`Preview lokasi ${event.title}`}
+          />
+
+          {/* Transparent clickable layer — no overlay, map preview fully visible */}
+          <div
+            onClick={() => setMapOpen(true)}
+            role="button"
+            aria-label="Buka peta interaktif"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === "Enter" && setMapOpen(true)}
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 20,
+              cursor: "pointer",
+            }}
           />
         </motion.div>
 
@@ -253,7 +278,8 @@ export default function EventSection({ event, index, sectionId }: EventCardProps
         <motion.div
           variants={fade(0.5)}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
           className="flex items-center justify-center"
           style={{ gap: 0 }}
         >
@@ -261,38 +287,18 @@ export default function EventSection({ event, index, sectionId }: EventCardProps
             href={event.mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 transition-colors duration-300"
-            style={{
-              color: "var(--gold-dim)",
-              fontSize: "9px",
-              fontFamily: "Inter, sans-serif",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              padding: "6px 16px",
-              borderRight: "1px solid var(--border)",
-            }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--gold)")}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--gold-dim)")}
+            className="event-action-link flex items-center gap-2 transition-colors duration-300"
+            style={{ color: "var(--gold-dim)", fontSize: "9px", fontFamily: "Inter, sans-serif", letterSpacing: "0.2em", textTransform: "uppercase", padding: "6px 16px", borderRight: "1px solid var(--border)" }}
           >
             <ExternalLink size={10} />
             Maps
           </a>
-
           <a
             href={calendarUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 transition-colors duration-300"
-            style={{
-              color: "var(--gold-dim)",
-              fontSize: "9px",
-              fontFamily: "Inter, sans-serif",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              padding: "6px 16px",
-            }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--gold)")}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--gold-dim)")}
+            className="event-action-link flex items-center gap-2 transition-colors duration-300"
+            style={{ color: "var(--gold-dim)", fontSize: "9px", fontFamily: "Inter, sans-serif", letterSpacing: "0.2em", textTransform: "uppercase", padding: "6px 16px" }}
           >
             <CalendarPlus size={10} />
             Kalender

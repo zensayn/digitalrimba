@@ -1,21 +1,15 @@
-"use client";
+import * as motion from "framer-motion/client";
+import type { InvitationConfig } from "@/lib/config-types";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
-
-export default function ClosingSection() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-15%" });
-  const { couple } = useInvitationConfig();
+export default function ClosingSection({ couple }: { couple: InvitationConfig["couple"] }) {
 
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
-    visible: (i: number) => ({
+    visible: {
       opacity: 1,
       y: 0,
-      transition: { delay: i * 0.2, duration: 1, ease: "easeOut" as const },
-    }),
+      transition: { duration: 1, ease: "easeOut" as const },
+    },
   };
 
   return (
@@ -53,7 +47,6 @@ export default function ClosingSection() {
       </div>
 
       <div
-        ref={ref}
         className="relative z-10 flex flex-col items-center text-center w-full max-w-xs mx-auto px-6"
         style={{
           paddingTop: "clamp(28px, 6vh, 48px)",
@@ -62,9 +55,11 @@ export default function ClosingSection() {
       >
         <motion.p
           custom={0}
+          transition={{ delay: 0 * 0.2, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="font-label"
           style={{
             fontSize: "9px",
@@ -79,9 +74,11 @@ export default function ClosingSection() {
 
         <motion.h2
           custom={1}
+          transition={{ delay: 1 * 0.2, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="font-display text-copper-gradient leading-tight"
           style={{ fontSize: "clamp(48px, 14vw, 80px)", fontWeight: 400 }}
         >
@@ -90,9 +87,11 @@ export default function ClosingSection() {
 
         <motion.div
           custom={2}
+          transition={{ delay: 2 * 0.2, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="flex items-center gap-4 my-2"
         >
           <div className="copper-divider" />
@@ -107,9 +106,11 @@ export default function ClosingSection() {
 
         <motion.h2
           custom={3}
+          transition={{ delay: 3 * 0.2, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="font-display text-copper-gradient leading-tight"
           style={{ fontSize: "clamp(48px, 14vw, 80px)", fontWeight: 400 }}
         >
@@ -118,9 +119,11 @@ export default function ClosingSection() {
 
         <motion.div
           custom={4}
+          transition={{ delay: 4 * 0.2, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="relative w-full flex flex-col items-center justify-center"
           style={{
             marginTop: "clamp(16px, 4vh, 28px)",
@@ -129,7 +132,7 @@ export default function ClosingSection() {
         >
           {/* Single border decoration - full width */}
           <img
-            src="/images/BungaPutihBorder.webp"
+            src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/BungaPutihBorder.webp`}
             alt="Bunga Putih Border"
             style={{
               width: "100vw",
@@ -161,15 +164,17 @@ export default function ClosingSection() {
           </p>
         </motion.div>
 
-        <motion.div custom={5} variants={fadeUp} initial="hidden" animate={isInView ? "visible" : "hidden"}>
+        <motion.div custom={5} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-15%" }} transition={{ delay: 5 * 0.2, duration: 1, ease: "easeOut" }}>
           <div className="copper-divider mx-auto" style={{ marginBottom: 16 }} />
         </motion.div>
 
         <motion.p
           custom={6}
+          transition={{ delay: 6 * 0.2, duration: 1, ease: "easeOut" }}
           variants={fadeUp}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-15%" }}
           className="font-label"
           style={{ color: "var(--gold-dim)", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase" }}
         >
@@ -203,7 +208,7 @@ export default function ClosingSection() {
         }}
       >
         <img
-          src="/images/Borderbawah.webp"
+          src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Borderbawah.webp`}
           alt="Bottom Border"
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
