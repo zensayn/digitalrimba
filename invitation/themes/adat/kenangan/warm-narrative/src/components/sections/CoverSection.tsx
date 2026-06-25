@@ -46,6 +46,12 @@ export default function CoverSection({
   const weddingDate = new Date(weddingDateString);
   const countdown = useCountdown(weddingDateString);
   const sectionRef = useRef<HTMLElement>(null);
+  const [bgLoaded, setBgLoaded] = useState(false);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setBgLoaded(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   // Format tanggal display
   const dateStr = weddingDate.toLocaleDateString("id-ID", {
@@ -78,37 +84,43 @@ export default function CoverSection({
       ref={sectionRef}
       style={{ background: "var(--bg)", overflow: "hidden" }}
     >
-      {/* Background Ornaments */}
-      <img
-        src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/AwanPink.webp`}
-        alt="Background Awan"
-        fetchPriority="low"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          opacity: 0.18,
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
-      <img
-        src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/BintangBintang.webp`}
-        alt="Background Bintang"
-        fetchPriority="low"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          opacity: 0.12,
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
+      {/* Background Ornaments — deferred after first paint to unblock LCP */}
+      {bgLoaded && (
+        <>
+          <img
+            src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/AwanPink.webp`}
+            alt=""
+            aria-hidden="true"
+            fetchPriority="low"
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              opacity: 0.18,
+              pointerEvents: "none",
+              zIndex: 0,
+            }}
+          />
+          <img
+            src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/BintangBintang.webp`}
+            alt=""
+            aria-hidden="true"
+            fetchPriority="low"
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              opacity: 0.12,
+              pointerEvents: "none",
+              zIndex: 0,
+            }}
+          />
+        </>
+      )}
 
       {/* Falling Flower Animation */}
       <FallingFlowers count={20} zIndex={1} />
