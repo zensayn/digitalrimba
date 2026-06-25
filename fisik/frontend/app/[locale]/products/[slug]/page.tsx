@@ -10,7 +10,12 @@ import { Link } from "@/i18n/routing";
 import { IconArrowLeft } from "@tabler/icons-react";
 import ProductInteractive from "@/components/products/ProductInteractive";
 import RecommendedTemplates from "@/components/products/RecommendedTemplates";
-import { fetchProductBySlug, fetchProducts } from "@/lib/catalog";
+import {
+  fetchProductBySlug,
+  fetchProducts,
+  fetchPricingCatalog,
+  pricingBySlug,
+} from "@/lib/catalog";
 
 const MAX_RECOMMENDATIONS = 4;
 
@@ -30,8 +35,19 @@ export default async function ProductDetailPage({
   const t = await getTranslations("Templates");
   const tp = await getTranslations("Products");
 
-  const product = await fetchProductBySlug(slug);
+  const [product, pricingCatalog] = await Promise.all([
+    fetchProductBySlug(slug),
+    fetchPricingCatalog(),
+  ]);
   if (!product) notFound();
+
+  // Live pricing for this product (tiers + per-tier amounts). Falls back to an
+  // empty/unpriced state when the pricing service is down or has no match.
+  const tiers = pricingCatalog?.tiers ?? [];
+  const pricing =
+    pricingCatalog?.products.find((p) => p.product_slug === slug) ?? null;
+  const prices = pricing?.prices ?? {};
+  const priceBySlug = pricingBySlug(pricingCatalog);
 
   const features = [
     tp("feature1"),
@@ -92,6 +108,8 @@ export default async function ProductDetailPage({
           categoryLabel={categoryLabel}
           images={images}
           features={features}
+          tiers={tiers}
+          prices={prices}
           labels={{
             volumeTitle: tp("volumeTitle"),
             perUnit: tp("perUnit"),
@@ -101,6 +119,8 @@ export default async function ProductDetailPage({
             shippingNote: tp("shippingNote"),
             quantityLabel: tp("quantityLabel"),
             orderWhatsApp: tp("orderWhatsApp"),
+            checkCatalog: tp("checkCatalog"),
+            checkCatalogNote: tp("checkCatalogNote"),
             share: tp("share"),
             shareTooltip: tp("shareTooltip"),
             linkCopied: tp("linkCopied"),
@@ -112,7 +132,10 @@ export default async function ProductDetailPage({
         />
 
         {/* Recommendations grid */}
-        <RecommendedTemplates recommendations={recommendations} />
+        <RecommendedTemplates
+          recommendations={recommendations}
+          priceBySlug={priceBySlug}
+        />
       </section>
     </main>
   );

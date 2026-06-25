@@ -31,6 +31,7 @@ func main() {
 	defer pool.Close()
 
 	var catalogStore internalhandlers.CatalogStore = internalhandlers.NewPostgresCatalogStore(pool)
+	var pricingStore internalhandlers.PricingStore = internalhandlers.NewPostgresPricingStore(pool)
 
 	// Optional Redis cache for the read-only catalog. Static data, so wrap the
 	// store in a caching decorator when REDIS_URL is configured. The cache is
@@ -47,11 +48,13 @@ func main() {
 			log.Printf("redis flush on boot: %v", err)
 		}
 		catalogStore = internalhandlers.NewCachingCatalogStore(catalogStore, rdb, time.Hour)
+		pricingStore = internalhandlers.NewCachingPricingStore(pricingStore, rdb, time.Hour)
 		defer rdb.Close()
 		log.Println("catalog cache enabled (redis)")
 	}
 
 	catalogHandler := internalhandlers.NewCatalogHandler(catalogStore)
+	pricingHandler := internalhandlers.NewPricingHandler(pricingStore)
 
 	allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
 
@@ -77,8 +80,9 @@ func main() {
 
 	r.Get("/health", handlers.Health)
 
-	// Public product catalog — no auth required.
+	// Public product catalog + pricing — no auth required.
 	catalogHandler.RegisterRoutes(r)
+	pricingHandler.RegisterRoutes(r)
 
 	port := os.Getenv("PORT")
 	if port == "" {

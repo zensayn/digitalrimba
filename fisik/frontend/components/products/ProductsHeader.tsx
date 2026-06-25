@@ -15,11 +15,12 @@ export default function ProductsHeader() {
 
   return (
     <header className="w-full max-w-[1200px] mx-auto px-6 md:px-10 pt-16 md:pt-24 pb-4 text-center flex flex-col items-center">
-      <motion.h1
+      <motion.h2
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.05, ease: EASE_OUT_STRONG }}
-        className="text-3xl sm:text-4xl md:text-5xl font-normal tracking-[-0.03em] leading-[1.12] text-[#212121] max-w-3xl mb-4"
+            className="font-poppins font-medium text-[#212121] mt-3 whitespace-pre-line"
+            style={{ fontSize: "clamp(1.9rem, 4vw, 3rem)", lineHeight: 1.08, letterSpacing: "-0.02em" }}
       >
         {t("title")
           .split("\n")
@@ -29,12 +30,12 @@ export default function ProductsHeader() {
               {i < arr.length - 1 && <br />}
             </span>
           ))}
-      </motion.h1>
+      </motion.h2>
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.7, delay: 0.15, ease: EASE_OUT_STRONG }}
-        className="text-sm md:text-base text-[#616161] max-w-xl font-light leading-relaxed"
+        className="font-poppins text-[#616161] mt-4" style={{ fontSize: "1.0625rem", lineHeight: 1.5 }}
       >
         {t("subtitle")}
       </motion.p>

@@ -21,8 +21,16 @@ import {
 
 import { Link } from "@/i18n/routing";
 import { TextureButton } from "@/components/ui/texture-button";
+import { Input } from "@/components/ui/input";
+import SortDropdown from "@/components/catalog/SortDropdown";
+import type { SortOrder } from "@/components/catalog/types";
 import TemplatePreviewCard from "@/components/TemplatePreviewCard";
-import type { CatalogProduct, CatalogCollection } from "@/lib/catalog";
+import CardPriceTag from "@/components/products/CardPriceTag";
+import type {
+  CatalogProduct,
+  CatalogCollection,
+  CardPrice,
+} from "@/lib/catalog";
 
 // Strong ease-out per Emil's design principles
 const EASE_OUT_STRONG = [0.23, 1, 0.32, 1] as const;
@@ -30,17 +38,21 @@ const EASE_OUT_STRONG = [0.23, 1, 0.32, 1] as const;
 interface MobileCatalogCarouselsProps {
   products: CatalogProduct[];
   collections: CatalogCollection[];
+  /** slug → entry price + availability. Absent ⇒ cards render without a price. */
+  priceBySlug?: Record<string, CardPrice>;
 }
 
 export default function MobileCatalogCarousels({
   products,
   collections,
+  priceBySlug,
 }: MobileCatalogCarouselsProps) {
   const t = useTranslations("Templates");
 
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [popularOnly, setPopularOnly] = useState<boolean>(false);
+  const [sortOrder, setSortOrder] = useState<SortOrder>("popular");
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState<boolean>(true);
   const [popularSectionExpanded, setPopularSectionExpanded] = useState<boolean>(true);
@@ -115,9 +127,17 @@ export default function MobileCatalogCarousels({
       return true;
     });
 
-    const rank = (p: (typeof list)[number]) => (p.top_seller ? 2 : p.popular ? 1 : 0);
-    return [...list].sort((a, b) => rank(b) - rank(a));
-  }, [products, searchQuery, popularOnly]);
+    const sorted = [...list];
+    if (sortOrder === "nameAsc") {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortOrder === "nameDesc") {
+      sorted.sort((a, b) => b.name.localeCompare(a.name));
+    } else {
+      const rank = (p: (typeof list)[number]) => (p.top_seller ? 2 : p.popular ? 1 : 0);
+      sorted.sort((a, b) => rank(b) - rank(a));
+    }
+    return sorted;
+  }, [products, searchQuery, popularOnly, sortOrder]);
 
   // ─── Group into per-collection rails (or single rail if a collection is chosen)
   const groups = useMemo(() => {
@@ -142,20 +162,20 @@ export default function MobileCatalogCarousels({
 
   return (
     <section className="w-full bg-white pb-20 px-6 flex flex-col">
-      {/* ── Search + filter bar (sort is desktop-only) ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-6">
+      {/* ── Search + filter + sort bar ── */}
+      <div className="flex flex-col gap-3 mb-6">
         {/* Search */}
-        <div className="relative flex-1">
+        <div className="relative w-full">
           <IconSearch
             size={16}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-[#93939f] pointer-events-none"
           />
-          <input
+          <Input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t("searchPlaceholder")}
-            className="w-full h-11 pl-11 pr-10 rounded-full border border-[#e5e7eb] bg-white text-sm text-[#212121] placeholder:text-[#93939f] font-poppins outline-none transition-[border-color,box-shadow] duration-200 ease-out focus:border-[#346739] focus:shadow-[0_0_0_3px_rgba(52,103,57,0.15)]"
+            className="h-11 pl-11 pr-10 rounded-full text-sm"
           />
           {searchQuery && (
             <button
@@ -169,18 +189,34 @@ export default function MobileCatalogCarousels({
           )}
         </div>
 
-        {/* Filter button — opens drawer */}
-        <button
-          type="button"
-          onClick={() => setFilterOpen(true)}
-          className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded-full border border-[#e5e7eb] bg-white text-sm text-[#212121] font-poppins transition-colors hover:border-[#212121] active:scale-[0.97]"
-        >
-          <IconAdjustmentsHorizontal size={16} />
-          {t("filterTitle")}
-          {hasActiveFilters && (
-            <span className="w-1.5 h-1.5 rounded-full bg-[#346739]" aria-hidden="true" />
-          )}
-        </button>
+        {/* Filter + sort row */}
+        <div className="flex items-center gap-3">
+          {/* Filter button — opens drawer */}
+          <button
+            type="button"
+            onClick={() => setFilterOpen(true)}
+            className="inline-flex flex-1 items-center justify-center gap-2 h-11 px-5 rounded-full border border-[#e5e7eb] bg-white text-sm text-[#212121] font-poppins transition-colors hover:border-[#212121] active:scale-[0.97]"
+          >
+            <IconAdjustmentsHorizontal size={16} />
+            {t("filterTitle")}
+            {hasActiveFilters && (
+              <span className="w-1.5 h-1.5 rounded-full bg-[#346739]" aria-hidden="true" />
+            )}
+          </button>
+
+          {/* Sort dropdown (Radix dropdown-menu) */}
+          <SortDropdown
+            value={sortOrder}
+            onChange={setSortOrder}
+            label={t("sortLabel")}
+            options={{
+              popular: t("sortPopular"),
+              nameAsc: t("sortNameAsc"),
+              nameDesc: t("sortNameDesc"),
+            }}
+            className="flex-1 justify-center"
+          />
+        </div>
       </div>
 
       {/* ── Result count ─────────────────────────────────────────── */}
@@ -205,6 +241,7 @@ export default function MobileCatalogCarousels({
               label={group.label}
               items={group.items}
               t={t}
+              priceBySlug={priceBySlug}
             />
           ))}
         </div>
@@ -221,7 +258,7 @@ export default function MobileCatalogCarousels({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2, ease: EASE_OUT_STRONG }}
               onClick={closeFilterManually}
-              className="fixed inset-0 z-[100] bg-[#212121]/30 backdrop-blur-sm"
+              className="fixed inset-0 z-[10000] bg-[#212121]/30 backdrop-blur-sm"
               aria-hidden="true"
             />
             <motion.aside
@@ -233,23 +270,27 @@ export default function MobileCatalogCarousels({
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ duration: 0.35, ease: EASE_OUT_STRONG }}
-              className="fixed inset-0 z-[101] w-full h-full bg-white flex flex-col"
+              className="fixed inset-0 z-[10001] w-full h-full bg-white flex flex-col"
             >
-              {/* Drawer header */}
+              {/* Drawer header — breadcrumb back route at top-left */}
               <div className="flex items-center justify-between px-4 py-4 border-b border-[#f2f2f2] shrink-0">
-                <div className="flex items-center gap-2">
+                <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm font-poppins">
                   <button
                     type="button"
                     onClick={closeFilterManually}
-                    aria-label="Back"
-                    className="w-9 h-9 rounded-full hover:bg-[#f2f2f2] flex items-center justify-center text-[#212121] active:scale-[0.95] transition-[background-color,transform] duration-150 ease-out"
+                    className="group inline-flex items-center gap-1 text-[#616161] hover:text-[#212121] active:scale-[0.98] transition-[color,transform] duration-150 ease-out"
                   >
-                    <IconChevronLeft size={20} />
+                    <IconChevronLeft
+                      size={16}
+                      className="transition-transform duration-150 ease-out group-hover:-translate-x-0.5"
+                    />
+                    {t("filterBack")}
                   </button>
-                  <h3 className="font-poppins text-base font-medium text-[#212121]">
+                  <span className="text-[#d9d9dd]" aria-hidden="true">/</span>
+                  <span className="text-[#212121] font-medium" aria-current="page">
                     {t("filterTitle")}
-                  </h3>
-                </div>
+                  </span>
+                </nav>
                 <button
                   type="button"
                   onClick={closeFilterManually}
@@ -311,11 +352,13 @@ function CategoryRail({
   label,
   items,
   t,
+  priceBySlug,
 }: {
   groupIndex: number;
   label: string;
   items: CatalogProduct[];
   t: ReturnType<typeof useTranslations>;
+  priceBySlug?: Record<string, CardPrice>;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -346,7 +389,12 @@ function CategoryRail({
         >
           <div className="inline-flex gap-3 px-6 py-1">
             {items.map((product) => (
-              <RailCard key={product.slug} product={product} t={t} />
+              <RailCard
+                key={product.slug}
+                product={product}
+                t={t}
+                price={priceBySlug?.[product.slug]}
+              />
             ))}
           </div>
         </div>
@@ -359,14 +407,19 @@ function CategoryRail({
 function RailCard({
   product,
   t,
+  price,
 }: {
   product: CatalogProduct;
   t: ReturnType<typeof useTranslations>;
+  price?: CardPrice;
 }) {
+  const muted = !!price && !price.available;
   return (
     <div data-rail-card className="snap-start shrink-0 w-[240px]">
       <Link
         href={`/products/${product.slug}`}
+        target="_blank"
+        rel="noopener noreferrer"
         className="group block text-left"
       >
         <div className="relative w-full aspect-[4/5] bg-[#fdfdfd] rounded-[18px] overflow-hidden border border-[#f2f2f2] shadow-card-lift transition-[box-shadow,border-color] duration-300 ease-out group-hover:shadow-card-lift-hover group-hover:border-[#d9d9dd]">
@@ -390,7 +443,9 @@ function RailCard({
             src={product.cover_url}
             alt={product.name}
             sizes="240px"
-            className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.025]"
+            className={`w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.025] ${
+              muted ? "grayscale opacity-60" : ""
+            }`}
           />
         </div>
 
@@ -398,9 +453,10 @@ function RailCard({
           <h4 className="font-poppins text-[14px] font-medium text-[#212121] truncate">
             {product.name}
           </h4>
-          <span className="shrink-0 font-poppins text-[12px] font-medium text-[#212121]">
-            {t("priceTag")}
-          </span>
+          <CardPriceTag
+            price={price}
+            className="shrink-0 font-poppins text-[12px] font-medium"
+          />
         </div>
 
         <p className="mt-0.5 font-poppins text-[12px] text-[#616161] leading-snug">

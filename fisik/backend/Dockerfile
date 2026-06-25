@@ -16,10 +16,11 @@ RUN go mod download
 # goose migration CLI (independent module).
 RUN GOBIN=/out go install github.com/pressly/goose/v3/cmd/goose@latest
 
-# Build the API + seeder as static binaries.
+# Build the API + seeders as static binaries.
 COPY backend/ ./
 RUN CGO_ENABLED=0 GOOS=linux go build -o /out/api ./cmd/api \
- && CGO_ENABLED=0 GOOS=linux go build -o /out/seed-catalog ./cmd/seed-catalog
+ && CGO_ENABLED=0 GOOS=linux go build -o /out/seed-catalog ./cmd/seed-catalog \
+ && CGO_ENABLED=0 GOOS=linux go build -o /out/seed-pricing ./cmd/seed-pricing
 
 FROM alpine:3.20
 RUN apk add --no-cache ca-certificates
@@ -27,6 +28,7 @@ WORKDIR /app
 
 COPY --from=builder /out/api /app/api
 COPY --from=builder /out/seed-catalog /app/seed-catalog
+COPY --from=builder /out/seed-pricing /app/seed-pricing
 COPY --from=builder /out/goose /app/goose
 COPY db/migrations /app/migrations
 COPY db/seed /app/seed
@@ -34,5 +36,6 @@ COPY backend/docker-entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 ENV CATALOG_SEED_PATH=/app/seed/catalog-seed.json
+ENV PRICING_SEED_PATH=/app/seed/pricing-seed.json
 EXPOSE 8080
 ENTRYPOINT ["/app/entrypoint.sh"]

@@ -16,14 +16,22 @@ import ReviewSection from "@/components/ReviewSection";
 import FaqSection from "@/components/FaqSection";
 import BottomCTA from "@/components/BottomCTA";
 import ConsultationBooking from "@/components/ConsultationBooking";
-import { fetchCollections, fetchProducts } from "@/lib/catalog";
+import {
+  fetchCollections,
+  fetchProducts,
+  fetchPricingCatalog,
+  pricingBySlug,
+} from "@/lib/catalog";
 import HowItWorks from "@/components/HowItWorks";
 
 export default async function App() {
-  const [collections, products] = await Promise.all([
+  const [collections, products, pricing] = await Promise.all([
     fetchCollections(),
     fetchProducts(),
+    fetchPricingCatalog(),
   ]);
+
+  const priceBySlug = pricingBySlug(pricing);
 
   return (
     <main className="min-h-screen bg-white">
@@ -34,7 +42,11 @@ export default async function App() {
       <CraftMaterials />
       {/* Face Formula-style editorial gallery — comparison candidate, sits above
           the existing dark-band carousel. Keep the one that wins, drop the other. */}
-      <TemplateGallery products={products} collections={collections} />
+      <TemplateGallery
+        products={products}
+        collections={collections}
+        priceBySlug={priceBySlug}
+      />
       {/* Social-proof masonry — real couples; teaser linking to /gallery */}
       <RealWeddings />
       <HowItWorks />

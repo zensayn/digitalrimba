@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowRightUp, AltArrowRight, LetterOpened, WindowFrame, CrownStar } from "@solar-icons/react";
 import { IconBrandWhatsapp } from "@tabler/icons-react";
@@ -40,9 +41,12 @@ function HeroNavbar() {
       {/* Logo */}
       <div className="flex-1">
         <Link href="/" className="-ml-3 md:ml-0 inline-block hover:opacity-85 transition-opacity">
-          <img
+          <Image
             src="https://contents.rimba.app/assets/rimba-logo-white.webp"
             alt="Rimba Fisik"
+            width={569}
+            height={320}
+            priority
             className="block h-16 md:h-[72px] -my-3 w-auto"
           />
         </Link>
@@ -348,7 +352,7 @@ export default function Hero() {
                 transition={{ duration: 0.8, delay: 0.55 }}
                 className="mt-8 grid grid-cols-2 gap-3 w-fit"
               >
-                <Link href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer">
+                <Link href="https://wa.me/6285750275751" target="_blank" rel="noopener noreferrer">
                   <TextureButton variant="primary" size="lg" className="w-full whitespace-nowrap font-medium">
                     <IconBrandWhatsapp className="w-5 h-5 shrink-0" />
                     <span className="sm:hidden">Konsultasi</span>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, type Variants } from "motion/react";
 import { useTranslations } from "next-intl";
@@ -176,9 +177,11 @@ export default function CurvedMenu({ buttonColor = "#212121", activeButtonColor 
               }}
               className="absolute top-8 left-3 md:left-12 z-10 inline-block hover:opacity-85 transition-opacity"
             >
-              <img
+              <Image
                 src="https://contents.rimba.app/assets/rimba-logo-white.webp"
                 alt="Rimba Fisik"
+                width={569}
+                height={320}
                 className="block h-16 w-auto"
               />
             </Link>

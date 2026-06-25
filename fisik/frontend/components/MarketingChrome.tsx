@@ -6,7 +6,6 @@
 //   - /dashboard (app shell)
 //   - /auth, /login, /sign-up (auth flow has its own minimal chrome)
 //   - /onboarding (focused setup flow)
-//   - /template/* (live template preview routes embed in iframes)
 //
 // Mount this once in app/[locale]/layout.tsx so individual marketing pages
 // don't have to import <Header />, <Footer />, or <Navbar />.
@@ -23,7 +22,6 @@ const NON_MARKETING_PREFIXES = [
   "/login",
   "/sign-up",
   "/onboarding",
-  "/template",
 ] as const;
 
 function isMarketingPath(pathname: string): boolean {
