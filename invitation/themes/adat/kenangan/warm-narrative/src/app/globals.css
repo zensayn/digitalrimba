@@ -183,26 +183,9 @@ body {
   to   { transform: rotate(360deg); }
 }
 
-@keyframes petalFall {
-  0%   { transform: translateY(-80px) translateX(0) rotate(var(--petal-rot-start)); opacity: 0; }
-  8%   { opacity: 0.82; }
-  30%  { transform: translateY(28vh) translateX(var(--petal-sway)) rotate(calc(var(--petal-rot-start) + 110deg)); }
-  60%  { transform: translateY(60vh) translateX(calc(var(--petal-sway) * -0.55)) rotate(calc(var(--petal-rot-start) + 235deg)); }
-  92%  { opacity: 0.65; }
-  100% { transform: translateY(112vh) translateX(calc(var(--petal-sway) * 0.3)) rotate(calc(var(--petal-rot-start) + 360deg)); opacity: 0; }
-}
+/* petalFall keyframes generated per-petal inline by FallingFlowers.tsx */
 
-.petal-fall {
-  position: absolute;
-  top: 0;
-  pointer-events: none;
-  animation-name: petalFall;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-fill-mode: both;
-  opacity: 0;
-  height: auto;
-}
+/* .petal-fall styles moved inline to FallingFlowers.tsx */
 
 /* ─── Form elements ──────────────────────────────────────────────────────────── */
 .input-warm {
