@@ -1,0 +1,1155 @@
+{
+  "currency": "IDR",
+  "source": "harga-katalog-rimba.xlsx",
+  "tiers": [
+    {
+      "code": "t1",
+      "label": "50-99 pcs",
+      "min_qty": 50,
+      "max_qty": 99,
+      "sort_order": 0
+    },
+    {
+      "code": "t2",
+      "label": "100-299 pcs",
+      "min_qty": 100,
+      "max_qty": 299,
+      "sort_order": 1
+    },
+    {
+      "code": "t3",
+      "label": "300-499 pcs",
+      "min_qty": 300,
+      "max_qty": 499,
+      "sort_order": 2
+    },
+    {
+      "code": "t4",
+      "label": "500+ pcs",
+      "min_qty": 500,
+      "max_qty": null,
+      "sort_order": 3
+    }
+  ],
+  "products": [
+    {
+      "rimba_code": "rs-01.1",
+      "invitto_code": "E 01.1",
+      "name": "Savannah",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 17700,
+        "t2": 15863,
+        "t3": 14944,
+        "t4": 13025
+      }
+    },
+    {
+      "rimba_code": "rs-01.2",
+      "invitto_code": "E 01.2",
+      "name": "Topaz",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 16500,
+        "t2": 14813,
+        "t3": 13969,
+        "t4": 12125
+      }
+    },
+    {
+      "rimba_code": "rs-01.3",
+      "invitto_code": "E 01.3",
+      "name": "Lavender",
+      "collection_code": "rs",
+      "status": "pending",
+      "prices": {}
+    },
+    {
+      "rimba_code": "rs-02.3",
+      "invitto_code": "E 02.3",
+      "name": "Porcelain",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 15100,
+        "t2": 13588,
+        "t3": 12831,
+        "t4": 11075
+      }
+    },
+    {
+      "rimba_code": "rs-02.4",
+      "invitto_code": "E 02.4",
+      "name": "Santorini",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 16000,
+        "t2": 14375,
+        "t3": 13563,
+        "t4": 11750
+      }
+    },
+    {
+      "rimba_code": "rs-02.5",
+      "invitto_code": "E 02.5",
+      "name": "Hyacinth",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 16500,
+        "t2": 14813,
+        "t3": 13969,
+        "t4": 12125
+      }
+    },
+    {
+      "rimba_code": "rs-03.1",
+      "invitto_code": "E 03.1",
+      "name": "Anemone",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 16100,
+        "t2": 14463,
+        "t3": 13644,
+        "t4": 11825
+      }
+    },
+    {
+      "rimba_code": "rs-03.2",
+      "invitto_code": "E 03.2",
+      "name": "Vermilion",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 15900,
+        "t2": 14288,
+        "t3": 13481,
+        "t4": 11675
+      }
+    },
+    {
+      "rimba_code": "rs-04.1",
+      "invitto_code": "E 04.1",
+      "name": "Phoenix",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 18300,
+        "t2": 16388,
+        "t3": 15431,
+        "t4": 13475
+      }
+    },
+    {
+      "rimba_code": "rs-04.2",
+      "invitto_code": "E 04.2",
+      "name": "Alpine",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 18300,
+        "t2": 16388,
+        "t3": 15431,
+        "t4": 13475
+      }
+    },
+    {
+      "rimba_code": "rs-04.3",
+      "invitto_code": "E 04.3",
+      "name": "Toscana",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 18800,
+        "t2": 16825,
+        "t3": 15838,
+        "t4": 13850
+      }
+    },
+    {
+      "rimba_code": "rs-05.1",
+      "invitto_code": "E 05.1",
+      "name": "Sakura",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 18300,
+        "t2": 16388,
+        "t3": 15431,
+        "t4": 13475
+      }
+    },
+    {
+      "rimba_code": "rs-05.2",
+      "invitto_code": "E 05.2",
+      "name": "Magnolia",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 18800,
+        "t2": 16825,
+        "t3": 15838,
+        "t4": 13850
+      }
+    },
+    {
+      "rimba_code": "rs-06.1",
+      "invitto_code": "E 06.1",
+      "name": "Peony",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 16100,
+        "t2": 14463,
+        "t3": 13644,
+        "t4": 11825
+      }
+    },
+    {
+      "rimba_code": "rs-06.2",
+      "invitto_code": "E 06.2",
+      "name": "Ruby",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 15900,
+        "t2": 14288,
+        "t3": 13481,
+        "t4": 11675
+      }
+    },
+    {
+      "rimba_code": "rs-07.1",
+      "invitto_code": "E 07.1",
+      "name": "Camellia",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 17200,
+        "t2": 15425,
+        "t3": 14538,
+        "t4": 12650
+      }
+    },
+    {
+      "rimba_code": "rs-08.2",
+      "invitto_code": "E 08.2",
+      "name": "Lovebird",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 18300,
+        "t2": 16388,
+        "t3": 15431,
+        "t4": 13475
+      }
+    },
+    {
+      "rimba_code": "rs-09.1",
+      "invitto_code": "E 09.1",
+      "name": "Ginkgo",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 17400,
+        "t2": 15600,
+        "t3": 14700,
+        "t4": 12800
+      }
+    },
+    {
+      "rimba_code": "rs-09.2",
+      "invitto_code": "E 09.2",
+      "name": "Lilac",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 17100,
+        "t2": 15338,
+        "t3": 14456,
+        "t4": 12575
+      }
+    },
+    {
+      "rimba_code": "rs-09.3",
+      "invitto_code": "E 09.3",
+      "name": "Olive",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 16800,
+        "t2": 15075,
+        "t3": 14213,
+        "t4": 12350
+      }
+    },
+    {
+      "rimba_code": "rs-09.4",
+      "invitto_code": "E 09.4",
+      "name": "Indigo",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 17000,
+        "t2": 15250,
+        "t3": 14375,
+        "t4": 12500
+      }
+    },
+    {
+      "rimba_code": "rs-10.1",
+      "invitto_code": "E 10.1",
+      "name": "Carmine",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 16100,
+        "t2": 14463,
+        "t3": 13644,
+        "t4": 11825
+      }
+    },
+    {
+      "rimba_code": "rs-11.1",
+      "invitto_code": "E 11.1",
+      "name": "Amber",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 18100,
+        "t2": 16213,
+        "t3": 15269,
+        "t4": 13325
+      }
+    },
+    {
+      "rimba_code": "rs-12.1",
+      "invitto_code": "E 12.1",
+      "name": "Florence",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 19600,
+        "t2": 17525,
+        "t3": 16488,
+        "t4": 14450
+      }
+    },
+    {
+      "rimba_code": "rs-13.1",
+      "invitto_code": "E 13.1",
+      "name": "Azure",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 16500,
+        "t2": 14813,
+        "t3": 13969,
+        "t4": 12125
+      }
+    },
+    {
+      "rimba_code": "rs-14.1",
+      "invitto_code": "E 14.1",
+      "name": "Mauve",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 18300,
+        "t2": 16388,
+        "t3": 15431,
+        "t4": 13475
+      }
+    },
+    {
+      "rimba_code": "rs-15.1",
+      "invitto_code": "E 15.1",
+      "name": "Vesper",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 18800,
+        "t2": 16825,
+        "t3": 15838,
+        "t4": 13850
+      }
+    },
+    {
+      "rimba_code": "rs-16.1",
+      "invitto_code": "E 16.1",
+      "name": "Blush",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 16500,
+        "t2": 14813,
+        "t3": 13969,
+        "t4": 12125
+      }
+    },
+    {
+      "rimba_code": "rs-17.1",
+      "invitto_code": "E 17.1",
+      "name": "Forest",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 17200,
+        "t2": 15425,
+        "t3": 14538,
+        "t4": 12650
+      }
+    },
+    {
+      "rimba_code": "rs-18.1",
+      "invitto_code": "E 18.1",
+      "name": "Bordeaux",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 17400,
+        "t2": 15600,
+        "t3": 14700,
+        "t4": 12800
+      }
+    },
+    {
+      "rimba_code": "rs-19.1",
+      "invitto_code": "E 19.1",
+      "name": "Sienna",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 16100,
+        "t2": 14463,
+        "t3": 13644,
+        "t4": 11825
+      }
+    },
+    {
+      "rimba_code": "rs-19.2",
+      "invitto_code": "E 19.2",
+      "name": "Emerald",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 15800,
+        "t2": 14200,
+        "t3": 13400,
+        "t4": 11600
+      }
+    },
+    {
+      "rimba_code": "rs-19.3",
+      "invitto_code": "E 19.3",
+      "name": "Cerise",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 15700,
+        "t2": 14113,
+        "t3": 13319,
+        "t4": 11525
+      }
+    },
+    {
+      "rimba_code": "rs-20.1",
+      "invitto_code": "E 20.1",
+      "name": "Ivory",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 15200,
+        "t2": 13675,
+        "t3": 12913,
+        "t4": 11150
+      }
+    },
+    {
+      "rimba_code": "rs-21.1",
+      "invitto_code": "E 21.1",
+      "name": "Fern",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 15500,
+        "t2": 13938,
+        "t3": 13156,
+        "t4": 11375
+      }
+    },
+    {
+      "rimba_code": "rs-22.1",
+      "invitto_code": "E 22.1",
+      "name": "Sapphire",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 16300,
+        "t2": 14638,
+        "t3": 13806,
+        "t4": 11975
+      }
+    },
+    {
+      "rimba_code": "rs-23.1",
+      "invitto_code": "E 23.1",
+      "name": "Marigold",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 16700,
+        "t2": 14988,
+        "t3": 14131,
+        "t4": 12275
+      }
+    },
+    {
+      "rimba_code": "rs-24.1",
+      "invitto_code": "E 24.1",
+      "name": "Rosé",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 15900,
+        "t2": 14288,
+        "t3": 13481,
+        "t4": 11675
+      }
+    },
+    {
+      "rimba_code": "rs-25.1",
+      "invitto_code": "E 25.1",
+      "name": "Jade",
+      "collection_code": "rs",
+      "status": "available",
+      "prices": {
+        "t1": 19900,
+        "t2": 17788,
+        "t3": 16731,
+        "t4": 14675
+      }
+    },
+    {
+      "rimba_code": "rsh-01.1",
+      "invitto_code": "A 01.1",
+      "name": "Verdant",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 17600,
+        "t2": 15775,
+        "t3": 14863,
+        "t4": 12950
+      }
+    },
+    {
+      "rimba_code": "rsh-01.2",
+      "invitto_code": "A 01.2",
+      "name": "Cerulean",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 17500,
+        "t2": 15688,
+        "t3": 14781,
+        "t4": 12875
+      }
+    },
+    {
+      "rimba_code": "rsh-02.1",
+      "invitto_code": "A 02.1",
+      "name": "Ophelia",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 19900,
+        "t2": 17788,
+        "t3": 16731,
+        "t4": 14675
+      }
+    },
+    {
+      "rimba_code": "rsh-03.1",
+      "invitto_code": "A 03.1",
+      "name": "Florentine",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 19400,
+        "t2": 17350,
+        "t3": 16325,
+        "t4": 14300
+      }
+    },
+    {
+      "rimba_code": "rsh-03.2",
+      "invitto_code": "A 03.2",
+      "name": "Persimmon",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 19200,
+        "t2": 17175,
+        "t3": 16163,
+        "t4": 14150
+      }
+    },
+    {
+      "rimba_code": "rsh-04.1",
+      "invitto_code": "A 04.1",
+      "name": "Onyx",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 15000,
+        "t2": 13500,
+        "t3": 12750,
+        "t4": 11000
+      }
+    },
+    {
+      "rimba_code": "rsh-06.1",
+      "invitto_code": "A 06.1",
+      "name": "Periwinkle",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 21000,
+        "t2": 18750,
+        "t3": 17625,
+        "t4": 15500
+      }
+    },
+    {
+      "rimba_code": "rsh-06.2",
+      "invitto_code": "A 06.2",
+      "name": "Mirabelle",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 18200,
+        "t2": 16300,
+        "t3": 15350,
+        "t4": 13400
+      }
+    },
+    {
+      "rimba_code": "rsh-08.2",
+      "invitto_code": "A 08.2",
+      "name": "Tulipa",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 18300,
+        "t2": 16388,
+        "t3": 15431,
+        "t4": 13475
+      }
+    },
+    {
+      "rimba_code": "rsh-09.1",
+      "invitto_code": "A 09.1",
+      "name": "Seraphine",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 21000,
+        "t2": 18750,
+        "t3": 17625,
+        "t4": 15500
+      }
+    },
+    {
+      "rimba_code": "rsh-10.1",
+      "invitto_code": "A 10.1",
+      "name": "Cobalt",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 20500,
+        "t2": 18313,
+        "t3": 17219,
+        "t4": 15125
+      }
+    },
+    {
+      "rimba_code": "rsh-10.2",
+      "invitto_code": "A 10.2",
+      "name": "Camellia Royale",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 18300,
+        "t2": 16388,
+        "t3": 15431,
+        "t4": 13475
+      }
+    },
+    {
+      "rimba_code": "rsh-11.1",
+      "invitto_code": "A 11.1",
+      "name": "Monstera",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 18300,
+        "t2": 16388,
+        "t3": 15431,
+        "t4": 13475
+      }
+    },
+    {
+      "rimba_code": "rsh-11.2",
+      "invitto_code": "A 11.2",
+      "name": "Aurelia",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 18300,
+        "t2": 16388,
+        "t3": 15431,
+        "t4": 13475
+      }
+    },
+    {
+      "rimba_code": "rsh-12.1",
+      "invitto_code": "A 12.1",
+      "name": "Celeste",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 16000,
+        "t2": 14375,
+        "t3": 13563,
+        "t4": 11750
+      }
+    },
+    {
+      "rimba_code": "rsh-12.2",
+      "invitto_code": "A 12.2",
+      "name": "Mimosa",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 16000,
+        "t2": 14375,
+        "t3": 13563,
+        "t4": 11750
+      }
+    },
+    {
+      "rimba_code": "rsh-12.3",
+      "invitto_code": "A 12.3",
+      "name": "Coral",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 16200,
+        "t2": 14550,
+        "t3": 13725,
+        "t4": 11900
+      }
+    },
+    {
+      "rimba_code": "rsh-13.1",
+      "invitto_code": "A 13.1",
+      "name": "Latte",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 19900,
+        "t2": 17788,
+        "t3": 16731,
+        "t4": 14675
+      }
+    },
+    {
+      "rimba_code": "rsh-13.2",
+      "invitto_code": "A 13.2",
+      "name": "Wildflower",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 18300,
+        "t2": 16388,
+        "t3": 15431,
+        "t4": 13475
+      }
+    },
+    {
+      "rimba_code": "rsh-13.3",
+      "invitto_code": "A 13.3",
+      "name": "Petal",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 19900,
+        "t2": 17788,
+        "t3": 16731,
+        "t4": 14675
+      }
+    },
+    {
+      "rimba_code": "rsh-14.1",
+      "invitto_code": "A 14.1",
+      "name": "Saffron",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 18300,
+        "t2": 16388,
+        "t3": 15431,
+        "t4": 13475
+      }
+    },
+    {
+      "rimba_code": "rsh-16.1",
+      "invitto_code": "A 16.1",
+      "name": "Vintessa",
+      "collection_code": "rsh",
+      "status": "available",
+      "prices": {
+        "t1": 17200,
+        "t2": 15425,
+        "t3": 14538,
+        "t4": 12650
+      }
+    },
+    {
+      "rimba_code": "rfh-01.1",
+      "invitto_code": "T 01.1",
+      "name": "Whisper",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 11900,
+        "t2": 10663,
+        "t3": 10044,
+        "t4": 8425
+      }
+    },
+    {
+      "rimba_code": "rfh-01.2",
+      "invitto_code": "T 01.2",
+      "name": "Meadow",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 11800,
+        "t2": 10575,
+        "t3": 9963,
+        "t4": 8350
+      }
+    },
+    {
+      "rimba_code": "rfh-02.1",
+      "invitto_code": "T 02.1",
+      "name": "Wildgrass",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 14000,
+        "t2": 12500,
+        "t3": 11750,
+        "t4": 10000
+      }
+    },
+    {
+      "rimba_code": "rfh-03.2",
+      "invitto_code": "T 03.2",
+      "name": "Blossom",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 17800,
+        "t2": 15825,
+        "t3": 14838,
+        "t4": 12850
+      }
+    },
+    {
+      "rimba_code": "rfh-04.1",
+      "invitto_code": "T 04.1",
+      "name": "Pinkie",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 16800,
+        "t2": 14950,
+        "t3": 14025,
+        "t4": 12100
+      }
+    },
+    {
+      "rimba_code": "rfh-04.2",
+      "invitto_code": "T 04.2",
+      "name": "Whitewood",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 13300,
+        "t2": 11888,
+        "t3": 11181,
+        "t4": 9475
+      }
+    },
+    {
+      "rimba_code": "rfh-04.3",
+      "invitto_code": "T 04.3",
+      "name": "Snowdrop",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 13300,
+        "t2": 11888,
+        "t3": 11181,
+        "t4": 9475
+      }
+    },
+    {
+      "rimba_code": "rfh-04.4",
+      "invitto_code": "T 04.4",
+      "name": "Tulipe",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 13200,
+        "t2": 11800,
+        "t3": 11100,
+        "t4": 9400
+      }
+    },
+    {
+      "rimba_code": "rfh-05.1",
+      "invitto_code": "T 05.1",
+      "name": "Autumn",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 12900,
+        "t2": 11538,
+        "t3": 10856,
+        "t4": 9175
+      }
+    },
+    {
+      "rimba_code": "rfh-05.2",
+      "invitto_code": "T 05.2",
+      "name": "Pinewood",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 12900,
+        "t2": 11538,
+        "t3": 10856,
+        "t4": 9175
+      }
+    },
+    {
+      "rimba_code": "rfh-05.3",
+      "invitto_code": "T 05.3",
+      "name": "Cherry",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 13300,
+        "t2": 11888,
+        "t3": 11181,
+        "t4": 9475
+      }
+    },
+    {
+      "rimba_code": "rfh-05.4",
+      "invitto_code": "T 05.4",
+      "name": "Midnight",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 13100,
+        "t2": 11713,
+        "t3": 11019,
+        "t4": 9325
+      }
+    },
+    {
+      "rimba_code": "rfh-06.1",
+      "invitto_code": "T 06.1",
+      "name": "Crimson",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 13400,
+        "t2": 11975,
+        "t3": 11263,
+        "t4": 9550
+      }
+    },
+    {
+      "rimba_code": "rfh-06.2",
+      "invitto_code": "T 06.2",
+      "name": "Linen",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 13300,
+        "t2": 11888,
+        "t3": 11181,
+        "t4": 9475
+      }
+    },
+    {
+      "rimba_code": "rfh-06.3",
+      "invitto_code": "T 06.3",
+      "name": "Rosewood",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 13400,
+        "t2": 11975,
+        "t3": 11263,
+        "t4": 9550
+      }
+    },
+    {
+      "rimba_code": "rfh-06.4",
+      "invitto_code": "T 06.4",
+      "name": "Bluebell",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 13300,
+        "t2": 11888,
+        "t3": 11181,
+        "t4": 9475
+      }
+    },
+    {
+      "rimba_code": "rfh-07.1",
+      "invitto_code": "T 07.1",
+      "name": "Velvet",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 13600,
+        "t2": 12150,
+        "t3": 11425,
+        "t4": 9700
+      }
+    },
+    {
+      "rimba_code": "rfh-08.1",
+      "invitto_code": "T 08.1",
+      "name": "Champagne",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 13500,
+        "t2": 12063,
+        "t3": 11344,
+        "t4": 9625
+      }
+    },
+    {
+      "rimba_code": "rfh-09.1",
+      "invitto_code": "T 09.1",
+      "name": "Mint",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 13700,
+        "t2": 12238,
+        "t3": 11506,
+        "t4": 9775
+      }
+    },
+    {
+      "rimba_code": "rfh-10.1",
+      "invitto_code": "T 10.1",
+      "name": "Eucalypta",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 12300,
+        "t2": 11013,
+        "t3": 10369,
+        "t4": 8725
+      }
+    },
+    {
+      "rimba_code": "rfh-10.2",
+      "invitto_code": "T 10.2",
+      "name": "Heritage",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 12500,
+        "t2": 11188,
+        "t3": 10531,
+        "t4": 8875
+      }
+    },
+    {
+      "rimba_code": "rfh-11.1",
+      "invitto_code": "T 11.1",
+      "name": "Garden",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 12400,
+        "t2": 11100,
+        "t3": 10450,
+        "t4": 8800
+      }
+    },
+    {
+      "rimba_code": "rfh-11.2",
+      "invitto_code": "T 11.2",
+      "name": "Pastel",
+      "collection_code": "rfh",
+      "status": "available",
+      "prices": {
+        "t1": 12900,
+        "t2": 11538,
+        "t3": 10856,
+        "t4": 9175
+      }
+    },
+    {
+      "rimba_code": "rfh-12.1",
+      "invitto_code": "T 12.1",
+      "name": "Aquamarine",
+      "collection_code": "rfh",
+      "status": "pending",
+      "prices": {}
+    },
+    {
+      "rimba_code": "rfh-13.1",
+      "invitto_code": "T 13.1",
+      "name": "Iceberg",
+      "collection_code": "rfh",
+      "status": "pending",
+      "prices": {}
+    },
+    {
+      "rimba_code": "rfh-14.1",
+      "invitto_code": "T 14.1",
+      "name": "Tropic",
+      "collection_code": "rfh",
+      "status": "pending",
+      "prices": {}
+    },
+    {
+      "rimba_code": "rfh-15.1",
+      "invitto_code": "T 15.1",
+      "name": "Crème",
+      "collection_code": "rfh",
+      "status": "pending",
+      "prices": {}
+    }
+  ]
+}

@@ -23,11 +23,17 @@ import {
 
 import { Link, useRouter } from "@/i18n/routing";
 import TemplatePreviewCard from "@/components/TemplatePreviewCard";
+import CardPriceTag from "@/components/products/CardPriceTag";
+import { Input } from "@/components/ui/input";
 import EmptyState from "./catalog/EmptyState";
 import SortDropdown from "./catalog/SortDropdown";
 import FilterPanel from "./catalog/FilterPanel";
 import type { SortOrder } from "./catalog/types";
-import type { CatalogProduct, CatalogCollection } from "@/lib/catalog";
+import type {
+  CatalogProduct,
+  CatalogCollection,
+  CardPrice,
+} from "@/lib/catalog";
 
 // Strong ease-out per Emil's design principles
 const EASE_OUT_STRONG = [0.23, 1, 0.32, 1] as const;
@@ -39,6 +45,8 @@ interface TemplateCatalogProps {
   showHeading?: boolean;
   products: CatalogProduct[];
   collections: CatalogCollection[];
+  /** slug → entry price + availability. Absent ⇒ cards render without a price. */
+  priceBySlug?: Record<string, CardPrice>;
 }
 
 export default function TemplateCatalog({
@@ -46,6 +54,7 @@ export default function TemplateCatalog({
   showHeading = true,
   products,
   collections,
+  priceBySlug,
 }: TemplateCatalogProps) {
   // Home carousel teases a handful per category; the full list lives at /products.
   const HOME_LIMIT = 5;
@@ -210,7 +219,12 @@ export default function TemplateCatalog({
   };
 
   // ─── Shared bits ──────────────────────────────────────────────────────────
-  const renderCard = (product: CatalogProduct, index: number) => (
+  const renderCard = (product: CatalogProduct, index: number) => {
+    // Pending / unpriced products read as a calm "inactive" card: the cover is
+    // desaturated and the price line shows a muted "Cek katalog" instead.
+    const price = priceBySlug?.[product.slug];
+    const muted = !!price && !price.available;
+    return (
     <motion.div
       layout
       key={product.slug}
@@ -220,7 +234,12 @@ export default function TemplateCatalog({
       transition={{ duration: 0.5, delay: Math.min(index * 0.04, 0.24), ease: EASE_OUT_STRONG }}
       className="w-[285px] sm:w-auto shrink-0 snap-align-start snap-always"
     >
-      <Link href={`/products/${product.slug}`} className="group block text-left">
+      <Link
+        href={`/products/${product.slug}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group block text-left"
+      >
         {/* Image-only card — only the preview gets the border + shadow + radius */}
         <div className="relative w-full aspect-[4/5] bg-[#fdfdfd] rounded-[18px] overflow-hidden border border-[#f2f2f2] shadow-card-lift transition-[box-shadow,border-color] duration-300 ease-out group-hover:shadow-card-lift-hover group-hover:border-[#d9d9dd]">
           {/* Seller badge (top-left) — top sellers get a filled green chip,
@@ -244,7 +263,9 @@ export default function TemplateCatalog({
           <TemplatePreviewCard
             src={product.cover_url}
             alt={product.name}
-            className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.025]"
+            className={`w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.025] ${
+              muted ? "grayscale opacity-60" : ""
+            }`}
           />
         </div>
 
@@ -253,9 +274,10 @@ export default function TemplateCatalog({
           <h3 className="font-poppins text-[15px] sm:text-[16px] font-medium text-[#212121] truncate">
             {product.name}
           </h3>
-          <span className="shrink-0 font-poppins text-[13px] font-medium text-[#212121]">
-            {t("priceTag")}
-          </span>
+          <CardPriceTag
+            price={price}
+            className="shrink-0 font-poppins text-[13px] font-medium"
+          />
         </div>
 
         <p className="mt-1 font-poppins text-[12.5px] text-[#616161] leading-snug">
@@ -267,10 +289,14 @@ export default function TemplateCatalog({
         </p>
       </Link>
     </motion.div>
-  );
+    );
+  };
 
   // ─── HOME MODE: Custom Swipable Carousel & Rounded Band ─────────────────
-  const renderHomeCard = (product: CatalogProduct, index: number) => (
+  const renderHomeCard = (product: CatalogProduct, index: number) => {
+    const price = priceBySlug?.[product.slug];
+    const muted = !!price && !price.available;
+    return (
     <motion.div
       layout
       key={product.slug}
@@ -280,7 +306,12 @@ export default function TemplateCatalog({
       transition={{ duration: 0.5, delay: Math.min(index * 0.04, 0.24), ease: EASE_OUT_STRONG }}
       className="carousel-card w-[260px] sm:w-[300px] lg:w-[340px] shrink-0 snap-start snap-always"
     >
-      <Link href={`/products/${product.slug}`} className="group block text-left">
+      <Link
+        href={`/products/${product.slug}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group block text-left"
+      >
         {/* The full-size template preview card */}
         <div className="relative w-full aspect-[4/5] rounded-[24px] overflow-hidden border border-white/10 shadow-xl transition-all duration-300 ease-out group-hover:scale-[1.02] group-hover:shadow-2xl">
           {/* Seller badge inside the card — top seller filled, popular pale */}
@@ -298,7 +329,11 @@ export default function TemplateCatalog({
 
 
 
-          <TemplatePreviewCard src={product.cover_url} alt={product.name} className="w-full h-full" />
+          <TemplatePreviewCard
+            src={product.cover_url}
+            alt={product.name}
+            className={`w-full h-full ${muted ? "grayscale opacity-60" : ""}`}
+          />
         </div>
 
         {/* Bottom Details outside the card */}
@@ -307,9 +342,11 @@ export default function TemplateCatalog({
             <h3 className="font-poppins text-[16px] sm:text-[18px] font-medium text-white truncate">
               {product.name}
             </h3>
-            <span className="shrink-0 font-poppins text-[13px] font-medium text-white/90">
-              {t("priceTag")}
-            </span>
+            <CardPriceTag
+              price={price}
+              tone="dark"
+              className="shrink-0 font-poppins text-[13px] font-medium"
+            />
           </div>
           <p className="mt-1.5 font-poppins text-[12px] text-white/60 leading-snug uppercase">
             {product.collection_name}
@@ -317,7 +354,8 @@ export default function TemplateCatalog({
         </div>
       </Link>
     </motion.div>
-  );
+    );
+  };
 
   // Reset the carousel to the first card (aligned under the heading) on filter change
   useEffect(() => {
@@ -448,12 +486,12 @@ export default function TemplateCatalog({
               size={16}
               className="absolute left-4 top-1/2 -translate-y-1/2 text-[#93939f] pointer-events-none"
             />
-            <input
+            <Input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t("searchPlaceholder")}
-              className="w-full h-11 pl-11 pr-10 rounded-full border border-[#e5e7eb] bg-white text-sm text-[#212121] placeholder:text-[#93939f] font-poppins outline-none transition-[border-color,box-shadow] duration-200 ease-out focus:border-[#346739] focus:shadow-[0_0_0_3px_rgba(52,103,57,0.15)]"
+              className="h-11 pl-11 pr-10 rounded-full text-sm"
             />
             {searchQuery && (
               <button

@@ -12,14 +12,20 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { Eye } from "@solar-icons/react";
 import TemplatePreviewCard from "@/components/TemplatePreviewCard";
-import type { CatalogProduct } from "@/lib/catalog";
+import CardPriceTag from "@/components/products/CardPriceTag";
+import type { CatalogProduct, CardPrice } from "@/lib/catalog";
 
 interface Props {
   /** Products to recommend (already filtered/ordered by the server). */
   recommendations: CatalogProduct[];
+  /** slug → entry price + availability. Absent ⇒ cards render without a price. */
+  priceBySlug?: Record<string, CardPrice>;
 }
 
-export default function RecommendedTemplates({ recommendations }: Props) {
+export default function RecommendedTemplates({
+  recommendations,
+  priceBySlug,
+}: Props) {
   const t = useTranslations("Templates");
   const tp = useTranslations("Products");
 
@@ -53,10 +59,15 @@ export default function RecommendedTemplates({ recommendations }: Props) {
 
         {/* Card grid — 2 cols on mobile, 4 on lg */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 md:gap-x-5 gap-y-7">
-          {recommendations.map((product) => (
+          {recommendations.map((product) => {
+            const price = priceBySlug?.[product.slug];
+            const muted = !!price && !price.available;
+            return (
             <Link
               key={product.slug}
               href={`/products/${product.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="group block text-left"
             >
               {/* Image-only card */}
@@ -87,7 +98,9 @@ export default function RecommendedTemplates({ recommendations }: Props) {
                   src={product.cover_url}
                   alt={product.name}
                   sizes="(min-width: 1024px) 280px, (min-width: 768px) 33vw, 50vw"
-                  className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.025]"
+                  className={`w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.025] ${
+                    muted ? "grayscale opacity-60" : ""
+                  }`}
                 />
               </div>
 
@@ -96,16 +109,18 @@ export default function RecommendedTemplates({ recommendations }: Props) {
                 <h3 className="font-poppins text-[14px] font-medium text-[#212121] truncate">
                   {product.name}
                 </h3>
-                <span className="shrink-0 font-poppins text-[12px] font-medium text-[#212121]">
-                  {t("priceTag")}
-                </span>
+                <CardPriceTag
+                  price={price}
+                  className="shrink-0 font-poppins text-[12px] font-medium"
+                />
               </div>
 
               <p className="mt-0.5 font-poppins text-[12px] text-[#616161] leading-snug">
                 {product.collection_name}
               </p>
             </Link>
-          ))}
+            );
+          })}
         </div>
 
         {/* Mobile-only "see all" link below the grid */}

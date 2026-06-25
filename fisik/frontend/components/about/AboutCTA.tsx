@@ -24,7 +24,7 @@ Estimasi Total: Rp ${state.total.toLocaleString()}
 
 Saya ingin berkonsultasi mengenai desain undangan pernikahan saya.`;
 
-    return `https://wa.me/1234567890?text=${encodeURIComponent(text)}`;
+    return `https://wa.me/6285750275751?text=${encodeURIComponent(text)}`;
   };
 
   const easeDrawer = [0.23, 1, 0.32, 1] as const;

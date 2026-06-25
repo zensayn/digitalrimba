@@ -1,6 +1,6 @@
 "use client";
 
-import { IconSearch } from "@tabler/icons-react";
+import { MinimalisticMagnifier} from "@solar-icons/react";
 
 interface EmptyStateProps {
   title: string;
@@ -18,7 +18,7 @@ export default function EmptyState({
   return (
     <div className="border border-dashed border-[#e5e7eb] rounded-[24px] py-16 px-6 text-center flex flex-col items-center">
       <span className="w-12 h-12 rounded-full bg-[#f2f2f2] flex items-center justify-center text-[#93939f] mb-4">
-        <IconSearch size={20} />
+        <MinimalisticMagnifier weight="BoldDuotone" size={20} color="#346739" />
       </span>
       <h4 className="font-poppins text-base font-medium text-[#212121] mb-1">{title}</h4>
       <p className="text-sm text-[#616161] max-w-sm font-poppins font-light mb-5">{description}</p>
