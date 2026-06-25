@@ -1,19 +1,24 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import InfiniteMenu from "@/components/shared/InfiniteMenu";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
+import dynamic from "next/dynamic";
+import type { InvitationConfig } from "@/lib/config-types";
 
-export default function GallerySection() {
+const LazyInfiniteMenu = dynamic(() => import("@/components/shared/InfiniteMenu"), {
+  ssr: false,
+  loading: () => (
+    <div
+      aria-hidden="true"
+      className="h-full w-full"
+      style={{ background: "var(--surface-2)" }}
+    />
+  ),
+});
+
+export default function GallerySection({ gallery }: { gallery: InvitationConfig["gallery"] }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-15%" });
-  const [isPreview, setIsPreview] = useState(false);
-  const { gallery } = useInvitationConfig();
-
-  useEffect(() => {
-    setIsPreview(window.location.search.includes("preview=1"));
-  }, []);
 
   const menuItems = useMemo(() => {
     return gallery.map((item) => ({
@@ -34,7 +39,7 @@ export default function GallerySection() {
         style={{
           fontSize: "clamp(80px, 25vw, 140px)",
           fontWeight: 400,
-          color: "rgba(192,120,48,0.025)",
+          color: "rgba(192,120,48,0.06)",
           top: "5%",
           left: "50%",
           transform: "translateX(-50%)",
@@ -76,18 +81,13 @@ export default function GallerySection() {
             borderRadius: "2px",
             position: "relative",
             overflow: "hidden",
+            background: "var(--surface-2)",
             boxShadow: "0 0 60px rgba(192,120,48,0.06), inset 0 0 40px rgba(0,0,0,0.3)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          {isPreview ? (
-            <div style={{ color: "var(--gold-dim)", fontSize: "12px", letterSpacing: "0.2em", textAlign: "center" }}>
-              <div style={{ fontSize: "24px", marginBottom: "8px", opacity: 0.4 }}>◈</div>
-              GALLERY
-            </div>
-          ) : null}
           {/* Corner ornaments */}
           {(["top-0 left-0", "top-0 right-0", "bottom-0 left-0", "bottom-0 right-0"] as const).map((pos, i) => (
             <div
@@ -105,7 +105,7 @@ export default function GallerySection() {
             />
           ))}
 
-          {!isPreview && <InfiniteMenu items={menuItems} scale={1.4} />}
+          <LazyInfiniteMenu items={menuItems} scale={1.4} />
         </motion.div>
 
         {/* Caption */}

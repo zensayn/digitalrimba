@@ -2,19 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
+import type { InvitationConfig } from "@/lib/config-types";
 
 const ROMAN = ["I", "II", "III", "IV", "V"];
 const INTERVAL_MS = 5000;
 
-export default function LoveStorySection() {
+export default function LoveStorySection({ loveStory }: { loveStory: InvitationConfig["loveStory"] }) {
   const ref = useRef(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-10%" });
   const [active, setActive] = useState(0);
   const activeRef = useRef(0);
   const isPausedRef = useRef(false);
-  const { loveStory } = useInvitationConfig();
+  const [hasSwiped, setHasSwiped] = useState(false);
 
   const isDragging = useRef(false);
   const startX = useRef(0);
@@ -23,6 +23,7 @@ export default function LoveStorySection() {
   const handleScroll = () => {
     if (!scrollRef.current) return;
     const idx = Math.round(scrollRef.current.scrollLeft / scrollRef.current.clientWidth);
+    if (idx !== activeRef.current) setHasSwiped(true);
     setActive(idx);
     activeRef.current = idx;
   };
@@ -42,6 +43,7 @@ export default function LoveStorySection() {
 
   const handlePointerDown = (e: React.PointerEvent) => {
     isPausedRef.current = true;
+    setHasSwiped(true);
     if (e.pointerType !== "mouse" || !scrollRef.current) return;
     isDragging.current = true;
     startX.current = e.pageX - scrollRef.current.offsetLeft;
@@ -75,22 +77,21 @@ export default function LoveStorySection() {
     <section id="lovestory" className="snap-section" style={{ background: "var(--surface)" }}>
       <div className="paper-overlay" />
 
-      {/* Timeline background line */}
+      {/* Timeline silhouette — just below the "Kisah Kami" label */}
       <div
         className="absolute pointer-events-none select-none z-0"
         style={{
           left: 0,
           right: 0,
-          top: "45%",
-          transform: "translateY(-50%)",
-          height: "clamp(120px, 30vh, 220px)",
-          opacity: 0.12,
+          top: "clamp(10px, 2vh, 36px)",
+          height: "clamp(140px, 32vh, 240px)",
+          opacity: 0.3,
         }}
       >
         <img
-          src="/images/Timeline.webp"
-          alt="Timeline Backdrop"
-          style={{ width: "100%", height: "100%", objectFit: "contain" }}
+          src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Timeline.webp`}
+          alt=""
+          style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "top" }}
         />
       </div>
 
@@ -161,49 +162,14 @@ export default function LoveStorySection() {
               gap: "clamp(10px, 2.5vh, 18px)",
             }}
           >
-            {/* Chapter number + year */}
-            <div className="flex items-center gap-3">
-              <span
-                className="font-garamond"
-                style={{ fontSize: "clamp(11px, 2.8vw, 14px)", fontStyle: "italic", color: "var(--gold)", letterSpacing: "0.15em" }}
-              >
-                {ROMAN[i] ?? String(i + 1)}
-              </span>
-              <div style={{ width: 28, height: 1, background: "rgba(192,120,48,0.35)" }} />
-              <span
-                className="font-label"
-                style={{ fontSize: "clamp(10px, 2.5vw, 12px)", color: "var(--text-dim)", letterSpacing: "0.2em" }}
-              >
-                {chapter.year}
-              </span>
-            </div>
-
-            {/* Chapter title */}
-            <h2
-              className="font-display"
-              style={{
-                fontSize: "clamp(26px, 8vw, 42px)",
-                fontWeight: 400,
-                fontStyle: "italic",
-                color: "var(--text)",
-                lineHeight: 1.1,
-              }}
-            >
-              {chapter.chapter}
-            </h2>
-
-            {/* Photo */}
+            {/* Photo — at top for editorial flow */}
             <div
               className="relative flex-shrink-0"
-              style={{
-                width: "100%",
-                maxWidth: "clamp(220px, 70vw, 300px)",
-              }}
+              style={{ width: "100%", maxWidth: "clamp(220px, 70vw, 300px)" }}
             >
-               {/* Sparkle top right */}
               <img
-                src="/images/Sparkle.webp"
-                alt="Sparkle"
+                src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Sparkle.webp`}
+                alt=""
                 style={{
                   position: "absolute",
                   width: "clamp(28px, 8vw, 36px)",
@@ -215,10 +181,9 @@ export default function LoveStorySection() {
                   pointerEvents: "none",
                 }}
               />
-              {/* Sparkle bottom left */}
               <img
-                src="/images/Sparkle.webp"
-                alt="Sparkle"
+                src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Sparkle.webp`}
+                alt=""
                 style={{
                   position: "absolute",
                   width: "clamp(20px, 6vw, 26px)",
@@ -266,6 +231,44 @@ export default function LoveStorySection() {
               </div>
             </div>
 
+            {/* Chapter number + year */}
+            <div className="flex items-center gap-3" style={{ marginTop: "clamp(4px, 1vh, 8px)" }}>
+              <span
+                className="font-garamond"
+                style={{ fontSize: "clamp(11px, 2.8vw, 14px)", fontStyle: "italic", color: "var(--gold)", letterSpacing: "0.15em" }}
+              >
+                {ROMAN[i] ?? String(i + 1)}
+              </span>
+              <div style={{ width: 28, height: 1, background: "rgba(192,120,48,0.35)" }} />
+              <span
+                className="font-label"
+                style={{ fontSize: "clamp(10px, 2.5vw, 12px)", color: "var(--text-dim)", letterSpacing: "0.2em" }}
+              >
+                {chapter.year}
+              </span>
+            </div>
+
+            {/* Chapter title */}
+            <h2
+              className="font-display"
+              style={{
+                fontSize: "clamp(26px, 8vw, 42px)",
+                fontWeight: 400,
+                fontStyle: "italic",
+                color: "var(--text)",
+                lineHeight: 1.1,
+              }}
+            >
+              {chapter.chapter}
+            </h2>
+
+            {/* Copper ornamental divider */}
+            <div className="flex items-center gap-2" style={{ justifyContent: "center" }}>
+              <div style={{ width: 28, height: 1, background: "linear-gradient(90deg, transparent, var(--gold))", opacity: 0.45 }} />
+              <div style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--gold)", opacity: 0.45 }} />
+              <div style={{ width: 28, height: 1, background: "linear-gradient(90deg, var(--gold), transparent)", opacity: 0.45 }} />
+            </div>
+
             {/* Description */}
             <p
               className="font-body"
@@ -284,57 +287,64 @@ export default function LoveStorySection() {
         ))}
       </div>
 
-      {/* Progress dots + timer bar */}
-      <div className="absolute bottom-6 left-0 right-0 z-20 flex flex-col items-center gap-2 pointer-events-none">
-        <div className="flex gap-2">
-          {loveStory.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => { scrollTo(i); activeRef.current = i; }}
-              style={{
-                width: active === i ? 24 : 6,
-                height: 2,
-                borderRadius: 2,
-                background: active === i ? "var(--gold)" : "var(--gold-dim)",
-                border: "none",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                opacity: active === i ? 1 : 0.35,
-                padding: 0,
-                pointerEvents: "auto",
-              }}
-            />
-          ))}
-        </div>
-        <div style={{ width: 40, height: 1, background: "rgba(192,120,48,0.15)", borderRadius: 1, overflow: "hidden" }}>
-          <motion.div
-            key={active}
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: INTERVAL_MS / 1000, ease: "linear" }}
-            style={{ height: "100%", background: "var(--gold)", transformOrigin: "left", opacity: 0.6 }}
-          />
-        </div>
+      {/* Unified progress pills — active pill fills with a timer animation */}
+      <div className="absolute bottom-6 left-0 right-0 z-20 flex justify-center gap-2 pointer-events-none">
+        {loveStory.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => { scrollTo(i); activeRef.current = i; setHasSwiped(true); }}
+            style={{
+              position: "relative",
+              width: active === i ? 28 : 6,
+              height: 4,
+              borderRadius: 4,
+              background: "rgba(192,120,48,0.2)",
+              border: "none",
+              cursor: "pointer",
+              overflow: "hidden",
+              transition: "width 0.3s ease",
+              padding: 0,
+              pointerEvents: "auto",
+              flexShrink: 0,
+            }}
+          >
+            {active === i && (
+              <motion.div
+                key={active}
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: INTERVAL_MS / 1000, ease: "linear" }}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "var(--gold)",
+                  transformOrigin: "left",
+                  borderRadius: 4,
+                }}
+              />
+            )}
+          </button>
+        ))}
       </div>
 
-      {/* Swipe hint */}
-      {active === 0 && (
-        <div
-          className="absolute z-20 flex items-center gap-1 font-label"
-          style={{
-            bottom: "clamp(20px, 4vh, 32px)",
-            right: "clamp(16px, 5vw, 28px)",
-            color: "var(--text-dim)",
-            fontSize: "8px",
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            pointerEvents: "none",
-          }}
-        >
-          <span>geser</span>
-          <span style={{ color: "var(--gold-dim)" }}>→</span>
-        </div>
-      )}
+      {/* Swipe hint — fades out after first swipe, positioned above dots */}
+      <motion.div
+        className="absolute z-20 flex items-center gap-1 font-label pointer-events-none"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: hasSwiped ? 0 : 1 }}
+        transition={{ duration: 0.6 }}
+        style={{
+          bottom: "clamp(40px, 7vh, 56px)",
+          right: "clamp(16px, 5vw, 28px)",
+          color: "var(--text-dim)",
+          fontSize: "8px",
+          letterSpacing: "0.2em",
+          textTransform: "uppercase",
+        }}
+      >
+        <span>geser</span>
+        <span style={{ color: "var(--gold-dim)" }}>→</span>
+      </motion.div>
     </section>
   );
 }

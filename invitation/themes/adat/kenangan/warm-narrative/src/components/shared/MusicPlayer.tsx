@@ -1,28 +1,20 @@
 "use client";
 
-// src/components/MusicPlayer.tsx
-// ─── FIXED: Floating music player bar ────────────────────────────────────────
-// Cara pakai:
-//   1. Ganti konstanta MUSIC_SRC, SONG_TITLE, SONG_ARTIST di bawah.
-//   2. Taruh file MP3 di public/music/
-//   3. Komponen ini sudah handle autoplay saat event "invitation-open" di-dispatch.
-// ─────────────────────────────────────────────────────────────────────────────
-
 import { useState, useEffect, useRef } from "react";
-import { Play, Pause } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ── GANTI SESUAI TEMA ─────────────────────────────────────────────────────────
-const MUSIC_SRC   = "/music/NAMA_FILE.mp3";
-const SONG_TITLE  = "Judul Lagu";
-const SONG_ARTIST = "Nama Artis";
+const MUSIC_SRC   = "/music/I_love_you_3000_-_Stephanie_Poetri_lofi_version_by_hyuu_KLICKAUD.mp3";
+const SONG_TITLE  = "I Love You 3000";
+const SONG_ARTIST = "Stephanie Poetri";
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function MusicPlayer() {
-  const [playing, setPlaying] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const [ready, setReady]     = useState(false);
-  const audioRef              = useRef<HTMLAudioElement | null>(null);
+  const [playing, setPlaying]         = useState(false);
+  const [visible, setVisible]         = useState(false);
+  const [ready, setReady]             = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const audioRef                      = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const audio    = new Audio(MUSIC_SRC);
@@ -31,10 +23,8 @@ export default function MusicPlayer() {
     audio.oncanplaythrough = () => setReady(true);
     audioRef.current = audio;
 
-    // Tampilkan player setelah 2 detik
     const showTimer = setTimeout(() => setVisible(true), 2000);
 
-    // Autoplay saat CoverSection dispatch event "invitation-open"
     const onOpen = () => {
       audio.play().then(() => setPlaying(true)).catch(() => {});
     };
@@ -55,110 +45,116 @@ export default function MusicPlayer() {
       audio.pause();
       setPlaying(false);
     } else {
-      audio.play();
+      audio.play().catch(() => {});
       setPlaying(true);
     }
   };
 
   return (
-    <>
-      <AnimatePresence>
-        {visible && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.5 }}
-            className="music-player-bar"
-            style={{ position: "fixed", bottom: 24, right: 20, left: "auto" }}
-          >
-            {/* Animated waveform */}
-            <div className="flex items-end gap-0.5" style={{ height: 16 }}>
-              {[1, 2, 3, 4].map((i) => (
-                <motion.div
-                  key={i}
-                  animate={
-                    playing
-                      ? {
-                          height: ["3px", `${5 + i * 4}px`, "3px"],
-                          transition: {
-                            duration: 0.5 + i * 0.1,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                            delay: i * 0.1,
-                          },
-                        }
-                      : { height: "3px" }
-                  }
-                  style={{
-                    width: 2,
-                    background: playing ? "var(--gold)" : "var(--gold-dim)",
-                    borderRadius: 2,
-                    height: 3,
-                    transition: "background 0.3s",
-                  }}
-                />
-              ))}
-            </div>
-
-            {/* Song info */}
-            <div className="flex flex-col leading-tight">
-              <span
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          style={{
+            position: "fixed",
+            bottom: "calc(24px + env(safe-area-inset-bottom))",
+            right: 20,
+            zIndex: 100,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          {/* Tooltip — desktop hover only */}
+          <AnimatePresence>
+            {showTooltip && (
+              <motion.div
+                initial={{ opacity: 0, x: 8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 8 }}
+                transition={{ duration: 0.2 }}
                 style={{
+                  marginRight: 10,
+                  padding: "5px 14px",
+                  background: "rgba(242,237,228,0.92)",
+                  backdropFilter: "blur(10px)",
+                  WebkitBackdropFilter: "blur(10px)",
+                  border: "1px solid var(--border)",
+                  borderRadius: 100,
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 10,
+                  letterSpacing: "0.06em",
                   color: "var(--text-muted)",
-                  fontSize: "10px",
-                  letterSpacing: "0.04em",
-                  fontFamily: "var(--font-body)",
-                  maxWidth: 130,
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
+                  pointerEvents: "none",
+                  boxShadow: "var(--shadow-card)",
                 }}
               >
-                {SONG_TITLE}
-              </span>
-              <span
-                style={{
-                  color: "var(--text-dim)",
-                  fontSize: "9px",
-                  letterSpacing: "0.08em",
-                  fontFamily: "var(--font-body)",
-                }}
-              >
-                {SONG_ARTIST}
-              </span>
-            </div>
+                {SONG_TITLE} · {SONG_ARTIST}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-            {/* Play/Pause button */}
-            <button
-              id="music-toggle-btn"
-              onClick={toggle}
-              disabled={!ready}
+          {/* Vinyl disc */}
+          <div
+            id="music-toggle-btn"
+            role="button"
+            aria-label={playing ? "Pause music" : "Play music"}
+            onClick={toggle}
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: "50%",
+              cursor: ready ? "pointer" : "default",
+              opacity: ready ? 1 : 0.45,
+              position: "relative",
+              flexShrink: 0,
+              animation: "vinyl-spin 4s linear infinite",
+              animationPlayState: playing ? "running" : "paused",
+              background: `radial-gradient(closest-side circle at center,
+                #1A1410 0%,
+                #1A1410 76%,
+                rgba(255,255,255,0.09) 79%,
+                #1A1410 82%,
+                #1A1410 100%
+              )`,
+              boxShadow: "0 3px 14px rgba(42,34,24,0.25)",
+            }}
+          >
+            {/* Center label */}
+            <div
               style={{
-                width: 28,
-                height: 28,
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 18,
+                height: 18,
                 borderRadius: "50%",
-                background: playing ? "var(--gold)" : "transparent",
-                border: "1px solid var(--gold)",
-                cursor: ready ? "pointer" : "not-allowed",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: playing ? "var(--bg)" : "var(--gold)",
-                transition: "all 0.3s ease",
-                flexShrink: 0,
-                opacity: ready ? 1 : 0.5,
+                background: "var(--surface)",
               }}
-            >
-              {playing ? (
-                <Pause size={11} strokeWidth={2} />
-              ) : (
-                <Play size={11} strokeWidth={2} style={{ marginLeft: 1 }} />
-              )}
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+            />
+            {/* Spindle dot — play indicator */}
+            <div
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 5,
+                height: 5,
+                borderRadius: "50%",
+                background: playing ? "var(--gold)" : "var(--gold-dim)",
+                transition: "background 0.4s ease",
+              }}
+            />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

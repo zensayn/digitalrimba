@@ -3,13 +3,18 @@
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Copy, Check } from "lucide-react";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
+import type { InvitationConfig } from "@/lib/config-types";
 
-export default function GiftClosingSlide() {
+export default function GiftClosingSlide({
+  bankAccounts,
+  couple,
+}: {
+  bankAccounts: InvitationConfig["bankAccounts"];
+  couple: InvitationConfig["couple"];
+}) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, margin: "-10%" });
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
-  const { bankAccounts, couple } = useInvitationConfig();
 
   const handleCopy = (text: string, idx: number) => {
     const clean = text.replace(/\s/g, "");

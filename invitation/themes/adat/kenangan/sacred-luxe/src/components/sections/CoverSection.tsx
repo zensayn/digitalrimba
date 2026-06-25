@@ -1,16 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import type { InvitationConfig } from "@/lib/config-types";
 
-export default function CoverSection() {
+export default function CoverSection({
+  couple,
+  weddingDate: weddingDateStr,
+}: {
+  couple: InvitationConfig["couple"];
+  weddingDate: string;
+}) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [loaded, setLoaded] = useState(false);
-  const { couple, weddingDate: weddingDateStr } = useInvitationConfig();
+  const loaded = true;
 
   useEffect(() => {
-    setLoaded(true);
     const tick = () => {
       const now = new Date();
       const diff = new Date(weddingDateStr).getTime() - now.getTime();

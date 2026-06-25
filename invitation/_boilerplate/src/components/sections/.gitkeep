@@ -14,13 +14,13 @@
 //   ClosingSection.tsx
 //
 // Setiap section:
-//   - Adalah React component biasa ("use client")
+//   - Default sebagai Server Component tanpa "use client"
 //   - Mengambil data via: import { useInvitationConfig } from "@/components/RimbaConfigProvider"
 //   - Wajib punya className="snap-section" pada root element
 //   - Beri id sesuai key section: id="cover", id="greeting", dst.
 //
 // Contoh minimal:
-//   "use client";
+//   // Tambahkan "use client" hanya jika section memakai state/event/browser API.
 //   import { useInvitationConfig } from "@/components/RimbaConfigProvider";
 //
 //   export default function CoverSection() {

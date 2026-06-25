@@ -2,12 +2,11 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
+import type { InvitationConfig } from "@/lib/config-types";
 
-export default function CoupleSlide() {
+export default function CoupleSlide({ couple }: { couple: InvitationConfig["couple"] }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, margin: "-5%" });
-  const { couple } = useInvitationConfig();
 
   const fadeIn = {
     hidden: { opacity: 0 },

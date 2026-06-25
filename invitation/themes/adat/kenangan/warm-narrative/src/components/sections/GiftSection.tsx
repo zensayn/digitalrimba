@@ -3,13 +3,12 @@
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Copy, Check } from "lucide-react";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
+import type { InvitationConfig } from "@/lib/config-types";
 
-export default function GiftSection() {
+export default function GiftSection({ bankAccounts }: { bankAccounts: InvitationConfig["bankAccounts"] }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-15%" });
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
-  const { bankAccounts } = useInvitationConfig();
 
   const handleCopy = (text: string, idx: number) => {
     const clean = text.replace(/\s/g, "");

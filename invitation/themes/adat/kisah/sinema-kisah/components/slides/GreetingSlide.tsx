@@ -2,18 +2,18 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { useInvitationConfig } from "@/components/shared/RimbaConfigProvider";
+import { useSearchParams } from "next/navigation";
+import type { InvitationConfig } from "@/lib/config-types";
 
 interface GreetingSlideProps {
-  guestName?: string;
+  couple: InvitationConfig["couple"];
 }
 
-export default function GreetingSlide({ guestName }: GreetingSlideProps) {
+export default function GreetingSlide({ couple }: GreetingSlideProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, margin: "-10%" });
-  const { couple } = useInvitationConfig();
-
-  const letters = guestName ? guestName.split("") : [];
+  const guestName = useSearchParams().get("to")?.trim();
+  const letters = guestName?.split("") ?? [];
 
   const fadeUp = {
     hidden: { opacity: 0, y: 20 },

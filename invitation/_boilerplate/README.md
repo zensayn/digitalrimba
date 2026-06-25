@@ -22,7 +22,7 @@ _boilerplate/
 │   └── invitation.ts         Typed re-export dari config.json
 │
 ├── src/components/
-│   ├── RimbaConfigProvider.tsx   Context + Rimba Studio sync
+│   ├── GuestName.tsx             Query-string client island
 │   ├── MusicPlayer.tsx           Floating music player
 │   └── sections/                 ← KOSONG — isi per tema
 │       └── .gitkeep              (baca instruksi di dalamnya)
@@ -72,13 +72,14 @@ Cari semua token `REPLACE_*` dan isi sesuai tier:
 
 ### 4. Salin nilai yang sama ke `invitation.config.json → theme`
 
-Token di `globals.css` dan `invitation.config.json → theme.colors` **harus identik** — karena `css-vars.ts` akan meng-override CSS vars dari config saat live preview di Studio.
+Token di `globals.css` dan `invitation.config.json → theme.colors` **harus identik** agar fallback CSS dan CSS variables hasil config konsisten.
 
 ### 5. Buat section components di `src/components/sections/`
 
 Baca konvensi di `sections/.gitkeep`. Setiap section:
-- `"use client"`
-- Gunakan `useInvitationConfig()` untuk data
+- Default sebagai Server Component tanpa `"use client"`
+- Terima data dari `page.tsx` melalui props
+- Tambahkan `"use client"` hanya untuk state, event handler, browser API, audio, canvas, atau gesture
 - Root element: `<section id="NAMA" className="snap-section">`
 
 ### 6. Uncomment section di `src/app/page.tsx`
@@ -121,14 +122,11 @@ Jika tema sudah jadi dan ada klien baru yang memesan tema yang sama:
 invitation.config.json
        │
        ├─→ src/data/invitation.ts          (typed re-export, static)
-       │         └─→ layout.tsx            (ambil theme untuk CSS vars awal)
+       │         └─→ layout.tsx            (theme dan metadata)
        │
-       └─→ RimbaConfigProvider             (runtime config)
-                 ├─→ mode iframe           listen postMessage dari Rimba Studio
-                 └─→ mode standalone       fetch dari localhost:3100
-                           │
-                           └─→ useInvitationConfig()
-                                     └─→ semua section components
+       └─→ page.tsx                        (Server Component)
+                 └─→ section props         (serializable config slices)
+                           └─→ client islands hanya bila interaktif
 ```
 
 ---
@@ -138,7 +136,6 @@ invitation.config.json
 - `src/lib/config-types.ts`
 - `src/lib/css-vars.ts`
 - `src/data/invitation.ts`
-- `src/components/RimbaConfigProvider.tsx`
 - `tsconfig.json`
 - `postcss.config.mjs`
 - `eslint.config.mjs`
@@ -148,10 +145,7 @@ invitation.config.json
 ## FAQ
 
 **Q: Kenapa ada dua tempat untuk theme colors (globals.css dan invitation.config.json)?**
-A: `globals.css` adalah nilai awal saat halaman pertama dirender (SSR). `invitation.config.json → theme` dipakai oleh `css-vars.ts` untuk update live saat di Rimba Studio. Keduanya harus identik.
+A: `globals.css` menyediakan fallback design tokens. `invitation.config.json → theme` dipakai oleh layout untuk menghasilkan CSS variables saat server render. Keduanya harus identik.
 
 **Q: Kapan perlu tambah dependency baru ke `package.json`?**
 A: Hanya jika tema butuh library spesifik (misal: `gsap` untuk animasi kompleks di Warisan tier, `gl-matrix` untuk efek WebGL). Jangan tambah jika tidak perlu — jaga bundle size.
-
-**Q: Bagaimana cara Rimba Studio tahu template sudah siap?**
-A: `RimbaConfigProvider` otomatis dispatch `postMessage({ type: "RIMBA_TEMPLATE_READY" })` ke parent window saat mount. Studio menunggu event ini sebelum mengirim config.
