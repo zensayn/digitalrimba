@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowRightUp, AltArrowRight, LetterOpened, WindowFrame } from "@solar-icons/react";
 import { useTranslations } from "next-intl";
@@ -32,9 +33,12 @@ export default function PageHeader() {
             href="/"
             className="-ml-3 md:ml-0 inline-block hover:opacity-85 transition-opacity"
           >
-            <img
+            <Image
               src="https://contents.rimba.app/assets/rimba-logo.webp"
               alt="Rimba Fisik"
+              width={569}
+              height={320}
+              priority
               className="block h-16 md:h-[72px] -my-3 w-auto"
             />
           </Link>

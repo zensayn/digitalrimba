@@ -26,7 +26,7 @@ export const HERO_STATS = [
 ] as const;
 
 // Site-wide WhatsApp number (matches the existing CTA pattern in AboutCTA/BottomCTA).
-export const WA_NUMBER = "1234567890";
+export const WA_NUMBER = "6285750275751";
 export const waLink = (text: string) =>
   `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
 

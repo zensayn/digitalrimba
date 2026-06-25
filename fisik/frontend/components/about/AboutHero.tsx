@@ -6,6 +6,7 @@
 
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 // Emil Kowalski's signature ease-out curve
 const EASE_OUT_STRONG: [number, number, number, number] = [0.23, 1, 0.32, 1];
@@ -24,8 +25,10 @@ export default function AboutHero() {
           transition={{ duration: 0.7, ease: EASE_OUT_STRONG, delay: 0.1 }}
           className="flex items-center justify-center shrink-0"
         >
-          <img
+          <Image
             src="/rimba-flower.webp"
+            width={400}
+            height={400}
             alt="Rimba Flower Keepsake"
             className="w-[260px] sm:w-[300px] md:w-[360px] lg:w-[400px] h-auto object-contain select-none"
             style={{ imageRendering: "pixelated" }}
@@ -51,7 +54,10 @@ export default function AboutHero() {
             transition={{ duration: 0.7, ease: EASE_OUT_STRONG, delay: 0.3 }}
             className="flex flex-col text-left"
           >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] text-neutral-900 tracking-[-0.02em] leading-[1.12] font-normal max-w-[620px]">
+            <h2
+            className="font-poppins font-medium text-[#212121] mt-3 whitespace-pre-line"
+            style={{ fontSize: "clamp(1.9rem, 4vw, 3rem)", lineHeight: 1.08, letterSpacing: "-0.02em" }}
+          >
               {t("headline")}
             </h2>
           </motion.div>

@@ -9,16 +9,25 @@
 //                              sort controls.
 //   • Desktop (lg+)         → TemplateCatalog page mode: sidebar + grid.
 
-import { fetchCollections, fetchProducts } from "@/lib/catalog";
+import {
+  fetchCollections,
+  fetchProducts,
+  fetchPricingCatalog,
+  pricingBySlug,
+} from "@/lib/catalog";
 import ProductsHeader from "@/components/products/ProductsHeader";
 import TemplateCatalog from "@/components/TemplateCatalog";
 import MobileCatalogCarousels from "@/components/products/MobileCatalogCarousels";
 
 export default async function ProductsPage() {
-  const [collections, products] = await Promise.all([
+  const [collections, products, pricing] = await Promise.all([
     fetchCollections(),
     fetchProducts(),
+    fetchPricingCatalog(),
   ]);
+
+  // slug → entry price + availability, for the card price tags.
+  const priceBySlug = pricingBySlug(pricing);
 
   return (
     <main className="min-h-screen bg-white text-[#212121] flex flex-col font-poppins">
@@ -26,7 +35,11 @@ export default async function ProductsPage() {
 
       {/* Mobile + tablet: per-collection horizontal carousels */}
       <div className="lg:hidden">
-        <MobileCatalogCarousels products={products} collections={collections} />
+        <MobileCatalogCarousels
+          products={products}
+          collections={collections}
+          priceBySlug={priceBySlug}
+        />
       </div>
 
       {/* Desktop: full filter sidebar + grid */}
@@ -36,6 +49,7 @@ export default async function ProductsPage() {
           showHeading={false}
           products={products}
           collections={collections}
+          priceBySlug={priceBySlug}
         />
       </div>
     </main>

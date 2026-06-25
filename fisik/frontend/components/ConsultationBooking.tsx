@@ -32,7 +32,7 @@ const CAL_NAMESPACE = "konsultasi";
 // Brand the embedded widget to match the page (Rimba green accent).
 const BRAND = "#346739";
 // WhatsApp fallback for people who'd rather chat first (matches FloatingWhatsApp).
-const WHATSAPP_URL = "https://wa.me/628123456789";
+const WHATSAPP_URL = "https://wa.me/6285750275751";
 
 export default function ConsultationBooking() {
   const t = useTranslations("ExclusiveOrder");

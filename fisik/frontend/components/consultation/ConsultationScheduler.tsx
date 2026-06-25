@@ -24,7 +24,7 @@ const CAL_LINK = "rimba-io/konsultasi-rimba";
 const CAL_NAMESPACE = "konsultasi-page";
 const BRAND = "#346739";
 // WhatsApp fallback for people who'd rather chat before committing to a time.
-const WHATSAPP_URL = "https://wa.me/628123456789";
+const WHATSAPP_URL = "https://wa.me/6285750275751";
 
 export default function ConsultationScheduler() {
   const t = useTranslations("Consultation");

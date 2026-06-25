@@ -22,7 +22,12 @@ import { motion } from "motion/react";
 import { ArrowRight } from "@solar-icons/react";
 import { Link } from "@/i18n/routing";
 import TemplatePreviewCard from "@/components/TemplatePreviewCard";
-import type { CatalogProduct, CatalogCollection } from "@/lib/catalog";
+import CardPriceTag from "@/components/products/CardPriceTag";
+import type {
+  CatalogProduct,
+  CatalogCollection,
+  CardPrice,
+} from "@/lib/catalog";
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
@@ -33,6 +38,8 @@ interface TemplateGalleryProps {
   limit?: number;
   /** Show the editor's-pick feature band below the grid. */
   showFeatured?: boolean;
+  /** slug → entry price + availability. Absent ⇒ cards render without a price. */
+  priceBySlug?: Record<string, CardPrice>;
 }
 
 export default function TemplateGallery({
@@ -40,6 +47,7 @@ export default function TemplateGallery({
   collections,
   limit = 8,
   showFeatured = true,
+  priceBySlug,
 }: TemplateGalleryProps) {
   const t = useTranslations("Templates");
   const [activeCategory, setActiveCategory] = useState<string>("all");
@@ -139,7 +147,10 @@ export default function TemplateGallery({
           layout
           className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10"
         >
-          {visible.map((product, i) => (
+          {visible.map((product, i) => {
+            const price = priceBySlug?.[product.slug];
+            const muted = !!price && !price.available;
+            return (
             <motion.div
               layout
               key={product.slug}
@@ -152,14 +163,21 @@ export default function TemplateGallery({
                 ease: EASE_OUT,
               }}
             >
-              <Link href={`/products/${product.slug}`} className="group block text-left">
+              <Link
+                href={`/products/${product.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block text-left"
+              >
                 {/* Soft-stone frame so the cover reads as a curated object */}
                 <div className="rounded-[22px] bg-[#f5f4f0] p-3 border border-[#ececea] transition-colors duration-300 ease-out group-hover:border-[#d9d9dd]">
                   <div className="relative aspect-[4/5] rounded-[14px] overflow-hidden bg-[#eeece7]">
                     <TemplatePreviewCard
                       src={product.cover_url}
                       alt={product.name}
-                      className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                      className={`w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.03] ${
+                        muted ? "grayscale opacity-60" : ""
+                      }`}
                     />
                   </div>
                 </div>
@@ -169,9 +187,10 @@ export default function TemplateGallery({
                   <h3 className="font-poppins text-[14px] font-medium text-[#212121] truncate">
                     {product.name}
                   </h3>
-                  <span className="shrink-0 font-poppins text-[13px] text-[#212121]">
-                    {t("priceTag")}
-                  </span>
+                  <CardPriceTag
+                    price={price}
+                    className="shrink-0 font-poppins text-[13px]"
+                  />
                 </div>
                 <p className="mt-1 px-0.5 font-poppins text-[12px] text-[#93939f]">
                   {product.popular ? `${t("popularLabel")} · ` : ""}
@@ -179,7 +198,8 @@ export default function TemplateGallery({
                 </p>
               </Link>
             </motion.div>
-          ))}
+            );
+          })}
         </motion.div>
 
         {/* ── Editor's-pick feature band (Face Formula bottom image) ────── */}
@@ -193,6 +213,8 @@ export default function TemplateGallery({
           >
             <Link
               href={`/products/${featured.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="group relative block w-full overflow-hidden rounded-[28px] md:rounded-[32px]"
             >
               <div className="relative aspect-[3/4] sm:aspect-[16/10] lg:aspect-[21/9]">

@@ -38,7 +38,7 @@ export default function FloatingWhatsApp() {
       {visible && (
         <motion.a
           key="floating-whatsapp"
-          href="https://wa.me/628123456789"
+          href="https://wa.me/6285750275751"
           target="_blank"
           rel="noopener noreferrer"
           initial={isLandingPage ? { opacity: 0, scale: 0.8 } : undefined}
