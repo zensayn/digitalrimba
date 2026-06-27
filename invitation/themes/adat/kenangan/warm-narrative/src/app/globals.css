@@ -30,6 +30,7 @@
 }
 
 html {
+  overflow-x: hidden;
   scroll-behavior: smooth;
   height: 100%;
   -webkit-text-size-adjust: 100%;
@@ -61,7 +62,7 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
 
 .snap-section {
-  min-height: 100dvh;
+  min-height: 100svh;
   width: 100%;
   position: relative;
   overflow: visible;
@@ -243,4 +244,25 @@ textarea.input-warm { resize: none; line-height: 1.7; }
 .overflow-y-auto { -ms-overflow-style: none; scrollbar-width: none; }
 .event-action-link:hover {
   color: var(--gold) !important;
+}
+
+/* ─── Desktop: frame HP di tengah ───────────────────────────────────────────── */
+@media (min-width: 768px) {
+  body {
+    background-color: #D9D2C8;
+    display: flex;
+    justify-content: center;
+  }
+
+  .snap-container {
+    max-width: 400px;
+    width: 100%;
+    flex-shrink: 0;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    box-shadow:
+      -24px 0 48px rgba(42, 34, 24, 0.08),
+       24px 0 48px rgba(42, 34, 24, 0.08);
+    background-color: var(--bg);
+  }
 }

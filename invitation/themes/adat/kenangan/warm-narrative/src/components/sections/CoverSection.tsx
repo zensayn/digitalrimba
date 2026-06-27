@@ -128,12 +128,6 @@ export default function CoverSection({
       {/* Paper texture */}
       <div className="paper-overlay" />
 
-      {/* Art Nouveau corner ornaments */}
-      <span className="corner-ornament tl" />
-      <span className="corner-ornament tr" />
-      <span className="corner-ornament bl" />
-      <span className="corner-ornament br" />
-
       {/* Border frame tipis */}
       <div
         style={{

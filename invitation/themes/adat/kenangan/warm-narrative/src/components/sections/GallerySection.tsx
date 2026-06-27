@@ -1,60 +1,23 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import dynamic from "next/dynamic";
 import type { InvitationConfig } from "@/lib/config-types";
-
-const LazyInfiniteMenu = dynamic(() => import("@/components/shared/InfiniteMenu"), {
-  ssr: false,
-  loading: () => (
-    <div
-      aria-hidden="true"
-      className="h-full w-full"
-      style={{ background: "var(--surface-2)" }}
-    />
-  ),
-});
 
 export default function GallerySection({ gallery }: { gallery: InvitationConfig["gallery"] }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-15%" });
 
-  const menuItems = useMemo(() => {
-    return gallery.map((item) => ({
-      image: item.src,
-      link: "",
-      title: item.alt,
-      description: "",
-    }));
-  }, [gallery]);
+  const photos = gallery.slice(0, 5);
 
   return (
-    <section id="gallery" className="snap-section" style={{ background: "var(--surface-2)" }}>
+    <section id="gallery" className="snap-section" style={{ background: "var(--surface-2)", minHeight: "auto", paddingTop: "clamp(60px, 12vh, 100px)", paddingBottom: "clamp(60px, 12vh, 100px)" }}>
       <div className="paper-overlay" />
 
-      {/* Watermark */}
-      <div
-        className="absolute font-display select-none pointer-events-none"
-        style={{
-          fontSize: "clamp(80px, 25vw, 140px)",
-          fontWeight: 400,
-          color: "rgba(192,120,48,0.06)",
-          top: "5%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          letterSpacing: "-0.05em",
-          lineHeight: 1,
-          whiteSpace: "nowrap",
-          textTransform: "uppercase",
-        }}
-      >
-        GALERI
-      </div>
 
       <div
         ref={ref}
-        className="relative z-10 flex flex-col items-center w-full px-6"
+        className="relative z-10 flex flex-col items-center w-full"
         style={{ gap: "clamp(14px, 3vh, 24px)" }}
       >
         {/* Label */}
@@ -68,61 +31,45 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
           Kenangan Terindah
         </motion.p>
 
-        {/* Framed globe */}
+        {/* Photo grid */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={isInView ? { opacity: 1, scale: 1 } : {}}
-          transition={{ duration: 1, delay: 0.2 }}
+          initial={{ opacity: 0, y: 16 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.9, delay: 0.2 }}
           style={{
-            width: "100%",
-            maxWidth: "360px",
-            height: "clamp(260px, 55vw, 380px)",
-            border: "1px solid var(--border)",
-            borderRadius: "2px",
-            position: "relative",
-            overflow: "hidden",
-            background: "var(--surface-2)",
-            boxShadow: "0 0 60px rgba(192,120,48,0.06), inset 0 0 40px rgba(0,0,0,0.3)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            width: "80%",
+            maxWidth: "320px",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "8px",
           }}
         >
-          {/* Corner ornaments */}
-          {(["top-0 left-0", "top-0 right-0", "bottom-0 left-0", "bottom-0 right-0"] as const).map((pos, i) => (
+          {photos.map((item, i) => (
             <div
               key={i}
-              className={`absolute ${pos} pointer-events-none z-10`}
               style={{
-                width: 16,
-                height: 16,
-                borderTop: i < 2 ? "1px solid var(--gold)" : "none",
-                borderBottom: i >= 2 ? "1px solid var(--gold)" : "none",
-                borderLeft: i % 2 === 0 ? "1px solid var(--gold)" : "none",
-                borderRight: i % 2 === 1 ? "1px solid var(--gold)" : "none",
-                opacity: 0.6,
+                gridColumn: i === 0 ? "1 / -1" : undefined,
+                aspectRatio: i === 0 ? "4/3" : "1",
+                overflow: "hidden",
+                border: "1px solid var(--border)",
+                boxShadow: "var(--shadow-warm)",
               }}
-            />
+            >
+              <img
+                src={item.src}
+                alt={item.alt}
+                draggable={false}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                  filter: "sepia(20%) contrast(1.05) brightness(0.97)",
+                }}
+              />
+            </div>
           ))}
-
-          <LazyInfiniteMenu items={menuItems} scale={1.4} />
         </motion.div>
-
-        {/* Caption */}
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="font-display italic text-center"
-          style={{
-            color: "var(--text-dim)",
-            fontSize: "clamp(12px, 3.5vw, 14px)",
-            fontWeight: 300,
-            letterSpacing: "0.05em",
-          }}
-        >
-          Putar untuk menjelajahi kenangan kami
-        </motion.p>
       </div>
     </section>
   );

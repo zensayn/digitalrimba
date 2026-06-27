@@ -15,10 +15,6 @@ export default function ClosingSection({ couple }: { couple: InvitationConfig["c
   return (
     <section id="closing" className="snap-section" style={{ background: "var(--bg)" }}>
       <div className="paper-overlay" />
-      <span className="corner-ornament tl" />
-      <span className="corner-ornament tr" />
-      <span className="corner-ornament bl" />
-      <span className="corner-ornament br" />
 
       {/* Decorative intersecting rings */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
@@ -130,22 +126,6 @@ export default function ClosingSection({ couple }: { couple: InvitationConfig["c
             marginBottom: "clamp(16px, 4vh, 28px)",
           }}
         >
-          {/* Single border decoration - full width */}
-          <img
-            src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/BungaPutihBorder.webp`}
-            alt="Bunga Putih Border"
-            style={{
-              width: "100vw",
-              maxWidth: "none",
-              height: "auto",
-              objectFit: "contain",
-              opacity: 0.8,
-              marginBottom: "20px",
-              marginLeft: "calc(-50vw + 50%)",
-              marginRight: "calc(-50vw + 50%)",
-            }}
-          />
-          
           <p
             className="font-garamond"
             style={{
@@ -199,18 +179,12 @@ export default function ClosingSection({ couple }: { couple: InvitationConfig["c
       {/* Bottom border ornament */}
       <div
         className="absolute pointer-events-none select-none z-10"
-        style={{
-          bottom: 0,
-          left: 0,
-          right: 0,
-          width: "100%",
-          height: "clamp(48px, 12vw, 80px)",
-        }}
+        style={{ bottom: 0, left: 0, right: 0, width: "100%", transform: "translateY(40%)" }}
       >
         <img
           src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Borderbawah.webp`}
           alt="Bottom Border"
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          style={{ width: "100%", height: "auto", display: "block" }}
         />
       </div>
     </section>

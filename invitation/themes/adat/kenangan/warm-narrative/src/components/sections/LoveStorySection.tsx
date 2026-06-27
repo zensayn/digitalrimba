@@ -1,114 +1,27 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import type { InvitationConfig } from "@/lib/config-types";
 
 const ROMAN = ["I", "II", "III", "IV", "V"];
-const INTERVAL_MS = 5000;
 
 export default function LoveStorySection({ loveStory }: { loveStory: InvitationConfig["loveStory"] }) {
   const ref = useRef(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-10%" });
-  const [active, setActive] = useState(0);
-  const activeRef = useRef(0);
-  const isPausedRef = useRef(false);
-  const [hasSwiped, setHasSwiped] = useState(false);
-
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const scrollLeftRef = useRef(0);
-
-  const handleScroll = () => {
-    if (!scrollRef.current) return;
-    const idx = Math.round(scrollRef.current.scrollLeft / scrollRef.current.clientWidth);
-    if (idx !== activeRef.current) setHasSwiped(true);
-    setActive(idx);
-    activeRef.current = idx;
-  };
-
-  const scrollTo = (i: number) => {
-    scrollRef.current?.scrollTo({ left: i * (scrollRef.current.clientWidth || 0), behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      if (isPausedRef.current) return;
-      const next = (activeRef.current + 1) % loveStory.length;
-      scrollRef.current?.scrollTo({ left: next * (scrollRef.current.clientWidth || 0), behavior: "smooth" });
-    }, INTERVAL_MS);
-    return () => clearInterval(id);
-  }, [loveStory.length]);
-
-  const handlePointerDown = (e: React.PointerEvent) => {
-    isPausedRef.current = true;
-    setHasSwiped(true);
-    if (e.pointerType !== "mouse" || !scrollRef.current) return;
-    isDragging.current = true;
-    startX.current = e.pageX - scrollRef.current.offsetLeft;
-    scrollLeftRef.current = scrollRef.current.scrollLeft;
-    scrollRef.current.style.cursor = "grabbing";
-    scrollRef.current.style.scrollBehavior = "auto";
-    scrollRef.current.style.scrollSnapType = "none";
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging.current || !scrollRef.current || e.pointerType !== "mouse") return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    scrollRef.current.scrollLeft = scrollLeftRef.current - (x - startX.current) * 1.25;
-  };
-
-  const handlePointerUpOrLeave = (e: React.PointerEvent) => {
-    isPausedRef.current = false;
-    if (!isDragging.current || !scrollRef.current || e.pointerType !== "mouse") return;
-    isDragging.current = false;
-    scrollRef.current.style.cursor = "grab";
-    scrollRef.current.style.scrollBehavior = "smooth";
-    scrollRef.current.style.scrollSnapType = "x mandatory";
-    const nearest = Math.round(scrollRef.current.scrollLeft / scrollRef.current.clientWidth);
-    scrollTo(nearest);
-    activeRef.current = nearest;
-    setActive(nearest);
-  };
 
   return (
-    <section id="lovestory" className="snap-section" style={{ background: "var(--surface)" }}>
+    <section
+      id="lovestory"
+      className="snap-section"
+      style={{ background: "var(--surface)", justifyContent: "flex-start", minHeight: "auto" }}
+    >
       <div className="paper-overlay" />
-
-      {/* Timeline silhouette — just below the "Kisah Kami" label */}
-      <div
-        className="absolute pointer-events-none select-none z-0"
-        style={{
-          left: 0,
-          right: 0,
-          top: "clamp(10px, 2vh, 36px)",
-          height: "clamp(140px, 32vh, 240px)",
-          opacity: 0.3,
-        }}
-      >
-        <img
-          src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Timeline.webp`}
-          alt=""
-          style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "top" }}
-        />
-      </div>
 
       {/* Italic watermark */}
       <div
         className="absolute font-display select-none pointer-events-none z-0"
-        style={{
-          fontSize: "clamp(56px, 18vw, 100px)",
-          fontWeight: 400,
-          fontStyle: "italic",
-          color: "rgba(192,120,48,0.025)",
-          bottom: "8%",
-          right: "-2%",
-          letterSpacing: "-0.01em",
-          lineHeight: 1,
-          whiteSpace: "nowrap",
-        }}
+        style={{ fontSize: "clamp(56px, 18vw, 100px)", fontWeight: 400, fontStyle: "italic", color: "rgba(192,120,48,0.025)", bottom: "8%", right: "-2%", letterSpacing: "-0.01em", lineHeight: 1, whiteSpace: "nowrap" }}
       >
         Kisah Kami
       </div>
@@ -116,8 +29,8 @@ export default function LoveStorySection({ loveStory }: { loveStory: InvitationC
       {/* Header */}
       <div
         ref={ref}
-        className="absolute top-0 left-0 right-0 z-20 flex flex-col items-center"
-        style={{ paddingTop: "clamp(28px, 6vh, 48px)" }}
+        className="w-full flex flex-col items-center flex-shrink-0 z-10"
+        style={{ paddingTop: "clamp(28px, 6vh, 48px)", paddingBottom: "clamp(10px, 2vh, 16px)" }}
       >
         <motion.p
           initial={{ opacity: 0, y: -8 }}
@@ -128,223 +41,83 @@ export default function LoveStorySection({ loveStory }: { loveStory: InvitationC
         >
           Kisah Kami
         </motion.p>
+        <div className="copper-divider" style={{ marginTop: 8 }} />
       </div>
 
-      {/* Horizontal carousel */}
-      <div
-        id="lovestory-carousel"
-        ref={scrollRef}
-        onScroll={handleScroll}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUpOrLeave}
-        onPointerLeave={handlePointerUpOrLeave}
-        className="w-full h-full flex overflow-x-auto"
-        style={{
-          scrollSnapType: "x mandatory",
-          scrollBehavior: "smooth",
-          msOverflowStyle: "none",
-          scrollbarWidth: "none",
-          cursor: "grab",
-        }}
-      >
+      {/* Vertical chapters */}
+      <div className="w-full z-10" style={{ paddingBottom: "clamp(36px, 8vh, 60px)" }}>
         {loveStory.map((chapter, i) => (
-          <div
+          <motion.div
             key={i}
-            className="flex-shrink-0 w-full h-full flex flex-col justify-center relative select-none"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-5%" }}
+            transition={{ duration: 0.7 }}
             style={{
-              scrollSnapAlign: "start",
-              minWidth: "100%",
-              paddingTop: "clamp(60px, 12vh, 90px)",
-              paddingBottom: "clamp(52px, 10vh, 72px)",
-              paddingLeft: "clamp(28px, 8vw, 52px)",
-              paddingRight: "clamp(28px, 8vw, 52px)",
-              gap: "clamp(10px, 2.5vh, 18px)",
+              padding: "clamp(20px, 5vh, 36px) clamp(28px, 8vw, 52px)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "clamp(10px, 2vh, 16px)",
             }}
           >
-            {/* Photo — at top for editorial flow */}
-            <div
-              className="relative flex-shrink-0"
-              style={{ width: "100%", maxWidth: "clamp(220px, 70vw, 300px)" }}
-            >
+            {/* Photo */}
+            <div className="relative flex-shrink-0" style={{ width: "100%", maxWidth: "clamp(220px, 70vw, 300px)" }}>
               <img
                 src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Sparkle.webp`}
                 alt=""
-                style={{
-                  position: "absolute",
-                  width: "clamp(28px, 8vw, 36px)",
-                  height: "clamp(28px, 8vw, 36px)",
-                  top: "-14px",
-                  right: "-14px",
-                  zIndex: 10,
-                  opacity: 0.85,
-                  pointerEvents: "none",
-                }}
+                style={{ position: "absolute", width: "clamp(24px, 7vw, 32px)", height: "clamp(24px, 7vw, 32px)", top: "-12px", right: "-12px", zIndex: 10, opacity: 0.85, pointerEvents: "none" }}
               />
               <img
                 src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Sparkle.webp`}
                 alt=""
-                style={{
-                  position: "absolute",
-                  width: "clamp(20px, 6vw, 26px)",
-                  height: "clamp(20px, 6vw, 26px)",
-                  bottom: "-10px",
-                  left: "-10px",
-                  zIndex: 10,
-                  opacity: 0.7,
-                  pointerEvents: "none",
-                }}
+                style={{ position: "absolute", width: "clamp(16px, 5vw, 22px)", height: "clamp(16px, 5vw, 22px)", bottom: "-8px", left: "-8px", zIndex: 10, opacity: 0.7, pointerEvents: "none" }}
               />
-              <div
-                style={{
-                  width: "100%",
-                  aspectRatio: "4/3",
-                  border: "1px solid var(--border)",
-                  overflow: "hidden",
-                  position: "relative",
-                  boxShadow: "var(--shadow-warm)",
-                }}
-              >
+              <div style={{ width: "100%", aspectRatio: "4/3", border: "1px solid var(--border)", overflow: "hidden", position: "relative", boxShadow: "var(--shadow-warm)" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={chapter.image}
                   alt={chapter.chapter}
-                  draggable="false"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    filter: "sepia(20%) contrast(1.05) brightness(0.97)",
-                    display: "block",
-                    userSelect: "none",
-                    WebkitUserSelect: "none",
-                  }}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", filter: "sepia(20%) contrast(1.05) brightness(0.97)", display: "block" }}
                 />
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background: "rgba(192,120,48,0.04)",
-                    pointerEvents: "none",
-                  }}
-                />
+                <div style={{ position: "absolute", inset: 0, background: "rgba(192,120,48,0.04)", pointerEvents: "none" }} />
               </div>
             </div>
 
             {/* Chapter number + year */}
             <div className="flex items-center gap-3" style={{ marginTop: "clamp(4px, 1vh, 8px)" }}>
-              <span
-                className="font-garamond"
-                style={{ fontSize: "clamp(11px, 2.8vw, 14px)", fontStyle: "italic", color: "var(--gold)", letterSpacing: "0.15em" }}
-              >
+              <span className="font-garamond" style={{ fontSize: "clamp(11px, 2.8vw, 14px)", fontStyle: "italic", color: "var(--gold)", letterSpacing: "0.15em" }}>
                 {ROMAN[i] ?? String(i + 1)}
               </span>
               <div style={{ width: 28, height: 1, background: "rgba(192,120,48,0.35)" }} />
-              <span
-                className="font-label"
-                style={{ fontSize: "clamp(10px, 2.5vw, 12px)", color: "var(--text-dim)", letterSpacing: "0.2em" }}
-              >
+              <span className="font-label" style={{ fontSize: "clamp(10px, 2.5vw, 12px)", color: "var(--text-dim)", letterSpacing: "0.2em" }}>
                 {chapter.year}
               </span>
             </div>
 
             {/* Chapter title */}
-            <h2
-              className="font-display"
-              style={{
-                fontSize: "clamp(26px, 8vw, 42px)",
-                fontWeight: 400,
-                fontStyle: "italic",
-                color: "var(--text)",
-                lineHeight: 1.1,
-              }}
-            >
+            <h2 className="font-display" style={{ fontSize: "clamp(26px, 8vw, 42px)", fontWeight: 400, fontStyle: "italic", color: "var(--text)", lineHeight: 1.1 }}>
               {chapter.chapter}
             </h2>
 
             {/* Copper ornamental divider */}
-            <div className="flex items-center gap-2" style={{ justifyContent: "center" }}>
+            <div className="flex items-center gap-2">
               <div style={{ width: 28, height: 1, background: "linear-gradient(90deg, transparent, var(--gold))", opacity: 0.45 }} />
               <div style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--gold)", opacity: 0.45 }} />
               <div style={{ width: 28, height: 1, background: "linear-gradient(90deg, var(--gold), transparent)", opacity: 0.45 }} />
             </div>
 
             {/* Description */}
-            <p
-              className="font-body"
-              style={{
-                color: "var(--text-muted)",
-                fontSize: "clamp(13px, 3.2vw, 15px)",
-                fontStyle: "italic",
-                fontWeight: 300,
-                lineHeight: 1.85,
-                maxWidth: "34ch",
-              }}
-            >
+            <p className="font-body" style={{ color: "var(--text-muted)", fontSize: "clamp(13px, 3.2vw, 15px)", fontStyle: "italic", fontWeight: 300, lineHeight: 1.85, maxWidth: "34ch" }}>
               &ldquo;{chapter.description}&rdquo;
             </p>
-          </div>
-        ))}
-      </div>
 
-      {/* Unified progress pills — active pill fills with a timer animation */}
-      <div className="absolute bottom-6 left-0 right-0 z-20 flex justify-center gap-2 pointer-events-none">
-        {loveStory.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => { scrollTo(i); activeRef.current = i; setHasSwiped(true); }}
-            style={{
-              position: "relative",
-              width: active === i ? 28 : 6,
-              height: 4,
-              borderRadius: 4,
-              background: "rgba(192,120,48,0.2)",
-              border: "none",
-              cursor: "pointer",
-              overflow: "hidden",
-              transition: "width 0.3s ease",
-              padding: 0,
-              pointerEvents: "auto",
-              flexShrink: 0,
-            }}
-          >
-            {active === i && (
-              <motion.div
-                key={active}
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: INTERVAL_MS / 1000, ease: "linear" }}
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background: "var(--gold)",
-                  transformOrigin: "left",
-                  borderRadius: 4,
-                }}
-              />
+            {/* Separator between chapters */}
+            {i < loveStory.length - 1 && (
+              <div className="copper-divider-full" style={{ marginTop: "clamp(4px, 1.5vh, 12px)" }} />
             )}
-          </button>
+          </motion.div>
         ))}
       </div>
-
-      {/* Swipe hint — fades out after first swipe, positioned above dots */}
-      <motion.div
-        className="absolute z-20 flex items-center gap-1 font-label pointer-events-none"
-        initial={{ opacity: 1 }}
-        animate={{ opacity: hasSwiped ? 0 : 1 }}
-        transition={{ duration: 0.6 }}
-        style={{
-          bottom: "clamp(40px, 7vh, 56px)",
-          right: "clamp(16px, 5vw, 28px)",
-          color: "var(--text-dim)",
-          fontSize: "8px",
-          letterSpacing: "0.2em",
-          textTransform: "uppercase",
-        }}
-      >
-        <span>geser</span>
-        <span style={{ color: "var(--gold-dim)" }}>→</span>
-      </motion.div>
     </section>
   );
 }
