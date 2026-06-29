@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { useState } from "react";
 import * as motion from "framer-motion/client";
-import { MapPin, ExternalLink, X } from "lucide-react";
+import { ExternalLink, X } from "lucide-react";
 import type { InvitationConfig } from "@/lib/config-types";
 
 interface EventSectionProps {
@@ -26,11 +25,8 @@ interface EventSectionProps {
 
 export default function EventSection({ couple, event, index, sectionId }: EventSectionProps) {
   const isAkad = index === 0;
-  const [mapOpen, setMapOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [mapInteractive, setMapInteractive] = useState(false);
   const [dateNum, dateMonth, dateYear] = event.date.split(" ");
-
-  useEffect(() => setMounted(true), []);
 
   const bgAsset = isAkad
     ? `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/CincinEmas.webp`
@@ -52,74 +48,12 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
     visible: { opacity: 1, y: 0, transition: { delay, duration: 0.85, ease: "easeOut" as const } },
   });
 
-  const mapModal = mapOpen && mounted
-    ? createPortal(
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 9999,
-            display: "flex",
-            flexDirection: "column",
-            background: "#FAF7F2",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "14px 16px",
-              borderBottom: "1px solid rgba(192,120,48,0.2)",
-              background: "#F2EDE4",
-              flexShrink: 0,
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <MapPin size={13} color="#C07830" />
-              <span style={{ fontFamily: "Inter, sans-serif", fontSize: "11px", letterSpacing: "0.14em", color: "#6B5E4E", textTransform: "uppercase" }}>
-                {event.venue}
-              </span>
-            </div>
-            <button
-              onClick={() => setMapOpen(false)}
-              aria-label="Tutup peta"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: 32,
-                height: 32,
-                borderRadius: "50%",
-                background: "rgba(192,120,48,0.08)",
-                border: "1px solid rgba(192,120,48,0.2)",
-                cursor: "pointer",
-                color: "#6B5E4E",
-              }}
-            >
-              <X size={14} />
-            </button>
-          </div>
-          <iframe
-            src={event.embedUrl}
-            width="100%"
-            style={{ flex: 1, border: 0, display: "block" }}
-            allowFullScreen
-            referrerPolicy="no-referrer-when-downgrade"
-            title={`Lokasi ${event.title}`}
-          />
-        </div>,
-        document.body
-      )
-    : null;
-
   return (
     <section
       id={sectionId}
       className="snap-section"
       style={{ background: isAkad ? "var(--surface)" : "var(--bg)" }}
     >
-      {mapModal}
       <div className="paper-overlay" />
 
       {/* Large background icon */}
@@ -184,7 +118,7 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
           </div>
         </motion.div>
 
-        {/* Map tap-to-open */}
+        {/* Inline interactive map */}
         <motion.div
           variants={fade(0.4)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}
           className="w-full"
@@ -197,37 +131,48 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
             <svg width="20" height="20"><path d="M20 0 L20 20 L0 20" stroke="var(--gold)" strokeWidth="0.8" fill="none" opacity="0.5"/></svg>
           </div>
 
-          {/* Static preview — pointer-events none, scroll unaffected */}
           <iframe
             src={event.embedUrl}
             width="100%"
-            height="140"
+            height="260"
             style={{
               border: 0,
               display: "block",
-              // Warm, bright filter to match the light parchment theme
               filter: "sepia(25%) saturate(0.85) brightness(1.02) contrast(0.95)",
-              pointerEvents: "none",
+              pointerEvents: mapInteractive ? "auto" : "none",
             }}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            title={`Preview lokasi ${event.title}`}
+            title={`Lokasi ${event.title}`}
           />
 
-          {/* Transparent clickable layer — map preview fully visible */}
-          <div
-            onClick={() => setMapOpen(true)}
-            role="button"
-            aria-label="Buka peta interaktif"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === "Enter" && setMapOpen(true)}
-            style={{
-              position: "absolute",
-              inset: 0,
-              zIndex: 20,
-              cursor: "pointer",
-            }}
-          />
+          {/* Overlay: tap to activate */}
+          {!mapInteractive && (
+            <div
+              onClick={() => setMapInteractive(true)}
+              role="button"
+              aria-label="Aktifkan peta interaktif"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === "Enter" && setMapInteractive(true)}
+              style={{ position: "absolute", inset: 0, zIndex: 20, cursor: "pointer", display: "flex", alignItems: "flex-end", justifyContent: "center", paddingBottom: 10 }}
+            >
+              <span style={{ fontFamily: "Inter, sans-serif", fontSize: "9px", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--text-dim)", background: "rgba(250,247,242,0.88)", padding: "4px 10px", backdropFilter: "blur(4px)" }}>
+                Ketuk untuk menggeser
+              </span>
+            </div>
+          )}
+
+          {/* Done button when interactive */}
+          {mapInteractive && (
+            <button
+              onClick={() => setMapInteractive(false)}
+              aria-label="Selesai"
+              style={{ position: "absolute", top: 8, right: 8, zIndex: 20, display: "flex", alignItems: "center", gap: 4, fontFamily: "Inter, sans-serif", fontSize: "9px", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gold-dim)", background: "rgba(250,247,242,0.92)", border: "1px solid rgba(192,120,48,0.3)", padding: "4px 10px", cursor: "pointer", backdropFilter: "blur(4px)" }}
+            >
+              <X size={10} />
+              Selesai
+            </button>
+          )}
         </motion.div>
 
         {/* Action links */}

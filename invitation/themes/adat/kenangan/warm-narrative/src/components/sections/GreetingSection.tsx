@@ -21,10 +21,6 @@ export default function GreetingSection({ couple }: GreetingSectionProps) {
   return (
     <section id="greeting" className="snap-section" style={{ background: "var(--surface)", paddingBottom: "clamp(60px, 14vh, 110px)" }}>
       <div className="paper-overlay" />
-      <span className="corner-ornament tl" />
-      <span className="corner-ornament tr" />
-      <span className="corner-ornament bl" />
-      <span className="corner-ornament br" />
 
       <div
         className="absolute inset-0 pointer-events-none"

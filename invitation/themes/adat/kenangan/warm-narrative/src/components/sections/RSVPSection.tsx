@@ -44,7 +44,7 @@ export default function RSVPSection() {
         className="relative z-10 w-full mx-auto px-8 overflow-y-auto"
         style={{
           maxWidth: "300px",
-          maxHeight: "100dvh",
+          maxHeight: "100svh",
           paddingTop: "clamp(32px, 7vh, 72px)",
           paddingBottom: "clamp(32px, 7vh, 72px)",
         }}
