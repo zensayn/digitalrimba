@@ -38,6 +38,19 @@ function PhonePlaceholder({ className = "" }: { className?: string }) {
   );
 }
 
+function Chip({ live, t }: { live: boolean; t: ReturnType<typeof useTranslations> }) {
+  return live ? (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#346739] px-3 py-1 text-[11px] font-medium text-white">
+      <span className="h-1.5 w-1.5 rounded-full bg-[#9fe6a0]" />
+      {t("availableLabel")}
+    </span>
+  ) : (
+    <span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-[#93939f]">
+      {t("comingSoonLabel")}
+    </span>
+  );
+}
+
 export default function OurServices() {
   const t = useTranslations("OurServices");
   const reduce = useReducedMotion();
@@ -49,18 +62,6 @@ export default function OurServices() {
     viewport: { once: true, margin: "-100px" },
     transition: { duration: 0.7, delay, ease },
   });
-
-  const Chip = ({ live }: { live: boolean }) =>
-    live ? (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-[#346739] px-3 py-1 text-[11px] font-medium text-white">
-        <span className="h-1.5 w-1.5 rounded-full bg-[#9fe6a0]" />
-        {t("availableLabel")}
-      </span>
-    ) : (
-      <span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-[#93939f]">
-        {t("comingSoonLabel")}
-      </span>
-    );
 
   const top = SERVICES.slice(0, 3);
   // ponytail: layout is designed for a 3+1 split; a 4th entry renders wide, a 5th+ won't show.
@@ -102,7 +103,7 @@ export default function OurServices() {
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white">
                     <Icon className="h-5 w-5 text-[#346739]" />
                   </div>
-                  <Chip live={s.status === "live"} />
+                  <Chip live={s.status === "live"} t={t} />
                 </div>
 
                 <h3 className="mt-6 text-[22px] font-normal leading-tight tracking-tight text-[#212121]">
@@ -130,7 +131,7 @@ export default function OurServices() {
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white">
                   <WideIcon className="h-5 w-5 text-[#346739]" />
                 </div>
-                <Chip live={(wide.status as string) === "live"} />
+                <Chip live={(wide.status as string) === "live"} t={t} />
               </div>
               <h3 className="mt-6 text-[26px] md:text-[32px] font-normal leading-tight tracking-tight text-[#212121]">
                 {t(`services.${wide.key}.title`)}

@@ -1,5 +1,4 @@
-"use client";
-
+import Image from "next/image";
 import Link from "next/link";
 
 // ponytail: static content, no CMS — wire to real product pages when they exist
@@ -35,14 +34,15 @@ export default function ProductSuite() {
 
         {/* Flagship — full-bleed photo card with floating RSVP UI (WhatsApp "Message privately" pattern) */}
         <div className="relative rounded-[28px] overflow-hidden min-h-[520px] md:min-h-[560px] flex items-center">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1600&q=80"
             alt="Wedding celebration"
-            className="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
           {/* Scrim for copy legibility, deep-green tinted */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#00201b]/90 via-[#00201b]/55 to-[#00201b]/10" />
+          <div className="absolute inset-0 bg-linear-to-r from-[#00201b]/90 via-[#00201b]/55 to-[#00201b]/10" />
 
           {/* Copy — left */}
           <div className="relative z-10 p-8 md:p-14 lg:p-16 max-w-lg space-y-6 text-white">

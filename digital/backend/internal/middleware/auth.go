@@ -47,7 +47,9 @@ func (a *Authenticator) parse(ctx context.Context, raw []byte) (jwt.Token, error
 			}
 		}
 	}
-	set, err := jwk.Fetch(ctx, a.jwksURL)
+	fetchCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	set, err := jwk.Fetch(fetchCtx, a.jwksURL)
 	if err != nil {
 		return nil, err
 	}

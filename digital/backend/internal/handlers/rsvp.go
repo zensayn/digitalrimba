@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -51,7 +52,7 @@ type RsvpEntry struct {
 
 type RsvpStore interface {
 	GuestRsvpByToken(context.Context, string) (RsvpGuest, error)
-	SubmitRsvp(ctx context.Context, token, status string, attendeeCount int, message string) error
+	SubmitRsvp(ctx context.Context, token, status string, attendeeCount int, message string) (RsvpGuest, error)
 	ListWishes(context.Context, string) ([]Wish, error)
 	ListRsvps(context.Context, string) ([]RsvpEntry, error)
 }
@@ -134,12 +135,7 @@ func (h *RsvpHandler) Submit(w http.ResponseWriter, r *http.Request) {
 		req.AttendeeCount = 0
 	}
 
-	if err := h.store.SubmitRsvp(r.Context(), token, status, req.AttendeeCount, strings.TrimSpace(req.Message)); err != nil {
-		writeRsvpError(w, err)
-		return
-	}
-
-	guest, err := h.store.GuestRsvpByToken(r.Context(), token)
+	guest, err := h.store.SubmitRsvp(r.Context(), token, status, req.AttendeeCount, strings.TrimSpace(req.Message))
 	if err != nil {
 		writeRsvpError(w, err)
 		return
@@ -184,10 +180,11 @@ func (h *RsvpHandler) List(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, entries)
 }
 
+// resolveWeddingID intentionally does NOT accept GuestAuth: GuestAuth only
+// carries a WeddingID (no per-guest identifier), so honoring it here would let
+// any guest link list every guest's RSVP -- names, statuses, attendee counts,
+// and messages -- for the whole wedding. Only an owner session may list.
 func (h *RsvpHandler) resolveWeddingID(ctx context.Context) (string, error) {
-	if auth, ok := GuestAuthFromContext(ctx); ok {
-		return auth.WeddingID, nil
-	}
 	userID, ok := UserIDFromContext(ctx)
 	if !ok || h.weddingResolver == nil {
 		return "", ErrForbidden
@@ -206,6 +203,7 @@ func writeRsvpError(w http.ResponseWriter, err error) {
 	case errors.Is(err, ErrForbidden):
 		http.Error(w, "forbidden", http.StatusForbidden)
 	default:
+		log.Printf("rsvp: internal error: %v", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
 }

@@ -6,6 +6,10 @@ import { TextureButton } from "@/components/ui/texture-button";
 import { Input } from "@/components/ui/input";
 import type { CheckInGuest } from "@/lib/api/checkin-operator";
 
+function formatTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+}
+
 export type CheckInOptions = {
   actualPax: number;
   proxyName: string;
@@ -138,10 +142,7 @@ function SheetBody({
             }`}
           >
             {justArrived ? "✓ Berhasil check-in " : "Sudah check-in "}
-            {new Date(guest.arrivedAt).toLocaleTimeString("id-ID", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            {formatTime(guest.arrivedAt)}
             {guest.checkedInByLabel ? ` oleh ${guest.checkedInByLabel}` : ""}
           </p>
           {guest.proxyName && (
@@ -166,12 +167,7 @@ function SheetBody({
           },
           {
             label: "Tiba",
-            value: guest.arrivedAt
-              ? new Date(guest.arrivedAt).toLocaleTimeString("id-ID", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : "—",
+            value: guest.arrivedAt ? formatTime(guest.arrivedAt) : "—",
           },
         ].map(({ label, value }) => (
           <div key={label} className="bg-[#faf8f5] rounded-xl py-2.5 text-center">

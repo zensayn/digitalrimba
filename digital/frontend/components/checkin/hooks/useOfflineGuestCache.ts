@@ -20,9 +20,9 @@ export function useOfflineGuestCache(token: string | null) {
     try {
       const guests = await fetchRoster(token);
       if (requestId !== requestIdRef.current) return; // superseded by a newer refresh
-      await cacheGuests(guests);
       setRoster(guests);
       setFromCache(false);
+      await cacheGuests(guests).catch(() => {}); // best-effort persistence
     } catch {
       const cached = await getCachedGuests().catch(() => []);
       if (requestId === requestIdRef.current && cached.length > 0) {
@@ -45,7 +45,7 @@ export function useOfflineGuestCache(token: string | null) {
       next[idx] = guest;
       return next;
     });
-    void putCachedGuest(guest);
+    void putCachedGuest(guest).catch(() => {});
   }, []);
 
   return { roster, fromCache, refresh, upsertGuest };

@@ -94,10 +94,22 @@ func (s *PostgresCheckinStore) MarkGuestArrived(ctx context.Context, qrToken str
 		g.ProxyName = details.ProxyName
 		g.GiftTagCode = details.GiftTagCode
 		g.CheckedInByLabel = details.CheckedInByLabel
+
+		counts, err := s.GetCheckinCounts(ctx, g.WeddingID)
+		return g, false, counts, err
 	}
 
+	// ON CONFLICT DO NOTHING hit a race: another request checked this guest in
+	// between our initial read and this insert. Re-fetch so we report the real
+	// already-arrived state instead of a bare, timestamp-less "success".
+	var raceArrivedAt time.Time
+	if err := s.db.QueryRow(ctx, `SELECT checked_in_at FROM checkin WHERE guest_id = $1::uuid`, g.ID).Scan(&raceArrivedAt); err != nil {
+		return CheckinGuest{}, false, CheckinCounts{}, err
+	}
+	g.ArrivedAt = &raceArrivedAt
+
 	counts, err := s.GetCheckinCounts(ctx, g.WeddingID)
-	return g, false, counts, err
+	return g, true, counts, err
 }
 
 func (s *PostgresCheckinStore) GetCheckinCounts(ctx context.Context, weddingID string) (CheckinCounts, error) {

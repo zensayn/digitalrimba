@@ -40,6 +40,7 @@ export function KioskChrome({
     pressTimer.current = setTimeout(() => setMenuOpen(true), 700);
   };
   const cancelPress = () => clearTimeout(pressTimer.current);
+  useEffect(() => cancelPress, []);
 
   const pct =
     counts.totalPax > 0

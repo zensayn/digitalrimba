@@ -2,7 +2,7 @@
 // pending-scan replay queue, and small meta values (gift tag counter).
 // Uses `idb` only to remove IndexedDB callback boilerplate.
 
-import { openDB, type DBSchema, type IDBPDatabase } from "idb";
+import { openDB, deleteDB, type DBSchema, type IDBPDatabase } from "idb";
 import type { CheckInGuest, ScanPayload } from "@/lib/api/checkin-operator";
 
 const DB_NAME = "rimba-checkin";
@@ -98,8 +98,11 @@ export async function wipeOfflineData(): Promise<void> {
     (await dbPromise).close();
     dbPromise = null;
   }
-  await new Promise<void>((resolve) => {
-    const req = indexedDB.deleteDatabase(DB_NAME);
-    req.onsuccess = req.onerror = req.onblocked = () => resolve();
+  await deleteDB(DB_NAME, {
+    blocked() {
+      // Another tab/connection is still open; surface this so the caller
+      // can retry or warn the operator instead of assuming data is gone.
+      console.warn("wipeOfflineData: delete blocked by another open connection");
+    },
   });
 }

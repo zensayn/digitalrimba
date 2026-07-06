@@ -41,7 +41,7 @@ export function ArcGauge({
   over?: boolean;
   children?: ReactNode;
 }) {
-  const clamped = Math.max(0, Math.min(pct, 100));
+  const clamped = Number.isFinite(pct) ? Math.max(0, Math.min(pct, 100)) : 0;
   const arcLen = Math.PI * 80; // radius 80 semicircle ≈ 251.3
   const dash = (clamped / 100) * arcLen;
   const path = 'M 20 100 A 80 80 0 0 1 180 100';

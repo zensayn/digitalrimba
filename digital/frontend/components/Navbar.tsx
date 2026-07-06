@@ -36,14 +36,18 @@ export default function Navbar() {
         {/* Center menu (desktop only) */}
         <ul className="hidden md:flex items-center gap-8 text-[#212121] font-normal text-sm">
           {menuItems.map((item) => (
-            <li
-              key={item.name}
-              className="cursor-pointer hover:opacity-75 transition-opacity flex items-center gap-1 group py-2"
-            >
-              {item.name}
-              {item.hasDropdown && (
-                <AltArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-              )}
+            <li key={item.name}>
+              <button
+                type="button"
+                aria-haspopup={item.hasDropdown || undefined}
+                aria-expanded={item.hasDropdown ? false : undefined}
+                className="cursor-pointer hover:opacity-75 transition-opacity flex items-center gap-1 group py-2"
+              >
+                {item.name}
+                {item.hasDropdown && (
+                  <AltArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                )}
+              </button>
             </li>
           ))}
         </ul>

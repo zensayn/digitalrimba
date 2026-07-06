@@ -30,9 +30,9 @@ export default function proxy(request: NextRequest) {
 
     // 4. Everything else — locale routing via next-intl.
     return intl(request);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("[Proxy Middleware] ERROR:", err);
-    return new NextResponse("PROXY ERROR: " + err.message + "\n" + err.stack, { status: 500 });
+    return NextResponse.next();
   }
 }
 

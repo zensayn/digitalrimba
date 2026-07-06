@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 type ServiceCard = {
   key: "card1" | "card2" | "card3";
@@ -56,15 +57,16 @@ export default function OurServices2() {
                 className="group relative rounded-[28px] overflow-hidden h-[420px] md:h-[460px] lg:h-[500px] flex flex-col justify-end p-8 cursor-pointer shadow-xs border border-neutral-100/50"
               >
                 {/* Background Fullscreen Image */}
-                <img
+                <Image
                   src={card.image}
                   alt={t(`${card.key}.title`)}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                  loading="lazy"
+                  fill
+                  sizes="(min-width: 768px) 33vw, 100vw"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
 
                 {/* Tinted Gradient Overlay for Contrast and Polish */}
-                <div className={`absolute inset-0 bg-gradient-to-t ${card.gradientClass} opacity-90 transition-opacity duration-300 group-hover:opacity-95`} />
+                <div className={`absolute inset-0 bg-linear-to-t ${card.gradientClass} opacity-90 transition-opacity duration-300 group-hover:opacity-95`} />
 
                 {/* Text Content Overlay */}
                 <div className="relative z-10 space-y-2">

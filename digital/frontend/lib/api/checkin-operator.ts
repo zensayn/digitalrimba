@@ -2,6 +2,17 @@
 // (organizer JWT), every call here takes the PIN-session token explicitly.
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
+const REQUEST_TIMEOUT_MS = 10_000;
+
+// Bounded fetch so a stalled request on flaky venue Wi-Fi fails cleanly
+// instead of hanging the caller's busy state indefinitely. On timeout this
+// aborts like a plain network failure (not a CheckinApiError), so it still
+// flows into the existing offline-queue path.
+function fetchWithTimeout(input: string, init: RequestInit = {}): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  return fetch(input, { ...init, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
 
 export type CheckInGuest = {
   id: string;
@@ -45,11 +56,11 @@ export class CheckinApiError extends Error {
   }
 }
 
-async function checkOk(res: Response, action: string): Promise<Response> {
+async function checkOk(res: Response, action: string, defaultMessage?: string): Promise<Response> {
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new CheckinApiError(
-      (body as { error?: string }).error ?? `${action} failed`,
+      (body as { error?: string }).error ?? defaultMessage ?? `${action} failed`,
       res.status
     );
   }
@@ -81,18 +92,15 @@ function authHeaders(token: string, json = false): HeadersInit {
 }
 
 export async function authOperator(eventCode: string, pin: string) {
-  const res = await fetch(`${BASE}/api/checkin/auth`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ eventCode, pin }),
-  });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({ error: "Wrong PIN" }));
-    throw new CheckinApiError(
-      (body as { error?: string }).error ?? "Wrong PIN",
-      res.status
-    );
-  }
+  const res = await checkOk(
+    await fetchWithTimeout(`${BASE}/api/checkin/auth`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eventCode, pin }),
+    }),
+    "Auth",
+    "Wrong PIN"
+  );
   const data = (await res.json()) as {
     token: string;
     expires_at?: string;
@@ -111,7 +119,7 @@ export async function lookupByQR(
   qrToken: string
 ): Promise<CheckInGuest | null> {
   const res = await checkOk(
-    await fetch(`${BASE}/api/checkin/guests?qr=${encodeURIComponent(qrToken)}`, {
+    await fetchWithTimeout(`${BASE}/api/checkin/guests?qr=${encodeURIComponent(qrToken)}`, {
       headers: authHeaders(token),
     }),
     "Guest lookup"
@@ -124,7 +132,7 @@ export async function lookupByQR(
 /** Write — marks the guest as arrived with the kiosk details. */
 export async function scanGuest(token: string, payload: ScanPayload) {
   const res = await checkOk(
-    await fetch(`${BASE}/api/checkin/scan`, {
+    await fetchWithTimeout(`${BASE}/api/checkin/scan`, {
       method: "POST",
       headers: authHeaders(token, true),
       body: JSON.stringify({
@@ -153,7 +161,7 @@ export async function searchGuests(
   query: string
 ): Promise<CheckInGuest[]> {
   const res = await checkOk(
-    await fetch(`${BASE}/api/checkin/guests?q=${encodeURIComponent(query)}`, {
+    await fetchWithTimeout(`${BASE}/api/checkin/guests?q=${encodeURIComponent(query)}`, {
       headers: authHeaders(token),
     }),
     "Guest search"
@@ -168,7 +176,7 @@ export async function searchGuests(
 /** Full guest list for the offline cache. */
 export async function fetchRoster(token: string): Promise<CheckInGuest[]> {
   const res = await checkOk(
-    await fetch(`${BASE}/api/checkin/roster`, { headers: authHeaders(token) }),
+    await fetchWithTimeout(`${BASE}/api/checkin/roster`, { headers: authHeaders(token) }),
     "Roster"
   );
   const data = (await res.json()) as Record<string, unknown>[];
@@ -181,7 +189,7 @@ export async function toggleSouvenir(
   collected: boolean
 ): Promise<boolean> {
   const res = await checkOk(
-    await fetch(`${BASE}/api/checkin/guests/${guestId}/souvenir`, {
+    await fetchWithTimeout(`${BASE}/api/checkin/guests/${guestId}/souvenir`, {
       method: "PATCH",
       headers: authHeaders(token, true),
       body: JSON.stringify({ collected }),
@@ -198,7 +206,7 @@ export async function createWalkIn(
   payload: WalkInPayload
 ): Promise<CheckInGuest> {
   const res = await checkOk(
-    await fetch(`${BASE}/api/checkin/walkin`, {
+    await fetchWithTimeout(`${BASE}/api/checkin/walkin`, {
       method: "POST",
       headers: authHeaders(token, true),
       body: JSON.stringify({

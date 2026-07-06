@@ -112,6 +112,6 @@ no page errors. Screenshot shows the fake-camera feed filling the viewfinder.
 
 ## Summary
 
-- **14 / 20 fully implemented**, 4 partial, 5 not built (one item intentionally skipped per the checklist's own note).
+- **15 / 24 fully implemented**, 4 partial, 5 not built.
 - The camera bug was the only defect found in the implemented set; fixed and verified end-to-end this session.
 - Biggest genuine gaps, in impact order: check-in ledger **CSV export** (Phase 7 — cheap, data already in one table), **gift-amount entry UI** (Phase 7), scanner **idle throttling** (Phase 8), and the whole **usher ecosystem** (Phases 5–6 — a separate product surface).

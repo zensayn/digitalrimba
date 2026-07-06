@@ -59,6 +59,7 @@ export function ItemsTab({ items, isLoading, onAdd, onEdit, onDelete }: Props) {
         case 'status': return STATUS_ORDER[a.payment_status] - STATUS_ORDER[b.payment_status];
         case 'name':   return a.item_name.localeCompare(b.item_name);
         default: // 'due' — soonest first, undated last
+          if (!a.due_date && !b.due_date) return 0;
           if (!a.due_date) return 1;
           if (!b.due_date) return -1;
           return a.due_date.localeCompare(b.due_date);

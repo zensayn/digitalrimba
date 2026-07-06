@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -25,6 +25,7 @@ export function PaymentsTab({ items, summary, isLoading, onTogglePaid, onAdd, on
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [editingBudget, setEditingBudget] = useState<string | null>(null);
   const [budgetDraft, setBudgetDraft] = useState('');
+  const cancelingRef = useRef(false);
 
   const toggleExpand = (name: string) => {
     setExpanded(prev => ({ ...prev, [name]: !prev[name] }));
@@ -38,8 +39,13 @@ export function PaymentsTab({ items, summary, isLoading, onTogglePaid, onAdd, on
   });
 
   function saveBudget(category: string) {
-    const planned = Number(budgetDraft) || 0;
-    if (planned >= 0) budgetMutation.mutate({ category, planned });
+    const planned = Math.max(0, Number(budgetDraft) || 0);
+    budgetMutation.mutate({ category, planned });
+    setEditingBudget(null);
+  }
+
+  function cancelEditingBudget() {
+    cancelingRef.current = true;
     setEditingBudget(null);
   }
 
@@ -65,6 +71,7 @@ export function PaymentsTab({ items, summary, isLoading, onTogglePaid, onAdd, on
 
     return Array.from(map.entries()).map(([name, data]) => {
       const sortedItems = [...data.items].sort((a, b) => {
+        if (!a.due_date && !b.due_date) return 0;
         if (!a.due_date) return 1;
         if (!b.due_date) return -1;
         return a.due_date.localeCompare(b.due_date);
@@ -138,10 +145,16 @@ export function PaymentsTab({ items, summary, isLoading, onTogglePaid, onAdd, on
                         autoFocus
                         value={budgetDraft}
                         onChange={e => setBudgetDraft(e.target.value)}
-                        onBlur={() => saveBudget(cat.name)}
+                        onBlur={() => {
+                          if (cancelingRef.current) {
+                            cancelingRef.current = false;
+                            return;
+                          }
+                          saveBudget(cat.name);
+                        }}
                         onKeyDown={e => {
                           if (e.key === 'Enter') saveBudget(cat.name);
-                          if (e.key === 'Escape') setEditingBudget(null);
+                          if (e.key === 'Escape') cancelEditingBudget();
                         }}
                         className="h-8 w-32 px-2.5 rounded-lg border border-[#346739] text-[12px] bg-white outline-hidden"
                         placeholder="0"

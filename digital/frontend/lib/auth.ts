@@ -11,12 +11,17 @@ const pool = new Pool({
 // Optional Redis session cache (docker: digital-redis, host port 6380).
 // When REDIS_URL is set, better-auth keeps sessions in Redis instead of
 // hitting Postgres on every validation; unset = old behavior, nothing breaks.
-const redis = process.env.REDIS_URL
+let redis = process.env.REDIS_URL
   ? createClient({ url: process.env.REDIS_URL })
   : null;
 if (redis) {
   redis.on("error", (err) => console.error("redis:", err));
-  await redis.connect();
+  try {
+    await redis.connect();
+  } catch (err) {
+    console.error("redis: failed to connect, falling back to Postgres sessions", err);
+    redis = null;
+  }
 }
 
 const googleEnabled =
@@ -34,11 +39,7 @@ export const auth = betterAuth({
     secondaryStorage: {
       get: (key: string) => redis.get(key),
       set: async (key: string, value: string, ttl?: number) => {
-        await redis.set(
-          key,
-          value,
-          ttl ? { expiration: { type: "EX", value: ttl } } : {},
-        );
+        await redis.set(key, value, ttl ? { EX: ttl } : {});
       },
       delete: async (key: string) => {
         await redis.del(key);

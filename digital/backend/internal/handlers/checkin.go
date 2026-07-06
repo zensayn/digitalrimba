@@ -493,17 +493,24 @@ func (h *CheckinHandler) Scan(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
-	if req.ActualPax != nil && *req.ActualPax < 1 {
-		http.Error(w, "actual_pax must be positive", http.StatusBadRequest)
+	if req.ActualPax != nil && (*req.ActualPax < 1 || *req.ActualPax > 99) {
+		http.Error(w, "actual_pax must be between 1 and 99", http.StatusBadRequest)
+		return
+	}
+	proxyName := strings.TrimSpace(req.ProxyName)
+	giftTagCode := strings.TrimSpace(req.GiftTagCode)
+	checkedInByLabel := strings.TrimSpace(req.CheckedInByLabel)
+	if len(proxyName) > 200 || len(giftTagCode) > 100 || len(checkedInByLabel) > 200 {
+		http.Error(w, "field too long", http.StatusBadRequest)
 		return
 	}
 
 	details := ScanDetails{
 		SouvenirGiven:    req.SouvenirGiven,
 		ActualPax:        req.ActualPax,
-		ProxyName:        strings.TrimSpace(req.ProxyName),
-		GiftTagCode:      strings.TrimSpace(req.GiftTagCode),
-		CheckedInByLabel: strings.TrimSpace(req.CheckedInByLabel),
+		ProxyName:        proxyName,
+		GiftTagCode:      giftTagCode,
+		CheckedInByLabel: checkedInByLabel,
 	}
 	guest, already, counts, err := h.store.MarkGuestArrived(r.Context(), req.QRToken, details, h.now().UTC())
 	if err != nil {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 import type QRCodeStyling from "qr-code-styling";
 import type { DotType, CornerSquareType, CornerDotType } from "qr-code-styling";
 import { Download, GalleryAdd, TrashBinMinimalistic } from "@solar-icons/react";
@@ -145,19 +146,27 @@ export default function QrPassesPage() {
       qrRef.current = qr;
       qrContainerRef.current.replaceChildren();
       qr.append(qrContainerRef.current);
+    }).catch(() => {
+      console.error("Failed to load QR renderer");
     });
     return () => {
       alive = false;
     };
   }, [qrOptions]);
 
+  const MAX_LOGO_BYTES = 300 * 1024; // 300KB — this becomes an inline base64 QR option
+
   function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
+    if (file.size > MAX_LOGO_BYTES) {
+      toast.error("Logo image is too large. Please use one under 300KB.");
+      return;
+    }
     const reader = new FileReader();
     reader.onload = () => setLogo(reader.result as string);
     reader.readAsDataURL(file);
-    e.target.value = "";
   }
 
   function handleDownload(extension: "png" | "svg") {

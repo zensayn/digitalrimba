@@ -308,6 +308,7 @@ export default function HeroMorph() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const heroHeaderRef = useRef<HTMLElement>(null);
 
@@ -335,6 +336,7 @@ export default function HeroMorph() {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) {
       if (heroHeader) gsap.set(heroHeader, { autoAlpha: 0 });
+      heroVideoRef.current?.pause();
       return;
     }
 
@@ -512,6 +514,7 @@ export default function HeroMorph() {
       >
         {/* Full-bleed brand hero video + readability overlay */}
         <video
+          ref={heroVideoRef}
           autoPlay
           muted
           loop

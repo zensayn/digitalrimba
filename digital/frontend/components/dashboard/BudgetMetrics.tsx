@@ -6,6 +6,7 @@ import {
   Widget,
   MoneyBag,
   Wallet,
+  GraphUp,
 } from '@solar-icons/react'
 import { motion } from 'motion/react'
 import { Label, Pie, PieChart } from 'recharts'
@@ -40,7 +41,7 @@ const BudgetMetrics = ({ data }: { data: DashboardBudgetSummary }) => {
 
   const MetricsData = [
     {
-      icons: <Widget className='size-4' />,
+      icons: <GraphUp className='size-4' />,
       title: 'Payment Trend',
       value: data.overspend ? 'Overspent' : 'On Track'
     },

@@ -1,5 +1,3 @@
-"use client";
-
 // Mews "constitution" pattern: unframed, rule-separated numbered rows — no cards
 const PROMISES = [
   {

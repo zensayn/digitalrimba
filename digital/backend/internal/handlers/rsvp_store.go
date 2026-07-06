@@ -36,16 +36,21 @@ func (s *PostgresRsvpStore) GuestRsvpByToken(ctx context.Context, token string) 
 	return g, err
 }
 
-// SubmitRsvp upserts the guest's RSVP keyed by qr_token. The rsvp table is the
-// single source of truth (guest_id is UNIQUE). Returns ErrGuestNotFound for an
-// unknown token.
-func (s *PostgresRsvpStore) SubmitRsvp(ctx context.Context, token, status string, attendeeCount int, message string) error {
-	var guestID string
-	err := s.db.QueryRow(ctx, submitRsvpSQL, token, status, attendeeCount, message).Scan(&guestID)
+// SubmitRsvp upserts the guest's RSVP keyed by qr_token and returns the
+// resulting guest view in the same round trip (the caller would otherwise
+// need a second GuestRsvpByToken query to rebuild the response). The rsvp
+// table is the single source of truth (guest_id is UNIQUE). Returns
+// ErrGuestNotFound for an unknown token.
+func (s *PostgresRsvpStore) SubmitRsvp(ctx context.Context, token, status string, attendeeCount int, message string) (RsvpGuest, error) {
+	var g RsvpGuest
+	err := s.db.QueryRow(ctx, submitRsvpSQL, token, status, attendeeCount, message).Scan(
+		&g.Name, &g.WeddingID, &g.EventDate, &g.VenueName, &g.VenueAddress,
+		&g.Status, &g.AttendeeCount, &g.Message,
+	)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return ErrGuestNotFound
+		return RsvpGuest{}, ErrGuestNotFound
 	}
-	return err
+	return g, err
 }
 
 func (s *PostgresRsvpStore) ListWishes(ctx context.Context, weddingID string) ([]Wish, error) {
@@ -126,17 +131,29 @@ WHERE g.qr_token = $1::uuid
 const submitRsvpSQL = `
 WITH g AS (
     SELECT id, wedding_id FROM guests WHERE qr_token = $1::uuid
+), upsert AS (
+    INSERT INTO rsvp (guest_id, wedding_id, status, attendee_count, message, responded_at)
+    SELECT g.id, g.wedding_id, $2, $3, NULLIF($4, ''), now()
+    FROM g
+    ON CONFLICT (guest_id) DO UPDATE
+    SET status = EXCLUDED.status,
+        attendee_count = EXCLUDED.attendee_count,
+        message = EXCLUDED.message,
+        responded_at = now(),
+        updated_at = now()
+    RETURNING guest_id, status, attendee_count, message
 )
-INSERT INTO rsvp (guest_id, wedding_id, status, attendee_count, message, responded_at)
-SELECT g.id, g.wedding_id, $2, $3, NULLIF($4, ''), now()
-FROM g
-ON CONFLICT (guest_id) DO UPDATE
-SET status = EXCLUDED.status,
-    attendee_count = EXCLUDED.attendee_count,
-    message = EXCLUDED.message,
-    responded_at = now(),
-    updated_at = now()
-RETURNING guest_id::text
+SELECT gu.name,
+       gu.wedding_id::text,
+       COALESCE(TO_CHAR(w.event_date, 'YYYY-MM-DD'), ''),
+       COALESCE(w.venue_name, ''),
+       COALESCE(w.venue_address, ''),
+       upsert.status,
+       upsert.attendee_count,
+       COALESCE(upsert.message, '')
+FROM upsert
+JOIN guests gu ON gu.id = upsert.guest_id
+JOIN weddings w ON w.id = gu.wedding_id
 `
 
 const listWishesSQL = `

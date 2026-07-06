@@ -36,6 +36,7 @@ export default function CurvedMenu({ buttonColor = "#212121", activeButtonColor 
   const t = useTranslations("Navbar");
   const drawerRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => setMounted(true), []);
 
@@ -88,6 +89,20 @@ export default function CurvedMenu({ buttonColor = "#212121", activeButtonColor 
 
   const close = () => setIsActive(false);
 
+  // Return focus to the hamburger trigger once the drawer closes (but not on
+  // initial mount, when it was never open to begin with).
+  const wasActiveRef = useRef(false);
+  useEffect(() => {
+    if (isActive) {
+      wasActiveRef.current = true;
+      return;
+    }
+    if (wasActiveRef.current) {
+      wasActiveRef.current = false;
+      triggerRef.current?.focus();
+    }
+  }, [isActive]);
+
   // Dialog a11y: move focus in, trap Tab inside the drawer, Escape closes it.
   useEffect(() => {
     if (!isActive) return;
@@ -122,6 +137,7 @@ export default function CurvedMenu({ buttonColor = "#212121", activeButtonColor 
     <>
       {/* Hamburger trigger */}
       <button
+        ref={triggerRef}
         onClick={() => setIsActive(!isActive)}
         className="relative z-[10000] w-11 h-11 rounded-full flex flex-col items-center justify-center gap-1.5 transition-all duration-300 border border-[#d9d9dd]/65 bg-white/80 backdrop-blur-md shadow-sm hover:scale-105 active:scale-95 cursor-pointer outline-none"
         style={{

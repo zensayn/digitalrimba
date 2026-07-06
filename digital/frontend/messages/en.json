@@ -7,6 +7,52 @@
     "trustLabel": "Trusted by couples & planners across the archipelago",
     "morphCaption": "Whatever your celebration, plan and grow it on your terms."
   },
+  "CaraOrder": {
+    "eyebrow": "How it works",
+    "heading": "Five steps.\nAbout 15 minutes.",
+    "subheading": "Most of them do themselves.",
+    "cta": "Get started",
+    "steps": {
+      "step1": {
+        "title": "Pick a theme",
+        "detail": "Browse hand-crafted themes and choose the one that feels like you.",
+        "duration": "± 2 min"
+      },
+      "step2": {
+        "title": "Tell your story",
+        "detail": "Names, date, venue, photos — one simple form, no design skills needed.",
+        "duration": "± 10 min"
+      },
+      "step3": {
+        "title": "Publish",
+        "detail": "Preview live as you type, publish the moment it feels right.",
+        "duration": "instant"
+      },
+      "step4": {
+        "title": "Share on WhatsApp",
+        "detail": "Send every guest a personal link with their name on it.",
+        "duration": "one tap"
+      },
+      "step5": {
+        "title": "Watch RSVPs arrive",
+        "detail": "Replies land in your dashboard by themselves. That's it.",
+        "duration": "automatic"
+      }
+    }
+  },
+  "HowToOrder": {
+    "eyebrow": "How to order",
+    "heading": "The whole journey, at a glance",
+    "ctaTitle": "Get started",
+    "ctaSubtitle": "Your invitation is 15 minutes away.",
+    "frames": {
+      "frame1": { "title": "Pick a theme", "duration": "± 2 min" },
+      "frame2": { "title": "Tell your story", "duration": "± 10 min" },
+      "frame3": { "title": "Publish", "duration": "instant" },
+      "frame4": { "title": "Share on WhatsApp", "duration": "one tap" },
+      "frame5": { "title": "Watch RSVPs arrive", "duration": "automatic" }
+    }
+  },
   "OurServices": {
     "eyebrow": "Our Services",
     "heading": "Everything for your day,\nin one place.",
@@ -123,30 +169,6 @@
     "unpaid": "Unpaid",
     "noItems": "No items added yet.",
     "addItem": "Add Item"
-  },
-  "OurServices": {
-    "eyebrow": "What we offer",
-    "heading": "Everything your celebration\nneeds, in one place",
-    "availableLabel": "Available",
-    "comingSoonLabel": "Coming soon",
-    "services": {
-      "webInvitations": {
-        "title": "Web Invitations",
-        "desc": "Beautifully designed digital invitations, ready to share in minutes."
-      },
-      "smartRsvp": {
-        "title": "Smart RSVP",
-        "desc": "Guests confirm attendance in seconds; you track responses in real time."
-      },
-      "qrCheckin": {
-        "title": "QR Check-in",
-        "desc": "Scan guests in at the door — no clipboards, no queues."
-      },
-      "vendorTools": {
-        "title": "Vendor Tools",
-        "desc": "Coordinate vendors and logistics from a single dashboard."
-      }
-    }
   },
   "OurServices2": {
     "heading": "More features you will love",

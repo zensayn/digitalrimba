@@ -6,26 +6,28 @@ import Link from "next/link";
 // an inline headline over photography, character prose below. No cards.
 // ponytail: prices are PLACEHOLDERS — replace with real Rp before launch.
 
+// One shared feature list — checked or dimmed per tier, so the upgrade path
+// reads at a glance without a comparison table.
+const FEATURES = [
+  { key: "whatsappRsvp", label: "WhatsApp RSVP & personal guest links" },
+  { key: "musicGalleryMap", label: "Music, gallery & interactive map" },
+  { key: "loveStoryTimeline", label: "Love-story timeline section" },
+  { key: "qrCheckin", label: "QR check-in & guest tracking" },
+  { key: "adatThemes", label: "Adat themes & custom cultural motif" },
+  { key: "prioritySupport", label: "Priority designer support" },
+] as const;
+
+type FeatureKey = (typeof FEATURES)[number]["key"];
+
 type Tier = {
   name: string;
   price: string;
   character: string;
   image: string;
   popular?: boolean;
-  included: boolean[]; // maps onto FEATURES
+  included: Record<FeatureKey, boolean>;
   active: string; // masa aktif
 };
-
-// One shared feature list — checked or dimmed per tier, so the upgrade path
-// reads at a glance without a comparison table.
-const FEATURES = [
-  "WhatsApp RSVP & personal guest links",
-  "Music, gallery & interactive map",
-  "Love-story timeline section",
-  "QR check-in & guest tracking",
-  "Adat themes & custom cultural motif",
-  "Priority designer support",
-];
 
 const TIERS: Tier[] = [
   {
@@ -34,7 +36,14 @@ const TIERS: Tier[] = [
     character: "For the moments you want kept",
     image:
       "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80",
-    included: [true, true, false, false, false, false],
+    included: {
+      whatsappRsvp: true,
+      musicGalleryMap: true,
+      loveStoryTimeline: false,
+      qrCheckin: false,
+      adatThemes: false,
+      prioritySupport: false,
+    },
     active: "6 bulan",
   },
   {
@@ -44,7 +53,14 @@ const TIERS: Tier[] = [
     image:
       "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
     popular: true,
-    included: [true, true, true, true, false, false],
+    included: {
+      whatsappRsvp: true,
+      musicGalleryMap: true,
+      loveStoryTimeline: true,
+      qrCheckin: true,
+      adatThemes: false,
+      prioritySupport: false,
+    },
     active: "12 bulan",
   },
   {
@@ -53,7 +69,14 @@ const TIERS: Tier[] = [
     character: "For the heritage that endures",
     image:
       "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80",
-    included: [true, true, true, true, true, true],
+    included: {
+      whatsappRsvp: true,
+      musicGalleryMap: true,
+      loveStoryTimeline: true,
+      qrCheckin: true,
+      adatThemes: true,
+      prioritySupport: true,
+    },
     active: "Selamanya",
   },
 ];
@@ -112,11 +135,11 @@ export default function Pricings() {
               </p>
 
               <ul className="space-y-2">
-                {FEATURES.map((f, fi) => {
-                  const has = t.included[fi];
+                {FEATURES.map(({ key, label }) => {
+                  const has = t.included[key];
                   return (
                     <li
-                      key={f}
+                      key={key}
                       className={`flex items-start gap-2.5 text-sm leading-relaxed ${
                         has ? "text-[#3a3a3a]" : "text-[#c4c4cc] line-through decoration-[#c4c4cc]/50"
                       }`}
@@ -129,7 +152,8 @@ export default function Pricings() {
                       >
                         {has ? "✓" : "—"}
                       </span>
-                      {f}
+                      <span className="sr-only">{has ? "Included: " : "Not included: "}</span>
+                      {label}
                     </li>
                   );
                 })}
