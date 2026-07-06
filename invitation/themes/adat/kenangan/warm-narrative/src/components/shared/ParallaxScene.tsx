@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type CSSProperties, type ReactNode, type SyntheticEvent } from "react";
+import { useRef, type CSSProperties, type ReactNode } from "react";
 import {
   motion,
   useScroll,
@@ -112,7 +112,7 @@ function Layer({
     loading: (layer.priority ? "eager" : "lazy") as "eager" | "lazy",
     decoding: "async" as const,
     fetchPriority: (layer.priority ? "high" : "low") as "high" | "low",
-    onError: (e: SyntheticEvent<HTMLImageElement>) => {
+    onError: (e: React.SyntheticEvent<HTMLImageElement>) => {
       // Asset missing → hide gracefully, fall back to section background.
       e.currentTarget.style.display = "none";
     },

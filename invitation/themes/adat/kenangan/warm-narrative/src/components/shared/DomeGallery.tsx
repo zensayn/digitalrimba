@@ -650,12 +650,6 @@ export default function DomeGallery({
                   aria-label={it.alt || "Open image"}
                   onClick={onTileClick}
                   onPointerUp={onTilePointerUp}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      if (!openingRef.current) openItemFromElement(e.currentTarget);
-                    }
-                  }}
                 >
                   <img src={it.src} draggable={false} alt={it.alt} />
                 </div>
