@@ -81,3 +81,6 @@ go.work.sum
 .wrangler
 temp
 localandrie
+
+# playwright mcp session artifacts
+.playwright-mcp/

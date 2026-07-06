@@ -1,4 +1,4 @@
-import EnvelopeGate from "@/components/shared/EnvelopeGate";
+import EnvelopeOverlay from "@/components/shared/EnvelopeOverlay";
 import MusicPlayer from "@/components/shared/MusicPlayer";
 import SnapContainer from "@/components/shared/SnapContainer";
 import CoverSection from "@/components/sections/CoverSection";
@@ -50,7 +50,7 @@ export default function Page() {
 
   return (
     <>
-      <EnvelopeGate groomName={config.couple.groom.name} brideName={config.couple.bride.name} />
+      <EnvelopeOverlay />
       <MusicPlayer />
       <SnapContainer>
         {sectionIds.map((id) => renderSection(id))}
