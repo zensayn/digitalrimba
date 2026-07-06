@@ -91,6 +91,11 @@
 
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee-left, .animate-marquee-right { animation: none; }
+  /* HeroMorph's scroll runway is CSS-driven (independent of the GSAP timeline
+     it skips under reduced motion) — collapse it so reduced-motion users
+     don't scroll through a long, unchanging hero for no reason. */
+  .hero-morph-container { height: 100svh !important; }
+  .hero-morph-section { position: static !important; }
 }
 
 .noise-overlay::after {

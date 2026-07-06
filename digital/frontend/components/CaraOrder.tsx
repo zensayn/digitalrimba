@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -81,12 +82,15 @@ export default function CaraOrder() {
                 className={`${s.surface} relative rounded-[28px] overflow-hidden border border-black/[0.04] shadow-[0_-12px_30px_-26px_rgba(0,0,0,0.3)]`}
               >
                 {/* photo — prominent, edge fades into the wash */}
-                <img
-                  src={s.image}
-                  alt={t(`steps.${s.key}.title`)}
-                  loading="lazy"
-                  className="h-52 w-full object-cover [mask-image:linear-gradient(to_bottom,black_55%,transparent_98%)] md:absolute md:inset-y-0 md:right-0 md:h-full md:w-[58%] md:[mask-image:linear-gradient(to_left,black_55%,transparent_98%)]"
-                />
+                <div className="relative h-52 w-full overflow-hidden [mask-image:linear-gradient(to_bottom,black_55%,transparent_98%)] md:absolute md:inset-y-0 md:right-0 md:h-full md:w-[58%] md:[mask-image:linear-gradient(to_left,black_55%,transparent_98%)]">
+                  <Image
+                    src={s.image}
+                    alt={t(`steps.${s.key}.title`)}
+                    fill
+                    sizes="(min-width: 768px) 46vw, 100vw"
+                    className="object-cover"
+                  />
+                </div>
 
                 <div className="relative z-10 flex min-h-[220px] flex-col justify-between gap-10 p-8 md:min-h-[340px] md:max-w-[46%] md:p-10">
                   <div className="flex items-center gap-3">

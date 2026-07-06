@@ -486,10 +486,10 @@ export default function HeroMorph() {
   );
 
   return (
-    <div ref={containerRef} className="relative w-full h-[200svh] bg-white font-poppins">
+    <div ref={containerRef} className="hero-morph-container relative w-full h-[200svh] bg-white font-poppins">
     <section
       ref={sectionRef}
-      className="sticky top-0 w-full h-[100svh] overflow-hidden bg-white"
+      className="hero-morph-section sticky top-0 w-full h-[100svh] overflow-hidden bg-white"
     >
       {/* Scattered grid — desktop layout at every size (cropped on mobile) */}
       <TileGrid

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -72,11 +73,12 @@ export default function HowToOrder() {
             key={f.key}
             className="group relative snap-start shrink-0 w-[240px] md:w-[280px] aspect-[3/4] rounded-[22px] overflow-hidden"
           >
-            <img
+            <Image
               src={f.image}
               alt={t(`frames.${f.key}.title`)}
-              loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              fill
+              sizes="(min-width: 768px) 280px, 240px"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-linear-to-t from-[#00201b]/85 via-[#00201b]/15 to-transparent" />
             <span className="absolute top-5 left-5 font-amoria text-4xl text-white/90">

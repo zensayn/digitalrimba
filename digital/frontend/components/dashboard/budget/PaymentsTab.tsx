@@ -49,6 +49,12 @@ export function PaymentsTab({ items, summary, isLoading, onTogglePaid, onAdd, on
     setEditingBudget(null);
   }
 
+  function startEditingBudget(name: string, draft: string) {
+    cancelingRef.current = false;
+    setEditingBudget(name);
+    setBudgetDraft(draft);
+  }
+
   // Planned (top-down) budget per category from the summary; 0 when unset.
   const plannedByName = useMemo(() => {
     const m = new Map<string, number>();
@@ -168,7 +174,7 @@ export function PaymentsTab({ items, summary, isLoading, onTogglePaid, onAdd, on
                           {formatRupiah(cat.actual)} <span className="text-[#c4c4cc]">of</span> {formatRupiah(cat.budgeted)}
                           <button
                             type="button"
-                            onClick={() => { setEditingBudget(cat.name); setBudgetDraft(cat.planned ? String(cat.planned) : ''); }}
+                            onClick={() => startEditingBudget(cat.name, cat.planned ? String(cat.planned) : '')}
                             className="text-[#c4c4cc] hover:text-[#346739] transition-colors cursor-pointer"
                             title="Set category budget"
                           >
@@ -188,7 +194,7 @@ export function PaymentsTab({ items, summary, isLoading, onTogglePaid, onAdd, on
                   ) : (
                     <button
                       type="button"
-                      onClick={() => { setEditingBudget(cat.name); setBudgetDraft(''); }}
+                      onClick={() => startEditingBudget(cat.name, '')}
                       className="text-[11px] text-[#93939f] hover:text-[#346739] font-medium transition-colors cursor-pointer inline-flex items-center gap-1"
                     >
                       <Pen2 size={12} /> Set a budget

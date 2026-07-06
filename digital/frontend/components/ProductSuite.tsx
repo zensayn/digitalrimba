@@ -39,6 +39,7 @@ export default function ProductSuite() {
             alt="Wedding celebration"
             fill
             sizes="100vw"
+            priority
             className="object-cover"
           />
           {/* Scrim for copy legibility, deep-green tinted */}
