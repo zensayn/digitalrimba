@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"sort"
 	"strings"
 	"sync"
 	"testing"
@@ -107,6 +108,120 @@ func TestCheckinHandlers(t *testing.T) {
 			},
 		},
 		{
+			name: "auth returns next_gift_tag seed",
+			run: func(t *testing.T, h *CheckinHandler, store *memoryCheckinStore) {
+				g := store.guests["qr-2"]
+				g.GiftTagCode = "041"
+				store.guests["qr-2"] = g
+
+				req := httptest.NewRequest(http.MethodPost, "/api/checkin/auth", strings.NewReader(`{"eventCode":"EVT","pin":"123456"}`))
+				rec := httptest.NewRecorder()
+				checkinRouter(h).ServeHTTP(rec, req)
+
+				assertStatus(t, rec.Code, http.StatusOK)
+				var response struct {
+					NextGiftTag int `json:"next_gift_tag"`
+				}
+				decodeBody(t, rec, &response)
+				if response.NextGiftTag != 42 {
+					t.Fatalf("next_gift_tag = %d; want 42", response.NextGiftTag)
+				}
+			},
+		},
+		{
+			name: "scan persists pax, proxy and tag details",
+			run: func(t *testing.T, h *CheckinHandler, store *memoryCheckinStore) {
+				token := mustToken(t, h)
+				body := `{"qr_token":"qr-1","souvenir_given":true,"actual_pax":4,"proxy_name":"Pak Budi","gift_tag_code":"007","checked_in_by_label":"Meja Depan"}`
+				req := httptest.NewRequest(http.MethodPost, "/api/checkin/scan", strings.NewReader(body))
+				req.Header.Set("Authorization", "Bearer "+token)
+				rec := httptest.NewRecorder()
+				checkinRouter(h).ServeHTTP(rec, req)
+
+				assertStatus(t, rec.Code, http.StatusOK)
+				var response struct {
+					Guest CheckinGuest `json:"guest"`
+				}
+				decodeBody(t, rec, &response)
+				if response.Guest.ActualPax == nil || *response.Guest.ActualPax != 4 {
+					t.Fatalf("actual_pax = %v; want 4", response.Guest.ActualPax)
+				}
+				if response.Guest.ProxyName != "Pak Budi" || response.Guest.GiftTagCode != "007" || response.Guest.CheckedInByLabel != "Meja Depan" {
+					t.Fatalf("details not persisted: %+v", response.Guest)
+				}
+				// counts must be pax-aware: 4 actual pax arrived of 3 total party size
+				stored := store.guests["qr-1"]
+				if stored.ActualPax == nil || *stored.ActualPax != 4 {
+					t.Fatalf("store actual_pax = %v; want 4", stored.ActualPax)
+				}
+			},
+		},
+		{
+			name: "scan rejects non-positive actual_pax",
+			run: func(t *testing.T, h *CheckinHandler, _ *memoryCheckinStore) {
+				token := mustToken(t, h)
+				req := httptest.NewRequest(http.MethodPost, "/api/checkin/scan", strings.NewReader(`{"qr_token":"qr-1","actual_pax":0}`))
+				req.Header.Set("Authorization", "Bearer "+token)
+				rec := httptest.NewRecorder()
+				checkinRouter(h).ServeHTTP(rec, req)
+				assertStatus(t, rec.Code, http.StatusBadRequest)
+			},
+		},
+		{
+			name: "roster returns all guests for the wedding",
+			run: func(t *testing.T, h *CheckinHandler, _ *memoryCheckinStore) {
+				token := mustToken(t, h)
+				req := httptest.NewRequest(http.MethodGet, "/api/checkin/roster", nil)
+				req.Header.Set("Authorization", "Bearer "+token)
+				rec := httptest.NewRecorder()
+				checkinRouter(h).ServeHTTP(rec, req)
+
+				assertStatus(t, rec.Code, http.StatusOK)
+				var guests []CheckinGuest
+				decodeBody(t, rec, &guests)
+				if len(guests) != 2 {
+					t.Fatalf("roster len = %d; want 2", len(guests))
+				}
+			},
+		},
+		{
+			name: "walk-in creates guest already checked in",
+			run: func(t *testing.T, h *CheckinHandler, store *memoryCheckinStore) {
+				token := mustToken(t, h)
+				body := `{"name":"Tamu Dadakan","party_size":3,"gift_tag_code":"012"}`
+				req := httptest.NewRequest(http.MethodPost, "/api/checkin/walkin", strings.NewReader(body))
+				req.Header.Set("Authorization", "Bearer "+token)
+				rec := httptest.NewRecorder()
+				checkinRouter(h).ServeHTTP(rec, req)
+
+				assertStatus(t, rec.Code, http.StatusCreated)
+				var response struct {
+					Guest CheckinGuest `json:"guest"`
+				}
+				decodeBody(t, rec, &response)
+				if response.Guest.ArrivedAt == nil {
+					t.Fatal("walk-in guest must be checked in immediately")
+				}
+				if response.Guest.PartySize != 3 || response.Guest.Tag != "Walk-in" {
+					t.Fatalf("unexpected walk-in guest: %+v", response.Guest)
+				}
+				if len(store.guests) != 3 {
+					t.Fatalf("guest count = %d; want 3", len(store.guests))
+				}
+			},
+		},
+		{
+			name: "walk-in rejects empty name",
+			run: func(t *testing.T, h *CheckinHandler, _ *memoryCheckinStore) {
+				token := mustToken(t, h)
+				req := httptest.NewRequest(http.MethodPost, "/api/checkin/walkin", strings.NewReader(`{"name":"  "}`))
+				req.Header.Set("Authorization", "Bearer "+token)
+				rec := httptest.NewRecorder()
+				checkinRouter(h).ServeHTTP(rec, req)
+				assertStatus(t, rec.Code, http.StatusBadRequest)
+			},
+		},
+		{
 			name: "CreateEvent returns eventCode and 6-digit PIN",
 			run: func(t *testing.T, h *CheckinHandler, _ *memoryCheckinStore) {
 				req := httptest.NewRequest(http.MethodPost, "/api/checkin/events", strings.NewReader(`{}`))
@@ -149,6 +264,21 @@ func TestCheckinHandlers(t *testing.T) {
 				}
 				if _, ok := resp["pin"]; ok {
 					t.Error("GET must not return pin")
+				}
+			},
+		},
+		{
+			name: "GuestList returns full roster for dashboard user",
+			run: func(t *testing.T, h *CheckinHandler, store *memoryCheckinStore) {
+				req := httptest.NewRequest(http.MethodGet, "/api/checkin/events/guests", nil)
+				req = req.WithContext(WithUserID(req.Context(), "user-1"))
+				rec := httptest.NewRecorder()
+				checkinEventsRouter(h).ServeHTTP(rec, req)
+				assertStatus(t, rec.Code, http.StatusOK)
+				var resp []CheckinGuest
+				decodeBody(t, rec, &resp)
+				if len(resp) != len(store.guests) {
+					t.Fatalf("guests = %d; want %d", len(resp), len(store.guests))
 				}
 			},
 		},
@@ -428,8 +558,8 @@ func newMemoryCheckinStore(t *testing.T, eventDate time.Time) *memoryCheckinStor
 			WeddingDate: eventDate,
 		},
 		guests: map[string]CheckinGuest{
-			"qr-1": {ID: "guest-1", WeddingID: "wed-1", Name: "Alya Mahendra", Tag: "VIP", QRToken: "qr-1"},
-			"qr-2": {ID: "guest-2", WeddingID: "wed-1", Name: "Bima Santoso", Tag: "Family", QRToken: "qr-2"},
+			"qr-1": {ID: "guest-1", WeddingID: "wed-1", Name: "Alya Mahendra", Tag: "VIP", QRToken: "qr-1", PartySize: 2},
+			"qr-2": {ID: "guest-2", WeddingID: "wed-1", Name: "Bima Santoso", Tag: "Family", QRToken: "qr-2", PartySize: 1},
 		},
 		events: make(map[string]CheckinEvent),
 	}
@@ -442,7 +572,7 @@ func (s *memoryCheckinStore) GetCheckinEventByCode(_ context.Context, code strin
 	return s.event, nil
 }
 
-func (s *memoryCheckinStore) MarkGuestArrived(_ context.Context, qr string, souvenir bool, now time.Time) (CheckinGuest, bool, CheckinCounts, error) {
+func (s *memoryCheckinStore) MarkGuestArrived(_ context.Context, qr string, details ScanDetails, now time.Time) (CheckinGuest, bool, CheckinCounts, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -455,7 +585,11 @@ func (s *memoryCheckinStore) MarkGuestArrived(_ context.Context, qr string, souv
 	}
 
 	guest.ArrivedAt = &now
-	guest.SouvenirGiven = souvenir
+	guest.SouvenirGiven = details.SouvenirGiven
+	guest.ActualPax = details.ActualPax
+	guest.ProxyName = details.ProxyName
+	guest.GiftTagCode = details.GiftTagCode
+	guest.CheckedInByLabel = details.CheckedInByLabel
 	s.guests[qr] = guest
 	s.scanRows++
 	return guest, false, s.countsLocked(), nil
@@ -509,11 +643,66 @@ func (s *memoryCheckinStore) UpdateGuestSouvenir(_ context.Context, guestID, wed
 func (s *memoryCheckinStore) countsLocked() CheckinCounts {
 	counts := CheckinCounts{Total: len(s.guests)}
 	for _, guest := range s.guests {
+		counts.TotalPax += guest.PartySize
 		if guest.ArrivedAt != nil {
 			counts.Arrived++
+			if guest.ActualPax != nil {
+				counts.ArrivedPax += *guest.ActualPax
+			} else {
+				counts.ArrivedPax += guest.PartySize
+			}
 		}
 	}
 	return counts
+}
+
+func (s *memoryCheckinStore) GetFullRoster(_ context.Context, weddingID string) ([]CheckinGuest, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	var out []CheckinGuest
+	for _, g := range s.guests {
+		if g.WeddingID == weddingID {
+			out = append(out, g)
+		}
+	}
+	return out, nil
+}
+
+func (s *memoryCheckinStore) CreateWalkInGuest(_ context.Context, weddingID, name string, partySize int, details ScanDetails, now time.Time) (CheckinGuest, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	qr := fmt.Sprintf("walkin-%d", len(s.guests)+1)
+	g := CheckinGuest{
+		ID:               fmt.Sprintf("guest-%d", len(s.guests)+1),
+		WeddingID:        weddingID,
+		Name:             name,
+		Tag:              "Walk-in",
+		QRToken:          qr,
+		PartySize:        partySize,
+		ArrivedAt:        &now,
+		SouvenirGiven:    details.SouvenirGiven,
+		GiftTagCode:      details.GiftTagCode,
+		CheckedInByLabel: details.CheckedInByLabel,
+	}
+	s.guests[qr] = g
+	s.scanRows++
+	return g, nil
+}
+
+func (s *memoryCheckinStore) MaxGiftTag(_ context.Context, weddingID string) (int, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	max := 0
+	for _, g := range s.guests {
+		if g.WeddingID != weddingID {
+			continue
+		}
+		var n int
+		if _, err := fmt.Sscanf(g.GiftTagCode, "%d", &n); err == nil && n > max {
+			max = n
+		}
+	}
+	return max, nil
 }
 
 func (s *memoryCheckinStore) GetCheckinEventByWeddingID(_ context.Context, weddingID string) (CheckinEvent, error) {
@@ -577,8 +766,17 @@ func (s *memoryCheckinStore) GetCheckinStats(_ context.Context, weddingID string
 	for _, g := range s.guests {
 		if g.WeddingID == weddingID {
 			stats.Total++
+			stats.TotalPax += g.PartySize
+			if g.Tag == "Walk-in" {
+				stats.WalkIns++
+			}
 			if g.ArrivedAt != nil {
 				stats.Arrived++
+				if g.ActualPax != nil {
+					stats.ArrivedPax += *g.ActualPax
+				} else {
+					stats.ArrivedPax += g.PartySize
+				}
 			}
 			if g.SouvenirGiven {
 				stats.Souvenirs++
@@ -586,6 +784,46 @@ func (s *memoryCheckinStore) GetCheckinStats(_ context.Context, weddingID string
 		}
 	}
 	return stats, nil
+}
+
+func (s *memoryCheckinStore) GetOperatorStats(_ context.Context, weddingID string) ([]OperatorStat, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	byLabel := map[string]*OperatorStat{}
+	for _, g := range s.guests {
+		if g.WeddingID != weddingID || g.ArrivedAt == nil {
+			continue
+		}
+		label := g.CheckedInByLabel
+		if label == "" {
+			label = "Unnamed operator"
+		}
+		o, ok := byLabel[label]
+		if !ok {
+			o = &OperatorStat{Label: label}
+			byLabel[label] = o
+		}
+		o.Scans++
+		if g.ActualPax != nil {
+			o.Pax += *g.ActualPax
+		} else {
+			o.Pax += g.PartySize
+		}
+		if g.ArrivedAt.After(o.LastScanAt) {
+			o.LastScanAt = *g.ArrivedAt
+		}
+	}
+	var out []OperatorStat
+	for _, o := range byLabel {
+		out = append(out, *o)
+	}
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].Scans != out[j].Scans {
+			return out[i].Scans > out[j].Scans
+		}
+		return out[i].Label < out[j].Label
+	})
+	return out, nil
 }
 
 type memoryWeddingResolver struct{ weddingID string }
@@ -598,6 +836,7 @@ func checkinEventsRouter(h *CheckinHandler) http.Handler {
 	r := chi.NewRouter()
 	r.Post("/api/checkin/events", h.CreateEvent)
 	r.Get("/api/checkin/events", h.GetEvent)
+	r.Get("/api/checkin/events/guests", h.GuestList)
 	r.Get("/api/checkin/events/qr/pdf", h.GetGuestQRPdf)
 	r.Post("/api/checkin/events/qr/email", h.EmailGuestQRCodes)
 	return r

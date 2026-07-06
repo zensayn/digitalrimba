@@ -145,22 +145,29 @@ func scanStoredGuest(row rowScanner) (Guest, error) {
 	return guest, err
 }
 
-const guestSelectColumns = `id::text, wedding_id::text, name, COALESCE(phone, ''), COALESCE(guest_group, ''), qr_token::text, COALESCE(email, ''), COALESCE(notes, ''), COALESCE(party_size, 1), COALESCE(method, ''), COALESCE(TO_CHAR(responded_at, 'YYYY-MM-DD'), ''), COALESCE(rsvp_status, 'pending')`
+// ponytail: '' literal for method — no table stores it, frontend treats it as optional
+const guestSelectColumns = `g.id::text, g.wedding_id::text, g.name, COALESCE(g.phone, ''), COALESCE(g.guest_group, ''), g.qr_token::text, COALESCE(g.email, ''), COALESCE(g.notes, ''), COALESCE(g.party_size, 1), ''::text, COALESCE(TO_CHAR(r.responded_at, 'YYYY-MM-DD'), ''), COALESCE(r.status, 'pending')`
 
 const listGuestsSQL = `
 SELECT ` + guestSelectColumns + `
-FROM guests
-WHERE wedding_id = $1::uuid
-ORDER BY created_at ASC, id ASC
+FROM guests g
+LEFT JOIN rsvp r ON r.guest_id = g.id
+WHERE g.wedding_id = $1::uuid
+ORDER BY g.created_at ASC, g.id ASC
 `
 
 const updateGuestTagSQL = `
-UPDATE guests
-SET guest_group = $3,
-    updated_at = now()
-WHERE id::text = $1
-  AND wedding_id = $2::uuid
-RETURNING ` + guestSelectColumns + `
+WITH g AS (
+    UPDATE guests
+    SET guest_group = $3,
+        updated_at = now()
+    WHERE id::text = $1
+      AND wedding_id = $2::uuid
+    RETURNING *
+)
+SELECT ` + guestSelectColumns + `
+FROM g
+LEFT JOIN rsvp r ON r.guest_id = g.id
 `
 
 const deleteGuestsSQL = `

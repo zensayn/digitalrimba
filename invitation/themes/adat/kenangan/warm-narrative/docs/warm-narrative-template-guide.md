@@ -181,7 +181,7 @@ wrangler.jsonc         # config Worker (name, route, vars)
    - via PIL: `Image.open(..).convert("RGBA").resize(..,LANCZOS).save(out,"WEBP",quality=70–82,method=6)`.
 3. Upload R2:
    ```bash
-   ./node_modules/.bin/wrangler.exe r2 object put \
+   bunx wrangler r2 object put \
      rimba-themes/adat/kenangan/warm-narrative/<Nama>.webp \
      --file=<Nama>.webp --content-type=image/webp \
      --cache-control="public, max-age=31536000, immutable" --remote

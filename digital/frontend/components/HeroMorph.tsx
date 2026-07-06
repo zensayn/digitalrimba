@@ -3,13 +3,36 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useTranslations, useLocale } from "next-intl";
-import { Link, usePathname, useRouter } from "@/i18n/routing";
-import { IconChevronRight } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
+import { AltArrowRight, ArrowRightUp } from "@solar-icons/react";
 import { TextureButton } from "@/components/ui/texture-button";
+import LocaleSwitcher from "@/components/LocaleSwitcher";
+import CurvedMenu from "@/components/CurvedMenu";
 import React from "react";
 
 gsap.registerPlugin(ScrollTrigger);
+// Ignore mobile address-bar height changes so the frozen scrub geometry doesn't fight
+// the toolbar showing/hiding (same reason fisik's Hero uses this + svh units).
+ScrollTrigger.config({ ignoreMobileResize: true });
+
+// Hero video lives in R2; tiles hotlink Unsplash (CSS background, no next/image config).
+const HERO_VIDEO = "https://contents.rimba.app/assets/video_rimba_hero_1.webm";
+const u = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=500&q=70`;
+const PHOTOS = [
+  u("1519225421980-715cb0215aed"),
+  u("1511285560929-80b456fea0bc"),
+  u("1465495976277-4387d4b0b4c6"),
+  u("1606800052052-a08af7148866"),
+  u("1519741497674-611481863552"),
+  u("1522673607200-164d1b6ce486"),
+  u("1583939003579-730e3918a45a"),
+  u("1525258946800-98cfd641d0de"),
+  u("1469371670807-013ccf25f16a"),
+  u("1460978812857-470ed1c77af0"),
+  u("1511795409834-ef04bbd61622"),
+  u("1464366400600-7168b8af9bc3"),
+];
 
 // Run before paint on the client (kills the first-frame flash when the global
 // nav switches out of flow); fall back to useEffect during SSR.
@@ -22,60 +45,42 @@ const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffec
 type IconName = "ring" | "leaf" | "spark" | "open";
 
 type Tile =
-  | { kind: "color"; value: string; col: number; row: number; outer?: string }
-  | { kind: "image"; value: string; col: number; row: number; outer?: string }
-  | { kind: "icon"; value: IconName; col: number; row: number; outer?: string };
+  | { kind: "color"; value: string; col: number; row: number; span?: number; outer?: string }
+  | { kind: "image"; value: string; col: number; row: number; span?: number; outer?: string }
+  | { kind: "icon"; value: IconName; col: number; row: number; span?: number; outer?: string };
 
-// --- Desktop layout (5 columns), scattered like the reference. The caption
-// occupies row 3 (full span); the hero media morphs into row 4 / col 3.
+// --- Desktop: 10-col grid, every tile spans 2 cols. Odd start cols (1,3,5,7,9)
+// give an aligned 5-tile row; even start cols (2,4,6,8) give a half-offset 4-tile
+// row that sits in the gaps. Rows 1/5 = 4 (offset), rows 2/4 = 5; caption = row 3.
+// Reading order 1..18; hero video morphs into position 12 (row 4 / col 5, centred
+// just below the caption).
 const DESKTOP_TILES: Tile[] = [
-  // Row 1 — top cluster (col 3 left open)
-  { kind: "icon", value: "leaf", col: 1, row: 1 },
-  { kind: "image", value: "/Element3d/1.png", col: 2, row: 1 },
-  { kind: "image", value: "/Element3d/2.png", col: 4, row: 1 },
-  { kind: "icon", value: "spark", col: 5, row: 1 },
+  // Row 1 — 4 tiles, offset (1-4)
+  { kind: "image", value: PHOTOS[0], col: 2, row: 1, span: 2 },
+  { kind: "icon", value: "open", col: 4, row: 1, span: 2 },
+  { kind: "image", value: PHOTOS[1], col: 6, row: 1, span: 2 },
+  { kind: "icon", value: "spark", col: 8, row: 1, span: 2 },
 
-  // Row 2 — full band
-  { kind: "image", value: "/Element3d/3.png", col: 1, row: 2 },
-  { kind: "icon", value: "open", col: 2, row: 2 },
-  { kind: "image", value: "/Element3d/4.png", col: 3, row: 2 },
-  { kind: "image", value: "/Element3d/1.png", col: 4, row: 2 },
-  { kind: "image", value: "/Element3d/2.png", col: 5, row: 2 },
+  // Row 2 — 5 tiles (5-9)
+  { kind: "image", value: PHOTOS[2], col: 1, row: 2, span: 2 },
+  { kind: "image", value: PHOTOS[3], col: 3, row: 2, span: 2 },
+  { kind: "image", value: PHOTOS[7], col: 5, row: 2, span: 2 },
+  { kind: "image", value: PHOTOS[4], col: 7, row: 2, span: 2 },
+  { kind: "image", value: PHOTOS[5], col: 9, row: 2, span: 2 },
 
-  // Row 4 — bottom cluster (col 3 = hero slot)
-  { kind: "icon", value: "ring", col: 1, row: 4 },
-  { kind: "image", value: "/Element3d/2.png", col: 2, row: 4 },
-  { kind: "icon", value: "leaf", col: 4, row: 4 },
-  { kind: "image", value: "/Element3d/3.png", col: 5, row: 4 },
+  // Row 4 — 5 tiles (10-14); col 5 = hero slot / video = position 12
+  { kind: "image", value: PHOTOS[6], col: 1, row: 4, span: 2 },
+  { kind: "icon", value: "ring", col: 3, row: 4, span: 2 },
+  { kind: "icon", value: "leaf", col: 7, row: 4, span: 2 },
+  { kind: "image", value: PHOTOS[8], col: 9, row: 4, span: 2 },
 
-  // Row 5 — partially clipped tail
-  { kind: "image", value: "/Element3d/4.png", col: 2, row: 5 },
-  { kind: "image", value: "/Element3d/1.png", col: 3, row: 5 },
-  { kind: "icon", value: "spark", col: 4, row: 5 },
+  // Row 5 — 4 tiles, offset (15-18)
+  { kind: "image", value: PHOTOS[9], col: 2, row: 5, span: 2 },
+  { kind: "image", value: PHOTOS[10], col: 4, row: 5, span: 2 },
+  { kind: "image", value: PHOTOS[11], col: 6, row: 5, span: 2 },
+  { kind: "image", value: PHOTOS[0], col: 8, row: 5, span: 2 },
 ];
-const DESKTOP_HERO = { col: 3, row: 4 };
-
-// --- Mobile layout (3 columns), sparser. Edge tiles bleed off-screen via the
-// outer wrapper translate. Hero morphs into row 2 / col 2 (centred, prominent).
-const MOBILE_TILES: Tile[] = [
-  // Row 1
-  { kind: "image", value: "/Element3d/1.png", col: 2, row: 1 },
-  { kind: "image", value: "/Element3d/2.png", col: 3, row: 1, outer: "translate-x-[35%]" },
-
-  // Row 2 (col 2 = hero slot)
-  { kind: "icon", value: "open", col: 1, row: 2, outer: "-translate-x-[40%]" },
-  { kind: "image", value: "/Element3d/3.png", col: 3, row: 2, outer: "translate-x-[40%]" },
-
-  // Row 4
-  { kind: "image", value: "/Element3d/4.png", col: 1, row: 4, outer: "-translate-x-[35%]" },
-  { kind: "image", value: "/Element3d/1.png", col: 2, row: 4 },
-  { kind: "icon", value: "spark", col: 3, row: 4, outer: "translate-x-[35%]" },
-
-  // Row 5
-  { kind: "icon", value: "ring", col: 1, row: 5 },
-  { kind: "image", value: "/Element3d/2.png", col: 2, row: 5 },
-];
-const MOBILE_HERO = { col: 2, row: 2 };
+const DESKTOP_HERO = { col: 5, row: 4, span: 2 };
 
 const PLACEHOLDER_BRANDS = ["AMARTA", "SENJA", "LARAS", "GITA", "NUSANTARA", "WANGI"];
 
@@ -86,13 +91,6 @@ const PLACEHOLDER_BRANDS = ["AMARTA", "SENJA", "LARAS", "GITA", "NUSANTARA", "WA
 
 const HeroHeader = React.forwardRef<HTMLElement>((_, ref) => {
   const t = useTranslations("Navbar");
-  const locale = useLocale();
-  const pathname = usePathname();
-  const router = useRouter();
-
-  const handleLocaleChange = (newLocale: string) => {
-    router.replace(pathname, { locale: newLocale });
-  };
 
   const menuItems = [
     { name: t("ecosystem"), hasDropdown: false },
@@ -104,51 +102,52 @@ const HeroHeader = React.forwardRef<HTMLElement>((_, ref) => {
   return (
     <header
       ref={ref}
-      className="absolute top-0 inset-x-0 z-[60] flex items-center justify-between py-4 px-6 md:px-10 w-full font-poppins"
+      className="absolute top-0 inset-x-0 z-[60] flex items-center justify-between py-6 px-6 md:px-10 w-full font-poppins"
     >
-      {/* Logo */}
-      <Link href="/" className="flex-1 flex items-center gap-4">
-        <span className="font-poppins font-bold tracking-tight text-xl text-white">
-          RIMBA DIGITAL
-        </span>
-      </Link>
+      {/* Logo — white brand mark over the video (matches fisik's hero nav) */}
+      <div className="flex-1">
+        <Link href="/" className="-ml-3 md:ml-0 inline-block hover:opacity-85 transition-opacity">
+          <img
+            src="https://contents.rimba.app/assets/rimba-logo-white.webp"
+            alt="Rimba Digital"
+            className="block h-16 md:h-[72px] -my-3 w-auto"
+          />
+        </Link>
+      </div>
 
-      {/* Center menu */}
-      <ul className="hidden md:flex items-center gap-8 text-white/80 font-poppins font-normal text-[12px] lowercase">
+      {/* Center menu (desktop only) */}
+      <ul className="hidden md:flex items-center gap-8 text-white font-normal text-sm">
         {menuItems.map((item) => (
           <li
             key={item.name}
-            className="cursor-pointer hover:text-white transition-colors flex items-center gap-1 group"
+            className="cursor-pointer hover:opacity-75 transition-opacity flex items-center gap-1 group py-2"
           >
             {item.name}
             {item.hasDropdown && (
-              <IconChevronRight className="w-3 h-3 transition-transform group-hover:rotate-90" />
+              <AltArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
             )}
           </li>
         ))}
       </ul>
 
-      {/* Right side */}
-      <div className="flex-1 flex justify-end items-center gap-6">
-        <div className="flex items-center gap-2 text-white/50 font-poppins font-bold text-[10px] uppercase">
-          <button
-            onClick={() => handleLocaleChange("id")}
-            className={`hover:text-white transition-colors ${locale === "id" ? "text-white underline underline-offset-4" : ""}`}
-          >
-            ID
-          </button>
-          <span>/</span>
-          <button
-            onClick={() => handleLocaleChange("en")}
-            className={`hover:text-white transition-colors ${locale === "en" ? "text-white underline underline-offset-4" : ""}`}
-          >
-            EN
-          </button>
-        </div>
+      {/* Right side: locale dropdown + login CTA + mobile hamburger (matches fisik) */}
+      <div className="flex-1 flex justify-end items-center gap-3 md:gap-4">
+        <LocaleSwitcher />
 
-        <TextureButton variant="secondary" size="sm" className="hidden md:flex rounded-full">
+        <Link
+          href="/login"
+          className="group/btn hidden md:flex items-center gap-2 bg-[#212121] hover:bg-[#346739] text-white text-sm font-normal rounded-full pl-2 pr-6 py-2 transition-colors duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] cursor-pointer"
+        >
+          <span className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover/btn:rotate-[45deg] shrink-0">
+            <ArrowRightUp className="w-[18px] h-[18px]" />
+          </span>
           {t("login")}
-        </TextureButton>
+        </Link>
+
+        {/* Curved hamburger menu — mobile only */}
+        <div className="md:hidden">
+          <CurvedMenu buttonColor="#212121" activeButtonColor="#ffffff" />
+        </div>
       </div>
     </header>
   );
@@ -168,7 +167,7 @@ function TileIcon({ name }: { name: IconName }) {
     strokeLinejoin: "round" as const,
   };
   return (
-    <svg viewBox="0 0 100 100" className="w-1/2 h-1/2 opacity-80">
+    <svg viewBox="0 0 100 100" className="w-3/4 h-3/4 opacity-90">
       {name === "ring" && (
         <>
           <circle cx="50" cy="58" r="26" {...common} />
@@ -219,7 +218,7 @@ function TileContent({ tile }: { tile: Tile }) {
     );
   }
   return (
-    <div className="w-full h-full bg-white flex items-center justify-center">
+    <div className="w-full h-full flex items-center justify-center">
       <TileIcon name={tile.value} />
     </div>
   );
@@ -240,7 +239,7 @@ function TileGrid({
   captionRef,
 }: {
   tiles: Tile[];
-  hero: { col: number; row: number };
+  hero: { col: number; row: number; span?: number };
   columns: number;
   caption: React.ReactNode;
   className?: string;
@@ -249,36 +248,48 @@ function TileGrid({
   captionRef: React.Ref<HTMLDivElement>;
 }) {
   return (
-    <div className={`absolute inset-0 flex items-center justify-center px-4 ${className ?? ""}`}>
+    <div className={`absolute inset-0 flex items-center justify-center md:px-12 ${className ?? ""}`}>
+      {/* Mobile keeps the desktop grid at a fixed width so the viewport crops the
+          edges (cards bleed off the sides); desktop fills the row. */}
       <div
-        className="grid w-full max-w-[1100px] gap-x-4 gap-y-6 md:gap-6"
+        className="grid shrink-0 w-[820px] max-w-none md:w-full md:shrink gap-x-10 gap-y-4"
         style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
       >
-        {tiles.map((tile, i) => (
-          <div
-            key={i}
-            className={tile.outer ?? ""}
-            style={{ gridColumn: tile.col, gridRow: tile.row }}
-          >
+        {tiles.map((tile, i) => {
+          // Photos sit in a rounded card; doodle icons draw straight on the page (no card).
+          const isIcon = tile.kind === "icon";
+          return (
             <div
-              ref={(el) => registerTile(el, i)}
-              className="aspect-square overflow-hidden rounded-2xl border border-[#f2f2f2] shadow-sm"
+              key={i}
+              className={tile.outer ?? ""}
+              style={{ gridColumn: `${tile.col} / span ${tile.span ?? 1}`, gridRow: tile.row }}
             >
-              <TileContent tile={tile} />
+              <div
+                ref={(el) => registerTile(el, i)}
+                className={`aspect-square mx-auto w-full max-w-[118px] ${
+                  isIcon ? "" : "overflow-hidden rounded-2xl border border-[#f2f2f2] shadow-sm"
+                }`}
+              >
+                <TileContent tile={tile} />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {/* Empty cell (same size as every tile) the hero morphs into */}
-        <div style={{ gridColumn: hero.col, gridRow: hero.row }}>
-          <div ref={slotRef} aria-hidden className="aspect-square opacity-0" />
+        <div style={{ gridColumn: `${hero.col} / span ${hero.span ?? 1}`, gridRow: hero.row }}>
+          <div
+            ref={slotRef}
+            aria-hidden
+            className="aspect-square mx-auto w-full max-w-[118px] opacity-0"
+          />
         </div>
 
         {/* Caption + arrow occupy the middle band (row 3, full span) */}
         <div
           ref={captionRef}
           style={{ gridColumn: "1 / -1", gridRow: 3 }}
-          className="flex flex-col items-center justify-center px-6 py-8 text-center pointer-events-none"
+          className="flex flex-col items-center justify-center px-6 py-2 text-center pointer-events-none"
         >
           {caption}
         </div>
@@ -294,25 +305,30 @@ function TileGrid({
 export default function HeroMorph() {
   const t = useTranslations("Hero");
 
+  const containerRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const heroHeaderRef = useRef<HTMLElement>(null);
 
+  // Each fullscreen element exits on its own, so refs are individual.
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const taglineRef = useRef<HTMLSpanElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const trustRef = useRef<HTMLDivElement>(null);
+
   const deskTileRefs = useRef<HTMLDivElement[]>([]);
   const deskSlotRef = useRef<HTMLDivElement>(null);
   const deskCaptionRef = useRef<HTMLDivElement>(null);
 
-  const mobTileRefs = useRef<HTMLDivElement[]>([]);
-  const mobSlotRef = useRef<HTMLDivElement>(null);
-  const mobCaptionRef = useRef<HTMLDivElement>(null);
-
   useIsomorphicLayoutEffect(() => {
+    const container = containerRef.current;
     const section = sectionRef.current;
     const hero = heroRef.current;
     const content = contentRef.current;
     const heroHeader = heroHeaderRef.current;
-    if (!section || !hero || !content) return;
+    if (!container || !section || !hero || !content) return;
 
     const nav = document.querySelector<HTMLElement>("[data-site-nav]");
 
@@ -335,8 +351,6 @@ export default function HeroMorph() {
         const r = slot.getBoundingClientRect();
         return { top: r.top - s.top, left: r.left - s.left, width: r.width, height: r.height };
       };
-      const shrinkRatio = () => slotBox().width / section.getBoundingClientRect().width;
-
       // Take the global (sticky) nav out of flow so the hero is full-bleed,
       // and hide it until the media has shrunk.
       if (nav) {
@@ -362,26 +376,28 @@ export default function HeroMorph() {
         borderRadius: 0,
       });
       gsap.set(content, { xPercent: -50, yPercent: -50, transformOrigin: "center center", scale: 1 });
-      gsap.set(tiles, { opacity: 0, scale: 0.6, y: 24 });
-      gsap.set(captionEl, { opacity: 0, y: 24 });
+      gsap.set(tiles, { opacity: 0, scale: 0.85, y: 16 });
+      gsap.set(captionEl, { opacity: 0, y: 16 });
 
+      // Native CSS sticky (not GSAP pin) supplies the dwell — the 200svh container
+      // gives 100svh of scroll while the inner wrapper is stuck at top:0. Avoids pin's
+      // snap/jump fighting (same approach as fisik's Hero).
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: section,
+          id: "hero-morph",
+          trigger: container,
           start: "top top",
-          end: "+=2200",
-          scrub: 1.5, // higher scrub smoothing → no snap on the way back
-          pin: true,
-          pinSpacing: true,
+          end: "bottom bottom",
+          scrub: 1,
           invalidateOnRefresh: true,
         },
       });
 
-      if (heroHeader) {
-        tl.to(heroHeader, { autoAlpha: 0, y: -30, duration: 0.5, ease: "power1.inOut" }, 0);
-      }
-
-      // Media card morphs from full-screen down into the uniform slot.
+      // The media-card morph is the BACKBONE: a single tween that spans the whole
+      // scrub (duration 1 of a ~1.5 total), so the shrink is gradual end-to-end —
+      // the same "one continuous morph across the dwell" that makes fisik's hero
+      // feel clean. Everything else is layered inside this window, and there's only
+      // a short tail hold, so the motion never bunches up into a snap.
       tl.to(
         hero,
         {
@@ -396,10 +412,21 @@ export default function HeroMorph() {
         0
       );
 
-      // Text scales down in lock-step with the card — no opacity fade.
-      tl.to(content, { scale: () => shrinkRatio(), duration: 1, ease: "power2.inOut" }, 0);
+      if (heroHeader) {
+        tl.to(heroHeader, { autoAlpha: 0, y: -30, duration: 0.4, ease: "power2.out" }, 0);
+      }
 
-      // Surrounding thumbnails pop in from the centre outward.
+      // Each fullscreen element exits on its own (different direction / property /
+      // duration), but with opacity + transform ONLY — no per-frame filter:blur(),
+      // which is expensive and stutters a scrubbed timeline. Exits use ease-out.
+      tl.to(taglineRef.current, { autoAlpha: 0, y: -24, duration: 0.3, ease: "power2.out" }, 0);
+      tl.to(titleRef.current, { autoAlpha: 0, y: -44, duration: 0.4, ease: "power3.out" }, 0);
+      tl.to(actionsRef.current, { autoAlpha: 0, y: 32, scale: 0.94, duration: 0.35, ease: "power3.out" }, 0.05);
+      tl.to(trustRef.current, { autoAlpha: 0, y: 24, duration: 0.3, ease: "power2.out" }, 0.08);
+      // Readability overlay clears so the settled tile shows the clean video.
+      tl.to(overlayRef.current, { autoAlpha: 0, duration: 0.5, ease: "sine.out" }, 0.1);
+
+      // Thumbnails ease in from the centre — no overshoot, so the reveal stays calm.
       tl.to(
         tiles,
         {
@@ -407,63 +434,66 @@ export default function HeroMorph() {
           scale: 1,
           y: 0,
           duration: 0.5,
-          ease: "back.out(1.4)",
-          stagger: { each: 0.025, from: "center" },
+          ease: "power3.out",
+          stagger: { each: 0.02, from: "center" },
         },
-        0.4
+        0.5
       );
 
-      // Caption + arrow arrive.
-      tl.to(captionEl, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 0.65);
+      // Caption arrives as the card settles.
+      tl.to(captionEl, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 0.62);
 
       // Global nav eases in once the media is small.
       if (nav) {
-        tl.to(nav, { yPercent: 0, autoAlpha: 1, duration: 0.5, ease: "power1.inOut" }, 0.8);
+        tl.to(nav, { yPercent: 0, autoAlpha: 1, duration: 0.4, ease: "power2.out" }, 0.72);
       }
+
+      // Short dwell on the settled composition before the sticky section releases.
+      tl.to({}, { duration: 0.35 });
     };
 
-    const mm = gsap.matchMedia();
-    mm.add("(min-width: 768px)", () => {
+    // One grid for every breakpoint — desktop layout, cropped on mobile by the
+    // overflow-hidden section (cards bleed off the sides). Same positions, just cut.
+    const ctx = gsap.context(() => {
       buildTimeline(deskTileRefs.current, deskSlotRef.current, deskCaptionRef.current);
     });
-    mm.add("(max-width: 767px)", () => {
-      buildTimeline(mobTileRefs.current, mobSlotRef.current, mobCaptionRef.current);
-    });
 
-    return () => mm.revert();
+    // When CurvedMenu pins <body> to lock scroll, window.scrollY reads 0 and the
+    // scrubbed morph snaps back to its fullscreen start — showing through the
+    // semi-transparent drawer. Freeze the scrub (keep current frame) while locked.
+    const onScrollLock = (e: Event) => {
+      const st = ScrollTrigger.getById("hero-morph");
+      if (!st) return;
+      if ((e as CustomEvent<boolean>).detail) st.disable(false);
+      else st.enable();
+    };
+    document.addEventListener("scroll-lock", onScrollLock);
+
+    return () => {
+      document.removeEventListener("scroll-lock", onScrollLock);
+      ctx.revert();
+    };
   }, []);
 
   const captionBlock = (
     <>
-      <h2 className="font-poppins font-normal text-[#212121] text-2xl md:text-4xl leading-tight tracking-[-0.5px] max-w-xl">
+      <h2 className="font-poppins font-normal text-[#212121] text-3xl md:text-5xl leading-tight tracking-[-0.5px] max-w-[340px] md:max-w-3xl">
         {t("morphCaption")}
       </h2>
-      <svg
-        viewBox="0 0 120 90"
-        className="mt-5 w-16 h-12 md:w-20 md:h-16 text-[#212121]"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M95 8 C70 24 40 36 22 78" />
-        <path d="M10 56 L22 80 L44 70" />
-      </svg>
     </>
   );
 
   return (
+    <div ref={containerRef} className="relative w-full h-[200svh] bg-white font-poppins">
     <section
       ref={sectionRef}
-      className="relative w-full h-screen overflow-hidden bg-white font-poppins"
+      className="sticky top-0 w-full h-[100svh] overflow-hidden bg-white"
     >
-      {/* Desktop scattered grid */}
+      {/* Scattered grid — desktop layout at every size (cropped on mobile) */}
       <TileGrid
-        className="hidden md:flex"
         tiles={DESKTOP_TILES}
         hero={DESKTOP_HERO}
-        columns={5}
+        columns={10}
         caption={captionBlock}
         registerTile={(el, i) => {
           if (el) deskTileRefs.current[i] = el;
@@ -472,50 +502,36 @@ export default function HeroMorph() {
         captionRef={deskCaptionRef}
       />
 
-      {/* Mobile scattered grid */}
-      <TileGrid
-        className="flex md:hidden"
-        tiles={MOBILE_TILES}
-        hero={MOBILE_HERO}
-        columns={3}
-        caption={captionBlock}
-        registerTile={(el, i) => {
-          if (el) mobTileRefs.current[i] = el;
-        }}
-        slotRef={mobSlotRef}
-        captionRef={mobCaptionRef}
-      />
-
       {/* -------------------------------------------------------------- */}
       {/*  Hero media card — starts full-screen, morphs into the slot     */}
       {/* -------------------------------------------------------------- */}
       <div
         ref={heroRef}
-        className="absolute inset-0 z-50 overflow-hidden border border-[#f2f2f2]"
+        className="absolute inset-0 z-50 overflow-hidden"
         style={{ borderRadius: 0 }}
       >
-        {/* Media field (gradient stands in for the brand hero video) */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#003c33] via-[#346739] to-[#212121]" />
-        <div
-          className="absolute inset-0 opacity-[0.15]"
-          style={{
-            backgroundImage: "radial-gradient(circle at center, #ffffff 1px, transparent 1px)",
-            backgroundSize: "26px 26px",
-          }}
+        {/* Full-bleed brand hero video + readability overlay */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          src={HERO_VIDEO}
         />
-        <div className="absolute inset-0 bg-black/25" />
+        <div ref={overlayRef} className="absolute inset-0 bg-black/40" />
 
         {/* Text composition — full-viewport replica that scales down (no fade) */}
         <div
           ref={contentRef}
           className="absolute top-1/2 left-1/2 pointer-events-none"
-          style={{ width: "100vw", height: "100vh" }}
+          style={{ width: "100vw", height: "100svh" }}
         >
           <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-            <span className="font-poppins font-normal uppercase tracking-[0.28px] text-[14px] text-white/80 mb-6">
+            <span ref={taglineRef} className="font-poppins font-normal uppercase tracking-[0.28px] text-[14px] text-white/80 mb-6">
               {t("tagline")}
             </span>
-            <h1 className="text-4xl md:text-6xl lg:text-[88px] font-poppins font-normal tracking-[-1.92px] leading-none text-white mb-10 max-w-5xl">
+            <h1 ref={titleRef} className="text-4xl md:text-6xl lg:text-[88px] font-poppins font-normal tracking-[-1.92px] leading-none text-white mb-10 max-w-5xl">
               {t("title")
                 .split("\n")
                 .map((line, i) => (
@@ -525,7 +541,7 @@ export default function HeroMorph() {
                   </React.Fragment>
                 ))}
             </h1>
-            <div className="flex flex-col sm:flex-row items-center gap-4 pointer-events-auto">
+            <div ref={actionsRef} className="flex flex-col sm:flex-row items-center gap-4 pointer-events-auto">
               <TextureButton variant="secondary" size="lg" className="min-w-[200px] rounded-full">
                 {t("primaryAction")}
               </TextureButton>
@@ -536,7 +552,7 @@ export default function HeroMorph() {
           </div>
 
           {/* Trust-logo strip pinned to the bottom of the full hero */}
-          <div className="absolute inset-x-0 bottom-0 px-6 md:px-12 py-8 flex flex-col items-center gap-4">
+          <div ref={trustRef} className="absolute inset-x-0 bottom-0 px-6 md:px-12 py-8 flex flex-col items-center gap-4">
             <span className="font-poppins text-[12px] text-white/60 text-center">
               {t("trustLabel")}
             </span>
@@ -559,5 +575,6 @@ export default function HeroMorph() {
       {/* -------------------------------------------------------------- */}
       <HeroHeader ref={heroHeaderRef} />
     </section>
+    </div>
   );
 }

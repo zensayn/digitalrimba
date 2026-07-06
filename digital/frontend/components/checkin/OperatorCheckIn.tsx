@@ -1,175 +1,126 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { TextureButton } from "@/components/ui/texture-button";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { Input } from "@/components/ui/input";
+import { TextureButton } from "@/components/ui/texture-button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useQrScanner } from "@/components/checkin/hooks/useQrScanner";
+import { useOfflineGuestCache } from "@/components/checkin/hooks/useOfflineGuestCache";
+import { useScanQueue } from "@/components/checkin/hooks/useScanQueue";
+import {
+  ScanSuccessSheet,
+  type CheckInOptions,
+} from "@/components/checkin/ScanSuccessSheet";
+import {
+  KioskChrome,
+  requestKioskFullscreen,
+} from "@/components/checkin/KioskChrome";
+import { WalkInForm } from "@/components/checkin/WalkInForm";
+import type { CheckinCountsView } from "@/components/checkin/types";
+import {
+  authOperator,
+  createWalkIn,
+  lookupByQR,
+  searchGuests,
+  toggleSouvenir,
+  type CheckInGuest,
+} from "@/lib/api/checkin-operator";
+import {
+  readSession,
+  subscribeSession,
+  writeSession,
+} from "@/lib/checkin/session";
+import { getMeta, setMeta, wipeOfflineData } from "@/lib/checkin/offline-db";
+import { fuzzySearchGuests } from "@/lib/checkin/fuzzy-search";
+import {
+  primeAudio,
+  successFeedback,
+  warningFeedback,
+} from "@/lib/checkin/haptics-audio";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+const BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
+const SCANNER_ID = "operator-checkin-reader";
+const GIFT_TAG_META_KEY = "nextGiftTag";
 
-type GuestTag = "VIP" | "Family" | "Friend" | "Vendor";
-
-export type CheckInGuest = {
-  id: string;
-  name: string;
-  tag: GuestTag | string;
-  tableNumber?: string;
-  arrivedAt: string | null;
-  souvenirCollected: boolean;
-  qrToken: string;
-  partySize?: number;
-  rsvpStatus?: string;
-};
+const padTag = (n: number) => String(n).padStart(3, "0");
 
 type OperatorCheckInProps = {
   eventCode: string;
 };
 
-type Html5QrcodeInstance = {
-  start: (
-    cameraConfig: { facingMode: string },
-    config: { fps: number; qrbox: { width: number; height: number } },
-    onScanSuccess: (decodedText: string) => void,
-    onScanError?: () => void
-  ) => Promise<void>;
-  stop: () => Promise<void>;
-};
-
-declare global {
-  interface Window {
-    Html5Qrcode?: new (elementId: string) => Html5QrcodeInstance;
-  }
-}
-
-// ── API helpers ────────────────────────────────────────────────────────────────
-
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
-const SCANNER_ID = "operator-checkin-reader";
-
-async function apiAuthOperator(eventCode: string, pin: string) {
-  const res = await fetch(`${BASE}/api/checkin/auth`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ eventCode, pin }),
-  });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({ error: "Wrong PIN" }));
-    throw new Error((body as { error?: string }).error ?? "Wrong PIN");
-  }
-  const data = (await res.json()) as {
-    token: string;
-    arrived_count?: number;
-    total_count?: number;
-  };
-  return {
-    token: data.token,
-    arrivedCount: data.arrived_count ?? 0,
-    totalCount: data.total_count ?? 0,
-  };
-}
-
-/** Read-only QR lookup — does NOT mark the guest as arrived. */
-async function apiLookupByQR(
-  token: string,
-  qrToken: string
-): Promise<CheckInGuest | null> {
-  const res = await fetch(
-    `${BASE}/api/checkin/guests?qr=${encodeURIComponent(qrToken)}`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-  if (!res.ok) return null;
-  const data = (await res.json()) as unknown[];
-  if (!Array.isArray(data) || data.length === 0) return null;
-  return normalizeGuest(data[0] as Record<string, unknown>);
-}
-
-/** Write — marks the guest as arrived. Call only on explicit Check In tap. */
-async function apiScanGuest(token: string, qrToken: string) {
-  const res = await fetch(`${BASE}/api/checkin/scan`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+function useOnline(): boolean {
+  return useSyncExternalStore(
+    (cb) => {
+      window.addEventListener("online", cb);
+      window.addEventListener("offline", cb);
+      return () => {
+        window.removeEventListener("online", cb);
+        window.removeEventListener("offline", cb);
+      };
     },
-    body: JSON.stringify({ qr_token: qrToken }),
-  });
-  if (!res.ok) throw new Error("Scan failed");
-  const data = (await res.json()) as {
-    guest: Record<string, unknown>;
-    already_arrived?: boolean;
-  };
-  return {
-    guest: normalizeGuest(data.guest),
-    alreadyArrived: Boolean(data.already_arrived),
-  };
-}
-
-async function apiSearchGuests(
-  token: string,
-  query: string
-): Promise<CheckInGuest[]> {
-  const res = await fetch(
-    `${BASE}/api/checkin/guests?q=${encodeURIComponent(query)}`,
-    { headers: { Authorization: `Bearer ${token}` } }
+    () => navigator.onLine,
+    () => true
   );
-  if (!res.ok) return [];
-  const data = (await res.json()) as unknown;
-  const list = Array.isArray(data)
-    ? data
-    : ((data as { guests?: unknown[] }).guests ?? []);
-  return (list as Record<string, unknown>[]).map(normalizeGuest);
 }
-
-async function apiToggleSouvenir(
-  token: string,
-  guestId: string,
-  collected: boolean
-): Promise<boolean> {
-  const res = await fetch(`${BASE}/api/checkin/guests/${guestId}/souvenir`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ collected }),
-  });
-  if (!res.ok) throw new Error("Toggle failed");
-  const data = (await res.json()) as { souvenir_claimed?: boolean };
-  return data.souvenir_claimed ?? collected;
-}
-
-function normalizeGuest(raw: Record<string, unknown>): CheckInGuest {
-  return {
-    id: String(raw.id ?? ""),
-    name: String(raw.name ?? ""),
-    tag: String(raw.tag ?? raw.guest_group ?? "") as GuestTag,
-    tableNumber: raw.table_number ? String(raw.table_number) : undefined,
-    arrivedAt: raw.arrived_at ? String(raw.arrived_at) : null,
-    souvenirCollected: Boolean(raw.souvenir_given ?? raw.souvenir_claimed),
-    qrToken: String(raw.qr_token ?? ""),
-    partySize: raw.party_size ? Number(raw.party_size) : undefined,
-    rsvpStatus: raw.rsvp_status ? String(raw.rsvp_status) : undefined,
-  };
-}
-
-// ── Component ──────────────────────────────────────────────────────────────────
 
 export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
-  const [token, setToken] = useState<string | null>(null);
-  const [pin, setPin] = useState("");
-  const [authError, setAuthError] = useState("");
-  const [counts, setCounts] = useState({ arrived: 0, total: 0 });
+  const session = useSyncExternalStore(
+    subscribeSession,
+    () => readSession(eventCode),
+    () => null
+  );
+  const token = session?.token ?? null;
+  const operatorLabel = session?.label ?? "";
+  const online = useOnline();
+
+  const [counts, setCounts] = useState<CheckinCountsView>({
+    arrived: 0,
+    total: 0,
+    arrivedPax: 0,
+    totalPax: 0,
+  });
   const [guest, setGuest] = useState<CheckInGuest | null>(null);
   const [alreadyIn, setAlreadyIn] = useState(false);
+  const [justArrived, setJustArrived] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [walkInOpen, setWalkInOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<CheckInGuest[]>([]);
+  const [serverResults, setServerResults] = useState<CheckInGuest[]>([]);
   const [busy, setBusy] = useState(false);
-  const scannerRef = useRef<HTMLDivElement>(null);
-  const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  // Prevent scans from firing while the guest sheet is open.
+  const [scanNotice, setScanNotice] = useState("");
+  const [nextGiftTag, setNextGiftTag] = useState(1);
+
   const sheetOpenRef = useRef(false);
+  const scanCooldownRef = useRef(false);
+  const noticeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const { roster, upsertGuest, refresh: refreshRoster } =
+    useOfflineGuestCache(token);
+  const { submitScan, pendingCount, flush } = useScanQueue(token);
+
+  // ── Gift tag counter: survive refresh via IndexedDB meta ────────────────────
+  useEffect(() => {
+    if (!token) return;
+    void getMeta(GIFT_TAG_META_KEY).then((v) => {
+      const stored = typeof v === "number" ? v : 0;
+      setNextGiftTag((current) => Math.max(current, stored, 1));
+    });
+  }, [token]);
+
+  const consumeGiftTag = useCallback(() => {
+    const tag = padTag(nextGiftTag);
+    const next = nextGiftTag + 1;
+    setNextGiftTag(next);
+    void setMeta(GIFT_TAG_META_KEY, next);
+    return tag;
+  }, [nextGiftTag]);
 
   // ── SSE live counter (authenticated fetch — avoids token in URL) ────────────
   useEffect(() => {
@@ -197,13 +148,15 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
             try {
               const d = JSON.parse(line.slice(6)) as {
                 arrived?: number;
-                arrived_count?: number;
                 total?: number;
-                total_count?: number;
+                arrived_pax?: number;
+                total_pax?: number;
               };
               setCounts({
-                arrived: d.arrived ?? d.arrived_count ?? 0,
-                total: d.total ?? d.total_count ?? 0,
+                arrived: d.arrived ?? 0,
+                total: d.total ?? 0,
+                arrivedPax: d.arrived_pax ?? d.arrived ?? 0,
+                totalPax: d.total_pax ?? d.total ?? 0,
               });
             } catch {}
           }
@@ -219,184 +172,243 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
     return () => controller.abort();
   }, [token]);
 
-  // ── QR scanner ─────────────────────────────────────────────────────────────
+  // ── Navigation speed bump while a session is active ─────────────────────────
   useEffect(() => {
-    if (!token || !scannerRef.current) return;
-    if (!window.Html5Qrcode) return;
+    if (!token) return;
+    const onBeforeUnload = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [token]);
 
-    const scanner = new window.Html5Qrcode(SCANNER_ID);
-    let active = true;
+  // ── Notices ──────────────────────────────────────────────────────────────────
+  const showNotice = useCallback((message: string) => {
+    clearTimeout(noticeTimer.current);
+    setScanNotice(message);
+    noticeTimer.current = setTimeout(() => setScanNotice(""), 2500);
+  }, []);
 
-    scanner
-      .start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 220, height: 220 } },
-        async (text) => {
-          // Guard: skip if another scan is in-flight or sheet is already open.
-          if (!active || busy || sheetOpenRef.current) return;
-          active = false;
-          setBusy(true);
-          try {
-            // Read-only lookup — does NOT mark arrival yet.
-            const found = await apiLookupByQR(token, text);
-            if (found) {
-              sheetOpenRef.current = true;
-              setGuest(found);
-              setAlreadyIn(!!found.arrivedAt);
-              setSheetOpen(true);
-            }
-          } finally {
-            setBusy(false);
-            setTimeout(() => {
-              active = true;
-            }, 2000);
-          }
-        },
-        () => {}
-      )
-      .catch(() => {});
+  // ── Sheet open/close ─────────────────────────────────────────────────────────
+  const openGuestSheet = useCallback(
+    (g: CheckInGuest, opts?: { justArrived?: boolean }) => {
+      sheetOpenRef.current = true;
+      setGuest(g);
+      setAlreadyIn(!!g.arrivedAt);
+      setJustArrived(opts?.justArrived ?? false);
+      setSheetOpen(true);
+    },
+    []
+  );
 
-    return () => {
-      scanner.stop().catch(() => {});
-    };
-  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
+  const closeGuestSheet = useCallback(() => {
+    sheetOpenRef.current = false;
+    setSheetOpen(false);
+    setGuest(null);
+    setJustArrived(false);
+  }, []);
 
-  // ── Debounced search ────────────────────────────────────────────────────────
-  useEffect(() => {
-    clearTimeout(searchTimer.current);
-    if (!searchQuery.trim() || !token) {
-      setSearchResults([]);
-      return;
-    }
-    searchTimer.current = setTimeout(async () => {
-      const results = await apiSearchGuests(token, searchQuery);
-      setSearchResults(results);
-    }, 300);
-    return () => clearTimeout(searchTimer.current);
-  }, [searchQuery, token]);
-
-  // ── Handlers ────────────────────────────────────────────────────────────────
-
-  async function handleAuth(e: React.FormEvent) {
-    e.preventDefault();
-    setAuthError("");
-    setBusy(true);
-    try {
-      const res = await apiAuthOperator(eventCode, pin);
-      setToken(res.token);
-      setCounts({ arrived: res.arrivedCount, total: res.totalCount });
-    } catch (err: unknown) {
-      setAuthError(err instanceof Error ? err.message : "Wrong PIN");
-    } finally {
-      setBusy(false);
+  function handleSheetOpenChange(open: boolean) {
+    sheetOpenRef.current = open;
+    setSheetOpen(open);
+    if (!open) {
+      setGuest(null);
+      setJustArrived(false);
     }
   }
 
-  /** Explicit Check In — this is the only place that calls the write endpoint. */
-  async function handleCheckIn() {
+  // ── QR scanner ───────────────────────────────────────────────────────────────
+  async function handleScannedText(text: string) {
+    if (!token || busy || sheetOpenRef.current || scanCooldownRef.current)
+      return;
+    scanCooldownRef.current = true;
+    setBusy(true);
+    try {
+      // Read-only lookup — does NOT mark arrival yet. Falls back to the
+      // offline roster cache when the network is down.
+      let found: CheckInGuest | null = null;
+      if (online) found = await lookupByQR(token, text).catch(() => null);
+      found ??= roster.find((g) => g.qrToken === text) ?? null;
+
+      if (found) {
+        if (found.arrivedAt) warningFeedback();
+        else successFeedback();
+        openGuestSheet(found);
+      } else {
+        warningFeedback();
+        showNotice("QR tidak dikenal");
+      }
+    } finally {
+      setBusy(false);
+      setTimeout(() => {
+        scanCooldownRef.current = false;
+      }, 2000);
+    }
+  }
+
+  const { torchAvailable, torchOn, toggleTorch, cameraError } = useQrScanner({
+    elementId: SCANNER_ID,
+    enabled: Boolean(token),
+    onScan: handleScannedText,
+  });
+
+  // ── Check-in write (live or queued) ─────────────────────────────────────────
+  async function handleCheckIn(options: CheckInOptions) {
     if (!guest || !token) return;
     setBusy(true);
     try {
-      const result = await apiScanGuest(token, guest.qrToken);
-      setGuest(result.guest);
-      setAlreadyIn(result.alreadyArrived);
-      if (!result.alreadyArrived) {
-        sheetOpenRef.current = false;
-        setSheetOpen(false);
-        setGuest(null);
+      const giftTagCode = guest.giftTagCode || consumeGiftTag();
+      const result = await submitScan({
+        qrToken: guest.qrToken,
+        souvenirGiven: options.souvenirGiven,
+        actualPax: options.actualPax,
+        proxyName: options.proxyName || undefined,
+        giftTagCode,
+        checkedInByLabel: operatorLabel || undefined,
+      });
+
+      if (result.queued) {
+        const optimistic: CheckInGuest = {
+          ...guest,
+          arrivedAt: new Date().toISOString(),
+          souvenirCollected: options.souvenirGiven,
+          actualPax: options.actualPax,
+          proxyName: options.proxyName || undefined,
+          giftTagCode,
+          checkedInByLabel: operatorLabel || undefined,
+        };
+        upsertGuest(optimistic);
+        successFeedback();
+        showNotice("Tersimpan offline — akan disinkronkan");
+        closeGuestSheet();
+      } else if (result.alreadyArrived) {
+        warningFeedback();
+        upsertGuest(result.guest);
+        setGuest(result.guest);
+        setAlreadyIn(true);
+        setJustArrived(false);
+      } else {
+        upsertGuest(result.guest);
+        successFeedback();
+        closeGuestSheet();
       }
+    } catch (err) {
+      warningFeedback();
+      showNotice(err instanceof Error ? err.message : "Scan gagal");
     } finally {
       setBusy(false);
     }
   }
 
   async function handleToggleSouvenir() {
+    // Only reachable for already-arrived guests; pre-check-in souvenir state
+    // lives inside the sheet and rides along with the scan payload.
     if (!guest || !token) return;
     const next = !guest.souvenirCollected;
-    const actual = await apiToggleSouvenir(token, guest.id, next);
-    setGuest((g) => (g ? { ...g, souvenirCollected: actual } : g));
+    try {
+      const actual = await toggleSouvenir(token, guest.id, next);
+      const updated = { ...guest, souvenirCollected: actual };
+      setGuest(updated);
+      upsertGuest(updated);
+    } catch {
+      warningFeedback();
+    }
   }
+
+  // ── Search: instant local fuzzy + debounced server merge ────────────────────
+  const trimmedQuery = searchQuery.trim();
+  const localResults = useMemo(
+    () => (trimmedQuery ? fuzzySearchGuests(roster, trimmedQuery) : []),
+    [roster, trimmedQuery]
+  );
+
+  useEffect(() => {
+    if (!trimmedQuery || !token || !navigator.onLine) return;
+    const timer = setTimeout(() => {
+      searchGuests(token, trimmedQuery)
+        .then(setServerResults)
+        .catch(() => {});
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [trimmedQuery, token]);
+
+  const searchResults = useMemo(() => {
+    if (!trimmedQuery) return [];
+    const seen = new Set(localResults.map((g) => g.id));
+    return [
+      ...localResults,
+      ...serverResults.filter((g) => !seen.has(g.id)),
+    ].slice(0, 8);
+  }, [trimmedQuery, localResults, serverResults]);
 
   function handleSearchSelect(g: CheckInGuest) {
-    sheetOpenRef.current = true;
-    setGuest(g);
-    setAlreadyIn(!!g.arrivedAt);
-    setSheetOpen(true);
+    openGuestSheet(g);
     setSearchQuery("");
-    setSearchResults([]);
+    setServerResults([]);
   }
 
-  function handleSheetOpenChange(open: boolean) {
-    sheetOpenRef.current = open;
-    setSheetOpen(open);
-    if (!open) setGuest(null);
+  // ── Walk-in ──────────────────────────────────────────────────────────────────
+  async function handleWalkIn(name: string, partySize: number) {
+    if (!token) return;
+    const created = await createWalkIn(token, {
+      name,
+      partySize,
+      giftTagCode: consumeGiftTag(),
+      checkedInByLabel: operatorLabel || undefined,
+    });
+    upsertGuest(created);
+    successFeedback();
+    setWalkInOpen(false);
+    openGuestSheet(created, { justArrived: true });
+    void refreshRoster();
   }
+
+  // ── Kiosk menu actions ───────────────────────────────────────────────────────
+  const verifyPin = useCallback(
+    async (pin: string) => {
+      try {
+        await authOperator(eventCode, pin);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [eventCode]
+  );
+
+  const endEvent = useCallback(async () => {
+    await flush().catch(() => {});
+    await wipeOfflineData().catch(() => {});
+    writeSession(eventCode, null);
+    window.location.reload();
+  }, [eventCode, flush]);
 
   // ── PIN auth screen ────────────────────────────────────────────────────────
-
   if (!token) {
-    return (
-      <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-6">
-        <div className="w-full max-w-sm">
-          <h1 className="text-2xl font-bold text-[#212121] mb-1">
-            Operator Login
-          </h1>
-          <p className="text-sm text-[#93939f] mb-6">
-            Event:{" "}
-            <span className="font-semibold text-[#212121]">{eventCode}</span>
-          </p>
-          <form onSubmit={handleAuth} className="space-y-3">
-            <Input
-              type="password"
-              inputMode="numeric"
-              pattern="[0-9]{6}"
-              maxLength={6}
-              placeholder="6-digit PIN"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              className="h-12 text-center text-xl tracking-widest font-mono rounded-xl"
-              autoComplete="off"
-            />
-            {authError && (
-              <p className="text-xs text-[#b30000] text-center">{authError}</p>
-            )}
-            <TextureButton
-              variant="primary"
-              className="w-full"
-              type="submit"
-              disabled={pin.length !== 6 || busy}
-            >
-              {busy ? "Verifying…" : "Unlock Check-in"}
-            </TextureButton>
-          </form>
-        </div>
-      </div>
-    );
+    return <PinScreen eventCode={eventCode} />;
   }
 
   // ── Main operator UI ───────────────────────────────────────────────────────
-
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
-      {/* Top bar */}
-      <div className="bg-white flex items-center justify-between px-4 py-3 flex-shrink-0 border-b border-neutral-100 z-10">
-        <div>
-          <p className="text-sm font-bold text-[#212121]">{eventCode}</p>
-          <p className="text-xs text-[#93939f]">Check-in active</p>
-        </div>
-        <div className="bg-[#edfce9] rounded-full px-3 py-1">
-          <span className="text-xs font-semibold text-[#346739]">
-            {counts.arrived} / {counts.total}
-          </span>
-        </div>
-      </div>
+    <div className="h-screen flex flex-col overflow-hidden" data-testid="checkin-shell">
+      <KioskChrome
+        eventCode={eventCode}
+        operatorLabel={operatorLabel}
+        counts={counts}
+        pendingCount={pendingCount}
+        online={online}
+        onVerifyPin={verifyPin}
+        onEndEvent={endEvent}
+      />
 
       {/* Camera */}
       <div className="flex-1 relative bg-[#1a1a1a] flex items-center justify-center overflow-hidden">
-        <div id={SCANNER_ID} ref={scannerRef} className="absolute inset-0" />
+        <div
+          id={SCANNER_ID}
+          data-testid="camera-viewfinder"
+          className="absolute inset-0"
+        />
 
-        {/* QR frame overlay */}
-        <div className="relative w-52 h-52 pointer-events-none z-10">
+        {/* Decorative aiming guide — the whole camera frame is scanned */}
+        <div className="relative w-64 h-64 sm:w-80 sm:h-80 pointer-events-none z-10">
           {(["tl", "tr", "bl", "br"] as const).map((c) => (
             <span
               key={c}
@@ -413,41 +425,85 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
           ))}
         </div>
 
+        {/* Transient notice (unknown QR, queued offline, errors) */}
+        {scanNotice && (
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-[#212121] text-white text-xs font-semibold px-4 py-2 rounded-full">
+            {scanNotice}
+          </div>
+        )}
+
         <p className="absolute bottom-4 left-0 right-0 text-center text-xs text-white/50 z-10 pointer-events-none">
-          Align guest QR code inside the frame
+          {cameraError
+            ? "Kamera tidak tersedia — gunakan pencarian di bawah"
+            : "Arahkan QR tamu ke kamera"}
         </p>
+
+        {torchAvailable && (
+          <button
+            type="button"
+            aria-label="Nyalakan senter"
+            onClick={toggleTorch}
+            className={`absolute top-3 right-3 z-10 h-10 w-10 rounded-full flex items-center justify-center transition-transform duration-150 ease-out active:scale-[0.97] ${
+              torchOn ? "bg-white text-[#212121]" : "bg-white/15 text-white"
+            }`}
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M6 3h12v3l-3 4v11a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V10L6 6V3Z"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        )}
       </div>
 
-      {/* Search bar */}
+      {/* Search bar + walk-in */}
       <div className="bg-white px-4 py-2.5 flex-shrink-0 border-t border-neutral-100">
-        <div className="relative">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#93939f]"
-            viewBox="0 0 24 24"
-            fill="none"
-          >
-            <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
-            <path
-              d="m16 16 4 4"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1 min-w-0">
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#93939f]"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+              <path
+                d="m16 16 4 4"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+            <Input
+              data-testid="guest-search"
+              autoFocus
+              className="pl-9 h-10 rounded-full bg-[#f5f3f0] border-0 text-sm"
+              placeholder="Cari nama tamu…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </svg>
-          <Input
-            className="pl-9 h-10 rounded-full bg-[#f5f3f0] border-0 text-sm"
-            placeholder="Search guest by name…"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+          </div>
+          <button
+            type="button"
+            disabled={!online}
+            onClick={() => setWalkInOpen(true)}
+            className="h-10 flex-shrink-0 rounded-full bg-[#212121] text-white text-xs font-semibold px-4 transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-30 disabled:active:scale-100"
+          >
+            + Walk-in
+          </button>
         </div>
 
         {searchResults.length > 0 && (
-          <div className="mt-2 bg-white rounded-xl ring-1 ring-foreground/10 overflow-hidden">
-            {searchResults.slice(0, 5).map((g) => (
+          <div
+            data-testid="search-results"
+            className="mt-2 bg-white rounded-xl ring-1 ring-foreground/10 overflow-hidden"
+          >
+            {searchResults.map((g) => (
               <button
                 key={g.id}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 text-left border-b border-neutral-50 last:border-0"
+                className="w-full flex items-center gap-3 px-4 py-3 text-left border-b border-neutral-50 last:border-0 transition-colors"
                 onClick={() => handleSearchSelect(g)}
               >
                 <Avatar className="h-8 w-8">
@@ -459,7 +515,10 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
                   <p className="text-sm font-semibold text-[#212121] truncate">
                     {g.name}
                   </p>
-                  <p className="text-xs text-[#93939f]">{g.tag}</p>
+                  <p className="text-xs text-[#93939f]">
+                    {g.tag}
+                    {g.partySize > 1 ? ` · ${g.partySize} pax` : ""}
+                  </p>
                 </div>
                 {g.arrivedAt && (
                   <span className="text-[10px] font-bold text-[#346739] bg-[#edfce9] px-2 py-0.5 rounded-full">
@@ -472,128 +531,105 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
         )}
       </div>
 
-      {/* Guest sheet */}
-      <Sheet open={sheetOpen} onOpenChange={handleSheetOpenChange}>
-        <SheetContent
-          side="bottom"
-          className="rounded-t-2xl px-5 pb-8 pt-3 max-h-[65vh] overflow-y-auto"
-        >
-          <div className="w-9 h-1 bg-[#e8e4df] rounded-full mx-auto mb-5" />
+      <ScanSuccessSheet
+        open={sheetOpen}
+        onOpenChange={handleSheetOpenChange}
+        guest={guest}
+        alreadyIn={alreadyIn}
+        justArrived={justArrived}
+        busy={busy}
+        giftTagPreview={padTag(nextGiftTag)}
+        onCheckIn={handleCheckIn}
+        onToggleSouvenir={handleToggleSouvenir}
+        onDismiss={closeGuestSheet}
+      />
 
-          {guest && (
-            <div className="space-y-4">
-              {/* Guest header */}
-              <div className="flex items-center gap-3">
-                <Avatar className="h-11 w-11">
-                  <AvatarFallback
-                    className={`text-sm font-bold ${
-                      alreadyIn
-                        ? "bg-[#fef2f2] text-[#b30000]"
-                        : "bg-[#edfce9] text-[#346739]"
-                    }`}
-                  >
-                    {guest.name.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="text-base font-bold text-[#212121] truncate">
-                    {guest.name}
-                  </p>
-                  <p className="text-xs text-[#93939f]">
-                    {alreadyIn && guest.arrivedAt
-                      ? `Arrived at ${new Date(guest.arrivedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
-                      : guest.tag}
-                  </p>
-                </div>
-                <span
-                  className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide flex-shrink-0 ${
-                    alreadyIn
-                      ? "bg-[#fef2f2] text-[#b30000]"
-                      : "bg-[#edfce9] text-[#346739]"
-                  }`}
-                >
-                  {alreadyIn ? "Already In" : guest.tag}
-                </span>
-              </div>
+      <WalkInForm
+        open={walkInOpen}
+        onOpenChange={setWalkInOpen}
+        onSubmit={handleWalkIn}
+      />
+    </div>
+  );
+}
 
-              {/* Info chips */}
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { label: "Table", value: guest.tableNumber ?? "—" },
-                  {
-                    label: "Party",
-                    value: guest.partySize ? `×${guest.partySize}` : "—",
-                  },
-                  {
-                    label: "RSVP",
-                    value: guest.rsvpStatus === "accepted" ? "✓" : "—",
-                  },
-                ].map(({ label, value }) => (
-                  <div
-                    key={label}
-                    className="bg-[#faf8f5] rounded-xl py-2 text-center"
-                  >
-                    <p className="text-[9px] font-bold uppercase tracking-wide text-[#93939f]">
-                      {label}
-                    </p>
-                    <p
-                      className={`text-sm font-bold mt-0.5 ${
-                        value === "✓" ? "text-[#346739]" : "text-[#212121]"
-                      }`}
-                    >
-                      {value}
-                    </p>
-                  </div>
-                ))}
-              </div>
+// ── PIN auth screen ────────────────────────────────────────────────────────────
 
-              {/* Souvenir toggle */}
-              <button
-                className="w-full flex items-center justify-between bg-[#faf8f5] rounded-xl px-4 py-3"
-                onClick={handleToggleSouvenir}
-              >
-                <div className="text-left">
-                  <p className="text-sm font-semibold text-[#212121]">
-                    Souvenir claimed
-                  </p>
-                  <p className="text-xs text-[#93939f]">
-                    Toggle after handing out
-                  </p>
-                </div>
-                <div
-                  className={`relative w-10 h-6 rounded-full transition-colors duration-150 ${
-                    guest.souvenirCollected ? "bg-[#346739]" : "bg-neutral-200"
-                  }`}
-                >
-                  <span
-                    className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-150 ${
-                      guest.souvenirCollected
-                        ? "translate-x-5"
-                        : "translate-x-1"
-                    }`}
-                  />
-                </div>
-              </button>
+function PinScreen({ eventCode }: { eventCode: string }) {
+  const [pin, setPin] = useState("");
+  const [label, setLabel] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [busy, setBusy] = useState(false);
 
-              {/* CTA */}
-              {alreadyIn ? (
-                <div className="w-full flex items-center justify-center gap-2 bg-[#fef2f2] text-[#b30000] rounded-full py-3.5 text-sm font-semibold">
-                  ⚠ Already checked in — scan another
-                </div>
-              ) : (
-                <TextureButton
-                  variant="primary"
-                  className="w-full"
-                  onClick={handleCheckIn}
-                  disabled={busy}
-                >
-                  {busy ? "Checking in…" : "✓ Check In"}
-                </TextureButton>
-              )}
-            </div>
+  async function handleAuth(e: React.FormEvent) {
+    e.preventDefault();
+    setAuthError("");
+    setBusy(true);
+    try {
+      const res = await authOperator(eventCode, pin);
+      // User gesture: unlock audio + enter kiosk fullscreen while we can.
+      primeAudio();
+      requestKioskFullscreen();
+      // Seed the sequential envelope-tag counter from the server max.
+      const stored = await getMeta(GIFT_TAG_META_KEY).catch(() => 0);
+      const storedNum = typeof stored === "number" ? stored : 0;
+      await setMeta(
+        GIFT_TAG_META_KEY,
+        Math.max(res.nextGiftTag, storedNum, 1)
+      ).catch(() => {});
+      writeSession(eventCode, { token: res.token, label: label.trim() });
+    } catch (err: unknown) {
+      setAuthError(err instanceof Error ? err.message : "Wrong PIN");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-6">
+      <div className="w-full max-w-sm">
+        <h1 className="text-2xl font-bold text-[#212121] mb-1">
+          Operator Login
+        </h1>
+        <p className="text-sm text-[#93939f] mb-6">
+          Event:{" "}
+          <span className="font-semibold text-[#212121]">{eventCode}</span>
+        </p>
+        <form onSubmit={handleAuth} className="space-y-3">
+          <Input
+            data-testid="pin-input"
+            type="password"
+            inputMode="numeric"
+            pattern="[0-9]{6}"
+            maxLength={6}
+            placeholder="6-digit PIN"
+            value={pin}
+            onChange={(e) => setPin(e.target.value)}
+            className="h-12 text-center text-xl tracking-widest font-mono rounded-xl"
+            autoComplete="off"
+          />
+          <Input
+            placeholder="Nama operator (opsional)"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            maxLength={40}
+            className="h-12 rounded-xl"
+            autoComplete="off"
+          />
+          {authError && (
+            <p className="text-xs text-[#b30000] text-center">{authError}</p>
           )}
-        </SheetContent>
-      </Sheet>
+          <TextureButton
+            data-testid="pin-submit"
+            variant="primary"
+            className="w-full"
+            type="submit"
+            disabled={pin.length !== 6 || busy}
+          >
+            {busy ? "Verifying…" : "Unlock Check-in"}
+          </TextureButton>
+        </form>
+      </div>
     </div>
   );
 }

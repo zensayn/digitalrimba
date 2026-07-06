@@ -1,5 +1,5 @@
 const protectedRouteSegments = ["dashboard", "onboarding", "invitation"];
-const nonLocalizedAppRouteSegments = ["dashboard", "onboarding"];
+const nonLocalizedAppRouteSegments = ["dashboard", "onboarding", "checkin"];
 const localePattern = /^[a-z]{2}$/;
 
 export function isProtectedRoute(pathname: string): boolean {

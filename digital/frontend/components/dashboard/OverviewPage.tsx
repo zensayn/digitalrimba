@@ -8,9 +8,9 @@ import {
   AddCircle,
   Flag,
   UserCircle,
-  Bell,
-  Hourglass,
-  Notes,
+  Danger,
+  CalendarMark,
+  Letter,
 } from '@solar-icons/react';
 import { TextureButton } from '@/components/ui/texture-button';
 import BudgetMetrics from '@/components/dashboard/BudgetMetrics';
@@ -18,7 +18,6 @@ import GuestTracking from '@/components/dashboard/GuestTracking';
 import { fetchDashboardOverview } from '@/lib/api/dashboard';
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -26,44 +25,31 @@ import {
 
 /* ── COMPONENTS ── */
 
-function MetricCard({
-  label,
-  value,
-  subtext,
-  icon,
-  subValue,
-  iconColor = "text-[#346739]"
-}: {
-  label: string,
-  value: string | number,
-  subtext?: string,
-  icon: React.ReactNode,
-  subValue?: string | number,
-  iconColor?: string
-}) {
+function MicroLabel({ children, tone = "light" }: { children: React.ReactNode; tone?: "light" | "dark" }) {
   return (
-    <div className="flex flex-col p-5 space-y-2">
-      <div className="flex items-center gap-2">
-        <div className={`size-4 ${iconColor}`}>
-          {icon}
-        </div>
-        <span className="text-[10px] font-bold uppercase text-[#93939f]">{label}</span>
-      </div>
-      <div className="flex items-baseline gap-2">
-        <span className="text-xl font-bold tracking-tight text-bold">{value}</span>
-        {subValue && <span className="text-[11px] font-bold text-bold/40">{subValue}</span>}
-        {subtext && <span className="text-[11px] text-[#75758a]">{subtext}</span>}
-      </div>
-    </div>
+    <span className={`text-[10px] font-semibold uppercase tracking-normal ${tone === "dark" ? "text-white/60" : "text-[#93939f]"}`}>
+      {children}
+    </span>
   );
 }
 
 function AssignmentTag({ user }: { user: string }) {
   return (
-    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-neutral-50 border border-neutral-100">
+    <div className="flex items-center gap-1.5 rounded-md border border-[#f2f2f2] bg-[#fafafa] px-2 py-0.5">
       <UserCircle size={10} className={user === 'EO' ? 'text-[#346739]' : 'text-amber-500'} />
-      <span className="text-[8px] font-bold uppercase text-neutral-500">
+      <span className="text-[8px] font-semibold uppercase text-[#75758a]">
         {user === 'EO' ? 'EO' : 'You'}
+      </span>
+    </div>
+  );
+}
+
+function AlertRow({ label, count }: { label: string; count: number }) {
+  return (
+    <div className="flex items-center justify-between py-3">
+      <span className={`text-[13px] ${count > 0 ? 'text-[#212121]' : 'text-[#93939f]'}`}>{label}</span>
+      <span className={`min-w-6 rounded-full px-2 py-0.5 text-center text-[11px] font-semibold ${count > 0 ? 'bg-[#fff1ec] text-[#b30000]' : 'bg-[#fafafa] text-[#93939f]'}`}>
+        {count}
       </span>
     </div>
   );
@@ -90,7 +76,7 @@ export default function OverviewPage() {
   });
 
   const transition = {
-    duration: 0.6,
+    duration: 0.5,
     ease: [0.32, 0.72, 0, 1] as const // ease-drawer
   }
 
@@ -99,14 +85,14 @@ export default function OverviewPage() {
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.08,
-        delayChildren: 0.1
+        staggerChildren: 0.06,
+        delayChildren: 0.05
       }
     }
   }
 
   const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 16 },
     show: { opacity: 1, y: 0, transition }
   }
 
@@ -129,167 +115,211 @@ export default function OverviewPage() {
 
   const coupleName = overview.wedding.couple_name || 'Your Wedding';
   const diffDays = daysUntil(overview.wedding.event_date);
-  const alertCount = overview.alerts.urgent_tasks + overview.alerts.overdue_tasks + overview.alerts.overdue_budget_items;
+  const eventDate = formatLongDate(overview.wedding.event_date);
+  const alertCount = overview.alerts.urgent_tasks + overview.alerts.overdue_tasks + overview.alerts.overdue_budget_items + overview.alerts.pending_rsvps;
   const milestone = overview.next_milestone;
-  const tasks = overview.checklist.tasks;
+  const checklist = overview.checklist;
+  const tasks = checklist.tasks;
 
   return (
     <motion.div
       initial="hidden"
       animate="show"
       variants={containerVariants}
-      className="bg-white min-h-screen"
+      className="min-h-screen bg-white"
     >
-      {/* ── HEADER SECTION ── */}
-      <motion.header
-        variants={itemVariants}
-        className="pt-6 md:pt-10 pb-2"
-      >
-        <div className="max-w-[1400px] mx-auto px-4 md:px-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-          <div className="space-y-1">
-            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-bold">
-              {coupleName}&rsquo;s Wedding
+      <div className="mx-auto max-w-[1400px] px-4 pt-8 md:px-8 md:pt-12">
+
+        {/* ── HEADER: date caption + greeting (Origin/Bonsai pattern) ── */}
+        <motion.header variants={itemVariants} className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <div className="space-y-2">
+            <p className="text-[13px] text-[#75758a]">{formatTodayLong()}</p>
+            <h1 className="text-[32px] font-medium leading-[1.1] tracking-tight text-[#212121] md:text-[40px]">
+              {getGreeting()}, {coupleName}.
             </h1>
-            <p className="text-[13px] md:text-[14px] text-[#75758a]">Planning center for your most beautiful day.</p>
           </div>
+          <TextureButton variant="primary" className="h-10 w-full rounded-full px-6 text-xs md:w-auto">
+            Invite Partner
+          </TextureButton>
+        </motion.header>
 
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <TextureButton variant="primary" className="h-10 rounded-full text-xs px-6 w-full md:w-auto">
-              Invite Partner
-            </TextureButton>
-          </div>
-        </div>
-      </motion.header>
+        {/* ── MAIN GRID ── */}
+        <main className="grid grid-cols-1 gap-8 pb-24 pt-10 md:pt-12 lg:grid-cols-12">
 
-      {/* ── THE PULSE (METRICS RIBBON) ── */}
-      <motion.section
-        variants={itemVariants}
-        className="py-6 md:py-8 bg-[#fafafa]/30"
-      >
-        <div className="max-w-[1400px] mx-auto px-4 md:px-8">
-          <div className="bg-white rounded-xl ring-1 ring-foreground/10 overflow-hidden grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 divide-x divide-[#f2f2f2]/50">
-            <MetricCard
-              label="Countdown"
-              value={diffDays ?? "No Date"}
-              subtext={diffDays === null ? "Set event date" : "Days to go"}
-              icon={<Hourglass weight="BoldDuotone" />}
-              iconColor="text-[#346739]"
-            />
-            <MetricCard
-              label="Messages"
-              value="0 New"
-              subtext="Organizer Chat"
-              icon={<ChatDots weight="BoldDuotone" />}
-              iconColor="text-[#1863dc]"
-            />
-            <MetricCard
-              label="Checklist"
-              value={`${overview.checklist.progress}%`}
-              subtext="Completion"
-              icon={<Notes weight="BoldDuotone" />}
-              iconColor="text-[#ff7759]"
-            />
-            <MetricCard
-              label="Alerts"
-              value={alertCount}
-              subtext={alertCount === 1 ? "Action Required" : "Actions Required"}
-              icon={<Bell weight="BoldDuotone" />}
-              iconColor="text-red-500"
-            />
-            <div className="hidden lg:block">
-              <MetricCard
-                label="Next Milestone"
-                value={milestone?.label ?? "No milestone"}
-                subtext={milestone?.due_date ? formatShortDate(milestone.due_date) : "Add tasks"}
-                icon={<Flag weight="BoldDuotone" />}
-                iconColor="text-slate-400"
-              />
-            </div>
-          </div>
-        </div>
-      </motion.section>
+          {/* LEFT COLUMN (8/12) */}
+          <div className="space-y-10 lg:col-span-8">
 
-      {/* ── MAIN CONTENT GRID ── */}
-      <main className="pb-24">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-8 pt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            {/* LEFT CONTENT (8/12) */}
-            <motion.div variants={itemVariants} className="lg:col-span-8 space-y-12">
-              {/* Guest Tracking Section */}
-              <section className="space-y-6">
-                <GuestTracking data={overview.guests} />
-              </section>
-
-              {/* Checklist Section */}
-              <section className="space-y-6">
-                <Card className="border-[#f2f2f2] shadow-sm overflow-hidden bg-white rounded-2xl">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 md:pb-6 px-4 md:px-6">
-                    <div className="space-y-1">
-                      <CardTitle className="text-base md:text-lg font-semibold tracking-tight">Active Checklist</CardTitle>
-                      <CardDescription className="text-[11px] md:text-xs text-[#75758a]">Priority tasks for your current planning stage.</CardDescription>
-                    </div>
-                    <TextureButton variant="outline" className="h-8 rounded-full text-[10px] md:text-[11px] px-3 md:px-4 shrink-0">
-                      <span className="md:hidden">Timeline</span>
-                      <span className="hidden md:inline">Full Timeline</span>
-                    </TextureButton>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <div className="divide-y divide-[#f2f2f2] border-t border-[#f2f2f2]">
-                      {tasks.length > 0 ? tasks.map((task) => (
-                        <div key={task.id} className="group flex items-center justify-between py-4 md:py-5 hover:bg-[#fafafa] transition-colors px-4 md:px-6">
-                          <div className="flex items-center gap-4">
-                            <div className="w-5 h-5 rounded-md border-2 border-neutral-200 group-hover:border-[#346739] transition-colors flex items-center justify-center cursor-pointer">
-                              <div className="w-2 h-2 rounded-sm bg-[#346739] scale-0 group-hover:scale-100 transition-transform" />
-                            </div>
-                            <div>
-                              <p className="text-[14px] font-medium text-bold">{task.label}</p>
-                              <div className="flex items-center gap-2 mt-1">
-                                <span className="text-[10px] text-[#93939f] font-medium">{task.category || "Checklist"}</span>
-                                <span className="text-neutral-300">·</span>
-                                <AssignmentTag user={task.assigned_to || "You"} />
-                              </div>
-                            </div>
-                          </div>
-                          <AltArrowRight size={18} className="text-neutral-300 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                      )) : (
-                        <div className="px-4 md:px-6 py-8 text-[13px] text-[#75758a]">
-                          No active checklist tasks.
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </section>
-            </motion.div>
-
-            {/* RIGHT SIDEBAR (4/12) */}
-            <motion.div variants={itemVariants} className="lg:col-span-4 space-y-12">
-              {/* Payment Pulse */}
-              <section className="space-y-6">
-                <BudgetMetrics data={overview.budget} />
-              </section>
-
-              {/* Quick Actions */}
-              <section className="space-y-6">
-                <h2 className="text-lg font-semibold tracking-tight">Shortcuts</h2>
-                <div className="grid grid-cols-1 gap-3">
-                  <TextureButton variant="primary" className="w-full h-12 text-[13px] font-bold gap-3 justify-start px-5">
-                    <AddCircle size={20} weight="Bold" />
-                    Add New Expense
-                  </TextureButton>
-                  <TextureButton variant="outline" className="w-full h-12 text-[13px] font-bold gap-3 justify-start px-5 rounded-full">
-                    <ChatDots size={20} weight="Bold" className="text-neutral-400" />
-                    Message Organizer
-                  </TextureButton>
+            {/* Hero countdown module — one large numeral, Origin net-worth pattern */}
+            <motion.section variants={itemVariants}>
+              <div className="overflow-hidden rounded-[22px] border border-[#e5e7eb] bg-white">
+                <div className="flex items-center justify-between border-b border-[#e5e7eb] px-5 py-4 md:px-6">
+                  <MicroLabel>Countdown</MicroLabel>
+                  <div className="flex items-center gap-2 text-[11px] text-[#75758a]">
+                    <CalendarMark size={14} className="text-[#93939f]" />
+                    {eventDate ?? "No date set"}
+                  </div>
                 </div>
-              </section>
-            </motion.div>
+                <div className="flex flex-col gap-8 px-5 py-6 md:flex-row md:items-end md:justify-between md:px-6 md:py-8">
+                  <div>
+                    <div className="flex items-baseline gap-3">
+                      <span className="text-6xl font-normal leading-none tracking-tight text-[#212121] md:text-7xl">
+                        {diffDays ?? "—"}
+                      </span>
+                      <span className="text-[14px] text-[#75758a]">
+                        {diffDays === null ? "set your event date" : diffDays === 1 ? "day to go" : "days to go"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="w-full md:max-w-[260px]">
+                    <div className="mb-3 flex items-end justify-between">
+                      <MicroLabel>Planning progress</MicroLabel>
+                      <span className="text-[11px] font-semibold text-[#212121]">{checklist.progress}%</span>
+                    </div>
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#eeece7]">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${checklist.progress}%` }}
+                        transition={transition}
+                        className="h-full rounded-full bg-[#346739]"
+                      />
+                    </div>
+                    <p className="mt-2 text-[11px] text-[#75758a]">{checklist.completed} of {checklist.total} tasks complete</p>
+                  </div>
+                </div>
+              </div>
+            </motion.section>
+
+            {/* Guest tracking */}
+            <motion.section variants={itemVariants}>
+              <GuestTracking data={overview.guests} />
+            </motion.section>
+
+            {/* Up next — unframed rule-separated rows (Cohere research-table) */}
+            <motion.section variants={itemVariants}>
+              <div className="flex items-end justify-between pb-4">
+                <div className="space-y-1">
+                  <h2 className="text-lg font-semibold tracking-tight text-[#212121]">Up next</h2>
+                  <p className="text-[12px] text-[#75758a]">Priority tasks for your current planning stage.</p>
+                </div>
+                <TextureButton variant="outline" className="h-8 shrink-0 rounded-full px-4 text-[11px]">
+                  Full Timeline
+                </TextureButton>
+              </div>
+              <div className="divide-y divide-[#e5e7eb] border-y border-[#e5e7eb]">
+                {tasks.length > 0 ? tasks.map((task) => (
+                  <div key={task.id} className="group flex items-center justify-between px-1 py-4 transition-colors duration-150 hover:bg-[#fafafa] md:py-5">
+                    <div className="flex items-center gap-4">
+                      <div className="flex size-5 cursor-pointer items-center justify-center rounded-full border-2 border-[#d9d9dd] transition-colors duration-150 group-hover:border-[#346739]">
+                        <div className="size-2 scale-0 rounded-full bg-[#346739] transition-transform duration-150 ease-out group-hover:scale-100" />
+                      </div>
+                      <div>
+                        <p className="text-[14px] font-medium text-[#212121]">{task.label}</p>
+                        <div className="mt-1 flex items-center gap-2">
+                          <span className="text-[10px] font-medium uppercase text-[#93939f]">{task.category || "Checklist"}</span>
+                          <span className="text-[#d9d9dd]">·</span>
+                          <AssignmentTag user={task.assigned_to || "You"} />
+                          {task.urgent && (
+                            <span className="rounded-full bg-[#fff1ec] px-2 py-0.5 text-[9px] font-semibold uppercase text-[#b30000]">Urgent</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {task.due_date && (
+                        <span className="text-[11px] text-[#93939f]">{formatShortDate(task.due_date)}</span>
+                      )}
+                      <AltArrowRight size={16} className="text-[#d9d9dd] opacity-0 transition-opacity duration-150 group-hover:opacity-100" />
+                    </div>
+                  </div>
+                )) : (
+                  <div className="py-8 text-[13px] text-[#75758a]">
+                    No active checklist tasks.
+                  </div>
+                )}
+              </div>
+            </motion.section>
           </div>
-        </div>
-      </main>
+
+          {/* RIGHT RAIL (4/12) — stacked compact cards, Origin pattern */}
+          <div className="space-y-6 lg:col-span-4">
+
+            {/* Next milestone — deep-green dark-feature-band (Origin green card) */}
+            <motion.section variants={itemVariants}>
+              <div className="rounded-[22px] bg-[#003c33] p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <MicroLabel tone="dark">Next milestone</MicroLabel>
+                  <Flag size={16} weight="BoldDuotone" className="text-white/50" />
+                </div>
+                <p className="mt-4 text-xl font-medium leading-snug">
+                  {milestone?.label ?? "No milestone yet"}
+                </p>
+                <p className="mt-1 text-[12px] text-white/60">
+                  {milestone?.due_date ? `Due ${formatLongDate(milestone.due_date)}` : "Add tasks to build your timeline"}
+                </p>
+                <div className="mt-6 h-1.5 w-full overflow-hidden rounded-full bg-white/15">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${checklist.progress}%` }}
+                    transition={transition}
+                    className="h-full rounded-full bg-[#edfce9]"
+                  />
+                </div>
+                <p className="mt-2 text-[11px] text-white/60">{checklist.progress}% of planning complete</p>
+              </div>
+            </motion.section>
+
+            {/* Needs attention */}
+            <motion.section variants={itemVariants}>
+              <div className="rounded-[22px] border border-[#e5e7eb] bg-white px-5 py-5">
+                <div className="flex items-center justify-between">
+                  <MicroLabel>Needs attention</MicroLabel>
+                  <Danger size={16} weight="BoldDuotone" className={alertCount > 0 ? "text-[#ff7759]" : "text-[#d9d9dd]"} />
+                </div>
+                <div className="mt-2 divide-y divide-[#f2f2f2]">
+                  <AlertRow label="Urgent tasks" count={overview.alerts.urgent_tasks} />
+                  <AlertRow label="Overdue tasks" count={overview.alerts.overdue_tasks} />
+                  <AlertRow label="Overdue payments" count={overview.alerts.overdue_budget_items} />
+                  <AlertRow label="Pending RSVPs" count={overview.alerts.pending_rsvps} />
+                </div>
+              </div>
+            </motion.section>
+
+            {/* Budget */}
+            <motion.section variants={itemVariants}>
+              <BudgetMetrics data={overview.budget} />
+            </motion.section>
+
+            {/* Shortcuts */}
+            <motion.section variants={itemVariants} className="space-y-3">
+              <TextureButton variant="primary" className="h-12 w-full justify-start gap-3 px-5 text-[13px] font-semibold">
+                <AddCircle size={20} weight="Bold" />
+                Add New Expense
+              </TextureButton>
+              <TextureButton variant="outline" className="h-12 w-full justify-start gap-3 rounded-full px-5 text-[13px] font-semibold">
+                <ChatDots size={20} weight="Bold" className="text-[#93939f]" />
+                Message Organizer
+              </TextureButton>
+              <TextureButton variant="outline" className="h-12 w-full justify-start gap-3 rounded-full px-5 text-[13px] font-semibold">
+                <Letter size={20} weight="Bold" className="text-[#93939f]" />
+                Send Invitations
+              </TextureButton>
+            </motion.section>
+          </div>
+        </main>
+      </div>
     </motion.div>
   );
+}
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
+
+function formatTodayLong() {
+  return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 }
 
 function daysUntil(value: string) {
@@ -304,6 +334,12 @@ function formatShortDate(value: string) {
   const date = parseISODate(value);
   if (!date) return "No date";
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function formatLongDate(value: string) {
+  const date = parseISODate(value);
+  if (!date) return null;
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
 function parseISODate(value: string) {

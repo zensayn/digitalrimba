@@ -4,7 +4,9 @@ import (
 	"context"
 	"net/http"
 	"strings"
+	"time"
 
+	"github.com/lestrrat-go/httprc/v3"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/lestrrat-go/jwx/v3/jwt"
 )
@@ -15,10 +17,41 @@ type subjectContextKey struct{}
 
 type Authenticator struct {
 	jwksURL string
+	// cache holds the JWKS in-process so we don't do an HTTP round-trip to
+	// the frontend on every authenticated request. Nil if setup failed —
+	// parse then falls back to a live fetch, i.e. the old behavior.
+	cache *jwk.Cache
 }
 
 func NewAuthenticator(jwksURL string) *Authenticator {
-	return &Authenticator{jwksURL: jwksURL}
+	a := &Authenticator{jwksURL: jwksURL}
+	c, err := jwk.NewCache(context.Background(), httprc.NewClient())
+	if err == nil && c.Register(context.Background(), jwksURL,
+		jwk.WithMinInterval(15*time.Minute),
+		// Don't block boot on the frontend being up; fetch in the background.
+		jwk.WithWaitReady(false),
+	) == nil {
+		a.cache = c
+	}
+	return a
+}
+
+// parse verifies the token against the cached JWKS; on any cache miss or
+// verification failure it retries against a freshly fetched key set, so key
+// rotation never locks users out for the cache interval.
+func (a *Authenticator) parse(ctx context.Context, raw []byte) (jwt.Token, error) {
+	if a.cache != nil {
+		if set, err := a.cache.Lookup(ctx, a.jwksURL); err == nil {
+			if token, err := jwt.Parse(raw, jwt.WithKeySet(set), jwt.WithValidate(true)); err == nil {
+				return token, nil
+			}
+		}
+	}
+	set, err := jwk.Fetch(ctx, a.jwksURL)
+	if err != nil {
+		return nil, err
+	}
+	return jwt.Parse(raw, jwt.WithKeySet(set), jwt.WithValidate(true))
 }
 
 func AuthMiddleware(jwksURL string) func(http.Handler) http.Handler {
@@ -33,13 +66,7 @@ func (a *Authenticator) Middleware(next http.Handler) http.Handler {
 			return
 		}
 
-		keySet, err := jwk.Fetch(r.Context(), a.jwksURL)
-		if err != nil {
-			http.Error(w, "invalid signing keys", http.StatusUnauthorized)
-			return
-		}
-
-		token, err := jwt.Parse([]byte(raw), jwt.WithKeySet(keySet), jwt.WithValidate(true))
+		token, err := a.parse(r.Context(), []byte(raw))
 		if err != nil {
 			http.Error(w, "invalid bearer token", http.StatusUnauthorized)
 			return

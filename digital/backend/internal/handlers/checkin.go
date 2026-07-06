@@ -3,8 +3,8 @@ package handlers
 import (
 	"bytes"
 	"context"
-	cryptorand "crypto/rand"
 	"crypto/hmac"
+	cryptorand "crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
@@ -75,26 +75,45 @@ type CheckinEvent struct {
 }
 
 type CheckinGuest struct {
-	ID            string     `json:"id"`
-	WeddingID     string     `json:"wedding_id"`
-	Name          string     `json:"name"`
-	Tag           string     `json:"tag"`
-	QRToken       string     `json:"qr_token"`
-	ArrivedAt     *time.Time `json:"arrived_at,omitempty"`
-	SouvenirGiven bool       `json:"souvenir_given"`
+	ID               string     `json:"id"`
+	WeddingID        string     `json:"wedding_id"`
+	Name             string     `json:"name"`
+	Tag              string     `json:"tag"`
+	QRToken          string     `json:"qr_token"`
+	ArrivedAt        *time.Time `json:"arrived_at,omitempty"`
+	SouvenirGiven    bool       `json:"souvenir_given"`
+	PartySize        int        `json:"party_size"`
+	ActualPax        *int       `json:"actual_pax,omitempty"`
+	ProxyName        string     `json:"proxy_name,omitempty"`
+	GiftTagCode      string     `json:"gift_tag_code,omitempty"`
+	CheckedInByLabel string     `json:"checked_in_by_label,omitempty"`
+}
+
+// ScanDetails carries the optional kiosk fields recorded at check-in time.
+type ScanDetails struct {
+	SouvenirGiven    bool
+	ActualPax        *int
+	ProxyName        string
+	GiftTagCode      string
+	CheckedInByLabel string
 }
 
 type CheckinCounts struct {
-	Arrived int `json:"arrived"`
-	Total   int `json:"total"`
+	Arrived    int `json:"arrived"`
+	Total      int `json:"total"`
+	ArrivedPax int `json:"arrived_pax"`
+	TotalPax   int `json:"total_pax"`
 }
 
 type CheckinStore interface {
 	GetCheckinEventByCode(context.Context, string) (CheckinEvent, error)
-	MarkGuestArrived(context.Context, string, bool, time.Time) (CheckinGuest, bool, CheckinCounts, error)
+	MarkGuestArrived(context.Context, string, ScanDetails, time.Time) (CheckinGuest, bool, CheckinCounts, error)
 	GetCheckinCounts(context.Context, string) (CheckinCounts, error)
 	SearchGuestsByName(ctx context.Context, weddingID, query string) ([]CheckinGuest, error)
 	LookupGuestByQRToken(ctx context.Context, weddingID, qrToken string) (CheckinGuest, error)
+	GetFullRoster(ctx context.Context, weddingID string) ([]CheckinGuest, error)
+	CreateWalkInGuest(ctx context.Context, weddingID, name string, partySize int, details ScanDetails, now time.Time) (CheckinGuest, error)
+	MaxGiftTag(ctx context.Context, weddingID string) (int, error)
 	UpdateGuestSouvenir(ctx context.Context, guestID, weddingID string, collected bool) (CheckinGuest, error)
 	GetCheckinEventByWeddingID(ctx context.Context, weddingID string) (CheckinEvent, error)
 	CreateCheckinEvent(ctx context.Context, weddingID, eventCode, pinHash string) (CheckinEvent, error)
@@ -102,6 +121,7 @@ type CheckinStore interface {
 	GetGuestsForQR(ctx context.Context, weddingID string) ([]GuestQRData, error)
 	GetGuestsWithEmail(ctx context.Context, weddingID string) ([]GuestEmailData, error)
 	GetCheckinStats(ctx context.Context, weddingID string) (CheckinStats, error)
+	GetOperatorStats(ctx context.Context, weddingID string) ([]OperatorStat, error)
 }
 
 // EmailSender sends a QR code email to one guest.
@@ -234,6 +254,15 @@ func (h *CheckinHandler) GetEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	operators, err := h.store.GetOperatorStats(r.Context(), weddingID)
+	if err != nil {
+		http.Error(w, "stats error", http.StatusInternalServerError)
+		return
+	}
+	if operators == nil {
+		operators = []OperatorStat{}
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]any{
 		"eventCode":     event.EventCode,
@@ -241,7 +270,39 @@ func (h *CheckinHandler) GetEvent(w http.ResponseWriter, r *http.Request) {
 		"totalGuests":   stats.Total,
 		"arrivedGuests": stats.Arrived,
 		"souvenirCount": stats.Souvenirs,
+		"totalPax":      stats.TotalPax,
+		"arrivedPax":    stats.ArrivedPax,
+		"walkIns":       stats.WalkIns,
+		"operators":     operators,
 	})
+}
+
+// GuestList handles GET /api/checkin/events/guests.
+// Dashboard-authenticated full roster so the couple can see who has arrived.
+func (h *CheckinHandler) GuestList(w http.ResponseWriter, r *http.Request) {
+	userID, ok := UserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+	weddingID, err := h.resolver.WeddingIDForUser(r.Context(), userID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			http.Error(w, "no wedding found", http.StatusNotFound)
+		} else {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+		return
+	}
+	guests, err := h.store.GetFullRoster(r.Context(), weddingID)
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	if guests == nil {
+		guests = []CheckinGuest{}
+	}
+	writeJSON(w, http.StatusOK, guests)
 }
 
 // GetGuestQRPdf handles GET /api/checkin/events/qr/pdf.
@@ -348,6 +409,8 @@ func (h *CheckinHandler) RegisterRoutes(r chi.Router) {
 	r.Post("/api/checkin/scan", h.Scan)
 	r.Get("/api/checkin/stream", h.Stream)
 	r.Get("/api/checkin/guests", h.Search)
+	r.Get("/api/checkin/roster", h.Roster)
+	r.Post("/api/checkin/walkin", h.WalkIn)
 	r.Patch("/api/checkin/guests/{id}/souvenir", h.Souvenir)
 }
 
@@ -394,12 +457,20 @@ func (h *CheckinHandler) Auth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Seed for sequential envelope tag codes; the client increments locally.
+	maxTag, err := h.store.MaxGiftTag(r.Context(), event.WeddingID)
+	if err != nil {
+		maxTag = 0
+	}
+
 	writeJSON(w, http.StatusOK, struct {
-		Token     string    `json:"token"`
-		ExpiresAt time.Time `json:"expires_at"`
+		Token       string    `json:"token"`
+		ExpiresAt   time.Time `json:"expires_at"`
+		NextGiftTag int       `json:"next_gift_tag"`
 	}{
-		Token:     token,
-		ExpiresAt: expiresAt,
+		Token:       token,
+		ExpiresAt:   expiresAt,
+		NextGiftTag: maxTag + 1,
 	})
 }
 
@@ -411,15 +482,30 @@ func (h *CheckinHandler) Scan(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		QRToken       string `json:"qr_token"`
-		SouvenirGiven bool   `json:"souvenir_given"`
+		QRToken          string `json:"qr_token"`
+		SouvenirGiven    bool   `json:"souvenir_given"`
+		ActualPax        *int   `json:"actual_pax"`
+		ProxyName        string `json:"proxy_name"`
+		GiftTagCode      string `json:"gift_tag_code"`
+		CheckedInByLabel string `json:"checked_in_by_label"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
+	if req.ActualPax != nil && *req.ActualPax < 1 {
+		http.Error(w, "actual_pax must be positive", http.StatusBadRequest)
+		return
+	}
 
-	guest, already, counts, err := h.store.MarkGuestArrived(r.Context(), req.QRToken, req.SouvenirGiven, h.now().UTC())
+	details := ScanDetails{
+		SouvenirGiven:    req.SouvenirGiven,
+		ActualPax:        req.ActualPax,
+		ProxyName:        strings.TrimSpace(req.ProxyName),
+		GiftTagCode:      strings.TrimSpace(req.GiftTagCode),
+		CheckedInByLabel: strings.TrimSpace(req.CheckedInByLabel),
+	}
+	guest, already, counts, err := h.store.MarkGuestArrived(r.Context(), req.QRToken, details, h.now().UTC())
 	if err != nil {
 		writeCheckinError(w, err)
 		return
@@ -510,6 +596,74 @@ func (h *CheckinHandler) Search(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, guests)
+}
+
+// Roster handles GET /api/checkin/roster — the full guest list for the
+// operator's offline cache.
+func (h *CheckinHandler) Roster(w http.ResponseWriter, r *http.Request) {
+	claims, ok := h.authorize(r)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	guests, err := h.store.GetFullRoster(r.Context(), claims.WeddingID)
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	if guests == nil {
+		guests = []CheckinGuest{}
+	}
+	writeJSON(w, http.StatusOK, guests)
+}
+
+// WalkIn handles POST /api/checkin/walkin — creates a guest and checks
+// them in immediately (door walk-ins with no invitation).
+func (h *CheckinHandler) WalkIn(w http.ResponseWriter, r *http.Request) {
+	claims, ok := h.authorize(r)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var req struct {
+		Name             string `json:"name"`
+		PartySize        int    `json:"party_size"`
+		SouvenirGiven    bool   `json:"souvenir_given"`
+		GiftTagCode      string `json:"gift_tag_code"`
+		CheckedInByLabel string `json:"checked_in_by_label"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid json", http.StatusBadRequest)
+		return
+	}
+	req.Name = strings.TrimSpace(req.Name)
+	if req.Name == "" {
+		http.Error(w, "name required", http.StatusBadRequest)
+		return
+	}
+	if req.PartySize < 1 {
+		req.PartySize = 1
+	}
+
+	details := ScanDetails{
+		SouvenirGiven:    req.SouvenirGiven,
+		GiftTagCode:      strings.TrimSpace(req.GiftTagCode),
+		CheckedInByLabel: strings.TrimSpace(req.CheckedInByLabel),
+	}
+	guest, err := h.store.CreateWalkInGuest(r.Context(), claims.WeddingID, req.Name, req.PartySize, details, h.now().UTC())
+	if err != nil {
+		writeCheckinError(w, err)
+		return
+	}
+
+	if counts, err := h.store.GetCheckinCounts(r.Context(), claims.WeddingID); err == nil {
+		h.broadcast(claims.WeddingID, counts)
+	}
+	writeJSON(w, http.StatusCreated, struct {
+		Guest CheckinGuest `json:"guest"`
+	}{Guest: guest})
 }
 
 func (h *CheckinHandler) Souvenir(w http.ResponseWriter, r *http.Request) {

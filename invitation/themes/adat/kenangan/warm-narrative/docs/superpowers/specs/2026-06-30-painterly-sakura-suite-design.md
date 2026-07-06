@@ -71,7 +71,7 @@ Tiap section memakai struktur yang sama; teks konten selalu di *safe-zone* tenga
 | gift | `GiftBg.webp` | — | CornerL | 2 layer |
 | closing | `ClosingBg.webp` | `ClosingCanopy.webp` | CornerL + CornerR (penuh) | ✅ 3 layer (hero) |
 
-**Total aset baru:** 5 (kit) + 11 (Bg) + 4 (L1: Cover/Akad/Resepsi/Closing) = **20 gambar**.
+**Total aset baru (scope Bagian 4 — kit dasar + background per section):** 5 (kit) + 11 (Bg) + 4 (L1: Cover/Akad/Resepsi/Closing) = **20 gambar**. Belum termasuk varian anti-repetisi, frame penuh, frame border foto, dan scatter/base kit di Bagian 5c–5f.
 
 ### 4c. Dimensi & budget
 - Background L0: 1080×2340, webp quality ~82, target **< 180KB**.

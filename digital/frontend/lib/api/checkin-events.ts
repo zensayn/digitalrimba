@@ -1,11 +1,34 @@
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
 
+export interface OperatorStat {
+  label: string;
+  scans: number;
+  pax: number;
+  lastScanAt: string; // ISO timestamp
+}
+
 export interface CheckinEventConfig {
   eventCode: string;
   operatorUrl: string;
   totalGuests: number;
   arrivedGuests: number;
   souvenirCount: number;
+  totalPax: number;
+  arrivedPax: number;
+  walkIns: number;
+  operators: OperatorStat[];
+}
+
+export interface CheckinGuest {
+  id: string;
+  name: string;
+  tag: string; // guest group label; 'Walk-in' marks door additions
+  arrived_at?: string; // ISO timestamp, absent = not yet arrived
+  souvenir_given: boolean;
+  party_size: number;
+  actual_pax?: number;
+  proxy_name?: string;
+  checked_in_by_label?: string;
 }
 
 export interface CreateCheckinEventResult {
@@ -51,6 +74,13 @@ export async function getCheckinEvent(): Promise<CheckinEventConfig | null> {
   const res = await authedFetch(`${BASE}/api/checkin/events`);
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`getCheckinEvent failed: ${res.status}`);
+  return res.json();
+}
+
+/** Returns the full guest roster with live arrival details. */
+export async function getCheckinGuests(): Promise<CheckinGuest[]> {
+  const res = await authedFetch(`${BASE}/api/checkin/events/guests`);
+  if (!res.ok) throw new Error(`getCheckinGuests failed: ${res.status}`);
   return res.json();
 }
 

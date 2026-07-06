@@ -484,9 +484,9 @@ const dashboardBudgetSummarySQL = `
 SELECT
     COALESCE(SUM(estimated_amount), 0)::float8 AS total,
     COALESCE(SUM(actual_amount), 0)::float8 AS spent,
-    COALESCE(SUM(actual_amount) FILTER (WHERE paid), 0)::float8 AS paid,
+    COALESCE(SUM(paid_amount), 0)::float8 AS paid,
     COALESCE(BOOL_OR(actual_amount > estimated_amount), false) AS overspend,
-    COUNT(*) FILTER (WHERE due_date < CURRENT_DATE AND NOT paid)::int AS overdue_items
+    COUNT(*) FILTER (WHERE due_date < CURRENT_DATE AND payment_status <> 'paid')::int AS overdue_items
 FROM budget_items
 WHERE wedding_id = $1::uuid
 `
@@ -499,7 +499,7 @@ SELECT
     (due_date - CURRENT_DATE)::int AS due_in
 FROM budget_items
 WHERE wedding_id = $1::uuid
-  AND NOT paid
+  AND payment_status <> 'paid'
   AND due_date IS NOT NULL
 ORDER BY due_date ASC, created_at ASC, id ASC
 LIMIT 1

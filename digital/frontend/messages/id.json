@@ -7,13 +7,39 @@
     "trustLabel": "Dipercaya pasangan & perancang di seluruh nusantara",
     "morphCaption": "Apa pun perayaanmu, rancang dan kembangkan sesuai caramu."
   },
+  "OurServices": {
+    "eyebrow": "Layanan Kami",
+    "heading": "Semua untuk hari spesialmu,\ndalam satu tempat.",
+    "availableLabel": "Tersedia sekarang",
+    "comingSoonLabel": "Segera hadir",
+    "cta": "Jelajahi undangan",
+    "services": {
+      "webInvitations": {
+        "title": "Undangan Web Premium",
+        "desc": "Undangan web interaktif dengan personalisasi nama tamu, musik, integrasi peta, dan galeri visual yang mulus."
+      },
+      "smartRsvp": {
+        "title": "RSVP Pintar",
+        "desc": "Manajemen kehadiran tamu secara real-time, terintegrasi dengan WhatsApp untuk notifikasi otomatis."
+      },
+      "qrCheckin": {
+        "title": "Check-in QR",
+        "desc": "Validasi tamu di lokasi lewat QR Code untuk alur masuk yang mulus, distribusi souvenir, dan pendataan real-time."
+      },
+      "vendorTools": {
+        "title": "Alat Vendor",
+        "desc": "Koordinasikan vendor, deposit, dan pemesanan — semua terlacak di satu tempat dan selalu mutakhir."
+      }
+    }
+  },
   "Navbar": {
     "ecosystem": "Ekosistem",
     "economics": "Ekonomi",
     "developers": "Pengembang",
     "governance": "Tata Kelola",
     "bookDemo": "Jadwalkan Demo",
-    "login": "Masuk"
+    "login": "Masuk",
+    "languageLabel": "Bahasa"
   },
   "Auth": {
     "brandHeadline": "Berakar Kuat\nDi Setiap Momenmu",
@@ -97,5 +123,44 @@
     "unpaid": "Belum Lunas",
     "noItems": "Belum ada item.",
     "addItem": "Tambah Item"
+  },
+  "OurServices": {
+    "eyebrow": "Apa yang kami tawarkan",
+    "heading": "Semua kebutuhan perayaan Anda,\ndalam satu tempat",
+    "availableLabel": "Tersedia",
+    "comingSoonLabel": "Segera hadir",
+    "services": {
+      "webInvitations": {
+        "title": "Undangan Digital",
+        "desc": "Undangan digital dengan desain indah, siap dibagikan dalam hitungan menit."
+      },
+      "smartRsvp": {
+        "title": "RSVP Cerdas",
+        "desc": "Tamu mengonfirmasi kehadiran dalam hitungan detik; Anda melacak respons secara real-time."
+      },
+      "qrCheckin": {
+        "title": "Check-in QR",
+        "desc": "Pindai tamu di pintu masuk — tanpa clipboard, tanpa antrean."
+      },
+      "vendorTools": {
+        "title": "Alat Vendor",
+        "desc": "Koordinasikan vendor dan logistik dari satu dashboard."
+      }
+    }
+  },
+  "OurServices2": {
+    "heading": "Fitur lain yang akan Anda sukai",
+    "card1": {
+      "title": "Dirancang untuk keindahan",
+      "description": "Tidak ada lagi tata letak membosankan. Rimba memadukan tipografi editorial, musik premium, dan peta interaktif."
+    },
+    "card2": {
+      "title": "Didukung RSVP cerdas",
+      "description": "Tamu RSVP dalam hitungan detik lewat WhatsApp atau Web. Kelola jumlah tamu dengan mudah."
+    },
+    "card3": {
+      "title": "Mulus di pintu masuk",
+      "description": "Tinggalkan clipboard. Konsol check-in aman memindai pass di pintu masuk."
+    }
   }
 }

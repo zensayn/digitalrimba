@@ -7,13 +7,39 @@
     "trustLabel": "Trusted by couples & planners across the archipelago",
     "morphCaption": "Whatever your celebration, plan and grow it on your terms."
   },
+  "OurServices": {
+    "eyebrow": "Our Services",
+    "heading": "Everything for your day,\nin one place.",
+    "availableLabel": "Available now",
+    "comingSoonLabel": "Coming soon",
+    "cta": "Explore invitations",
+    "services": {
+      "webInvitations": {
+        "title": "Premium Web Invitations",
+        "desc": "Interactive web invitations with guest personalization, music, map integration, and a seamless visual gallery."
+      },
+      "smartRsvp": {
+        "title": "Smart RSVP",
+        "desc": "Real-time attendance management, integrated with WhatsApp for automatic guest notifications."
+      },
+      "qrCheckin": {
+        "title": "QR Check-in",
+        "desc": "On-site guest validation via QR code for smooth entry, souvenir distribution, and live attendance tracking."
+      },
+      "vendorTools": {
+        "title": "Vendor Tools",
+        "desc": "Coordinate vendors, deposits, and bookings — all tracked in one place, always up to date."
+      }
+    }
+  },
   "Navbar": {
     "ecosystem": "Ecosystem",
     "economics": "Economics",
     "developers": "Developers",
     "governance": "Governance",
     "bookDemo": "Book Demo",
-    "login": "Login"
+    "login": "Login",
+    "languageLabel": "Language"
   },
   "Auth": {
     "brandHeadline": "Deeply Rooted\nin Your Moments",
@@ -97,5 +123,44 @@
     "unpaid": "Unpaid",
     "noItems": "No items added yet.",
     "addItem": "Add Item"
+  },
+  "OurServices": {
+    "eyebrow": "What we offer",
+    "heading": "Everything your celebration\nneeds, in one place",
+    "availableLabel": "Available",
+    "comingSoonLabel": "Coming soon",
+    "services": {
+      "webInvitations": {
+        "title": "Web Invitations",
+        "desc": "Beautifully designed digital invitations, ready to share in minutes."
+      },
+      "smartRsvp": {
+        "title": "Smart RSVP",
+        "desc": "Guests confirm attendance in seconds; you track responses in real time."
+      },
+      "qrCheckin": {
+        "title": "QR Check-in",
+        "desc": "Scan guests in at the door — no clipboards, no queues."
+      },
+      "vendorTools": {
+        "title": "Vendor Tools",
+        "desc": "Coordinate vendors and logistics from a single dashboard."
+      }
+    }
+  },
+  "OurServices2": {
+    "heading": "More features you will love",
+    "card1": {
+      "title": "Designed for beauty",
+      "description": "No more boring layouts. Rimba combines editorial typography, premium music, and interactive maps."
+    },
+    "card2": {
+      "title": "Powered by smart RSVP",
+      "description": "Guests RSVP in seconds via WhatsApp or Web. Manage guest counts effortlessly."
+    },
+    "card3": {
+      "title": "Seamless at the door",
+      "description": "Drop the clipboards. Secure check-in consoles scan passes at the door."
+    }
   }
 }

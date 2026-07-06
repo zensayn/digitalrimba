@@ -11,6 +11,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"rimba-api/handlers"
+	"rimba-api/internal/cache"
 	"rimba-api/internal/db"
 	internalhandlers "rimba-api/internal/handlers"
 	authmw "rimba-api/internal/middleware"
@@ -50,8 +51,20 @@ func main() {
 	if len(checkinKey) == 0 {
 		log.Fatal("CHECKIN_SESSION_KEY is required")
 	}
-	checkinStore := internalhandlers.NewPostgresCheckinStore(pool)
-	checkinResolver := &internalhandlers.PgCheckinWeddingResolver{DB: pool}
+	var checkinStore internalhandlers.CheckinStore = internalhandlers.NewPostgresCheckinStore(pool)
+	var checkinResolver internalhandlers.CheckinWeddingResolver = &internalhandlers.PgCheckinWeddingResolver{DB: pool}
+
+	// Optional Redis cache (REDIS_URL) over the check-in read hot path; the
+	// backend runs unchanged without it.
+	if rdb, err := cache.New(ctx); err != nil {
+		log.Printf("redis cache disabled: %v", err)
+	} else if rdb != nil {
+		defer rdb.Close()
+		checkinStore = internalhandlers.NewCachingCheckinStore(checkinStore, rdb)
+		checkinResolver = internalhandlers.NewCachingWeddingResolver(checkinResolver, rdb)
+		log.Println("redis cache enabled for check-in reads")
+	}
+
 	checkinHandler := internalhandlers.NewCheckinHandler(checkinStore, checkinKey, checkinResolver)
 	// TODO: wire a real EmailSender (e.g. Resend/SendGrid) via checkinHandler.SetEmailSender(sender)
 	// when an email service is configured in this project.
@@ -111,6 +124,7 @@ func main() {
 		// Organizer check-in management routes.
 		r.Post("/api/checkin/events", checkinHandler.CreateEvent)
 		r.Get("/api/checkin/events", checkinHandler.GetEvent)
+		r.Get("/api/checkin/events/guests", checkinHandler.GuestList)
 		r.Get("/api/checkin/events/qr/pdf", checkinHandler.GetGuestQRPdf)
 		r.Post("/api/checkin/events/qr/email", checkinHandler.EmailGuestQRCodes)
 	})
