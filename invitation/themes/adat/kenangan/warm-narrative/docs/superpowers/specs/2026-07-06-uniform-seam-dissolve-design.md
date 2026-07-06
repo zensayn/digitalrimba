@@ -27,21 +27,24 @@ linear-gradient(to bottom, transparent 0, #000 ${fadeTop}svh,
                 #000 calc(100% - ${fadeBottom}svh), transparent 100%)
 ```
 
-Band fade selalu setebal ~12% layar di semua section, berapa pun tinggi
-sectionnya. Untuk section setinggi 100svh hasilnya identik dengan perilaku
-lama, jadi hanya section multi-viewport yang terkoreksi.
+Band fade selalu setebal sama di semua section, berapa pun tinggi
+sectionnya — hanya section multi-viewport yang terkoreksi dibanding
+perilaku lama.
 
-### 2. Nilai fade seragam (semua seam interior = 12)
+### 2. Nilai fade seragam (semua seam interior = 6svh)
 
-| Section            | Sebelum  | Sesudah  |
-| ------------------ | -------- | -------- |
-| Cover              | `0 / 14` | `0 / 12` |
-| Event (akad/resepsi) | `6 / 12` | `12 / 12` |
-| Closing            | `14 / 0` | `12 / 0` |
-| Lainnya (default)  | `12 / 12` | `12 / 12` (tidak disentuh) |
+Default `fadeTop`/`fadeBottom` di ParallaxScene = **6svh** — satu-satunya
+tempat tebal seam diatur. Awalnya dicoba 12svh, tapi zona pucat gabungan
+(12 + 12 = ~24svh) membuat lukisan antar section terasa berjauhan; 6svh
+per sisi (~12svh total) terasa rapat tapi tetap lembut.
 
-Tepi terluar halaman (atas Cover, bawah Closing) tetap `0` — tidak ada seam
-di sana.
+Section hanya meng-override untuk tepi terluar halaman (tanpa seam):
+
+| Section  | Override                         |
+| -------- | -------------------------------- |
+| Cover    | `fadeTop={0}` (atas halaman)     |
+| Closing  | `fadeBottom={0}` (bawah halaman) |
+| Lainnya  | — (pakai default 6/6)            |
 
 ## Di luar cakupan
 
