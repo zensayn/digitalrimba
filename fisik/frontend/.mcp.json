@@ -6,6 +6,9 @@
         "shadcn@latest",
         "mcp"
       ]
+    },
+    "mobbin": {
+      "serverUrl": "https://api.mobbin.com/mcp"
     }
   }
 }
