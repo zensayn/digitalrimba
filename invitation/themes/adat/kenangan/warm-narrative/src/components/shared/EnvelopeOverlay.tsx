@@ -2,7 +2,7 @@
 
 // src/components/shared/EnvelopeOverlay.tsx
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
@@ -11,6 +11,7 @@ const EASE_STRING = "cubic-bezier(0.23, 1, 0.32, 1)";
 export default function EnvelopeOverlay() {
   const [phase, setPhase] = useState<"closed" | "opening" | "dismiss">("closed");
   const [gone, setGone] = useState(false);
+  const originalOverflow = useRef<string | null>(null);
 
   const open = () => {
     if (phase !== "closed") return;
@@ -19,14 +20,14 @@ export default function EnvelopeOverlay() {
   };
 
   // Prevent scroll ONLY when the envelope is closed. Unlock it immediately upon tapping open.
+  // Restores whatever overflow value was on body before we touched it, instead of assuming "".
   useEffect(() => {
-    if (phase === "closed") {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
+    if (originalOverflow.current === null) {
+      originalOverflow.current = document.body.style.overflow;
     }
+    document.body.style.overflow = phase === "closed" ? "hidden" : originalOverflow.current;
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = originalOverflow.current ?? "";
     };
   }, [phase]);
 
@@ -38,7 +39,14 @@ export default function EnvelopeOverlay() {
     <motion.div
       role="button"
       aria-label="Ketuk untuk membuka undangan"
+      tabIndex={phase === "closed" ? 0 : -1}
       onClick={open}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          open();
+        }
+      }}
       animate={{ opacity: phase === "dismiss" ? 0 : 1 }}
       transition={{ duration: 0.7, ease: EASE }}
       onAnimationComplete={() => {
