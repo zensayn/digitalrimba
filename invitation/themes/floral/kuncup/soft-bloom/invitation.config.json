@@ -1,0 +1,104 @@
+{
+  "couple": {
+    "groom": {
+      "name": "Raka",
+      "fullName": "Raka Adi Pratama",
+      "parents": "Putra Bapak Bambang Pratama & Ibu Lestari",
+      "photo": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80",
+      "instagram": "@raka.adi"
+    },
+    "bride": {
+      "name": "Kirana",
+      "fullName": "Kirana Maheswari",
+      "parents": "Putri Bapak Hadi Wijaya & Ibu Ratna Dewi",
+      "photo": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+      "instagram": "@kirana.m"
+    },
+    "hashtag": "#RakaKiranaBermekar",
+    "quote": "\"Seperti bunga liar yang tumbuh apa adanya — cinta kami merekah sederhana, namun penuh warna.\""
+  },
+  "events": {
+    "akad": {
+      "title": "Akad Nikah",
+      "day": "Sabtu",
+      "date": "12 Desember 2026",
+      "time": "08.00 – 10.00 WIB",
+      "venue": "Pendopo Taman Sari",
+      "address": "Jl. Tamansari No. 12, Yogyakarta",
+      "mapsUrl": "https://maps.google.com/?q=-7.8101,110.3592",
+      "embedUrl": "https://maps.google.com/maps?q=-7.8101,110.3592&z=16&output=embed",
+      "startISO": "20261212T010000Z",
+      "endISO": "20261212T030000Z"
+    },
+    "resepsi": {
+      "title": "Resepsi",
+      "day": "Sabtu",
+      "date": "12 Desember 2026",
+      "time": "11.00 – 14.00 WIB",
+      "venue": "Greenfield Garden Hall",
+      "address": "Jl. Palagan Tentara No. 88, Sleman",
+      "mapsUrl": "https://maps.google.com/?q=-7.7372,110.4115",
+      "embedUrl": "https://maps.google.com/maps?q=-7.7372,110.4115&z=16&output=embed",
+      "startISO": "20261212T040000Z",
+      "endISO": "20261212T070000Z"
+    }
+  },
+  "weddingDate": "2026-12-12T08:00:00",
+  "gallery": [
+    { "src": "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1200&q=80", "alt": "Perjalanan cinta" },
+    { "src": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80", "alt": "Momen bersama" },
+    { "src": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=600&q=80", "alt": "Senyum bahagia" },
+    { "src": "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=600&q=80", "alt": "Kasih sayang" },
+    { "src": "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=600&q=80", "alt": "Kenangan indah" },
+    { "src": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80", "alt": "Bersama selamanya" }
+  ],
+  "bankAccounts": [
+    { "bank": "BCA", "name": "Raka Adi Pratama", "number": "1357 2468 9012" },
+    { "bank": "Mandiri", "name": "Kirana Maheswari", "number": "1440 0099 8877 6" }
+  ],
+  "dressCode": {
+    "theme": "Taman Pastel",
+    "description": "Kenakan busana bernuansa pastel lembut — selaras dengan padang bunga liar yang menjadi suasana hari bahagia kami.",
+    "colors": [
+      { "hex": "#C9B8DA", "name": "Lilac" },
+      { "hex": "#F0E2A8", "name": "Butter" },
+      { "hex": "#BCD0DB", "name": "Powder Blue" },
+      { "hex": "#9BB08A", "name": "Sage" },
+      { "hex": "#FDFCFA", "name": "Ivory" }
+    ],
+    "avoid": ["Hitam Pekat", "Merah Menyala"]
+  },
+  "theme": {
+    "colors": {
+      "bg":         "#FDFCFA",
+      "surface":    "#F7F5F1",
+      "surface2":   "#EFEBE4",
+      "accent":     "#7E6996",
+      "accentSoft": "#C9B8DA",
+      "leaf":       "#7E956E",
+      "text":       "#3A3A36",
+      "textMuted":  "#6F6F67",
+      "textDim":    "#8C8C83"
+    },
+    "typography": {
+      "displayFont": "Cormorant Garamond",
+      "bodyFont":    "Jost",
+      "scriptFont":  "Imperial Script"
+    }
+  },
+  "sections": {
+    "order": ["cover", "greeting", "couple", "akad", "resepsi", "dresscode", "gallery", "rsvp", "gift", "closing"],
+    "enabled": {
+      "cover":     true,
+      "greeting":  true,
+      "couple":    true,
+      "akad":      true,
+      "resepsi":   true,
+      "dresscode": true,
+      "gallery":   true,
+      "rsvp":      true,
+      "gift":      true,
+      "closing":   true
+    }
+  }
+}
