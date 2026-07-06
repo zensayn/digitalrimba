@@ -136,19 +136,27 @@ const BudgetMetrics = ({ data }: { data: DashboardBudgetSummary }) => {
           ))}
         </div>
 
-        {/* ALERT: NEXT DUE (REFINED) */}
-        <div className='flex flex-col justify-between gap-3 border-l-2 border-[#ff7759] bg-[#fff7f3] py-3 pl-4 pr-2 sm:flex-row sm:items-center'>
+        {/* NEXT DUE — alert styling only when there's a real upcoming payment */}
+        <div className={`flex flex-col justify-between gap-3 border-l-2 py-3 pl-4 pr-2 sm:flex-row sm:items-center ${
+          nextPayment ? 'border-[#ff7759] bg-[#fff7f3]' : 'border-[#346739] bg-[#edfce9]'
+        }`}>
           <div className='flex items-center gap-3'>
-            <div className='flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-[#ff7759]'>
+            <div className={`flex size-8 shrink-0 items-center justify-center rounded-full bg-white ${
+              nextPayment ? 'text-[#ff7759]' : 'text-[#346739]'
+            }`}>
               <MoneyBag className="size-4" weight="BoldDuotone" />
             </div>
             <div>
-              <p className='mb-1 text-[10px] font-semibold uppercase leading-none text-[#9b4b32]'>Next Due: {nextPayment?.label ?? 'No upcoming payment'}</p>
+              <p className={`mb-1 text-[10px] font-semibold uppercase leading-none ${
+                nextPayment ? 'text-[#9b4b32]' : 'text-[#346739]'
+              }`}>Next Due: {nextPayment?.label ?? 'No upcoming payment'}</p>
               <p className='text-[13px] font-semibold text-[#212121]'>{nextPaymentValue}</p>
             </div>
           </div>
           <div className='px-11 sm:px-0 sm:text-right'>
-            <p className='w-fit rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold uppercase text-[#9b4b32] sm:w-auto'>{nextPaymentDue}</p>
+            <p className={`w-fit rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold uppercase sm:w-auto ${
+              nextPayment ? 'text-[#9b4b32]' : 'text-[#346739]'
+            }`}>{nextPaymentDue}</p>
           </div>
         </div>
 

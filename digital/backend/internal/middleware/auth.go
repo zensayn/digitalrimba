@@ -49,6 +49,13 @@ func (a *Authenticator) parse(ctx context.Context, raw []byte) (jwt.Token, error
 	}
 	fetchCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
+	if a.cache != nil {
+		set, err := a.cache.Refresh(fetchCtx, a.jwksURL)
+		if err != nil {
+			return nil, err
+		}
+		return jwt.Parse(raw, jwt.WithKeySet(set), jwt.WithValidate(true))
+	}
 	set, err := jwk.Fetch(fetchCtx, a.jwksURL)
 	if err != nil {
 		return nil, err

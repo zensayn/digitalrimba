@@ -148,6 +148,7 @@ export default function QrPassesPage() {
       qr.append(qrContainerRef.current);
     }).catch(() => {
       console.error("Failed to load QR renderer");
+      toast.error("Couldn't load the QR renderer. Please refresh and try again.");
     });
     return () => {
       alive = false;
