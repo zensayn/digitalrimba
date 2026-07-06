@@ -26,19 +26,6 @@
   --shadow-card:   0 2px 16px rgba(42, 34, 24, 0.06);
 }
 
-/* ─── Base ───────────────────────────────────────────────────────────────────── */
-/* IMPORTANT: must live in @layer base. Un-layered CSS beats @layer rules no
-   matter the specificity, and Tailwind emits utilities in @layer utilities —
-   an un-layered `* { margin:0; padding:0 }` silently disables every padding
-   and margin utility (px-8, mx-auto, ...) in the project. */
-@layer base {
-  *, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-}
-
 html {
   overflow-x: hidden;
   scroll-behavior: smooth;
