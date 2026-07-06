@@ -1,33 +1,41 @@
 import * as motion from "framer-motion/client";
+import ParallaxScene from "@/components/shared/ParallaxScene";
+import { sceneFrame } from "@/components/shared/sceneFrame";
 import type { InvitationConfig } from "@/lib/config-types";
+
+const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
+
+// Cream halo + soft plate so the names stay readable over the dense floral frame.
+const HALO = "0 1px 7px rgba(250,247,242,0.95), 0 0 3px rgba(250,247,242,0.9)";
+const TEXT_PLATE = "radial-gradient(ellipse 128% 116% at center, rgba(250,247,242,0.8) 0%, rgba(250,247,242,0.5) 55%, rgba(250,247,242,0) 100%)";
 
 export default function CoupleSection({ couple }: { couple: InvitationConfig["couple"] }) {
 
-  const fadeUp = {
-    hidden: { opacity: 0, y: 36 },
+  // Bottom-to-top clip reveal — "rises from the paper"
+  const photoReveal = (delay: number) => ({
+    hidden: { clipPath: "inset(100% 0 0 0)" },
+    visible: {
+      clipPath: "inset(0% 0 0 0)",
+      transition: { delay, duration: 1.0, ease: [0.22, 1, 0.36, 1] as const },
+    },
+  });
+
+  const fadeUp = (delay: number) => ({
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 1, ease: "easeOut" as const },
+      transition: { delay, duration: 0.85, ease: "easeOut" as const },
     },
-  };
-
-  const photoStyle = {
-    width: "clamp(72px, 20vw, 96px)",
-    height: "clamp(72px, 20vw, 96px)",
-    borderRadius: "50%",
-    border: "1px solid rgba(192,120,48,0.35)",
-    flexShrink: 0 as const,
-    background: "var(--surface-2)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden" as const,
-    marginBottom: "clamp(8px, 2vh, 14px)",
-  };
+  });
 
   return (
-    <section id="couple" className="snap-section" style={{ background: "var(--bg)", justifyContent: "flex-start", paddingTop: "clamp(48px, 10vh, 80px)" }}>
+    <section id="couple" className="snap-section" style={{ background: "transparent" }}>
+      {/* Greeting's garland hangs over our top (topFrame off — the old drape
+          doubled up with it); our corner pieces overhang into Love Story. */}
+      <ParallaxScene
+        layers={sceneFrame({ base: BASE, bg: `${BASE}/CoupleBg.webp`, variant: 1, density: "full", base_clusters: false, topFrame: false, seam: "overhang" })}
+      />
       <div className="paper-overlay" />
 
       {/* Italic watermark */}
@@ -49,213 +57,134 @@ export default function CoupleSection({ couple }: { couple: InvitationConfig["co
         Mempelai
       </div>
 
-      <div className="absolute top-0 left-0 right-0 copper-divider-full" />
-
-      {/* Bunga border as background anchored bottom-left */}
+      {/* Radial glow behind photos */}
       <div
-        className="absolute bottom-0 left-0 pointer-events-none"
-        style={{ zIndex: 1 }}
-      >
-        <img
-          src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/BungaPutihBorder.webp`}
-          alt=""
-          style={{ width: "clamp(200px, 70vw, 320px)", height: "auto", opacity: 0.2, display: "block" }}
-        />
-      </div>
+        className="absolute pointer-events-none"
+        style={{
+          top: "20%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "80%",
+          height: "50%",
+          background: "radial-gradient(ellipse 70% 50% at 50% 45%, rgba(192,120,48,0.07) 0%, transparent 70%)",
+          zIndex: 2,
+        }}
+      />
 
       <div
-        className="relative z-10 flex flex-col items-center text-center px-8 w-full max-w-sm mx-auto"
-        style={{ paddingBottom: "clamp(24px, 6vh, 48px)" }}
+        className="relative z-10 flex flex-col items-center w-full max-w-[400px] mx-auto px-8"
+        style={{ paddingBottom: "clamp(8px, 2vh, 16px)", paddingTop: "clamp(48px, 10svh, 80px)" }}
       >
+        {/* Eyebrow + display title + intro — same header hierarchy as the
+            Hadiah/RSVP sections: small tracked label, large Playfair Display
+            italic title, garamond intro line. Halos lift everything off the
+            garland hanging over this section's top. */}
         <motion.p
-          custom={0}
-          transition={{ delay: 0 * 0.18, duration: 1, ease: "easeOut" }}
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-15%" }}
+          variants={fadeUp(0)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-15%" }}
           className="font-label"
-          style={{
-            color: "var(--gold-dim)",
-            fontSize: "9px",
-            letterSpacing: "0.3em",
-            textTransform: "uppercase",
-            marginBottom: "clamp(12px, 4vh, 28px)",
-          }}
+          style={{ color: "var(--gold-deep)", fontSize: "10px", fontWeight: 600, letterSpacing: "0.32em", textTransform: "uppercase", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}
+        >
+          Kedua Mempelai
+        </motion.p>
+        <motion.h2
+          variants={fadeUp(0.08)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-15%" }}
+          className="font-display"
+          style={{ color: "var(--gold-deep)", fontSize: "clamp(30px, 9vw, 44px)", fontWeight: 400, fontStyle: "italic", lineHeight: 1.15, marginTop: 4, textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 12px rgba(250,247,242,0.9)" }}
         >
           Mempelai
+        </motion.h2>
+        <motion.p
+          variants={fadeUp(0.16)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-15%" }}
+          className="font-garamond"
+          style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "clamp(13px, 3.4vw, 15px)", marginTop: 8, marginBottom: "clamp(14px, 3.5vh, 24px)", textAlign: "center", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}
+        >
+          Dua insan, satu kisah baru yang dimulai.
         </motion.p>
 
-        {/* Groom */}
-        <motion.div
-          custom={1}
-          transition={{ delay: 1 * 0.18, duration: 1, ease: "easeOut" }}
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-15%" }}
-          className="flex flex-col items-center"
-          style={{ marginBottom: "clamp(8px, 2.5vh, 20px)" }}
-        >
-          <div style={{ ...photoStyle, position: "relative" }}>
+        {/* GROOM — photo left, details beside on the right */}
+        <div className="w-full flex items-center" style={{ gap: "clamp(14px, 4.5vw, 22px)" }}>
+          <div style={{ position: "relative", width: "43%", flexShrink: 0, aspectRatio: "3/4", zIndex: 1 }}>
+            <div style={{ position: "absolute", top: "6.5%", left: "6.5%", right: "6.5%", bottom: "6.5%", overflow: "hidden", boxShadow: "var(--shadow-warm)" }}>
+              <motion.div variants={photoReveal(0.15)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} style={{ position: "absolute", inset: 0 }}>
+                <img src={couple.groom.photo} alt={couple.groom.name} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "sepia(18%) contrast(1.04) brightness(0.97)", display: "block" }} />
+              </motion.div>
+            </div>
             <img
-              src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/InisialNama.webp`}
-              alt="Inisial Nama"
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                opacity: 0.95,
-                pointerEvents: "none"
-              }}
+              src={`${BASE}/PhotoFramePortrait.webp`}
+              alt=""
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 3 }}
             />
-            <span
-              className="font-display"
-              style={{ position: "relative", zIndex: 1, color: "var(--gold)", fontWeight: 400, fontSize: "clamp(20px, 5vw, 28px)" }}
-            >
-              {couple.groom.name[0]}
-            </span>
           </div>
-          <h2
-            className="font-display"
-            style={{
-              color: "var(--gold)",
-              fontWeight: 400,
-              fontStyle: "italic",
-              fontSize: "clamp(17px, 5vw, 22px)",
-              marginBottom: 4,
-            }}
+          <motion.div
+            variants={fadeUp(0.32)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}
+            style={{ flex: 1, minWidth: 0, textAlign: "left", background: TEXT_PLATE, padding: "6px 10px", borderRadius: 12 }}
           >
-            {couple.groom.fullName}
-          </h2>
-          <p
-            className="font-body"
-            style={{
-              color: "var(--text-muted)",
-              fontSize: "clamp(11px, 2.8vw, 13px)",
-              fontStyle: "italic",
-              lineHeight: 1.6,
-            }}
-          >
-            {couple.groom.parents}
-          </p>
-          <p
-            className="font-label"
-            style={{ color: "var(--gold-dim)", fontSize: "clamp(9px, 2.5vw, 11px)", letterSpacing: "0.08em", marginTop: 4 }}
-          >
-            {couple.groom.instagram}
-          </p>
+            <span className="font-label" style={{ color: "var(--gold-dim)", fontSize: "9px", letterSpacing: "0.22em", textTransform: "uppercase", textShadow: HALO }}>Mempelai Pria</span>
+            <h2 className="font-display" style={{ color: "var(--text)", fontWeight: 400, fontStyle: "italic", fontSize: "clamp(19px, 5.6vw, 27px)", lineHeight: 1.08, margin: "5px 0 8px", textShadow: HALO }}>
+              {couple.groom.fullName}
+            </h2>
+            <p className="font-body" style={{ color: "var(--text-muted)", fontSize: "clamp(10.5px, 2.7vw, 12px)", fontStyle: "italic", lineHeight: 1.55, textShadow: HALO }}>
+              {couple.groom.parents}
+            </p>
+            <p className="font-label" style={{ color: "var(--gold)", fontSize: "11px", letterSpacing: "0.06em", marginTop: 6, textShadow: HALO }}>
+              {couple.groom.instagram}
+            </p>
+          </motion.div>
+        </div>
+
+        {/* & separator */}
+        <motion.div
+          variants={fadeUp(0.4)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}
+          className="flex items-center justify-center"
+          style={{ gap: 14, width: "100%", maxWidth: 230, margin: "clamp(5px, 1.6vh, 11px) 0" }}
+        >
+          <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, var(--gold-dim))", opacity: 0.55 }} />
+          <span className="font-garamond" style={{ color: "var(--gold)", fontSize: "clamp(24px, 6.5vw, 32px)", fontStyle: "italic", lineHeight: 1 }}>&amp;</span>
+          <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, var(--gold-dim), transparent)", opacity: 0.55 }} />
         </motion.div>
 
-        {/* & separator with decorative flower border */}
-        <motion.div
-          custom={2}
-          transition={{ delay: 2 * 0.18, duration: 1, ease: "easeOut" }}
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-15%" }}
-          className="flex flex-col items-center w-full"
-          style={{
-            marginTop: "clamp(8px, 2vh, 16px)",
-            marginBottom: "clamp(8px, 2vh, 16px)",
-          }}
-        >
-          <span
-            className="font-garamond"
-            style={{ color: "var(--gold)", fontSize: "clamp(20px, 5vw, 26px)", fontStyle: "italic", lineHeight: 1 }}
+        {/* BRIDE — details left, photo right (mirrored) */}
+        <div className="w-full flex items-center" style={{ gap: "clamp(14px, 4.5vw, 22px)" }}>
+          <motion.div
+            variants={fadeUp(0.52)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}
+            style={{ flex: 1, minWidth: 0, textAlign: "right", background: TEXT_PLATE, padding: "6px 10px", borderRadius: 12 }}
           >
-            &amp;
-          </span>
-        </motion.div>
-
-        {/* Bride */}
-        <motion.div
-          custom={3}
-          transition={{ delay: 3 * 0.18, duration: 1, ease: "easeOut" }}
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-15%" }}
-          className="flex flex-col items-center"
-          style={{ marginBottom: "clamp(12px, 3vh, 24px)" }}
-        >
-          <div style={{ ...photoStyle, position: "relative" }}>
+            <span className="font-label" style={{ color: "var(--gold-dim)", fontSize: "9px", letterSpacing: "0.22em", textTransform: "uppercase", textShadow: HALO }}>Mempelai Wanita</span>
+            <h2 className="font-display" style={{ color: "var(--text)", fontWeight: 400, fontStyle: "italic", fontSize: "clamp(19px, 5.6vw, 27px)", lineHeight: 1.08, margin: "5px 0 8px", textShadow: HALO }}>
+              {couple.bride.fullName}
+            </h2>
+            <p className="font-body" style={{ color: "var(--text-muted)", fontSize: "clamp(10.5px, 2.7vw, 12px)", fontStyle: "italic", lineHeight: 1.55, textShadow: HALO }}>
+              {couple.bride.parents}
+            </p>
+            <p className="font-label" style={{ color: "var(--gold)", fontSize: "11px", letterSpacing: "0.06em", marginTop: 6, textShadow: HALO }}>
+              {couple.bride.instagram}
+            </p>
+          </motion.div>
+          <div style={{ position: "relative", width: "43%", flexShrink: 0, aspectRatio: "3/4", zIndex: 1 }}>
+            <div style={{ position: "absolute", top: "6.5%", left: "6.5%", right: "6.5%", bottom: "6.5%", overflow: "hidden", boxShadow: "var(--shadow-warm)" }}>
+              <motion.div variants={photoReveal(0.62)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} style={{ position: "absolute", inset: 0 }}>
+                <img src={couple.bride.photo} alt={couple.bride.name} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "sepia(18%) contrast(1.04) brightness(0.97)", display: "block" }} />
+              </motion.div>
+            </div>
             <img
-              src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/InisialNama.webp`}
-              alt="Inisial Nama"
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                opacity: 0.95,
-                pointerEvents: "none"
-              }}
+              src={`${BASE}/PhotoFramePortrait.webp`}
+              alt=""
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 3 }}
             />
-            <span
-              className="font-display"
-              style={{ position: "relative", zIndex: 1, color: "var(--gold)", fontWeight: 400, fontSize: "clamp(20px, 5vw, 28px)" }}
-            >
-              {couple.bride.name[0]}
-            </span>
           </div>
-          <h2
-            className="font-display"
-            style={{
-              color: "var(--gold)",
-              fontWeight: 400,
-              fontStyle: "italic",
-              fontSize: "clamp(17px, 5vw, 22px)",
-              marginBottom: 4,
-            }}
-          >
-            {couple.bride.fullName}
-          </h2>
-          <p
-            className="font-body"
-            style={{
-              color: "var(--text-muted)",
-              fontSize: "clamp(11px, 2.8vw, 13px)",
-              fontStyle: "italic",
-              lineHeight: 1.6,
-            }}
-          >
-            {couple.bride.parents}
-          </p>
-          <p
-            className="font-label"
-            style={{ color: "var(--gold-dim)", fontSize: "clamp(9px, 2.5vw, 11px)", letterSpacing: "0.08em", marginTop: 4 }}
-          >
-            {couple.bride.instagram}
-          </p>
-        </motion.div>
+        </div>
 
-        {/* Couple quote */}
+        {/* Quote */}
         <motion.p
-          custom={4}
-          transition={{ delay: 4 * 0.18, duration: 1, ease: "easeOut" }}
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-15%" }}
-          className="font-display"
-          style={{
-            color: "var(--text-muted)",
-            fontWeight: 400,
-            fontStyle: "italic",
-            fontSize: "clamp(12px, 3.2vw, 15px)",
-            lineHeight: 1.8,
-          }}
+          variants={fadeUp(0.72)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-15%" }}
+          className="font-garamond"
+          style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "clamp(13px, 3.4vw, 15px)", lineHeight: 1.85, marginTop: "clamp(14px, 3.5vh, 24px)", textAlign: "center", padding: "10px 14px", background: TEXT_PLATE, textShadow: HALO }}
         >
-          {couple.quote}
+          &ldquo;{couple.quote}&rdquo;
         </motion.p>
       </div>
-
-      <div className="absolute bottom-0 left-0 right-0 copper-divider-full" />
     </section>
   );
 }

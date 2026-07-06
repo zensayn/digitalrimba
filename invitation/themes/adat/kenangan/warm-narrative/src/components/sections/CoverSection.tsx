@@ -8,7 +8,10 @@
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import FallingFlowers from "@/components/shared/FallingFlowers";
+import ParallaxScene from "@/components/shared/ParallaxScene";
 import type { InvitationConfig } from "@/lib/config-types";
+
+const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
 
 // ── Countdown ──────────────────────────────────────────────────────────────────
 function useCountdown(targetDateString: string) {
@@ -46,12 +49,6 @@ export default function CoverSection({
   const weddingDate = new Date(weddingDateString);
   const countdown = useCountdown(weddingDateString);
   const sectionRef = useRef<HTMLElement>(null);
-  const [bgLoaded, setBgLoaded] = useState(false);
-
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setBgLoaded(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
 
   // Format tanggal display
   const dateStr = weddingDate.toLocaleDateString("id-ID", {
@@ -82,45 +79,35 @@ export default function CoverSection({
       id="cover"
       className="snap-section"
       ref={sectionRef}
-      style={{ background: "var(--bg)", overflow: "hidden" }}
+      style={{ background: "transparent", overflow: "hidden" }}
     >
-      {/* Background Ornaments — deferred after first paint to unblock LCP */}
-      {bgLoaded && (
-        <>
-          <img
-            src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/AwanPink.webp`}
-            alt=""
-            aria-hidden="true"
-            fetchPriority="low"
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              opacity: 0.18,
-              pointerEvents: "none",
-              zIndex: 0,
-            }}
-          />
-          <img
-            src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/BintangBintang.webp`}
-            alt=""
-            aria-hidden="true"
-            fetchPriority="low"
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              opacity: 0.12,
-              pointerEvents: "none",
-              zIndex: 0,
-            }}
-          />
-        </>
-      )}
+      {/* Painterly sakura scene — parallax background + framing arch */}
+      <ParallaxScene
+        fadeTop={0}
+        fadeBottom={14}
+        layers={[
+          { src: `${BASE}/CoverBg.webp`, depth: 0.03, priority: true, zIndex: 0 },
+          { src: `${BASE}/CoverArch.webp`, depth: 0.07, priority: true, opacity: 0.97, zIndex: 1 },
+          { src: `${BASE}/SakuraColumnL.webp`, depth: 0.08, opacity: 0.8, zIndex: 1, box: { top: "-2%", left: "-13%", height: "102svh", enterY: 0 } },
+          { src: `${BASE}/SakuraColumnR.webp`, depth: 0.08, opacity: 0.8, zIndex: 1, box: { top: "-2%", right: "-13%", height: "102svh", enterY: 0 } },
+          { src: `${BASE}/SakuraTopL.webp`, depth: 0.11, opacity: 0.9, zIndex: 2, box: { top: "-3%", left: "-5%", width: "40%" } },
+          { src: `${BASE}/SakuraTopR.webp`, depth: 0.12, opacity: 0.9, zIndex: 2, box: { top: "-3%", right: "-5%", width: "40%" } },
+          // Rest ON the bottom edge, not past it — the section clips overflow
+          // (falling petals), and a negative offset would chop them flat.
+          { src: `${BASE}/SakuraCornerL.webp`, depth: 0.13, opacity: 0.9, zIndex: 2, box: { bottom: "0%", left: "-7%", width: "44%" } },
+          { src: `${BASE}/SakuraCornerR.webp`, depth: 0.14, opacity: 0.9, zIndex: 2, box: { bottom: "0%", right: "-7%", width: "44%" } },
+        ]}
+      />
+
+      {/* Legibility scrim — soft cream glow lifts text off the florals */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          zIndex: 1,
+          background:
+            "radial-gradient(ellipse 78% 56% at 50% 47%, rgba(250,247,242,0.62) 0%, rgba(250,247,242,0.30) 45%, rgba(250,247,242,0) 72%)",
+        }}
+      />
 
       {/* Falling Flower Animation */}
       <FallingFlowers count={20} zIndex={1} />
@@ -158,7 +145,9 @@ export default function CoverSection({
           flexDirection: "column",
           alignItems: "center",
           textAlign: "center",
-          padding: "0 32px",
+          // Top padding lowers the centered block (~half its value) so the
+          // names sit below the arch instead of crowding it.
+          padding: "clamp(48px, 10svh, 84px) 32px 0",
           gap: 0,
           width: "100%",
         }}
@@ -170,12 +159,13 @@ export default function CoverSection({
           transition={{ duration: 0.7, delay: 0.2 }}
           style={{
             fontFamily: "'Inter', sans-serif",
-            fontSize: "10px",
-            fontWeight: 500,
-            letterSpacing: "0.3em",
+            fontSize: "12px",
+            fontWeight: 700,
+            letterSpacing: "0.26em",
             textTransform: "uppercase",
             color: "var(--gold)",
             marginBottom: "24px",
+            textShadow: "0 1px 3px rgba(250,247,242,0.98), 0 2px 14px rgba(250,247,242,1), 0 0 7px rgba(250,247,242,0.9)",
           }}
         >
           Undangan Pernikahan
@@ -207,22 +197,6 @@ export default function CoverSection({
             marginBottom: "16px",
           }}
         >
-          <img
-            src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/FrameEmas.webp`}
-            alt="Frame Emas"
-            fetchPriority="high"
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
-              opacity: 0.9,
-              pointerEvents: "none",
-              zIndex: -1,
-            }}
-          />
-
           {/* Nama mempelai pria */}
           <h1
             className="font-display"
@@ -328,6 +302,7 @@ export default function CoverSection({
                     color: "var(--gold)",
                     lineHeight: 1,
                     letterSpacing: "-0.01em",
+                    textShadow: "0 1px 3px rgba(250,247,242,0.98), 0 2px 14px rgba(250,247,242,1), 0 0 7px rgba(250,247,242,0.9)",
                   }}
                 >
                   {String(val).padStart(2, "0")}
@@ -336,10 +311,11 @@ export default function CoverSection({
                   className="font-label"
                   style={{
                     fontSize: "9px",
-                    fontWeight: 500,
+                    fontWeight: 600,
                     letterSpacing: "0.2em",
                     textTransform: "uppercase",
-                    color: "var(--text-dim)",
+                    color: "var(--text-muted)",
+                    textShadow: "0 1px 3px rgba(250,247,242,0.98), 0 2px 14px rgba(250,247,242,1), 0 0 7px rgba(250,247,242,0.9)",
                   }}
                 >
                   {label}

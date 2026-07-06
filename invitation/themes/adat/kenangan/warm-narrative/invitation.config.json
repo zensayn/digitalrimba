@@ -4,14 +4,14 @@
       "name": "Aryan",
       "fullName": "Aryan Budi Santoso",
       "parents": "Putra Bapak Drs. Hendra Santoso & Ibu Wulandari",
-      "photo": "/images/groom.jpg",
+      "photo": "https://picsum.photos/seed/groomwn/400/533",
       "instagram": "@aryan.budi"
     },
     "bride": {
       "name": "Sekar",
       "fullName": "Sekar Ayu Pradipta",
       "parents": "Putri Bapak H. Pradipta Utama & Ibu Siti Aminah",
-      "photo": "/images/bride.jpg",
+      "photo": "https://picsum.photos/seed/bridewn/400/533",
       "instagram": "@sekar.ayu"
     },
     "hashtag": "#AryanSekarForever",
@@ -118,7 +118,7 @@
       "cover":     true,
       "greeting":  true,
       "couple":    true,
-      "lovestory": true,
+      "lovestory": false,
       "akad":      true,
       "resepsi":   true,
       "dresscode": true,

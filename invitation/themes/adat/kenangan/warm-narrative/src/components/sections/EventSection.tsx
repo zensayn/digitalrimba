@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import * as motion from "framer-motion/client";
+import { useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { ExternalLink, X } from "lucide-react";
+import ParallaxScene from "@/components/shared/ParallaxScene";
+import { sceneFrame } from "@/components/shared/sceneFrame";
 import type { InvitationConfig } from "@/lib/config-types";
+
+const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
 
 interface EventSectionProps {
   couple: InvitationConfig["couple"];
@@ -26,11 +30,15 @@ interface EventSectionProps {
 export default function EventSection({ couple, event, index, sectionId }: EventSectionProps) {
   const isAkad = index === 0;
   const [mapInteractive, setMapInteractive] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
   const [dateNum, dateMonth, dateYear] = event.date.split(" ");
 
   const bgAsset = isAkad
     ? `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/CincinEmas.webp`
     : `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/TempatPernikahan.webp`;
+
+  const sceneBg = isAkad ? `${BASE}/AkadBg.webp` : `${BASE}/ResepsiBg.webp`;
+  const sceneArch = isAkad ? `${BASE}/AkadArch.webp` : `${BASE}/ResepsiArch.webp`;
 
   const calendarUrl = (() => {
     const params = new URLSearchParams({
@@ -43,31 +51,64 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
     return `https://calendar.google.com/calendar/render?${params.toString()}`;
   })();
 
+  // Frame-first: let the sceneFrame's core pieces land before content reveals,
+  // so the floral stage builds first and the text follows a beat later.
+  const REVEAL_AFTER_FRAME = 0.6;
+
+  // Direction-aware fade: Akad slides from left, Resepsi from right
   const fade = (delay: number) => ({
-    hidden: { opacity: 0, y: 22 },
-    visible: { opacity: 1, y: 0, transition: { delay, duration: 0.85, ease: "easeOut" as const } },
+    hidden: { opacity: 0, x: isAkad ? -18 : 18 },
+    visible: { opacity: 1, x: 0, transition: { delay: REVEAL_AFTER_FRAME + delay, duration: 0.85, ease: "easeOut" as const } },
   });
 
   return (
     <section
+      ref={sectionRef}
       id={sectionId}
       className="snap-section"
-      style={{ background: isAkad ? "var(--surface)" : "var(--bg)" }}
+      style={{ background: "transparent" }}
     >
+      {/* Painterly sakura scene — dense frame assembled piece-by-piece (sceneFrame).
+          Akad uses kit v1, Resepsi v2 so the two events don't look identical.
+          No top frame: the previous section's garland hangs over this seam;
+          our own bottom band overhangs into the next section the same way. */}
+      <ParallaxScene
+        fadeTop={6}
+        fadeBottom={12}
+        layers={sceneFrame({
+          base: BASE,
+          bg: sceneBg,
+          arch: sceneArch,
+          variant: isAkad ? 0 : 1,
+          density: "full",
+          topFrame: false,
+          seam: "overhang",
+        })}
+      />
+
       <div className="paper-overlay" />
 
-      {/* Large background icon */}
-      <div
-        className="absolute pointer-events-none select-none"
-        style={{ top: "18%", left: "50%", transform: "translateX(-50%)", width: isAkad ? "clamp(300px, 85vw, 440px)" : "clamp(340px, 90vw, 500px)", height: isAkad ? "clamp(300px, 85vw, 440px)" : "clamp(340px, 90vw, 500px)", zIndex: 0, opacity: isAkad ? 0.10 : 0.20 }}
-      >
-        <img src={bgAsset} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-      </div>
+      {/* Resepsi — top-right gradient accent */}
+      {!isAkad && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse 60% 40% at 80% 20%, rgba(212,160,86,0.08) 0%, transparent 60%)", zIndex: 0 }}
+        />
+      )}
 
       {/* Radial glow */}
       <div
         className="absolute pointer-events-none"
         style={{ top: "22%", left: "50%", transform: "translateX(-50%)", width: "clamp(160px, 50vw, 240px)", height: "clamp(160px, 50vw, 240px)", borderRadius: "50%", background: "radial-gradient(circle, rgba(192,120,48,0.07) 0%, transparent 70%)", zIndex: 1 }}
+      />
+
+      {/* Legibility scrim — z 6 sits above the seam garland (z 5) but below the
+          content (z 10), lifting the label/date off the dense florals the same
+          way the Cover does. Fades out before the framed edges so the flowers
+          stay rich at the borders. */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ zIndex: 6, background: "radial-gradient(ellipse 86% 60% at 50% 40%, rgba(250,247,242,0.66) 0%, rgba(250,247,242,0.32) 48%, rgba(250,247,242,0) 74%)" }}
       />
 
       {/* Roman numeral watermark */}
@@ -79,22 +120,51 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
       </div>
 
       <div
-        className="relative z-10 flex flex-col items-center w-full max-w-xs mx-auto px-8"
-        style={{ gap: "clamp(12px, 3vh, 22px)", paddingTop: "clamp(28px, 6vh, 48px)", paddingBottom: "calc(clamp(20px, 4vh, 36px) + 72px)" }}
+        className="relative z-10 flex flex-col items-center w-full max-w-[400px] mx-auto px-8"
+        style={{ gap: "clamp(7px, 1.8vh, 13px)", paddingTop: "clamp(48px, 10svh, 80px)", paddingBottom: "calc(clamp(10px, 2vh, 18px) + 52px)" }}
       >
         {/* Label */}
         <motion.div variants={fade(0)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} className="flex flex-col items-center gap-2">
-          <p className="font-label" style={{ fontSize: "9px", letterSpacing: "0.35em", textTransform: "uppercase", color: "var(--gold-dim)" }}>
+          {/* Deep copper, not runtime --gold (light #C07830 from the config
+              theme vars) — the label sits inside the seam-garland zone and the
+              light gold disappears into the pink florals. */}
+          <p className="font-label" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.35em", textTransform: "uppercase", color: "var(--gold-deep)", textShadow: "0 1px 3px rgba(250,247,242,0.98), 0 2px 14px rgba(250,247,242,1), 0 0 7px rgba(250,247,242,0.9), 0 0 18px rgba(250,247,242,0.85)" }}>
             {isAkad ? "Akad Nikah" : "Resepsi"}
           </p>
-          <div className="copper-divider" style={{ width: 40 }} />
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.7, delay: REVEAL_AFTER_FRAME + 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="copper-divider"
+            style={{ width: 40, transformOrigin: isAkad ? "left" : "right" }}
+          />
         </motion.div>
 
-        {/* Date hero */}
-        <motion.div variants={fade(0.1)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} className="flex flex-col items-center">
-          <p className="font-display" style={{ color: "var(--text-muted)", fontSize: "clamp(13px, 3.5vw, 16px)", fontStyle: "italic", letterSpacing: "0.12em", marginBottom: 2 }}>{event.day}</p>
-          <p className="font-display text-copper-gradient leading-none" style={{ fontSize: "clamp(72px, 22vw, 110px)", fontWeight: 400, lineHeight: 0.88 }}>{dateNum}</p>
-          <p className="font-display" style={{ color: "var(--gold-dim)", fontSize: "clamp(11px, 3vw, 14px)", letterSpacing: "0.28em", textTransform: "uppercase", marginTop: 6 }}>{dateMonth} · {dateYear}</p>
+        {/* Date hero with animated SVG ring */}
+        <motion.div
+          variants={fade(0.1)}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
+          className="flex flex-col items-center"
+        >
+          {/* Day — above the date number */}
+          <p className="font-display" style={{ color: "var(--text-muted)", fontSize: "clamp(13px, 3.5vw, 16px)", fontStyle: "italic", letterSpacing: "0.12em", marginBottom: "clamp(2px, 0.5vh, 4px)", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}>{event.day}</p>
+
+          {/* Date number */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.0, delay: REVEAL_AFTER_FRAME + 0.2, ease: [0.22, 1, 0.36, 1] }}
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "clamp(1px, 0.4vh, 4px) 0" }}
+          >
+            <span className="font-display text-copper-gradient" style={{ fontSize: "clamp(54px, 16vw, 84px)", fontWeight: 400, lineHeight: 0.9 }}>{dateNum}</span>
+          </motion.div>
+
+          {/* Month · Year — below the date */}
+          <p className="font-display" style={{ color: "var(--gold-dim)", fontSize: "clamp(11px, 3vw, 14px)", letterSpacing: "0.26em", textTransform: "uppercase", marginTop: "clamp(2px, 0.5vh, 4px)", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}>{dateMonth} · {dateYear}</p>
         </motion.div>
 
         {/* Ornamental divider */}
@@ -104,17 +174,21 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
           <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, var(--gold-dim), transparent)", opacity: 0.4 }} />
         </motion.div>
 
-        {/* Venue card */}
+        {/* Venue card with corner ornaments */}
         <motion.div
           variants={fade(0.3)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}
           className="flex flex-col items-center text-center w-full"
-          style={{ gap: 10, padding: "clamp(12px, 3vh, 18px) clamp(14px, 4vw, 20px)", background: isAkad ? "rgba(192,120,48,0.03)" : "rgba(192,120,48,0.04)", border: "1px solid var(--border)" }}
+          style={{ position: "relative", gap: 7, padding: "clamp(9px, 2vh, 13px) clamp(14px, 4vw, 20px)", background: "rgba(250,247,242,0.62)", backdropFilter: "blur(2px)", border: "1px solid var(--border)" }}
         >
-          <p className="font-label" style={{ fontSize: "11px", letterSpacing: "0.14em", color: "var(--text-muted)", borderBottom: "1px solid var(--border)", paddingBottom: 8, width: "100%" }}>{event.time}</p>
+          <div className="corner-ornament tl" />
+          <div className="corner-ornament tr" />
+          <div className="corner-ornament bl" />
+          <div className="corner-ornament br" />
+          <p className="font-label" style={{ fontSize: "11px", letterSpacing: "0.14em", color: "var(--text-muted)", borderBottom: "1px solid var(--border)", paddingBottom: 6, width: "100%" }}>{event.time}</p>
           <p className="font-display" style={{ color: "var(--text)", fontSize: "clamp(15px, 4.5vw, 20px)", fontWeight: 400, fontStyle: "italic", letterSpacing: "0.04em", lineHeight: 1.2 }}>{event.venue}</p>
           <div className="flex items-start justify-center gap-2" style={{ marginTop: 2 }}>
             <img src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/LocationPin.webp`} alt="" style={{ width: 14, height: 14, objectFit: "contain", opacity: 0.75, flexShrink: 0, marginTop: 1 }} />
-            <p className="font-label" style={{ color: "var(--text-dim)", fontSize: "11px", lineHeight: 1.5 }}>{event.address}</p>
+            <p className="font-label" style={{ color: "var(--text-muted)", fontSize: "11px", lineHeight: 1.5 }}>{event.address}</p>
           </div>
         </motion.div>
 
@@ -134,7 +208,7 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
           <iframe
             src={event.embedUrl}
             width="100%"
-            height="260"
+            height="200"
             style={{
               border: 0,
               display: "block",
@@ -146,7 +220,6 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
             title={`Lokasi ${event.title}`}
           />
 
-          {/* Overlay: tap to activate */}
           {!mapInteractive && (
             <div
               onClick={() => setMapInteractive(true)}
@@ -162,7 +235,6 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
             </div>
           )}
 
-          {/* Done button when interactive */}
           {mapInteractive && (
             <button
               onClick={() => setMapInteractive(false)}
@@ -177,11 +249,11 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
 
         {/* Action links */}
         <motion.div variants={fade(0.5)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} className="flex items-center justify-center">
-          <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="event-action-link flex items-center gap-2 transition-colors duration-300 font-label" style={{ color: "var(--gold-dim)", fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase", padding: "6px 16px", borderRight: "1px solid var(--border)" }}>
+          <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="event-action-link flex items-center gap-2 transition-colors duration-300 font-label" style={{ color: "var(--gold-dim)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.2em", textTransform: "uppercase", padding: "6px 16px", borderRight: "1px solid var(--border)", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}>
             <ExternalLink size={10} />
             Maps
           </a>
-          <a href={calendarUrl} target="_blank" rel="noopener noreferrer" className="event-action-link flex items-center gap-2 transition-colors duration-300 font-label" style={{ color: "var(--gold-dim)", fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase", padding: "6px 16px" }}>
+          <a href={calendarUrl} target="_blank" rel="noopener noreferrer" className="event-action-link flex items-center gap-2 transition-colors duration-300 font-label" style={{ color: "var(--gold-dim)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.2em", textTransform: "uppercase", padding: "6px 16px", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}>
             <img src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Calendar.webp`} alt="" style={{ width: 12, height: 12, objectFit: "contain", opacity: 0.8 }} />
             Kalender
           </a>

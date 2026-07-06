@@ -8,25 +8,22 @@
   --bg:          #FAF7F2;
   --surface:     #F2EDE4;
   --surface-2:   #E8E0D4;
-  --gold:        #C07830;
-  --gold-light:  #D4A056;
-  --gold-dim:    #A0917E;
-  --text:        #2A2218;
-  --text-muted:  #6B5E4E;
-  --text-dim:    #A0917E;
-  --border:      rgba(192, 120, 48, 0.2);
+  --gold:        #99511A;
+  --gold-light:  #C0823A;
+  --gold-dim:    #836237;
+  --text:        #261E14;
+  --text-muted:  #574A39;
+  --text-dim:    #836237;
+  --border:      rgba(153, 81, 26, 0.28);
 
   /* Tambahan khusus warm-narrative */
+  /* Copper pekat untuk teks kecil di atas floral ramai. Sengaja BUKAN --gold:
+     --gold ditimpa theme vars runtime (buildCssVars) menjadi copper terang
+     #C07830 yang tenggelam di bunga pink. Nama baru = tidak ikut tertimpa. */
+  --gold-deep: #8A4A16;
   --paper-texture: rgba(192, 120, 48, 0.04);
   --shadow-warm:   0 4px 24px rgba(42, 34, 24, 0.08);
   --shadow-card:   0 2px 16px rgba(42, 34, 24, 0.06);
-}
-
-/* ─── Base ───────────────────────────────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 html {
@@ -43,7 +40,8 @@ body {
   font-family: 'Source Serif 4', Georgia, serif;
   font-weight: 300;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow: hidden;
+  height: 100%;
 }
 
 /* ─── Typography helpers ─────────────────────────────────────────────────────── */
@@ -55,11 +53,16 @@ body {
 /* ─── Scroll Container ──────────────────────────────────────────────────────── */
 .snap-container {
   width: 100%;
+  height: 100svh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: none;
+  /* Satu gradient lembut & konsisten — sama di setiap layar saat scroll */
+  background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%);
 }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+::-webkit-scrollbar { display: none; }
+.snap-container { scrollbar-width: none; }
 
 .snap-section {
   min-height: 100svh;
@@ -75,18 +78,15 @@ body {
 }
 
 /* ─── Paper texture overlay ──────────────────────────────────────────────────── */
-/* Tekstur halus di atas background untuk kesan "kertas" */
+/* Tekstur kertas asli (cotton-rag) untuk kesan tactile, di-multiply di atas bg */
 .paper-overlay {
   position: absolute;
   inset: 0;
-  background-image:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      var(--paper-texture) 2px,
-      var(--paper-texture) 4px
-    );
+  background-image: url('https://assets-themes.rimba.io/adat/kenangan/warm-narrative/TeksturKertas.webp');
+  background-size: 360px;
+  background-repeat: repeat;
+  mix-blend-mode: multiply;
+  opacity: 0.55;
   pointer-events: none;
   z-index: 0;
 }
@@ -179,9 +179,58 @@ body {
   50%       { transform: translateY(-6px); }
 }
 
+/* Gentle ambient sway for pressed botanicals (sprigs, arch) */
+@keyframes sway {
+  0%, 100% { transform: rotate(-2.2deg); }
+  50%      { transform: rotate(2.2deg); }
+}
+
+@keyframes sway-soft {
+  0%, 100% { transform: rotate(-1deg); }
+  50%      { transform: rotate(1deg); }
+}
+
 @keyframes vinyl-spin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
+}
+
+/* Ambient wind — ornaments settle into a gentle wind-blown loop after their
+   entrance instead of freezing. Rotate sways from the piece's anchor edge
+   (transform-origin set per-piece) while drifting a few px, like a pressed
+   branch caught in a soft breeze. 0/50/100% are neutral so the hand-off from
+   the framer entrance (which ends neutral) is seamless. All parameters are fed
+   per-piece via CSS vars from ParallaxScene. */
+@keyframes wind-sway {
+  0%, 50%, 100% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+  25% {
+    transform: rotate(var(--wind-amp, 1deg))
+      translate3d(var(--wind-drift, 3px), calc(var(--wind-drift, 3px) * -0.4), 0);
+  }
+  75% {
+    transform: rotate(calc(var(--wind-amp, 1deg) * -1))
+      translate3d(calc(var(--wind-drift, 3px) * -1), calc(var(--wind-drift, 3px) * 0.4), 0);
+  }
+}
+
+.ambient-wind {
+  transform-origin: var(--wind-origin, center);
+  animation: wind-sway var(--wind-dur, 8s) ease-in-out var(--wind-delay, 0s) infinite;
+}
+
+/* Vertical-only bob for full-width drapes/banners, where a rotating sway would
+   swing the far edge and read as a wobble. Neutral at 0/50/100% for a seamless
+   hand-off from the entrance. */
+@keyframes wind-float {
+  0%, 50%, 100% { transform: translate3d(0, 0, 0); }
+  25%  { transform: translate3d(0, calc(var(--wind-drift, 4px) * -1), 0); }
+  75%  { transform: translate3d(0, var(--wind-drift, 4px), 0); }
+}
+
+.ambient-float {
+  animation: wind-float var(--wind-dur, 8s) ease-in-out var(--wind-delay, 0s) infinite;
 }
 
 /* petalFall keyframes generated per-petal inline by FallingFlowers.tsx */
@@ -212,7 +261,9 @@ textarea.input-warm { resize: none; line-height: 1.7; }
 .btn-warm {
   position: relative;
   padding: 12px 40px;
-  background: transparent;
+  /* Plate, not transparent: the button sits in the seam-garland zone and the
+     florals otherwise bleed through the label. */
+  background: rgba(250, 247, 242, 0.78);
   border: 1px solid var(--gold);
   color: var(--gold);
   font-family: 'Inter', sans-serif;
@@ -246,6 +297,37 @@ textarea.input-warm { resize: none; line-height: 1.7; }
   color: var(--gold) !important;
 }
 
+/* ─── Reduced motion ─────────────────────────────────────────────────────────── */
+/* Hormati preferensi pengguna: matikan animasi ambient (petal jatuh, float, sway). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── Gate overlay (EnvelopeGate) — ikuti lebar snap-container ──────────────── */
+/* Mobile: full-screen seperti biasa */
+.gate-overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 300;
+  background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%);
+  touch-action: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(18px, 4svh, 34px);
+  padding: calc(env(safe-area-inset-top) + 24px) 32px calc(env(safe-area-inset-bottom) + 24px);
+  overflow: hidden;
+}
+
 /* ─── Desktop: frame HP di tengah ───────────────────────────────────────────── */
 @media (min-width: 768px) {
   body {
@@ -263,6 +345,19 @@ textarea.input-warm { resize: none; line-height: 1.7; }
     box-shadow:
       -24px 0 48px rgba(42, 34, 24, 0.08),
        24px 0 48px rgba(42, 34, 24, 0.08);
-    background-color: var(--bg);
+  }
+
+  /* Desktop: constrain overlay supaya persis di atas snap-container */
+  .gate-overlay {
+    left: calc(50% - 200px);
+    right: auto;
+    width: 400px;
+    max-width: 400px;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    box-shadow:
+      -24px 0 48px rgba(42, 34, 24, 0.08),
+       24px 0 48px rgba(42, 34, 24, 0.08);
   }
 }
+

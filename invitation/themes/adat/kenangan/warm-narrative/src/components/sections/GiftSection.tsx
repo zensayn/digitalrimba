@@ -3,7 +3,11 @@
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Copy, Check } from "lucide-react";
+import ParallaxScene from "@/components/shared/ParallaxScene";
+import { sceneFrame } from "@/components/shared/sceneFrame";
 import type { InvitationConfig } from "@/lib/config-types";
+
+const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
 
 export default function GiftSection({ bankAccounts }: { bankAccounts: InvitationConfig["bankAccounts"] }) {
   const ref = useRef(null);
@@ -38,7 +42,12 @@ export default function GiftSection({ bankAccounts }: { bankAccounts: Invitation
   };
 
   return (
-    <section id="gift" className="snap-section" style={{ background: "var(--surface)" }}>
+    <section id="gift" className="snap-section" style={{ background: "transparent" }}>
+      {/* RSVP's overhang corners cover our top (topFrame off — the old drape
+          doubled up with it); our light band overhangs into Closing. */}
+      <ParallaxScene
+        layers={sceneFrame({ base: BASE, bg: `${BASE}/GiftBg.webp`, variant: 0, density: "light", topFrame: false, seam: "overhang" })}
+      />
       <div className="paper-overlay" />
 
       {/* Watermark */}
@@ -61,7 +70,7 @@ export default function GiftSection({ bankAccounts }: { bankAccounts: Invitation
 
       <div
         ref={ref}
-        className="relative z-10 flex flex-col items-center text-center w-full max-w-xs mx-auto px-6"
+        className="relative z-10 flex flex-col items-center text-center w-full max-w-[400px] mx-auto px-8"
       >
         <motion.p
           custom={0}
@@ -69,7 +78,7 @@ export default function GiftSection({ bankAccounts }: { bankAccounts: Invitation
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           className="font-label"
-          style={{ fontSize: "9px", letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--gold-dim)", marginBottom: 8 }}
+          style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--gold-deep)", marginBottom: 8, textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}
         >
           Amplop Digital
         </motion.p>
@@ -92,11 +101,12 @@ export default function GiftSection({ bankAccounts }: { bankAccounts: Invitation
           animate={isInView ? "visible" : "hidden"}
           className="font-body"
           style={{
-            color: "var(--text-dim)",
-            fontSize: "clamp(11px, 2.8vw, 13px)",
+            color: "var(--text-muted)",
+            fontSize: "clamp(12px, 3.1vw, 14px)",
             fontStyle: "italic",
             lineHeight: 1.9,
             marginBottom: "clamp(20px, 5vh, 36px)",
+            textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)",
           }}
         >
           Doa dan kehadiran Anda adalah hadiah terbesar bagi kami.

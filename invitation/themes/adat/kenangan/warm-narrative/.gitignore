@@ -30,3 +30,7 @@ Thumbs.db
 
 # OpenNext / Cloudflare Workers
 .open-next/
+
+# Theme image assets — served from R2/CDN (assets-themes.rimba.io), not bundled.
+# Source PNG/WebP are kept locally for re-upload but never committed.
+public/images/
