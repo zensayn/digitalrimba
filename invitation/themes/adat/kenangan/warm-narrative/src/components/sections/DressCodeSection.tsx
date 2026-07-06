@@ -1,43 +1,55 @@
 import * as motion from "framer-motion/client";
+import ParallaxScene from "@/components/shared/ParallaxScene";
+import { sceneFrame } from "@/components/shared/sceneFrame";
 import type { InvitationConfig } from "@/lib/config-types";
+
+const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
 
 export default function DressCodeSection({ dressCode }: { dressCode: InvitationConfig["dressCode"] }) {
 
-  const fadeUp = {
-    hidden: { opacity: 0, y: 24 },
+  const fadeUp = (delay: number) => ({
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+      transition: { delay, duration: 0.85, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
     },
-  };
+  });
 
   return (
-    <section id="dresscode" className="snap-section" style={{ background: "var(--surface)" }}>
+    <section id="dresscode" className="snap-section" style={{ background: "transparent" }}>
+      {/* Resepsi's garland hangs over our top (topFrame off — the old drape
+          doubled up with it); our bottom band overhangs into Gallery. */}
+      <ParallaxScene
+        layers={sceneFrame({ base: BASE, bg: `${BASE}/DressCodeBg.webp`, variant: 0, density: "full", topFrame: false, seam: "overhang" })}
+      />
       <div className="paper-overlay" />
 
+      {/* Center vignette */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, rgba(42,34,24,0.04) 100%)", zIndex: 0 }}
+      />
 
       <div
-        className="relative z-10 flex flex-col items-center text-center px-8 w-full max-w-sm mx-auto"
-        style={{ gap: "clamp(10px, 2.5vh, 20px)" }}
+        className="relative z-10 flex flex-col items-center text-center px-8 w-full max-w-[400px] mx-auto"
+        style={{ gap: "clamp(10px, 2.5vh, 20px)", paddingTop: "clamp(48px, 10svh, 80px)" }}
       >
+        {/* Label */}
         <motion.p
-          custom={0}
-          transition={{ delay: 0 * 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          variants={fadeUp}
+          variants={fadeUp(0)}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-15%" }}
           className="font-label"
-          style={{ fontSize: "9px", letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--gold-dim)" }}
+          style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--gold-deep)", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}
         >
           Dress Code
         </motion.p>
 
+        {/* Theme title */}
         <motion.h2
-          custom={1}
-          transition={{ delay: 1 * 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          variants={fadeUp}
+          variants={fadeUp(0.1)}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-15%" }}
@@ -53,20 +65,18 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
           {dressCode.theme}
         </motion.h2>
 
+        {/* Divider draws from center */}
         <motion.div
-          custom={2}
-          transition={{ delay: 2 * 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
+          initial={{ scaleX: 0, opacity: 0 }}
+          whileInView={{ scaleX: 1, opacity: 1 }}
           viewport={{ once: true, margin: "-15%" }}
+          transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           className="copper-divider mx-auto"
+          style={{ transformOrigin: "center" }}
         />
 
         <motion.p
-          custom={3}
-          transition={{ delay: 3 * 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          variants={fadeUp}
+          variants={fadeUp(0.25)}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-15%" }}
@@ -82,45 +92,63 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
           {dressCode.description}
         </motion.p>
 
-        {/* Color swatches */}
-        <motion.div
-          custom={4}
-          transition={{ delay: 4 * 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-15%" }}
-          className="flex flex-wrap justify-center"
-          style={{ gap: "clamp(12px, 4vw, 20px)", marginTop: "clamp(4px, 1.5vh, 12px)" }}
+        {/* Fabric swatches — 3-column grid, x-stagger alternating */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 72px)",
+            gap: "clamp(10px, 2.5vw, 14px)",
+            marginTop: "clamp(4px, 1.5vh, 12px)",
+          }}
         >
-          {dressCode.colors.map((color) => (
-            <div key={color.hex} className="flex flex-col items-center" style={{ gap: 6 }}>
+          {dressCode.colors.map((color, i) => (
+            <motion.div
+              key={color.hex}
+              initial={{ opacity: 0, x: i % 2 === 0 ? -22 : 22 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.65, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+              style={{ display: "flex", flexDirection: "column", width: 72 }}
+            >
+              {/* Color block */}
               <div
                 style={{
-                  width: "clamp(34px, 9vw, 46px)",
-                  height: "clamp(34px, 9vw, 46px)",
-                  borderRadius: "50%",
+                  width: 72,
+                  height: 80,
                   background: color.hex,
-                  border: "1px solid rgba(192,120,48,0.2)",
-                  boxShadow: `0 4px 16px ${color.hex}40`,
-                  flexShrink: 0,
+                  boxShadow: `inset 0 0 0 1px rgba(255,255,255,0.10), 0 4px 16px rgba(42,34,24,0.12)`,
                 }}
               />
-              <span
-                className="font-label"
-                style={{ fontSize: "clamp(8px, 2vw, 9px)", color: "var(--text-dim)", letterSpacing: "0.08em", textTransform: "uppercase" }}
+              {/* Name + hex tag */}
+              <div
+                style={{
+                  padding: "5px 6px 6px",
+                  border: "1px solid rgba(192,120,48,0.18)",
+                  borderTop: "none",
+                  background: "rgba(250,247,242,0.6)",
+                  backdropFilter: "blur(2px)",
+                }}
               >
-                {color.name}
-              </span>
-            </div>
+                <p
+                  className="font-label"
+                  style={{ fontSize: "8px", color: "var(--text)", letterSpacing: "0.05em", textTransform: "uppercase", lineHeight: 1.3, marginBottom: 2 }}
+                >
+                  {color.name}
+                </p>
+                <p
+                  className="font-label"
+                  style={{ fontSize: "7px", color: "var(--gold-dim)", letterSpacing: "0.04em", opacity: 0.8 }}
+                >
+                  {color.hex}
+                </p>
+              </div>
+            </motion.div>
           ))}
-        </motion.div>
+        </div>
 
-        {/* Avoid */}
+        {/* Avoid section */}
         <motion.div
-          custom={5}
-          transition={{ delay: 5 * 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          variants={fadeUp}
+          variants={fadeUp(0.55)}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-15%" }}
@@ -129,7 +157,7 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
         >
           <p
             className="font-label"
-            style={{ fontSize: "9px", color: "var(--text-dim)", letterSpacing: "0.25em", textTransform: "uppercase" }}
+            style={{ fontSize: "10px", fontWeight: 600, color: "var(--gold-deep)", letterSpacing: "0.25em", textTransform: "uppercase", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}
           >
             Hindari
           </p>
@@ -139,13 +167,16 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
                 key={item}
                 className="font-label"
                 style={{
-                  fontSize: "clamp(9px, 2.5vw, 11px)",
-                  color: "var(--text-dim)",
+                  fontSize: "clamp(10px, 2.8vw, 12px)",
+                  color: "var(--text-muted)",
                   padding: "4px 12px",
                   border: "1px solid var(--border)",
+                  // Solid-ish plate: the chips sit in the seam-garland zone, and
+                  // a transparent background lets the flowers bleed through the text.
+                  background: "rgba(250,247,242,0.85)",
                   letterSpacing: "0.05em",
                   textDecoration: "line-through",
-                  textDecorationColor: "rgba(192,120,48,0.35)",
+                  textDecorationColor: "rgba(192,120,48,0.45)",
                 }}
               >
                 {item}
@@ -154,8 +185,6 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
           </div>
         </motion.div>
       </div>
-
-      <div className="absolute bottom-0 left-0 right-0 copper-divider-full" />
     </section>
   );
 }

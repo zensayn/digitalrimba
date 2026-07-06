@@ -3,6 +3,10 @@
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Check } from "lucide-react";
+import ParallaxScene from "@/components/shared/ParallaxScene";
+import { sceneFrame } from "@/components/shared/sceneFrame";
+
+const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
 
 export default function RSVPSection() {
   const ref = useRef(null);
@@ -34,16 +38,20 @@ export default function RSVPSection() {
   };
 
   return (
-    <section id="rsvp" className="snap-section" style={{ background: "var(--bg)" }}>
+    <section id="rsvp" className="snap-section" style={{ background: "transparent" }}>
+      {/* Gallery above stays contained (small sprigs), so we keep our top
+          frame; our corner pieces overhang into Gift. */}
+      <ParallaxScene
+        layers={sceneFrame({ base: BASE, bg: `${BASE}/RSVPBg.webp`, variant: 1, density: "light", base_clusters: false, seam: "overhang" })}
+      />
       <div className="paper-overlay" />
-      <div className="absolute top-0 left-0 right-0 copper-divider-full" />
 
       <div
         ref={ref}
         data-prevent-snap="true"
         className="relative z-10 w-full mx-auto px-8 overflow-y-auto"
         style={{
-          maxWidth: "300px",
+          maxWidth: "400px",
           maxHeight: "100svh",
           paddingTop: "clamp(32px, 7vh, 72px)",
           paddingBottom: "clamp(32px, 7vh, 72px)",
@@ -56,7 +64,7 @@ export default function RSVPSection() {
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
             className="font-label"
-            style={{ fontSize: "9px", letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--gold-dim)", marginBottom: 4 }}
+            style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--gold-deep)", marginBottom: 4, textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}
           >
             Konfirmasi Kehadiran
           </motion.p>
@@ -124,7 +132,7 @@ export default function RSVPSection() {
               <div className="flex flex-col gap-1">
                 <label
                   className="font-label"
-                  style={{ color: "var(--text-dim)", fontSize: "9px", letterSpacing: "0.15em", textTransform: "uppercase" }}
+                  style={{ color: "var(--text-muted)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}
                 >
                   Nama Tamu
                 </label>
@@ -142,7 +150,7 @@ export default function RSVPSection() {
               <div className="flex flex-col gap-2">
                 <label
                   className="font-label"
-                  style={{ color: "var(--text-dim)", fontSize: "9px", letterSpacing: "0.15em", textTransform: "uppercase" }}
+                  style={{ color: "var(--text-muted)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}
                 >
                   Konfirmasi
                 </label>
@@ -155,8 +163,8 @@ export default function RSVPSection() {
                       className="flex-1 py-2.5 text-center transition-all duration-300 font-label"
                       style={{
                         border: `1px solid ${attendance === opt ? "var(--gold)" : "var(--border)"}`,
-                        color: attendance === opt ? "var(--gold)" : "var(--text-dim)",
-                        background: attendance === opt ? "rgba(192,120,48,0.06)" : "transparent",
+                        color: attendance === opt ? "var(--gold)" : "var(--text-muted)",
+                        background: attendance === opt ? "rgba(192,120,48,0.08)" : "rgba(250,247,242,0.65)",
                         fontSize: "10px",
                         letterSpacing: "0.1em",
                         textTransform: "uppercase",
@@ -178,7 +186,7 @@ export default function RSVPSection() {
                 >
                   <label
                     className="font-label"
-                    style={{ color: "var(--text-dim)", fontSize: "9px", letterSpacing: "0.15em", textTransform: "uppercase" }}
+                    style={{ color: "var(--text-muted)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}
                   >
                     Jumlah Tamu
                   </label>
@@ -211,7 +219,7 @@ export default function RSVPSection() {
               <div className="flex flex-col gap-1">
                 <label
                   className="font-label"
-                  style={{ color: "var(--text-dim)", fontSize: "9px", letterSpacing: "0.15em", textTransform: "uppercase" }}
+                  style={{ color: "var(--text-muted)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}
                 >
                   Ucapan (opsional)
                 </label>

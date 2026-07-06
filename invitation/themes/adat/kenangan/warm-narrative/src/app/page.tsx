@@ -1,4 +1,6 @@
+import EnvelopeGate from "@/components/shared/EnvelopeGate";
 import MusicPlayer from "@/components/shared/MusicPlayer";
+import SnapContainer from "@/components/shared/SnapContainer";
 import CoverSection from "@/components/sections/CoverSection";
 import GreetingSection from "@/components/sections/GreetingSection";
 import CoupleSection from "@/components/sections/CoupleSection";
@@ -37,7 +39,7 @@ function renderSection(id: string) {
     case "gift":
       return <GiftSection key="gift" bankAccounts={config.bankAccounts} />;
     case "closing":
-      return <ClosingSection key="closing" couple={config.couple} />;
+      return <ClosingSection key="closing" couple={config.couple} gallery={config.gallery} />;
     default:
       return null;
   }
@@ -48,10 +50,11 @@ export default function Page() {
 
   return (
     <>
+      <EnvelopeGate groomName={config.couple.groom.name} brideName={config.couple.bride.name} />
       <MusicPlayer />
-      <div className="snap-container">
+      <SnapContainer>
         {sectionIds.map((id) => renderSection(id))}
-      </div>
+      </SnapContainer>
     </>
   );
 }
