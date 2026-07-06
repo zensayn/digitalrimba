@@ -308,26 +308,6 @@ textarea.input-warm { resize: none; line-height: 1.7; }
   }
 }
 
-/* ─── Gate overlay (EnvelopeGate) — ikuti lebar snap-container ──────────────── */
-/* Mobile: full-screen seperti biasa */
-.gate-overlay {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 300;
-  background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%);
-  touch-action: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(18px, 4svh, 34px);
-  padding: calc(env(safe-area-inset-top) + 24px) 32px calc(env(safe-area-inset-bottom) + 24px);
-  overflow: hidden;
-}
-
 /* ─── Desktop: frame HP di tengah ───────────────────────────────────────────── */
 @media (min-width: 768px) {
   body {
@@ -347,17 +327,5 @@ textarea.input-warm { resize: none; line-height: 1.7; }
        24px 0 48px rgba(42, 34, 24, 0.08);
   }
 
-  /* Desktop: constrain overlay supaya persis di atas snap-container */
-  .gate-overlay {
-    left: calc(50% - 200px);
-    right: auto;
-    width: 400px;
-    max-width: 400px;
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    box-shadow:
-      -24px 0 48px rgba(42, 34, 24, 0.08),
-       24px 0 48px rgba(42, 34, 24, 0.08);
-  }
 }
 
