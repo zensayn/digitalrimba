@@ -44,6 +44,12 @@ export interface SceneFrameOptions {
    * Default true.
    */
   topFrame?: boolean;
+  /**
+   * Opacity multiplier (0–1) applied to all bottom ornaments:
+   * bottom corners, base center, base clusters, and scatter pieces.
+   * 1 = full opacity (default). Lower values make the bottom band more subtle.
+   */
+  bottomOpacity?: number;
 }
 
 /**
@@ -72,7 +78,10 @@ export function sceneFrame({
   drape = false,
   seam = "contained",
   topFrame = true,
+  bottomOpacity = 0.71,
 }: SceneFrameOptions): ParallaxLayer[] {
+  /** Clamp helper so callers can't accidentally pass values outside [0, 1]. */
+  const bo = Math.min(1, Math.max(0, bottomOpacity));
   const src = (name: string) => `${base}/${name}.webp`;
   const light = density === "light";
   const cornerL = variant === 1 ? "SakuraCornerL2" : "SakuraCornerL";
@@ -108,19 +117,19 @@ export function sceneFrame({
       : []),
 
     // 4 — bottom corners (grow upward; hang over the seam when overhanging)
-    { src: src(cornerL), depth: 0.11, opacity: 0.85, zIndex: 2, enterDelay: 0.65, overhang: over, box: { bottom: over ? "-5svh" : "-2%", left: "-7%", width: "42%" } },
-    { src: src(cornerR), depth: 0.12, opacity: 0.85, zIndex: 2, enterDelay: 0.78, overhang: over, box: { bottom: over ? "-5svh" : "-2%", right: "-7%", width: "42%" } },
+    { src: src(cornerL), depth: 0.11, opacity: 0.85 * bo, zIndex: 2, enterDelay: 0.65, overhang: over, box: { bottom: over ? "-5svh" : "-2%", left: "-7%", width: "42%" } },
+    { src: src(cornerR), depth: 0.12, opacity: 0.85 * bo, zIndex: 2, enterDelay: 0.78, overhang: over, box: { bottom: over ? "-5svh" : "-2%", right: "-7%", width: "42%" } },
   ];
 
   // 5 — grounding base band (static + vertical bob; large images, no parallax)
   if (base_clusters) {
     layers.push(
-      { src: src("SakuraBaseCenter"), depth: 0, opacity: 0.85, zIndex: 2, enterDelay: 0.95, wind: { motion: "float" }, overhang: over, box: { bottom: over ? "-7svh" : "-2%", left: "18%", width: "64%", enterY: 40 } },
+      { src: src("SakuraBaseCenter"), depth: 0, opacity: 0.85 * bo, zIndex: 2, enterDelay: 0.95, wind: { motion: "float" }, overhang: over, box: { bottom: over ? "-7svh" : "-2%", left: "18%", width: "64%", enterY: 40 } },
     );
     if (!light) {
       layers.push(
-        { src: src("SakuraBaseClusterL"), depth: 0, opacity: 0.9, zIndex: 3, enterDelay: 1.05, wind: { motion: "float" }, overhang: over, box: { bottom: over ? "-8svh" : "-3%", left: "-8%", width: "60%", enterY: 40 } },
-        { src: src("SakuraBaseClusterR"), depth: 0, opacity: 0.9, zIndex: 3, enterDelay: 1.15, wind: { motion: "float" }, overhang: over, box: { bottom: over ? "-8svh" : "-3%", right: "-8%", width: "60%", enterY: 40 } },
+        { src: src("SakuraBaseClusterL"), depth: 0, opacity: 0.9 * bo, zIndex: 3, enterDelay: 1.05, wind: { motion: "float" }, overhang: over, box: { bottom: over ? "-8svh" : "-3%", left: "-8%", width: "60%", enterY: 40 } },
+        { src: src("SakuraBaseClusterR"), depth: 0, opacity: 0.9 * bo, zIndex: 3, enterDelay: 1.15, wind: { motion: "float" }, overhang: over, box: { bottom: over ? "-8svh" : "-3%", right: "-8%", width: "60%", enterY: 40 } },
       );
     }
   }
@@ -131,7 +140,7 @@ export function sceneFrame({
     layers.push({
       src: src(s.asset),
       depth: 0,
-      opacity: light ? s.opacity * 0.7 : s.opacity,
+      opacity: (light ? s.opacity * 0.7 : s.opacity) * bo,
       zIndex: 2,
       enterDelay: 1.3 + i * 0.12,
       box: s.box,

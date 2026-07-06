@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 // ── GANTI SESUAI TEMA ─────────────────────────────────────────────────────────
 const MUSIC_SRC   = "/music/I_love_you_3000_-_Stephanie_Poetri_lofi_version_by_hyuu_KLICKAUD.mp3";
@@ -19,7 +19,10 @@ export default function MusicPlayer() {
   useEffect(() => {
     const audio    = new Audio(MUSIC_SRC);
     audio.loop     = true;
-    audio.preload  = "auto";
+    // "metadata" saja: mp3 ±3 MB — kalau preload "auto" ia ikut berebut
+    // bandwidth dengan gambar cover/LCP di detik-detik pertama. Download penuh
+    // baru dimulai saat undangan dibuka (play() memicu load otomatis).
+    audio.preload  = "metadata";
     audio.oncanplaythrough = () => setReady(true);
     audioRef.current = audio;
 
@@ -83,7 +86,7 @@ export default function MusicPlayer() {
                   WebkitBackdropFilter: "blur(10px)",
                   border: "1px solid var(--border)",
                   borderRadius: 100,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "var(--font-inter), sans-serif",
                   fontSize: 10,
                   letterSpacing: "0.06em",
                   color: "var(--text-muted)",

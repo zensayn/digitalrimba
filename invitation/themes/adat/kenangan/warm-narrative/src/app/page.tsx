@@ -1,3 +1,4 @@
+import MotionProvider from "@/components/shared/MotionProvider";
 import EnvelopeOverlay from "@/components/shared/EnvelopeOverlay";
 import MusicPlayer from "@/components/shared/MusicPlayer";
 import SnapContainer from "@/components/shared/SnapContainer";
@@ -49,12 +50,12 @@ export default function Page() {
   const sectionIds = config.sections.order.filter((id) => config.sections.enabled[id]);
 
   return (
-    <>
+    <MotionProvider>
       <EnvelopeOverlay />
       <MusicPlayer />
       <SnapContainer>
         {sectionIds.map((id) => renderSection(id))}
       </SnapContainer>
-    </>
+    </MotionProvider>
   );
 }

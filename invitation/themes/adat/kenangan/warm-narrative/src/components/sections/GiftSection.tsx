@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
+import { m as motion, useInView } from "framer-motion";
 import { Copy, Check } from "lucide-react";
 import ParallaxScene from "@/components/shared/ParallaxScene";
 import { sceneFrame } from "@/components/shared/sceneFrame";

@@ -3,10 +3,11 @@
 // src/components/shared/EnvelopeOverlay.tsx
 
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 const EASE_STRING = "cubic-bezier(0.23, 1, 0.32, 1)";
+const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
 
 export default function EnvelopeOverlay() {
   const [phase, setPhase] = useState<"closed" | "opening" | "dismiss">("closed");
@@ -18,6 +19,16 @@ export default function EnvelopeOverlay() {
     setPhase("opening");
     document.dispatchEvent(new CustomEvent("invitation-open"));
   };
+
+  // Safety net: iOS Safari can drop transitionend (app switch, gesture
+  // interruption), which would leave the overlay stuck in "opening" with the
+  // page unreachable until a refresh. The flaps finish at ~1.9s (0.9s delay +
+  // 1.0s duration); if the event hasn't arrived well past that, force dismiss.
+  useEffect(() => {
+    if (phase !== "opening") return;
+    const t = setTimeout(() => setPhase("dismiss"), 2600);
+    return () => clearTimeout(t);
+  }, [phase]);
 
   // Prevent scroll ONLY when the envelope is closed. Unlock it immediately upon tapping open.
   // Restores whatever overflow value was on body before we touched it, instead of assuming "".
@@ -41,6 +52,12 @@ export default function EnvelopeOverlay() {
       aria-label="Ketuk untuk membuka undangan"
       tabIndex={phase === "closed" ? 0 : -1}
       onClick={open}
+      // iOS Safari batalkan event click bila jari bergeser sedikit saat tap
+      // (apalagi dengan body scroll terkunci) — touchend tetap terkirim, jadi
+      // jadikan fallback; open() sudah di-guard sehingga double-fire aman.
+      onTouchEnd={() => {
+        if (phase === "closed") open();
+      }}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -135,7 +152,7 @@ export default function EnvelopeOverlay() {
               }}
             >
               <img
-                src="/images/triangle-card-purple.webp"
+                src={`${BASE}/WarmAmplopFlapLeft.webp`}
                 alt=""
                 aria-hidden="true"
                 style={{
@@ -167,7 +184,7 @@ export default function EnvelopeOverlay() {
           }}
         >
           <img
-            src="/images/stempel-surat-purple.webp"
+            src={`${BASE}/StempelWarm.webp`}
             alt=""
             aria-hidden="true"
             style={{

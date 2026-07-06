@@ -1,5 +1,8 @@
 "use client";
 
+import { useRef } from "react";
+import { useInView } from "framer-motion";
+
 const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
 const FLOWERS = [
   `${BASE}/BungaJatuh1.webp`,
@@ -16,6 +19,12 @@ function sr(seed: number) {
 }
 
 export default function FallingFlowers({ count = 20, zIndex = 3 }: { count?: number; zIndex?: number }) {
+  // Jeda 20 animasi kelopak saat section pemiliknya di luar viewport — sama
+  // seperti .scene-paused di ParallaxScene, loop infinite tak perlu terus
+  // membakar frame setelah user scroll melewatinya.
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(wrapRef, { margin: "20% 0px 20% 0px" });
+
   const petals = Array.from({ length: count }, (_, i) => {
     const sway = Math.round(18 + sr(i * 23 + 6) * 42);
     const rotStart = Math.round(sr(i * 11 + 5) * 360);
@@ -35,22 +44,23 @@ export default function FallingFlowers({ count = 20, zIndex = 3 }: { count?: num
   const css = petals.map((p) => p.keyframes).join("");
 
   return (
-    <>
+    <div
+      ref={wrapRef}
+      aria-hidden="true"
+      style={{ position: "absolute", inset: 0, zIndex, pointerEvents: "none" }}
+    >
       <style dangerouslySetInnerHTML={{ __html: css }} />
       {petals.map((p) => (
         <img
           key={p.id}
           src={p.src}
           alt=""
-          aria-hidden="true"
           style={{
             position: "absolute",
             top: 0,
             left: p.left,
             width: p.width,
             height: "auto",
-            zIndex,
-            pointerEvents: "none",
             opacity: 0,
             animationName: p.animName,
             animationDuration: p.duration,
@@ -58,9 +68,10 @@ export default function FallingFlowers({ count = 20, zIndex = 3 }: { count?: num
             animationTimingFunction: "linear",
             animationIterationCount: "infinite",
             animationFillMode: "both",
+            animationPlayState: inView ? "running" : "paused",
           }}
         />
       ))}
-    </>
+    </div>
   );
 }

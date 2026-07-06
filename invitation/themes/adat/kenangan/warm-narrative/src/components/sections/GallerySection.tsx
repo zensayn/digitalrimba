@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { m as motion, useInView } from "framer-motion";
 import ParallaxScene from "@/components/shared/ParallaxScene";
 import type { InvitationConfig } from "@/lib/config-types";
 
@@ -96,6 +96,8 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
                 src={item.src}
                 alt={item.alt}
                 draggable={false}
+                loading="lazy"
+                decoding="async"
                 style={
                   i === 0
                     ? { position: "absolute", top: "13%", left: "8.5%", width: "83%", height: "74%", objectFit: "cover", display: "block", filter: "sepia(20%) contrast(1.05) brightness(0.97)" }
@@ -107,6 +109,8 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
                   src={`${BASE}/PhotoFrameLandscape.webp`}
                   alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                   style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 2 }}
                 />
               )}

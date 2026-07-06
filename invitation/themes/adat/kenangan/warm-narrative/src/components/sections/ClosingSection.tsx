@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { m as motion, useInView } from "framer-motion";
 import ParallaxScene from "@/components/shared/ParallaxScene";
 import { sceneFrame } from "@/components/shared/sceneFrame";
 import type { InvitationConfig } from "@/lib/config-types";
@@ -34,7 +34,6 @@ export default function ClosingSection({ couple }: ClosingSectionProps) {
           Gift's garland hangs over our top (topFrame off); last section, so
           the bottom band stays contained. */}
       <ParallaxScene
-        fadeTop={14}
         fadeBottom={0}
         layers={sceneFrame({ base: BASE, bg: `${BASE}/ClosingBg.webp`, arch: `${BASE}/ClosingCanopy.webp`, variant: 1, density: "full", topFrame: false })}
       />
@@ -140,7 +139,7 @@ export default function ClosingSection({ couple }: ClosingSectionProps) {
         <motion.div {...anim(0.35)} className="flex items-center gap-4 my-2">
           <div className="copper-divider" />
           <span
-            className="font-garamond"
+            className="font-display"
             style={{ color: "var(--gold-dim)", fontSize: "clamp(18px, 5vw, 24px)", fontStyle: "italic" }}
           >
             &amp;
@@ -163,7 +162,7 @@ export default function ClosingSection({ couple }: ClosingSectionProps) {
           style={{ marginTop: "clamp(16px, 4vh, 28px)", marginBottom: "clamp(16px, 4vh, 28px)" }}
         >
           <p
-            className="font-garamond"
+            className="font-display"
             style={{
               color: "var(--text-muted)",
               fontStyle: "italic",

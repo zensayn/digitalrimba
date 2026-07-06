@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { ExternalLink, X } from "lucide-react";
 import ParallaxScene from "@/components/shared/ParallaxScene";
 import { sceneFrame } from "@/components/shared/sceneFrame";
@@ -73,8 +73,6 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
           No top frame: the previous section's garland hangs over this seam;
           our own bottom band overhangs into the next section the same way. */}
       <ParallaxScene
-        fadeTop={6}
-        fadeBottom={12}
         layers={sceneFrame({
           base: BASE,
           bg: sceneBg,
@@ -128,7 +126,9 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
           {/* Deep copper, not runtime --gold (light #C07830 from the config
               theme vars) — the label sits inside the seam-garland zone and the
               light gold disappears into the pink florals. */}
-          <p className="font-label" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.35em", textTransform: "uppercase", color: "var(--gold-deep)", textShadow: "0 1px 3px rgba(250,247,242,0.98), 0 2px 14px rgba(250,247,242,1), 0 0 7px rgba(250,247,242,0.9), 0 0 18px rgba(250,247,242,0.85)" }}>
+          {/* Judul memakai gaya yang sama dengan judul tema Dress Code
+              ("Warm Earth Tones"): Playfair Display italic besar. */}
+          <p className="font-display" style={{ fontSize: "clamp(26px, 7.5vw, 40px)", fontWeight: 400, fontStyle: "italic", lineHeight: 1.1, color: "var(--gold-deep)", textShadow: "0 1px 3px rgba(250,247,242,0.98), 0 2px 14px rgba(250,247,242,1), 0 0 7px rgba(250,247,242,0.9)" }}>
             {isAkad ? "Akad Nikah" : "Resepsi"}
           </p>
           <motion.div
@@ -170,7 +170,7 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
         {/* Ornamental divider */}
         <motion.div variants={fade(0.18)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} className="flex items-center w-full" style={{ gap: 10 }}>
           <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, var(--gold-dim))", opacity: 0.4 }} />
-          <img src={bgAsset} alt="" style={{ width: 22, height: 22, objectFit: "contain", opacity: 0.55, flexShrink: 0 }} />
+          <img src={bgAsset} alt="" loading="lazy" decoding="async" style={{ width: 22, height: 22, objectFit: "contain", opacity: 0.55, flexShrink: 0 }} />
           <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, var(--gold-dim), transparent)", opacity: 0.4 }} />
         </motion.div>
 
@@ -187,7 +187,7 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
           <p className="font-label" style={{ fontSize: "11px", letterSpacing: "0.14em", color: "var(--text-muted)", borderBottom: "1px solid var(--border)", paddingBottom: 6, width: "100%" }}>{event.time}</p>
           <p className="font-display" style={{ color: "var(--text)", fontSize: "clamp(15px, 4.5vw, 20px)", fontWeight: 400, fontStyle: "italic", letterSpacing: "0.04em", lineHeight: 1.2 }}>{event.venue}</p>
           <div className="flex items-start justify-center gap-2" style={{ marginTop: 2 }}>
-            <img src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/LocationPin.webp`} alt="" style={{ width: 14, height: 14, objectFit: "contain", opacity: 0.75, flexShrink: 0, marginTop: 1 }} />
+            <img src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/LocationPin.webp`} alt="" loading="lazy" decoding="async" style={{ width: 14, height: 14, objectFit: "contain", opacity: 0.75, flexShrink: 0, marginTop: 1 }} />
             <p className="font-label" style={{ color: "var(--text-muted)", fontSize: "11px", lineHeight: 1.5 }}>{event.address}</p>
           </div>
         </motion.div>
@@ -229,7 +229,7 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
               onKeyDown={(e) => e.key === "Enter" && setMapInteractive(true)}
               style={{ position: "absolute", inset: 0, zIndex: 20, cursor: "pointer", display: "flex", alignItems: "flex-end", justifyContent: "center", paddingBottom: 10 }}
             >
-              <span style={{ fontFamily: "Inter, sans-serif", fontSize: "9px", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--text-dim)", background: "rgba(250,247,242,0.88)", padding: "4px 10px", backdropFilter: "blur(4px)" }}>
+              <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "9px", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--text-dim)", background: "rgba(250,247,242,0.88)", padding: "4px 10px", backdropFilter: "blur(4px)" }}>
                 Ketuk untuk menggeser
               </span>
             </div>
@@ -239,7 +239,7 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
             <button
               onClick={() => setMapInteractive(false)}
               aria-label="Selesai"
-              style={{ position: "absolute", top: 8, right: 8, zIndex: 20, display: "flex", alignItems: "center", gap: 4, fontFamily: "Inter, sans-serif", fontSize: "9px", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gold-dim)", background: "rgba(250,247,242,0.92)", border: "1px solid rgba(192,120,48,0.3)", padding: "4px 10px", cursor: "pointer", backdropFilter: "blur(4px)" }}
+              style={{ position: "absolute", top: 8, right: 8, zIndex: 20, display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-inter), sans-serif", fontSize: "9px", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gold-dim)", background: "rgba(250,247,242,0.92)", border: "1px solid rgba(192,120,48,0.3)", padding: "4px 10px", cursor: "pointer", backdropFilter: "blur(4px)" }}
             >
               <X size={10} />
               Selesai
@@ -249,12 +249,12 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
 
         {/* Action links */}
         <motion.div variants={fade(0.5)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} className="flex items-center justify-center">
-          <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="event-action-link flex items-center gap-2 transition-colors duration-300 font-label" style={{ color: "var(--gold-dim)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.2em", textTransform: "uppercase", padding: "6px 16px", borderRight: "1px solid var(--border)", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}>
+          <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="event-action-link flex items-center gap-2 transition-colors duration-300 font-label" style={{ color: "var(--gold-deep)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.2em", textTransform: "uppercase", padding: "6px 16px", borderRight: "1px solid var(--border)", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}>
             <ExternalLink size={10} />
             Maps
           </a>
-          <a href={calendarUrl} target="_blank" rel="noopener noreferrer" className="event-action-link flex items-center gap-2 transition-colors duration-300 font-label" style={{ color: "var(--gold-dim)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.2em", textTransform: "uppercase", padding: "6px 16px", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}>
-            <img src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Calendar.webp`} alt="" style={{ width: 12, height: 12, objectFit: "contain", opacity: 0.8 }} />
+          <a href={calendarUrl} target="_blank" rel="noopener noreferrer" className="event-action-link flex items-center gap-2 transition-colors duration-300 font-label" style={{ color: "var(--gold-deep)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.2em", textTransform: "uppercase", padding: "6px 16px", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}>
+            <img src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Calendar.webp`} alt="" loading="lazy" decoding="async" style={{ width: 12, height: 12, objectFit: "contain", opacity: 0.8 }} />
             Kalender
           </a>
         </motion.div>

@@ -1,4 +1,4 @@
-import * as motion from "framer-motion/client";
+import * as motion from "framer-motion/m";
 import { Suspense } from "react";
 import GuestName from "@/components/shared/GuestName";
 import ParallaxScene from "@/components/shared/ParallaxScene";
@@ -73,7 +73,7 @@ export default function GreetingSection({ couple }: GreetingSectionProps) {
             {/* Bismillah — horizontal clip reveal */}
             <motion.p
               variants={clipH(0.15)}
-              className="font-garamond"
+              className="font-display"
               style={{
                 fontSize: "clamp(26px, 8vw, 42px)",
                 // Deep copper (not the light runtime --gold) + strong cream halo:
@@ -115,6 +115,8 @@ export default function GreetingSection({ couple }: GreetingSectionProps) {
             <img
               src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Surat.webp`}
               alt=""
+              loading="lazy"
+              decoding="async"
               style={{
                 position: "absolute",
                 inset: 0,
@@ -168,7 +170,7 @@ export default function GreetingSection({ couple }: GreetingSectionProps) {
             <div style={{ width: 24, height: 1, background: "var(--gold)", opacity: 0.3, marginBottom: "4%" }} />
 
             <p
-              className="font-garamond"
+              className="font-display"
               style={{
                 fontSize: "clamp(10px, 2.7vw, 12px)",
                 fontStyle: "italic",
@@ -195,7 +197,7 @@ export default function GreetingSection({ couple }: GreetingSectionProps) {
                 Hormat kami,
               </p>
               <p
-                className="font-garamond"
+                className="font-display"
                 style={{
                   fontSize: "clamp(13px, 3.4vw, 16px)",
                   fontStyle: "italic",

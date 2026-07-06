@@ -1,4 +1,4 @@
-import * as motion from "framer-motion/client";
+import * as motion from "framer-motion/m";
 import ParallaxScene from "@/components/shared/ParallaxScene";
 import { sceneFrame } from "@/components/shared/sceneFrame";
 import type { InvitationConfig } from "@/lib/config-types";
@@ -42,7 +42,7 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
           whileInView="visible"
           viewport={{ once: true, margin: "-15%" }}
           className="font-label"
-          style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--gold-deep)", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}
+          style={{ fontSize: "clamp(15px, 4vw, 18px)", fontWeight: 600, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--gold-deep)", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}
         >
           Dress Code
         </motion.p>
@@ -125,8 +125,10 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
                   padding: "5px 6px 6px",
                   border: "1px solid rgba(192,120,48,0.18)",
                   borderTop: "none",
-                  background: "rgba(250,247,242,0.6)",
-                  backdropFilter: "blur(2px)",
+                  // Plate lebih pekat menggantikan backdrop-filter: blur —
+                  // blur backdrop dihitung ulang GPU setiap frame selama
+                  // ornamen wind di belakangnya bergerak, mahal di HP.
+                  background: "rgba(250,247,242,0.82)",
                 }}
               >
                 <p
