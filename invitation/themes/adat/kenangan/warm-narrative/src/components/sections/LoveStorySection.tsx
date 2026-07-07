@@ -85,6 +85,7 @@ function ChapterBlock({ chapter, index, isLast, isFirst }: { chapter: Chapter; i
             alt={chapter.chapter}
             loading="lazy"
             decoding="async"
+            onError={hideOnError}
             style={{ width: "100%", height: "100%", objectFit: "cover", filter: "sepia(20%) contrast(1.05) brightness(0.97)", display: "block" }}
           />
           <div style={{ position: "absolute", inset: 0, background: "rgba(192,120,48,0.05)", pointerEvents: "none" }} />

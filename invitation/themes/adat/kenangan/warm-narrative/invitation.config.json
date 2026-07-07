@@ -20,27 +20,27 @@
   "events": {
     "akad": {
       "title": "Akad Nikah",
-      "day": "Sabtu",
-      "date": "21 Maret 2026",
+      "day": "Selasa",
+      "date": "21 Juli 2026",
       "time": "08.00 – 10.00 WIB",
       "venue": "Masjid Agung Al-Ikhlas",
       "address": "Jl. Pahlawan No. 5, Yogyakarta",
       "mapsUrl": "https://maps.google.com/?q=-7.7956,110.3695",
       "embedUrl": "https://maps.google.com/maps?q=-7.7956,110.3695&z=16&output=embed",
-      "startISO": "20260321T010000Z",
-      "endISO": "20260321T030000Z"
+      "startISO": "20260721T010000Z",
+      "endISO": "20260721T030000Z"
     },
     "resepsi": {
       "title": "Resepsi",
-      "day": "Sabtu",
-      "date": "21 Maret 2026",
+      "day": "Selasa",
+      "date": "21 Juli 2026",
       "time": "11.00 – 15.00 WIB",
       "venue": "The Grand Puri Ballroom",
       "address": "Jl. Malioboro No. 123, Yogyakarta",
       "mapsUrl": "https://maps.google.com/?q=-7.7929,110.3665",
       "embedUrl": "https://maps.google.com/maps?q=-7.7929,110.3665&z=16&output=embed",
-      "startISO": "20260321T040000Z",
-      "endISO": "20260321T080000Z"
+      "startISO": "20260721T040000Z",
+      "endISO": "20260721T080000Z"
     }
   },
   "weddingDate": "2026-07-21T08:00:00",

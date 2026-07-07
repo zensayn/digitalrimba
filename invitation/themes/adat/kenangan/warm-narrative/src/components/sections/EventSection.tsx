@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { m as motion } from "framer-motion";
 import { ExternalLink, X } from "lucide-react";
 import ParallaxScene from "@/components/shared/ParallaxScene";
-import { sceneFrame } from "@/components/shared/sceneFrame";
+import { frameDelay, sceneFrame } from "@/components/shared/sceneFrame";
 import type { InvitationConfig } from "@/lib/config-types";
 
 import { ASSET_BASE as BASE, hideOnError } from "@/lib/assets";
@@ -54,7 +54,7 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
   // Frame-first: let the sceneFrame's core pieces land before content reveals,
   // so the floral stage builds first and the text follows a beat later.
   // Ikut dipercepat bersama DELAY_SCALE di sceneFrame.ts (0.6 saat skala 1).
-  const REVEAL_AFTER_FRAME = 0.35;
+  const REVEAL_AFTER_FRAME = frameDelay(0.6);
 
   // Direction-aware fade: Akad slides from left, Resepsi from right
   const fade = (delay: number) => ({

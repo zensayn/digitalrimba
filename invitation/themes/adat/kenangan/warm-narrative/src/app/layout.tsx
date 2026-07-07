@@ -53,14 +53,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <link rel="preconnect" href={process.env.NEXT_PUBLIC_THEMES_CDN} />
         )}
         {/* First paint: amplop menutup seluruh layar — flap & stempel harus datang duluan */}
-        <link rel="preload" as="image" fetchPriority="high" href={`${THEME_BASE}/WarmAmplopFlapLeft.webp`} />
-        <link rel="preload" as="image" fetchPriority="high" href={`${THEME_BASE}/StempelWarm.webp`} />
+        <link rel="preload" as="image" type="image/webp" fetchPriority="high" href={`${THEME_BASE}/WarmAmplopFlapLeft.webp`} />
+        <link rel="preload" as="image" type="image/webp" fetchPriority="high" href={`${THEME_BASE}/StempelWarm.webp`} />
         {/* Cover scene di balik amplop — layer LCP (kolom sakura & bg) di-preload
             karena baru ter-discover setelah hydration (ParallaxScene client-side) */}
-        <link rel="preload" as="image" fetchPriority="high" href={`${THEME_BASE}/CoverBg.webp`} />
-        <link rel="preload" as="image" fetchPriority="high" href={`${THEME_BASE}/SakuraColumnL.webp`} />
-        <link rel="preload" as="image" href={`${THEME_BASE}/SakuraColumnR.webp`} />
-        <link rel="preload" as="image" href={`${THEME_BASE}/CoverArch.webp`} />
+        <link rel="preload" as="image" type="image/webp" fetchPriority="high" href={`${THEME_BASE}/CoverBg.webp`} />
+        <link rel="preload" as="image" type="image/webp" fetchPriority="high" href={`${THEME_BASE}/SakuraColumnL.webp`} />
+        <link rel="preload" as="image" type="image/webp" href={`${THEME_BASE}/SakuraColumnR.webp`} />
+        <link rel="preload" as="image" type="image/webp" href={`${THEME_BASE}/CoverArch.webp`} />
         {/* CSS vars statis dari invitation config */}
         <style id="rimba-theme-vars" dangerouslySetInnerHTML={{ __html: cssVars }} />
       </head>

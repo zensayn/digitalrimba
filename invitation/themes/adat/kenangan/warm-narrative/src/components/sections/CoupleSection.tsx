@@ -1,9 +1,11 @@
+"use client";
+
 import * as motion from "framer-motion/m";
 import ParallaxScene from "@/components/shared/ParallaxScene";
 import { sceneFrame } from "@/components/shared/sceneFrame";
 import type { InvitationConfig } from "@/lib/config-types";
 
-import { ASSET_BASE as BASE } from "@/lib/assets";
+import { ASSET_BASE as BASE, hideOnError } from "@/lib/assets";
 
 // Cream halo + soft plate so the names stay readable over the dense floral frame.
 const HALO = "0 1px 7px rgba(250,247,242,0.95), 0 0 3px rgba(250,247,242,0.9)";
@@ -128,6 +130,7 @@ export default function CoupleSection({ couple }: { couple: InvitationConfig["co
               aria-hidden="true"
               loading="lazy"
               decoding="async"
+              onError={hideOnError}
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 3 }}
             />
           </div>
@@ -190,6 +193,7 @@ export default function CoupleSection({ couple }: { couple: InvitationConfig["co
               aria-hidden="true"
               loading="lazy"
               decoding="async"
+              onError={hideOnError}
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 3 }}
             />
           </div>
