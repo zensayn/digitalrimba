@@ -23,7 +23,7 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const THEME_BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
+import { ASSET_BASE as THEME_BASE } from "@/lib/assets";
 
 // ── GANTI: Sesuaikan dengan nama pasangan & tanggal ──────────────────────────
 export const metadata: Metadata = {
@@ -49,7 +49,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/icon.png" type="image/png" />
-        <link rel="preconnect" href={process.env.NEXT_PUBLIC_THEMES_CDN} />
+        {process.env.NEXT_PUBLIC_THEMES_CDN && (
+          <link rel="preconnect" href={process.env.NEXT_PUBLIC_THEMES_CDN} />
+        )}
         {/* First paint: amplop menutup seluruh layar — flap & stempel harus datang duluan */}
         <link rel="preload" as="image" fetchPriority="high" href={`${THEME_BASE}/WarmAmplopFlapLeft.webp`} />
         <link rel="preload" as="image" fetchPriority="high" href={`${THEME_BASE}/StempelWarm.webp`} />

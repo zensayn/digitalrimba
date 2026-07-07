@@ -59,6 +59,7 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: none;
+  position: relative; /* framer-motion useScroll needs a non-static positioning context */
   /* Satu gradient lembut & konsisten — sama di setiap layar saat scroll.
      Ini warna "kertas" yang terlihat di seam antar section (band fade
      ParallaxScene larut ke sini). Sengaja BUKAN --bg/--surface: token itu
@@ -327,24 +328,37 @@ textarea.input-warm { resize: none; line-height: 1.7; }
   }
 }
 
-/* ─── Desktop: frame HP di tengah ───────────────────────────────────────────── */
+/* ─── Layout shell ──────────────────────────────────────────────────────────── */
+/* Pembungkus DesktopCover + kolom undangan. Di HP: kolom penuh, panel hilang. */
+.app-shell { width: 100%; }
+.desktop-cover { display: none; }
+
+/* ─── Tablet & desktop: panel cover kiri + kolom undangan kanan ─────────────── */
 @media (min-width: 768px) {
-  body {
-    background-color: #D9D2C8;
+  body { background-color: #D9D2C8; }
+
+  .app-shell {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
-  .snap-container {
-    max-width: 400px;
-    width: 100%;
-    flex-shrink: 0;
-    border-left: 1px solid var(--border);
+  .desktop-cover {
+    display: block;
+    position: relative;
+    flex: 1 1 auto;
+    height: 100svh;
+    overflow: hidden;
+    background: linear-gradient(180deg, #f8eedf 0%, #ffeed6 100%);
     border-right: 1px solid var(--border);
-    box-shadow:
-      -24px 0 48px rgba(42, 34, 24, 0.08),
-       24px 0 48px rgba(42, 34, 24, 0.08);
   }
 
+  /* Kolom mengecil di tablet portrait (48vw @768 ≈ 368px) supaya panel kiri
+     tetap kebagian ± setengah layar; di layar lebar mentok 400px. */
+  .snap-container {
+    flex: 0 0 clamp(360px, 48vw, 400px);
+    max-width: 400px;
+    border-right: 1px solid var(--border);
+    box-shadow: -24px 0 48px rgba(42, 34, 24, 0.10);
+  }
 }
 

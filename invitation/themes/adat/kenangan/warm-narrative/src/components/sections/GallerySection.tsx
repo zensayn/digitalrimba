@@ -5,7 +5,7 @@ import { m as motion, useInView } from "framer-motion";
 import ParallaxScene from "@/components/shared/ParallaxScene";
 import type { InvitationConfig } from "@/lib/config-types";
 
-const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
+import { ASSET_BASE as BASE, hideOnError } from "@/lib/assets";
 
 export default function GallerySection({ gallery }: { gallery: InvitationConfig["gallery"] }) {
   const ref = useRef(null);
@@ -111,6 +111,7 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
                   aria-hidden="true"
                   loading="lazy"
                   decoding="async"
+                  onError={hideOnError}
                   style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 2 }}
                 />
               )}

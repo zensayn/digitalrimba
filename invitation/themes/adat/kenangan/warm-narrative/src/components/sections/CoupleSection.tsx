@@ -3,7 +3,7 @@ import ParallaxScene from "@/components/shared/ParallaxScene";
 import { sceneFrame } from "@/components/shared/sceneFrame";
 import type { InvitationConfig } from "@/lib/config-types";
 
-const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
+import { ASSET_BASE as BASE } from "@/lib/assets";
 
 // Cream halo + soft plate so the names stay readable over the dense floral frame.
 const HALO = "0 1px 7px rgba(250,247,242,0.95), 0 0 3px rgba(250,247,242,0.9)";

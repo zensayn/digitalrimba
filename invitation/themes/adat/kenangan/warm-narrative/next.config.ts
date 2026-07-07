@@ -22,7 +22,10 @@ const nextConfig: NextConfig = {
   },
 
   // ── Response Headers ─────────────────────────────────────────────────────
+  // Guard: hanya aktif di production — dev mode butuh kontrol caching
+  // sendiri agar hot-reload (HMR) berjalan normal.
   async headers() {
+    if (process.env.NODE_ENV !== "production") return [];
     return [
       {
         // Cache aset statis Next.js selamanya (hash di nama file)

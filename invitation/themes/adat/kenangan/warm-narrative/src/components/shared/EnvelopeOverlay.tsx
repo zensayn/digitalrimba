@@ -7,7 +7,7 @@ import { m as motion } from "framer-motion";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 const EASE_STRING = "cubic-bezier(0.23, 1, 0.32, 1)";
-const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
+import { ASSET_BASE as BASE, hideOnError } from "@/lib/assets";
 
 export default function EnvelopeOverlay() {
   const [phase, setPhase] = useState<"closed" | "opening" | "dismiss">("closed");
@@ -155,6 +155,7 @@ export default function EnvelopeOverlay() {
                 src={`${BASE}/WarmAmplopFlapLeft.webp`}
                 alt=""
                 aria-hidden="true"
+                onError={hideOnError}
                 style={{
                   position: "absolute",
                   left: "-8.9%",
@@ -187,6 +188,7 @@ export default function EnvelopeOverlay() {
             src={`${BASE}/StempelWarm.webp`}
             alt=""
             aria-hidden="true"
+            onError={hideOnError}
             style={{
               display: "block",
               width: "100%",
