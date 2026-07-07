@@ -2,7 +2,7 @@
 
 import { useRef, type CSSProperties, type ReactNode, type SyntheticEvent } from "react";
 import {
-  motion,
+  m as motion,
   useScroll,
   useTransform,
   useReducedMotion,
@@ -245,14 +245,14 @@ function Layer({
 export default function ParallaxScene({
   layers,
   children,
-  fadeTop = 12,
-  fadeBottom = 12,
+  fadeTop = 6,
+  fadeBottom = 6,
 }: {
   layers: ParallaxLayer[];
   children?: ReactNode;
-  /** % of height the scene feathers into the page background at the top edge. */
+  /** Height (svh) the scene feathers into the page background at the top edge. */
   fadeTop?: number;
-  /** % of height the scene feathers into the page background at the bottom edge. */
+  /** Height (svh) the scene feathers into the page background at the bottom edge. */
   fadeBottom?: number;
 }) {
   const sceneRef = useRef<HTMLDivElement>(null);
@@ -261,7 +261,13 @@ export default function ParallaxScene({
   // Mount early (network lead time) and keep mounted. Each foreground piece
   // then gates its own entrance on its own position (see Layer), so top and
   // bottom pieces animate at the moment they are each reached.
-  const mounted = useInView(sceneRef, { once: true, margin: "300px 0px" });
+  const mounted = useInView(sceneRef, { once: true, margin: "600px 0px" });
+  // Ambient wind runs only while the scene is (nearly) on screen — the wide
+  // margin resumes the loops well before entry (Safari's IntersectionObserver
+  // lags during fast momentum scrolls) so nothing looks frozen, while scenes
+  // scrolled far past stop burning frames (.scene-paused, see globals.css).
+  const inView = useInView(sceneRef, { margin: "60% 0px 60% 0px" });
+  const pausedClass = inView ? undefined : "scene-paused";
 
   const { scrollYProgress } = useScroll({
     container: container ?? undefined,
@@ -273,7 +279,10 @@ export default function ParallaxScene({
   // cream page background — removes the hard seam where two scenes meet.
   // Applied ONLY to the full-bleed background layers; foreground kit pieces
   // sit in a separate un-masked group so they stay fully visible at the edges.
-  const mask = `linear-gradient(to bottom, transparent 0%, #000 ${fadeTop}%, #000 ${100 - fadeBottom}%, transparent 100%)`;
+  // Fade stops use svh, not % of scene height, so the dissolve band is the
+  // same absolute thickness at every seam — a % band on a multi-viewport
+  // section (LoveStory) would be several times taller than on a short one.
+  const mask = `linear-gradient(to bottom, transparent 0, #000 ${fadeTop}svh, #000 calc(100% - ${fadeBottom}svh), transparent 100%)`;
 
   const coverLayers = layers.filter((l) => !l.box);
   const boxLayers = layers.filter((l) => l.box && !l.overhang);
@@ -284,6 +293,7 @@ export default function ParallaxScene({
       <div
         ref={sceneRef}
         aria-hidden="true"
+        className={pausedClass}
         style={{
           position: "absolute",
           inset: 0,
@@ -323,6 +333,7 @@ export default function ParallaxScene({
       {overhangLayers.length > 0 && (
         <div
           aria-hidden="true"
+          className={pausedClass}
           style={{ position: "absolute", inset: 0, zIndex: 5, pointerEvents: "none" }}
         >
           {mounted &&

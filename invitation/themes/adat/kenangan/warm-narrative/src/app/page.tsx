@@ -1,5 +1,7 @@
+import MotionProvider from "@/components/shared/MotionProvider";
 import EnvelopeOverlay from "@/components/shared/EnvelopeOverlay";
 import MusicPlayer from "@/components/shared/MusicPlayer";
+import DesktopCover from "@/components/shared/DesktopCover";
 import SnapContainer from "@/components/shared/SnapContainer";
 import CoverSection from "@/components/sections/CoverSection";
 import GreetingSection from "@/components/sections/GreetingSection";
@@ -49,12 +51,16 @@ export default function Page() {
   const sectionIds = config.sections.order.filter((id) => config.sections.enabled[id]);
 
   return (
-    <>
+    <MotionProvider>
       <EnvelopeOverlay />
       <MusicPlayer />
-      <SnapContainer>
-        {sectionIds.map((id) => renderSection(id))}
-      </SnapContainer>
-    </>
+      <div className="app-shell">
+        {/* Panel cover dekoratif — hanya tampil di layar lebar (PC/laptop) */}
+        <DesktopCover couple={config.couple} weddingDate={config.weddingDate} />
+        <SnapContainer>
+          {sectionIds.map((id) => renderSection(id))}
+        </SnapContainer>
+      </div>
+    </MotionProvider>
   );
 }

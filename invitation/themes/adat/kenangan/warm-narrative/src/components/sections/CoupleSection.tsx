@@ -1,9 +1,11 @@
-import * as motion from "framer-motion/client";
+"use client";
+
+import * as motion from "framer-motion/m";
 import ParallaxScene from "@/components/shared/ParallaxScene";
 import { sceneFrame } from "@/components/shared/sceneFrame";
 import type { InvitationConfig } from "@/lib/config-types";
 
-const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
+import { ASSET_BASE as BASE, hideOnError } from "@/lib/assets";
 
 // Cream halo + soft plate so the names stay readable over the dense floral frame.
 const HALO = "0 1px 7px rgba(250,247,242,0.95), 0 0 3px rgba(250,247,242,0.9)";
@@ -11,11 +13,22 @@ const TEXT_PLATE = "radial-gradient(ellipse 128% 116% at center, rgba(250,247,24
 
 export default function CoupleSection({ couple }: { couple: InvitationConfig["couple"] }) {
 
-  // Bottom-to-top clip reveal — "rises from the paper"
-  const photoReveal = (delay: number) => ({
-    hidden: { clipPath: "inset(100% 0 0 0)" },
+  // Bottom-to-top "rises from the paper" reveal, transform-only: the outer
+  // window slides up while the photo counter-slides down, so the net effect is
+  // identical to a clip reveal but runs entirely on the compositor. The old
+  // clip-path inset animation restyled + repainted the sepia-filtered photo
+  // every frame and janked on mid-range phones.
+  const curtain = (delay: number) => ({
+    hidden: { y: "100%" },
     visible: {
-      clipPath: "inset(0% 0 0 0)",
+      y: "0%",
+      transition: { delay, duration: 1.0, ease: [0.22, 1, 0.36, 1] as const },
+    },
+  });
+  const curtainInner = (delay: number) => ({
+    hidden: { y: "-100%" },
+    visible: {
+      y: "0%",
       transition: { delay, duration: 1.0, ease: [0.22, 1, 0.36, 1] as const },
     },
   });
@@ -73,7 +86,7 @@ export default function CoupleSection({ couple }: { couple: InvitationConfig["co
 
       <div
         className="relative z-10 flex flex-col items-center w-full max-w-[400px] mx-auto px-8"
-        style={{ paddingBottom: "clamp(8px, 2vh, 16px)", paddingTop: "clamp(48px, 10svh, 80px)" }}
+        style={{ paddingBottom: "clamp(48px, 10svh, 80px)", paddingTop: "clamp(48px, 10svh, 80px)" }}
       >
         {/* Eyebrow + display title + intro — same header hierarchy as the
             Hadiah/RSVP sections: small tracked label, large Playfair Display
@@ -95,7 +108,7 @@ export default function CoupleSection({ couple }: { couple: InvitationConfig["co
         </motion.h2>
         <motion.p
           variants={fadeUp(0.16)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-15%" }}
-          className="font-garamond"
+          className="font-display"
           style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "clamp(13px, 3.4vw, 15px)", marginTop: 8, marginBottom: "clamp(14px, 3.5vh, 24px)", textAlign: "center", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}
         >
           Dua insan, satu kisah baru yang dimulai.
@@ -103,16 +116,21 @@ export default function CoupleSection({ couple }: { couple: InvitationConfig["co
 
         {/* GROOM — photo left, details beside on the right */}
         <div className="w-full flex items-center" style={{ gap: "clamp(14px, 4.5vw, 22px)" }}>
-          <div style={{ position: "relative", width: "43%", flexShrink: 0, aspectRatio: "3/4", zIndex: 1 }}>
+          <div style={{ position: "relative", width: "49%", flexShrink: 0, aspectRatio: "3/4", transform: "translateX(-6px)", zIndex: 1 }}>
             <div style={{ position: "absolute", top: "6.5%", left: "6.5%", right: "6.5%", bottom: "6.5%", overflow: "hidden", boxShadow: "var(--shadow-warm)" }}>
-              <motion.div variants={photoReveal(0.15)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} style={{ position: "absolute", inset: 0 }}>
-                <img src={couple.groom.photo} alt={couple.groom.name} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "sepia(18%) contrast(1.04) brightness(0.97)", display: "block" }} />
+              <motion.div variants={curtain(0.15)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
+                <motion.div variants={curtainInner(0.15)} style={{ position: "absolute", inset: 0 }}>
+                  <img src={couple.groom.photo} alt={couple.groom.name} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "sepia(18%) contrast(1.04) brightness(0.97)", display: "block" }} />
+                </motion.div>
               </motion.div>
             </div>
             <img
               src={`${BASE}/PhotoFramePortrait.webp`}
               alt=""
               aria-hidden="true"
+              loading="lazy"
+              decoding="async"
+              onError={hideOnError}
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 3 }}
             />
           </div>
@@ -140,7 +158,7 @@ export default function CoupleSection({ couple }: { couple: InvitationConfig["co
           style={{ gap: 14, width: "100%", maxWidth: 230, margin: "clamp(5px, 1.6vh, 11px) 0" }}
         >
           <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, var(--gold-dim))", opacity: 0.55 }} />
-          <span className="font-garamond" style={{ color: "var(--gold)", fontSize: "clamp(24px, 6.5vw, 32px)", fontStyle: "italic", lineHeight: 1 }}>&amp;</span>
+          <span className="font-display" style={{ color: "var(--gold)", fontSize: "clamp(24px, 6.5vw, 32px)", fontStyle: "italic", lineHeight: 1 }}>&amp;</span>
           <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, var(--gold-dim), transparent)", opacity: 0.55 }} />
         </motion.div>
 
@@ -161,16 +179,21 @@ export default function CoupleSection({ couple }: { couple: InvitationConfig["co
               {couple.bride.instagram}
             </p>
           </motion.div>
-          <div style={{ position: "relative", width: "43%", flexShrink: 0, aspectRatio: "3/4", zIndex: 1 }}>
+          <div style={{ position: "relative", width: "49%", flexShrink: 0, aspectRatio: "3/4", transform: "translateX(6px)", zIndex: 1 }}>
             <div style={{ position: "absolute", top: "6.5%", left: "6.5%", right: "6.5%", bottom: "6.5%", overflow: "hidden", boxShadow: "var(--shadow-warm)" }}>
-              <motion.div variants={photoReveal(0.62)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} style={{ position: "absolute", inset: 0 }}>
-                <img src={couple.bride.photo} alt={couple.bride.name} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "sepia(18%) contrast(1.04) brightness(0.97)", display: "block" }} />
+              <motion.div variants={curtain(0.62)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
+                <motion.div variants={curtainInner(0.62)} style={{ position: "absolute", inset: 0 }}>
+                  <img src={couple.bride.photo} alt={couple.bride.name} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "sepia(18%) contrast(1.04) brightness(0.97)", display: "block" }} />
+                </motion.div>
               </motion.div>
             </div>
             <img
               src={`${BASE}/PhotoFramePortrait.webp`}
               alt=""
               aria-hidden="true"
+              loading="lazy"
+              decoding="async"
+              onError={hideOnError}
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 3 }}
             />
           </div>
@@ -179,8 +202,8 @@ export default function CoupleSection({ couple }: { couple: InvitationConfig["co
         {/* Quote */}
         <motion.p
           variants={fadeUp(0.72)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-15%" }}
-          className="font-garamond"
-          style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "clamp(13px, 3.4vw, 15px)", lineHeight: 1.85, marginTop: "clamp(14px, 3.5vh, 24px)", textAlign: "center", padding: "10px 14px", background: TEXT_PLATE, textShadow: HALO }}
+          className="font-display"
+          style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "clamp(13px, 3.4vw, 15px)", lineHeight: 1.85, marginTop: "clamp(14px, 3.5vh, 24px)", textAlign: "center", padding: "10px 14px", background: TEXT_PLATE, borderRadius: 12, textShadow: HALO }}
         >
           &ldquo;{couple.quote}&rdquo;
         </motion.p>

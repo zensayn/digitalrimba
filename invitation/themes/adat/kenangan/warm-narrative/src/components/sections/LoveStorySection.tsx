@@ -1,10 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import ParallaxScene from "@/components/shared/ParallaxScene";
 import type { InvitationConfig } from "@/lib/config-types";
 
-const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
+import { ASSET_BASE as BASE, hideOnError } from "@/lib/assets";
 const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -65,7 +65,7 @@ function ChapterBlock({ chapter, index, isLast, isFirst }: { chapter: Chapter; i
         whileInView={{ opacity: 1 }}
         viewport={vp}
         transition={{ duration: 0.8, delay: 0.12 }}
-        className="font-garamond"
+        className="font-display"
         style={{ color: "var(--text-dim)", fontStyle: "italic", fontSize: "13px", letterSpacing: "0.16em", marginTop: 3, marginBottom: "clamp(8px, 1.6vh, 12px)" }}
       >
         {chapter.year}
@@ -83,6 +83,9 @@ function ChapterBlock({ chapter, index, isLast, isFirst }: { chapter: Chapter; i
           <img
             src={chapter.image}
             alt={chapter.chapter}
+            loading="lazy"
+            decoding="async"
+            onError={hideOnError}
             style={{ width: "100%", height: "100%", objectFit: "cover", filter: "sepia(20%) contrast(1.05) brightness(0.97)", display: "block" }}
           />
           <div style={{ position: "absolute", inset: 0, background: "rgba(192,120,48,0.05)", pointerEvents: "none" }} />
@@ -91,6 +94,9 @@ function ChapterBlock({ chapter, index, isLast, isFirst }: { chapter: Chapter; i
           src={`${BASE}/PhotoFrameLandscape.webp`}
           alt=""
           aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          onError={hideOnError}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-8%" }}
@@ -131,7 +137,7 @@ function ChapterBlock({ chapter, index, isLast, isFirst }: { chapter: Chapter; i
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-8%" }}
         transition={{ duration: 0.85, delay: 0.42, ease: "easeOut" }}
-        className="font-garamond"
+        className="font-display"
         style={{ color: "var(--text-muted)", fontSize: "clamp(13px, 3.4vw, 15px)", fontStyle: "italic", lineHeight: 1.9, maxWidth: "34ch", textShadow: "0 1px 6px rgba(250,247,242,0.6)" }}
       >
         &ldquo;{chapter.description}&rdquo;
@@ -163,8 +169,8 @@ export default function LoveStorySection({ loveStory }: { loveStory: InvitationC
       <ParallaxScene
         layers={[
           { src: `${BASE}/LoveStoryBg.webp`, depth: 0.03, zIndex: 0 },
-          { src: `${BASE}/SakuraCornerL.webp`, depth: 0.11, opacity: 0.82, zIndex: 1, overhang: true, box: { bottom: "-5svh", left: "-6%", width: "40%" } },
-          { src: `${BASE}/SakuraCornerR2.webp`, depth: 0.11, opacity: 0.82, zIndex: 1, overhang: true, box: { bottom: "-5svh", right: "-6%", width: "40%" } },
+          { src: `${BASE}/SakuraCornerL.webp`, depth: 0.11, opacity: 0.82, zIndex: 1, overhang: true, box: { bottom: "-2svh", left: "-6%", width: "40%" } },
+          { src: `${BASE}/SakuraCornerR2.webp`, depth: 0.11, opacity: 0.82, zIndex: 1, overhang: true, box: { bottom: "-2svh", right: "-6%", width: "40%" } },
         ]}
       />
       <div className="paper-overlay" />
@@ -215,7 +221,7 @@ export default function LoveStorySection({ loveStory }: { loveStory: InvitationC
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.8, delay: 0.15, ease: EASE }}
-          className="font-garamond"
+          className="font-display"
           style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "clamp(12.5px, 3.1vw, 14px)", marginTop: 10, lineHeight: 1.65, maxWidth: "26ch" }}
         >
           Setiap momen, satu langkah lebih dekat menuju selamanya.

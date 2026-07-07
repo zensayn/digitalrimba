@@ -34,3 +34,6 @@ Thumbs.db
 # Theme image assets — served from R2/CDN (assets-themes.rimba.io), not bundled.
 # Source PNG/WebP are kept locally for re-upload but never committed.
 public/images/
+
+# Arsip aset lokal (sumber PNG/webp yang sudah diupload ke R2) — tidak ikut deploy
+/asset-archive/

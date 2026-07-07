@@ -1,6 +1,6 @@
-/* ─── Google Fonts ───────────────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Source+Serif+4:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&family=Inter:wght@400;500&display=swap');
-
+/* Fonts di-serve self-hosted via next/font (layout.tsx) — tanpa @import
+   Google Fonts yang render-blocking. Font families tersedia sebagai CSS vars:
+   --font-playfair, --font-source-serif, --font-inter. */
 @import "tailwindcss";
 
 /* ─── Design Tokens — Warm Narrative ────────────────────────────────────────── */
@@ -10,10 +10,10 @@
   --surface-2:   #E8E0D4;
   --gold:        #99511A;
   --gold-light:  #C0823A;
-  --gold-dim:    #836237;
+  --gold-dim:    #6B4E28;
   --text:        #261E14;
   --text-muted:  #574A39;
-  --text-dim:    #836237;
+  --text-dim:    #6B4E28;
   --border:      rgba(153, 81, 26, 0.28);
 
   /* Tambahan khusus warm-narrative */
@@ -37,7 +37,9 @@ html {
 body {
   background-color: var(--bg);
   color: var(--text);
-  font-family: 'Source Serif 4', Georgia, serif;
+  font-family: var(--font-source-serif), Georgia, serif;
+  font-size: 16px;
+  line-height: 1.6;
   font-weight: 300;
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
@@ -45,10 +47,10 @@ body {
 }
 
 /* ─── Typography helpers ─────────────────────────────────────────────────────── */
-.font-display  { font-family: 'Playfair Display', Georgia, serif; }
-.font-body     { font-family: 'Source Serif 4', Georgia, serif; }
-.font-garamond { font-family: 'EB Garamond', Georgia, serif; }
-.font-label    { font-family: 'Inter', sans-serif; }
+.font-display  { font-family: var(--font-playfair), Georgia, serif; }
+.font-body     { font-family: var(--font-source-serif), Georgia, serif; }
+/* .font-garamond dihapus — peran italic accent dialihkan ke Playfair Display italic */
+.font-label    { font-family: var(--font-inter), sans-serif; }
 
 /* ─── Scroll Container ──────────────────────────────────────────────────────── */
 .snap-container {
@@ -57,8 +59,13 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: none;
-  /* Satu gradient lembut & konsisten — sama di setiap layar saat scroll */
-  background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%);
+  position: relative; /* framer-motion useScroll needs a non-static positioning context */
+  /* Satu gradient lembut & konsisten — sama di setiap layar saat scroll.
+     Ini warna "kertas" yang terlihat di seam antar section (band fade
+     ParallaxScene larut ke sini). Sengaja BUKAN --bg/--surface: token itu
+     terlalu pucat/putih dibanding lukisan peach-pink, jadi seam-nya kentara.
+     Nada parchment hangat ini diambil dari tepi lukisan background. */
+  background: linear-gradient(180deg, #f8eedf 0%, #ffeed6 100%);
 }
 
 ::-webkit-scrollbar { display: none; }
@@ -233,6 +240,15 @@ body {
   animation: wind-float var(--wind-dur, 8s) ease-in-out var(--wind-delay, 0s) infinite;
 }
 
+/* Hemat main thread & baterai: ParallaxScene menempelkan .scene-paused saat
+   scene-nya di luar viewport, membekukan semua loop wind di dalamnya. Tanpa
+   ini, di akhir scroll ada puluhan animasi infinite berjalan bersamaan dari
+   section-section yang sudah lewat. */
+.scene-paused .ambient-wind,
+.scene-paused .ambient-float {
+  animation-play-state: paused;
+}
+
 /* petalFall keyframes generated per-petal inline by FallingFlowers.tsx */
 
 /* .petal-fall styles moved inline to FallingFlowers.tsx */
@@ -240,19 +256,23 @@ body {
 /* ─── Form elements ──────────────────────────────────────────────────────────── */
 .input-warm {
   width: 100%;
-  background: transparent;
+  /* Plate lembut, bukan transparent: input RSVP duduk di atas scene floral,
+     tanpa plate teks & placeholder-nya bocor tertimpa bunga. */
+  background: rgba(250, 247, 242, 0.72);
   border: none;
   border-bottom: 1px solid var(--border);
   color: var(--text);
-  padding: 10px 0;
-  font-family: 'Source Serif 4', serif;
-  font-size: 15px;
+  padding: 10px 8px;
+  font-family: var(--font-source-serif), serif;
+  font-size: 16px;
   font-weight: 300;
   outline: none;
   transition: border-color 0.3s ease;
 }
 
-.input-warm::placeholder { color: var(--text-dim); font-style: italic; }
+/* Warna tetap, BUKAN var(--text-dim): token itu ditimpa theme vars runtime
+   menjadi #A0917E yang nyaris tak terbaca di plate krem. */
+.input-warm::placeholder { color: rgba(87, 74, 57, 0.9); font-style: italic; }
 .input-warm:focus { border-bottom-color: var(--gold); }
 
 textarea.input-warm { resize: none; line-height: 1.7; }
@@ -266,7 +286,7 @@ textarea.input-warm { resize: none; line-height: 1.7; }
   background: rgba(250, 247, 242, 0.78);
   border: 1px solid var(--gold);
   color: var(--gold);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter), sans-serif;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.18em;
@@ -308,24 +328,37 @@ textarea.input-warm { resize: none; line-height: 1.7; }
   }
 }
 
-/* ─── Desktop: frame HP di tengah ───────────────────────────────────────────── */
+/* ─── Layout shell ──────────────────────────────────────────────────────────── */
+/* Pembungkus DesktopCover + kolom undangan. Di HP: kolom penuh, panel hilang. */
+.app-shell { width: 100%; }
+.desktop-cover { display: none; }
+
+/* ─── Tablet & desktop: panel cover kiri + kolom undangan kanan ─────────────── */
 @media (min-width: 768px) {
-  body {
-    background-color: #D9D2C8;
+  body { background-color: #D9D2C8; }
+
+  .app-shell {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
-  .snap-container {
-    max-width: 400px;
-    width: 100%;
-    flex-shrink: 0;
-    border-left: 1px solid var(--border);
+  .desktop-cover {
+    display: block;
+    position: relative;
+    flex: 1 1 auto;
+    height: 100svh;
+    overflow: hidden;
+    background: linear-gradient(180deg, #f8eedf 0%, #ffeed6 100%);
     border-right: 1px solid var(--border);
-    box-shadow:
-      -24px 0 48px rgba(42, 34, 24, 0.08),
-       24px 0 48px rgba(42, 34, 24, 0.08);
   }
 
+  /* Kolom mengecil di tablet portrait (48vw @768 ≈ 368px) supaya panel kiri
+     tetap kebagian ± setengah layar; di layar lebar mentok 400px. */
+  .snap-container {
+    flex: 0 0 clamp(360px, 48vw, 400px);
+    max-width: 400px;
+    border-right: 1px solid var(--border);
+    box-shadow: -24px 0 48px rgba(42, 34, 24, 0.10);
+  }
 }
 

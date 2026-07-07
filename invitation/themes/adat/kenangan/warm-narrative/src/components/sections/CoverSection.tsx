@@ -6,12 +6,12 @@
 //         ornamen sudut Art Nouveau, motif garis tipis di tepian.
 
 import { useEffect, useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import FallingFlowers from "@/components/shared/FallingFlowers";
 import ParallaxScene from "@/components/shared/ParallaxScene";
 import type { InvitationConfig } from "@/lib/config-types";
 
-const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
+import { ASSET_BASE as BASE } from "@/lib/assets";
 
 // ── Countdown ──────────────────────────────────────────────────────────────────
 function useCountdown(targetDateString: string) {
@@ -37,6 +37,70 @@ function useCountdown(targetDateString: string) {
   return diff;
 }
 
+// Komponen terpisah agar tick per-detik hanya me-render ulang digit countdown,
+// bukan seluruh cover (parallax scene + falling flowers + semua motion element).
+function Countdown({ targetDateString }: { targetDateString: string }) {
+  const countdown = useCountdown(targetDateString);
+  if (countdown === null) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, delay: 1.25 }}
+      style={{
+        display: "flex",
+        gap: "20px",
+      }}
+    >
+      {[
+        { val: countdown.d, label: "Hari" },
+        { val: countdown.h, label: "Jam" },
+        { val: countdown.m, label: "Menit" },
+        { val: countdown.s, label: "Detik" },
+      ].map(({ val, label }, i) => (
+        <div
+          key={i}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 4,
+            minWidth: 44,
+          }}
+        >
+          <span
+            className="font-display"
+            style={{
+              fontSize: "clamp(22px, 5.5vw, 34px)",
+              fontWeight: 400,
+              color: "var(--gold)",
+              lineHeight: 1,
+              letterSpacing: "-0.01em",
+              textShadow: "0 1px 3px rgba(250,247,242,0.98), 0 2px 14px rgba(250,247,242,1), 0 0 7px rgba(250,247,242,0.9)",
+            }}
+          >
+            {String(val).padStart(2, "0")}
+          </span>
+          <span
+            className="font-label"
+            style={{
+              fontSize: "9px",
+              fontWeight: 600,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              color: "var(--text-muted)",
+              textShadow: "0 1px 3px rgba(250,247,242,0.98), 0 2px 14px rgba(250,247,242,1), 0 0 7px rgba(250,247,242,0.9)",
+            }}
+          >
+            {label}
+          </span>
+        </div>
+      ))}
+    </motion.div>
+  );
+}
+
 // ── Section ───────────────────────────────────────────────────────────────────
 export default function CoverSection({
   couple,
@@ -47,7 +111,6 @@ export default function CoverSection({
 }) {
   const { groom, bride } = couple;
   const weddingDate = new Date(weddingDateString);
-  const countdown = useCountdown(weddingDateString);
   const sectionRef = useRef<HTMLElement>(null);
 
   // Format tanggal display
@@ -79,21 +142,20 @@ export default function CoverSection({
       id="cover"
       className="snap-section"
       ref={sectionRef}
-      style={{ background: "transparent", overflow: "hidden" }}
+      // Jangan beri overflow:hidden — FallingFlowers menggantung 40svh ke
+      // section berikutnya (fade via mask), sama seperti pola seam overhang.
+      style={{ background: "transparent" }}
     >
       {/* Painterly sakura scene — parallax background + framing arch */}
       <ParallaxScene
         fadeTop={0}
-        fadeBottom={14}
         layers={[
           { src: `${BASE}/CoverBg.webp`, depth: 0.03, priority: true, zIndex: 0 },
           { src: `${BASE}/CoverArch.webp`, depth: 0.07, priority: true, opacity: 0.97, zIndex: 1 },
-          { src: `${BASE}/SakuraColumnL.webp`, depth: 0.08, opacity: 0.8, zIndex: 1, box: { top: "-2%", left: "-13%", height: "102svh", enterY: 0 } },
-          { src: `${BASE}/SakuraColumnR.webp`, depth: 0.08, opacity: 0.8, zIndex: 1, box: { top: "-2%", right: "-13%", height: "102svh", enterY: 0 } },
+          { src: `${BASE}/SakuraColumnL.webp`, depth: 0.08, priority: true, opacity: 0.8, zIndex: 1, box: { top: "-2%", left: "-13%", height: "102svh", enterY: 0 } },
+          { src: `${BASE}/SakuraColumnR.webp`, depth: 0.08, priority: true, opacity: 0.8, zIndex: 1, box: { top: "-2%", right: "-13%", height: "102svh", enterY: 0 } },
           { src: `${BASE}/SakuraTopL.webp`, depth: 0.11, opacity: 0.9, zIndex: 2, box: { top: "-3%", left: "-5%", width: "40%" } },
           { src: `${BASE}/SakuraTopR.webp`, depth: 0.12, opacity: 0.9, zIndex: 2, box: { top: "-3%", right: "-5%", width: "40%" } },
-          // Rest ON the bottom edge, not past it — the section clips overflow
-          // (falling petals), and a negative offset would chop them flat.
           { src: `${BASE}/SakuraCornerL.webp`, depth: 0.13, opacity: 0.9, zIndex: 2, box: { bottom: "0%", left: "-7%", width: "44%" } },
           { src: `${BASE}/SakuraCornerR.webp`, depth: 0.14, opacity: 0.9, zIndex: 2, box: { bottom: "0%", right: "-7%", width: "44%" } },
         ]}
@@ -158,7 +220,7 @@ export default function CoverSection({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
           style={{
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "var(--font-inter), sans-serif",
             fontSize: "12px",
             fontWeight: 700,
             letterSpacing: "0.26em",
@@ -213,7 +275,7 @@ export default function CoverSection({
 
           {/* Simbol "&" */}
           <p
-            className="font-garamond"
+            className="font-display"
             style={{
               fontSize: "clamp(18px, 4.5vw, 28px)",
               fontStyle: "italic",
@@ -268,62 +330,7 @@ export default function CoverSection({
         </motion.p>
 
         {/* Countdown */}
-        {countdown !== null && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 1.25 }}
-            style={{
-              display: "flex",
-              gap: "20px",
-            }}
-          >
-            {[
-              { val: countdown.d, label: "Hari" },
-              { val: countdown.h, label: "Jam" },
-              { val: countdown.m, label: "Menit" },
-              { val: countdown.s, label: "Detik" },
-            ].map(({ val, label }, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 4,
-                  minWidth: 44,
-                }}
-              >
-                <span
-                  className="font-display"
-                  style={{
-                    fontSize: "clamp(22px, 5.5vw, 34px)",
-                    fontWeight: 400,
-                    color: "var(--gold)",
-                    lineHeight: 1,
-                    letterSpacing: "-0.01em",
-                    textShadow: "0 1px 3px rgba(250,247,242,0.98), 0 2px 14px rgba(250,247,242,1), 0 0 7px rgba(250,247,242,0.9)",
-                  }}
-                >
-                  {String(val).padStart(2, "0")}
-                </span>
-                <span
-                  className="font-label"
-                  style={{
-                    fontSize: "9px",
-                    fontWeight: 600,
-                    letterSpacing: "0.2em",
-                    textTransform: "uppercase",
-                    color: "var(--text-muted)",
-                    textShadow: "0 1px 3px rgba(250,247,242,0.98), 0 2px 14px rgba(250,247,242,1), 0 0 7px rgba(250,247,242,0.9)",
-                  }}
-                >
-                  {label}
-                </span>
-              </div>
-            ))}
-          </motion.div>
-        )}
+        <Countdown targetDateString={weddingDateString} />
 
         {/* Scroll hint */}
         <motion.div
