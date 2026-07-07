@@ -23,7 +23,7 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-import { ASSET_BASE as THEME_BASE } from "@/lib/assets";
+import { ASSET_BASE as THEME_BASE, THEMES_CDN_ORIGIN } from "@/lib/assets";
 
 // ── GANTI: Sesuaikan dengan nama pasangan & tanggal ──────────────────────────
 export const metadata: Metadata = {
@@ -49,8 +49,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/icon.png" type="image/png" />
-        {process.env.NEXT_PUBLIC_THEMES_CDN && (
-          <link rel="preconnect" href={process.env.NEXT_PUBLIC_THEMES_CDN} />
+        {THEMES_CDN_ORIGIN && (
+          <link rel="preconnect" href={THEMES_CDN_ORIGIN} />
         )}
         {/* First paint: amplop menutup seluruh layar — flap & stempel harus datang duluan */}
         <link rel="preload" as="image" type="image/webp" fetchPriority="high" href={`${THEME_BASE}/WarmAmplopFlapLeft.webp`} />

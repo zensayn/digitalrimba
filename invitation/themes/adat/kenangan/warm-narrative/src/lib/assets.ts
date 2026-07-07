@@ -10,10 +10,10 @@
 
 import type { SyntheticEvent } from "react";
 
-const CDN = process.env.NEXT_PUBLIC_THEMES_CDN;
+export const THEMES_CDN_ORIGIN = process.env.NEXT_PUBLIC_THEMES_CDN;
 
-export const ASSET_BASE = CDN
-  ? `${CDN}/adat/kenangan/warm-narrative`
+export const ASSET_BASE = THEMES_CDN_ORIGIN
+  ? `${THEMES_CDN_ORIGIN}/adat/kenangan/warm-narrative`
   : "/images";
 
 export const asset = (file: string) => `${ASSET_BASE}/${file}`;
