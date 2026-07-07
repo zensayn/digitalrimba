@@ -5,15 +5,24 @@ export type PaymentStatus = 'unpaid' | 'partial' | 'paid';
 export type BudgetCategorySummary = {
   name: string;
   budgeted: number;
+  estimated: number;
+  planned: number;
   actual: number;
+  paid: number;
   overspend: boolean;
 };
 
 export type BudgetSummary = {
   total_budgeted: number;
   total_actual: number;
+  total_paid: number;
   overspend: boolean;
   categories: BudgetCategorySummary[];
+};
+
+export type CategoryBudget = {
+  category: string;
+  planned_amount: number;
 };
 
 export type BudgetItem = {
@@ -23,6 +32,7 @@ export type BudgetItem = {
   vendor?: string | null;
   estimated_amount: number;
   actual_amount: number;
+  paid_amount: number;
   paid: boolean;
   payment_status: PaymentStatus;
   due_date?: string | null;
@@ -36,8 +46,7 @@ export type CreateBudgetItemInput = {
   vendor?: string;
   estimated_amount: number;
   actual_amount: number;
-  paid: boolean;
-  payment_status: PaymentStatus;
+  paid_amount: number;
   due_date?: string | null;
 };
 
@@ -47,8 +56,7 @@ export type UpdateBudgetItemInput = {
   vendor?: string | null;
   estimated_amount?: number;
   actual_amount?: number;
-  paid?: boolean;
-  payment_status?: PaymentStatus;
+  paid_amount?: number;
   due_date?: string | null;
 };
 
@@ -113,4 +121,19 @@ export async function deleteBudgetItem(id: string): Promise<void> {
     method: 'DELETE',
   });
   if (!res.ok) throw new Error(`Delete budget item failed: ${res.status}`);
+}
+
+export async function fetchCategoryBudgets(): Promise<CategoryBudget[]> {
+  const res = await authedFetch(`${BASE}/api/budget/category-budgets`);
+  if (!res.ok) throw new Error(`Category budgets fetch failed: ${res.status}`);
+  return res.json();
+}
+
+export async function upsertCategoryBudget(category: string, planned_amount: number): Promise<CategoryBudget> {
+  const res = await authedFetch(`${BASE}/api/budget/category-budgets`, {
+    method: 'PUT',
+    body: JSON.stringify({ category, planned_amount }),
+  });
+  if (!res.ok) throw new Error(`Set category budget failed: ${res.status}`);
+  return res.json();
 }

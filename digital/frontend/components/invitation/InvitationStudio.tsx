@@ -6,7 +6,7 @@ import type { InvitationDraft } from "./InvitationPreview";
 import { TemplateSelector, type Template } from "./TemplateSelector";
 import { InvitationForm } from "./InvitationForm";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8090";
 
 const initialDraft: InvitationDraft = {
   brideName: "Alya",

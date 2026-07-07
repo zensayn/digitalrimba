@@ -7,13 +7,85 @@
     "trustLabel": "Trusted by couples & planners across the archipelago",
     "morphCaption": "Whatever your celebration, plan and grow it on your terms."
   },
+  "CaraOrder": {
+    "eyebrow": "How it works",
+    "heading": "Five steps.\nAbout 15 minutes.",
+    "subheading": "Most of them do themselves.",
+    "cta": "Get started",
+    "steps": {
+      "step1": {
+        "title": "Pick a theme",
+        "detail": "Browse hand-crafted themes and choose the one that feels like you.",
+        "duration": "± 2 min"
+      },
+      "step2": {
+        "title": "Tell your story",
+        "detail": "Names, date, venue, photos — one simple form, no design skills needed.",
+        "duration": "± 10 min"
+      },
+      "step3": {
+        "title": "Publish",
+        "detail": "Preview live as you type, publish the moment it feels right.",
+        "duration": "instant"
+      },
+      "step4": {
+        "title": "Share on WhatsApp",
+        "detail": "Send every guest a personal link with their name on it.",
+        "duration": "one tap"
+      },
+      "step5": {
+        "title": "Watch RSVPs arrive",
+        "detail": "Replies land in your dashboard by themselves. That's it.",
+        "duration": "automatic"
+      }
+    }
+  },
+  "HowToOrder": {
+    "eyebrow": "How to order",
+    "heading": "The whole journey, at a glance",
+    "ctaTitle": "Get started",
+    "ctaSubtitle": "Your invitation is 15 minutes away.",
+    "frames": {
+      "frame1": { "title": "Pick a theme", "duration": "± 2 min" },
+      "frame2": { "title": "Tell your story", "duration": "± 10 min" },
+      "frame3": { "title": "Publish", "duration": "instant" },
+      "frame4": { "title": "Share on WhatsApp", "duration": "one tap" },
+      "frame5": { "title": "Watch RSVPs arrive", "duration": "automatic" }
+    }
+  },
+  "OurServices": {
+    "eyebrow": "Our Services",
+    "heading": "Everything for your day,\nin one place.",
+    "availableLabel": "Available now",
+    "comingSoonLabel": "Coming soon",
+    "cta": "Explore invitations",
+    "services": {
+      "webInvitations": {
+        "title": "Premium Web Invitations",
+        "desc": "Interactive web invitations with guest personalization, music, map integration, and a seamless visual gallery."
+      },
+      "smartRsvp": {
+        "title": "Smart RSVP",
+        "desc": "Real-time attendance management, integrated with WhatsApp for automatic guest notifications."
+      },
+      "qrCheckin": {
+        "title": "QR Check-in",
+        "desc": "On-site guest validation via QR code for smooth entry, souvenir distribution, and live attendance tracking."
+      },
+      "vendorTools": {
+        "title": "Vendor Tools",
+        "desc": "Coordinate vendors, deposits, and bookings — all tracked in one place, always up to date."
+      }
+    }
+  },
   "Navbar": {
     "ecosystem": "Ecosystem",
     "economics": "Economics",
     "developers": "Developers",
     "governance": "Governance",
     "bookDemo": "Book Demo",
-    "login": "Login"
+    "login": "Login",
+    "languageLabel": "Language"
   },
   "Auth": {
     "brandHeadline": "Deeply Rooted\nin Your Moments",
@@ -97,5 +169,20 @@
     "unpaid": "Unpaid",
     "noItems": "No items added yet.",
     "addItem": "Add Item"
+  },
+  "OurServices2": {
+    "heading": "More features you will love",
+    "card1": {
+      "title": "Designed for beauty",
+      "description": "No more boring layouts. Rimba combines editorial typography, premium music, and interactive maps."
+    },
+    "card2": {
+      "title": "Powered by smart RSVP",
+      "description": "Guests RSVP in seconds via WhatsApp or Web. Manage guest counts effortlessly."
+    },
+    "card3": {
+      "title": "Seamless at the door",
+      "description": "Drop the clipboards. Secure check-in consoles scan passes at the door."
+    }
   }
 }

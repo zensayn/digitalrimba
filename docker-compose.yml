@@ -19,6 +19,22 @@ services:
       timeout: 5s
       retries: 5
 
+  # 1536MB Redis cache for the digital app: better-auth sessions (frontend
+  # secondaryStorage) + backend check-in read caching. Host port 6380 so the
+  # frontend dev server on the host can reach it (6379 left free).
+  digital-redis:
+    image: redis:7-alpine
+    container_name: rimba-digital-redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 1536mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./digital/backend
@@ -27,15 +43,18 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      digital-redis:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql://rimba:rimba_secret@postgres:5432/rimba_db
+      REDIS_URL: redis://digital-redis:6379
       JWKS_URL: http://host.docker.internal:3000/api/auth/jwks
       CHECKIN_SESSION_KEY: rimba-checkin-dev-secret-change-in-prod
       ALLOWED_ORIGIN: http://localhost:3000
       S3_API: https://bbfe2e9f8f01720f3ec3d64b880d77b8.r2.cloudflarestorage.com/rimba
       PORT: "8080"
     ports:
-      - "8080:8080"
+      - "8090:8080"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:

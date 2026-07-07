@@ -35,6 +35,8 @@ type BudgetStore interface {
 	GetBudgetItem(context.Context, string, string) (BudgetItem, error)
 	ListBudgetItems(context.Context, string) ([]BudgetItem, error)
 	GetBudgetSummary(context.Context, string) (BudgetSummary, error)
+	ListCategoryBudgets(context.Context, string) ([]CategoryBudget, error)
+	UpsertCategoryBudget(context.Context, string, string, float64) (CategoryBudget, error)
 }
 
 type PostgresBudgetStore struct {
@@ -70,6 +72,8 @@ func (h *BudgetHandler) RegisterRoutes(r chi.Router) {
 	r.Put("/api/budget/items/{id}", h.Update)
 	r.Delete("/api/budget/items/{id}", h.Delete)
 	r.Get("/api/budget/summary", h.Summary)
+	r.Get("/api/budget/category-budgets", h.ListCategoryBudgets)
+	r.Put("/api/budget/category-budgets", h.UpsertCategoryBudget)
 }
 
 type BudgetItem struct {
@@ -83,6 +87,7 @@ type BudgetItem struct {
 	Budgeted        float64   `json:"budgeted"`
 	ActualAmount    float64   `json:"actual_amount"`
 	Actual          float64   `json:"actual"`
+	PaidAmount      float64   `json:"paid_amount"`
 	Paid            bool      `json:"paid"`
 	PaymentStatus   string    `json:"payment_status"`
 	DueDate         *string   `json:"due_date,omitempty"`
@@ -97,8 +102,7 @@ type CreateBudgetItemParams struct {
 	Vendor          *string
 	EstimatedAmount float64
 	ActualAmount    float64
-	Paid            bool
-	PaymentStatus   string
+	PaidAmount      float64
 	DueDate         *string
 }
 
@@ -110,14 +114,19 @@ type UpdateBudgetItemParams struct {
 	Vendor          *string
 	EstimatedAmount *float64
 	ActualAmount    *float64
-	Paid            *bool
-	PaymentStatus   *string
+	PaidAmount      *float64
 	DueDate         *string
+}
+
+type CategoryBudget struct {
+	Category      string  `json:"category"`
+	PlannedAmount float64 `json:"planned_amount"`
 }
 
 type BudgetSummary struct {
 	TotalBudgeted float64                 `json:"total_budgeted"`
 	TotalActual   float64                 `json:"total_actual"`
+	TotalPaid     float64                 `json:"total_paid"`
 	Overspend     bool                    `json:"overspend"`
 	Categories    []BudgetCategorySummary `json:"categories"`
 }
@@ -125,7 +134,10 @@ type BudgetSummary struct {
 type BudgetCategorySummary struct {
 	Name      string  `json:"name"`
 	Budgeted  float64 `json:"budgeted"`
+	Estimated float64 `json:"estimated"`
+	Planned   float64 `json:"planned"`
 	Actual    float64 `json:"actual"`
+	Paid      float64 `json:"paid"`
 	Overspend bool    `json:"overspend"`
 }
 
@@ -139,8 +151,9 @@ type createBudgetItemRequest struct {
 	Budgeted        *float64 `json:"budgeted"`
 	ActualAmount    *float64 `json:"actual_amount"`
 	Actual          *float64 `json:"actual"`
-	Paid            *bool    `json:"paid"`
-	PaymentStatus   *string  `json:"payment_status"`
+	PaidAmount      *float64 `json:"paid_amount"`
+	Paid            *bool    `json:"paid"`          // legacy: translated to paid_amount
+	PaymentStatus   *string  `json:"payment_status"` // legacy: translated to paid_amount
 	DueDate         *string  `json:"due_date"`
 }
 
@@ -154,8 +167,7 @@ type updateBudgetItemRequest struct {
 	Budgeted        *float64 `json:"budgeted"`
 	ActualAmount    *float64 `json:"actual_amount"`
 	Actual          *float64 `json:"actual"`
-	Paid            *bool    `json:"paid"`
-	PaymentStatus   *string  `json:"payment_status"`
+	PaidAmount      *float64 `json:"paid_amount"`
 	DueDate         *string  `json:"due_date"`
 }
 
@@ -290,6 +302,68 @@ func (h *BudgetHandler) Summary(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, summary)
 }
 
+func (h *BudgetHandler) ListCategoryBudgets(w http.ResponseWriter, r *http.Request) {
+	weddingID, ok := h.requireBudgetWeddingID(w, r)
+	if !ok {
+		return
+	}
+
+	budgets, err := h.store.ListCategoryBudgets(r.Context(), weddingID)
+	if err != nil {
+		writeBudgetError(w, err)
+		return
+	}
+	if budgets == nil {
+		budgets = []CategoryBudget{}
+	}
+
+	writeJSON(w, http.StatusOK, budgets)
+}
+
+type upsertCategoryBudgetRequest struct {
+	WeddingID     string   `json:"wedding_id"`
+	Category      string   `json:"category"`
+	PlannedAmount *float64 `json:"planned_amount"`
+}
+
+func (h *BudgetHandler) UpsertCategoryBudget(w http.ResponseWriter, r *http.Request) {
+	weddingID, ok := h.requireBudgetWeddingID(w, r)
+	if !ok {
+		return
+	}
+
+	var req upsertCategoryBudgetRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid json", http.StatusBadRequest)
+		return
+	}
+	if !h.allowsRequestedWedding(w, weddingID, req.WeddingID) {
+		return
+	}
+
+	category := strings.TrimSpace(req.Category)
+	if category == "" {
+		http.Error(w, "category required", http.StatusBadRequest)
+		return
+	}
+	planned := 0.0
+	if req.PlannedAmount != nil {
+		planned = *req.PlannedAmount
+	}
+	if planned < 0 {
+		http.Error(w, "planned_amount must be non-negative", http.StatusBadRequest)
+		return
+	}
+
+	budget, err := h.store.UpsertCategoryBudget(r.Context(), weddingID, category, planned)
+	if err != nil {
+		writeBudgetError(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, budget)
+}
+
 func (h *BudgetHandler) requireBudgetWeddingID(w http.ResponseWriter, r *http.Request) (string, bool) {
 	weddingID, err := h.resolveBudgetWeddingID(r.Context())
 	if err != nil {
@@ -341,16 +415,16 @@ func createBudgetParams(weddingID string, req createBudgetItemRequest) (CreateBu
 		return CreateBudgetItemParams{}, errors.New("amounts must be non-negative")
 	}
 
-	paid := false
-	if req.Paid != nil {
-		paid = *req.Paid
+	// paid_amount is canonical; translate legacy paid / payment_status when absent.
+	paidAmount := 0.0
+	switch {
+	case req.PaidAmount != nil:
+		paidAmount = *req.PaidAmount
+	case (req.PaymentStatus != nil && *req.PaymentStatus == "paid") || (req.Paid != nil && *req.Paid):
+		paidAmount = actualAmount
 	}
-
-	ps := "unpaid"
-	if req.PaymentStatus != nil && (*req.PaymentStatus == "unpaid" || *req.PaymentStatus == "partial" || *req.PaymentStatus == "paid") {
-		ps = *req.PaymentStatus
-	} else if paid {
-		ps = "paid"
+	if paidAmount < 0 {
+		return CreateBudgetItemParams{}, errors.New("amounts must be non-negative")
 	}
 
 	return CreateBudgetItemParams{
@@ -360,8 +434,7 @@ func createBudgetParams(weddingID string, req createBudgetItemRequest) (CreateBu
 		Vendor:          optionalTrimmedString(req.Vendor),
 		EstimatedAmount: estimatedAmount,
 		ActualAmount:    actualAmount,
-		Paid:            paid,
-		PaymentStatus:   ps,
+		PaidAmount:      paidAmount,
 		DueDate:         optionalTrimmedString(req.DueDate),
 	}, nil
 }
@@ -388,6 +461,9 @@ func updateBudgetParams(id string, weddingID string, req updateBudgetItemRequest
 	if actualAmount != nil && *actualAmount < 0 {
 		return UpdateBudgetItemParams{}, errors.New("amounts must be non-negative")
 	}
+	if req.PaidAmount != nil && *req.PaidAmount < 0 {
+		return UpdateBudgetItemParams{}, errors.New("amounts must be non-negative")
+	}
 
 	return UpdateBudgetItemParams{
 		ID:              id,
@@ -397,8 +473,7 @@ func updateBudgetParams(id string, weddingID string, req updateBudgetItemRequest
 		Vendor:          optionalTrimmedString(req.Vendor),
 		EstimatedAmount: estimatedAmount,
 		ActualAmount:    actualAmount,
-		Paid:            req.Paid,
-		PaymentStatus:   req.PaymentStatus,
+		PaidAmount:      req.PaidAmount,
 		DueDate:         optionalTrimmedString(req.DueDate),
 	}, nil
 }
@@ -458,7 +533,22 @@ func normalizeBudgetItem(item BudgetItem) BudgetItem {
 	}
 	item.Budgeted = item.EstimatedAmount
 	item.Actual = item.ActualAmount
+	// Derive status from paid_amount vs actual. Idempotent with the DB generated
+	// columns; keeps the in-memory test store identical to Postgres.
+	item.PaymentStatus = derivePaymentStatus(item.ActualAmount, item.PaidAmount)
+	item.Paid = item.PaymentStatus == "paid"
 	return item
+}
+
+func derivePaymentStatus(actual, paid float64) string {
+	switch {
+	case paid <= 0:
+		return "unpaid"
+	case actual > 0 && paid >= actual:
+		return "paid"
+	default:
+		return "partial"
+	}
 }
 
 func writeBudgetError(w http.ResponseWriter, err error) {
@@ -481,9 +571,8 @@ func (s *PostgresBudgetStore) CreateBudgetItem(ctx context.Context, params Creat
 		params.Vendor,          // $4
 		params.EstimatedAmount, // $5
 		params.ActualAmount,    // $6
-		params.Paid,            // $7
-		params.PaymentStatus,   // $8
-		params.DueDate,         // $9
+		params.PaidAmount,      // $7
+		params.DueDate,         // $8
 	))
 }
 
@@ -501,9 +590,8 @@ func (s *PostgresBudgetStore) UpdateBudgetItem(ctx context.Context, params Updat
 		params.Vendor,          // $5
 		params.EstimatedAmount, // $6
 		params.ActualAmount,    // $7
-		params.Paid,            // $8
-		params.PaymentStatus,   // $9
-		params.DueDate,         // $10
+		params.PaidAmount,      // $8
+		params.DueDate,         // $9
 	))
 }
 
@@ -557,6 +645,7 @@ func (s *PostgresBudgetStore) GetBudgetSummary(ctx context.Context, weddingID st
 	err := s.db.QueryRow(ctx, budgetSummarySQL, weddingID).Scan(
 		&summary.TotalBudgeted,
 		&summary.TotalActual,
+		&summary.TotalPaid,
 		&summary.Overspend,
 		&categoriesJSON,
 	)
@@ -572,6 +661,33 @@ func (s *PostgresBudgetStore) GetBudgetSummary(ctx context.Context, weddingID st
 		summary.Categories = []BudgetCategorySummary{}
 	}
 	return summary, nil
+}
+
+func (s *PostgresBudgetStore) ListCategoryBudgets(ctx context.Context, weddingID string) ([]CategoryBudget, error) {
+	rows, err := s.db.Query(ctx, listCategoryBudgetsSQL, weddingID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	budgets := []CategoryBudget{}
+	for rows.Next() {
+		var b CategoryBudget
+		if err := rows.Scan(&b.Category, &b.PlannedAmount); err != nil {
+			return nil, err
+		}
+		budgets = append(budgets, b)
+	}
+	return budgets, rows.Err()
+}
+
+func (s *PostgresBudgetStore) UpsertCategoryBudget(ctx context.Context, weddingID, category string, planned float64) (CategoryBudget, error) {
+	var b CategoryBudget
+	err := s.db.QueryRow(ctx, upsertCategoryBudgetSQL, weddingID, category, planned).Scan(&b.Category, &b.PlannedAmount)
+	if err != nil {
+		return CategoryBudget{}, err
+	}
+	return b, nil
 }
 
 func (s *PostgresBudgetStore) BudgetWeddingIDForUser(ctx context.Context, userID string) (string, error) {
@@ -627,6 +743,7 @@ func scanBudgetItem(row rowScanner) (BudgetItem, error) {
 		&item.Vendor,
 		&item.EstimatedAmount,
 		&item.ActualAmount,
+		&item.PaidAmount,
 		&item.Paid,
 		&item.PaymentStatus,
 		&item.DueDate,
@@ -650,13 +767,16 @@ item_name,
 vendor,
 estimated_amount::float8,
 actual_amount::float8,
+paid_amount::float8,
 paid,
-COALESCE(payment_status, 'unpaid'),
+payment_status,
 due_date::text,
 created_at,
 updated_at
 `
 
+// paid and payment_status are generated columns (derived from paid_amount /
+// actual_amount), so they are never written here.
 const createBudgetItemSQL = `
 INSERT INTO budget_items (
     wedding_id,
@@ -665,8 +785,7 @@ INSERT INTO budget_items (
     vendor,
     estimated_amount,
     actual_amount,
-    paid,
-    payment_status,
+    paid_amount,
     due_date,
     created_at,
     updated_at
@@ -677,9 +796,8 @@ INSERT INTO budget_items (
     $4,
     $5::numeric,
     $6::numeric,
-    $7,
-    $8,
-    $9::date,
+    $7::numeric,
+    $8::date,
     now(),
     now()
 )
@@ -693,9 +811,8 @@ SET
     vendor           = COALESCE($5,          vendor),
     estimated_amount = COALESCE($6::numeric, estimated_amount),
     actual_amount    = COALESCE($7::numeric, actual_amount),
-    paid             = COALESCE($8,          paid),
-    payment_status   = COALESCE($9,          payment_status),
-    due_date         = COALESCE($10::date,   due_date),
+    paid_amount      = COALESCE($8::numeric, paid_amount),
+    due_date         = COALESCE($9::date,    due_date),
     updated_at       = now()
 WHERE id = $1::uuid
   AND wedding_id = $2::uuid
@@ -720,33 +837,77 @@ WHERE wedding_id = $1::uuid
 ORDER BY created_at, id
 `
 
+// A category's "budgeted" is its top-down planned amount when set, otherwise the
+// bottom-up sum of item estimates. FULL OUTER JOIN so a planned-but-empty category
+// (or an itemised category with no plan) still appears.
 const budgetSummarySQL = `
-WITH category_totals AS (
+WITH item_totals AS (
     SELECT
         category AS name,
-        COALESCE(SUM(estimated_amount), 0)::float8 AS budgeted,
-        COALESCE(SUM(actual_amount), 0)::float8 AS actual
+        COALESCE(SUM(estimated_amount), 0)::float8 AS estimated,
+        COALESCE(SUM(actual_amount), 0)::float8 AS actual,
+        COALESCE(SUM(paid_amount), 0)::float8 AS paid
     FROM budget_items
     WHERE wedding_id = $1::uuid
     GROUP BY category
+),
+planned AS (
+    SELECT category AS name, planned_amount::float8 AS planned
+    FROM budget_category_budgets
+    WHERE wedding_id = $1::uuid
+),
+merged AS (
+    SELECT
+        COALESCE(i.name, p.name) AS name,
+        COALESCE(i.estimated, 0) AS estimated,
+        COALESCE(i.actual, 0) AS actual,
+        COALESCE(i.paid, 0) AS paid,
+        COALESCE(p.planned, 0) AS planned
+    FROM item_totals i
+    FULL OUTER JOIN planned p ON i.name = p.name
+),
+final AS (
+    SELECT
+        name, estimated, actual, paid, planned,
+        CASE WHEN planned > 0 THEN planned ELSE estimated END AS budgeted
+    FROM merged
 )
 SELECT
     COALESCE(SUM(budgeted), 0)::float8 AS total_budgeted,
     COALESCE(SUM(actual), 0)::float8 AS total_actual,
+    COALESCE(SUM(paid), 0)::float8 AS total_paid,
     COALESCE(BOOL_OR(actual > budgeted), false) AS overspend,
     COALESCE(
         jsonb_agg(
             jsonb_build_object(
                 'name', name,
                 'budgeted', budgeted,
+                'estimated', estimated,
+                'planned', planned,
                 'actual', actual,
+                'paid', paid,
                 'overspend', actual > budgeted
             )
             ORDER BY name
         ) FILTER (WHERE name IS NOT NULL),
         '[]'::jsonb
     ) AS categories
-FROM category_totals
+FROM final
+`
+
+const listCategoryBudgetsSQL = `
+SELECT category, planned_amount::float8
+FROM budget_category_budgets
+WHERE wedding_id = $1::uuid
+ORDER BY category
+`
+
+const upsertCategoryBudgetSQL = `
+INSERT INTO budget_category_budgets (wedding_id, category, planned_amount, created_at, updated_at)
+VALUES ($1::uuid, $2, $3::numeric, now(), now())
+ON CONFLICT (wedding_id, category)
+DO UPDATE SET planned_amount = EXCLUDED.planned_amount, updated_at = now()
+RETURNING category, planned_amount::float8
 `
 
 const budgetWeddingIDForUserSQL = `

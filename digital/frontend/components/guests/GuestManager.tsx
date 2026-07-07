@@ -642,11 +642,10 @@ export function GuestManager() {
               key="messages"
               initial={{ opacity: 0, y: 12, filter: "blur(12px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -12, filter: "blur(12px)" }}
+              exit={{ opacity: 0, y: -12, filter: "blur(12px)", transition: { duration: 0.2, ease: "easeIn" } }}
               transition={{
                 duration: 0.35,
                 ease: EASE_OUT,
-                exit: { duration: 0.2, ease: "easeIn" }
               }}
               className="mt-8"
             >
@@ -709,11 +708,10 @@ export function GuestManager() {
               key="table"
               initial={{ opacity: 0, y: 12, filter: "blur(12px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -12, filter: "blur(12px)" }}
+              exit={{ opacity: 0, y: -12, filter: "blur(12px)", transition: { duration: 0.2, ease: "easeIn" } }}
               transition={{
                 duration: 0.35,
                 ease: EASE_OUT,
-                exit: { duration: 0.2, ease: "easeIn" }
               }}
               className="mt-8 -mx-4 md:mx-0 overflow-x-auto scrollbar-hide"
             >

@@ -1,106 +1,78 @@
 "use client";
 
-import { motion } from "motion/react";
-import { IconChevronRight, IconWorld, IconMoon, IconSun } from "@tabler/icons-react";
-import { useState, useEffect } from "react";
-import { useTranslations, useLocale } from 'next-intl';
-import { Link, usePathname, useRouter } from '@/i18n/routing';
-import { TextureButton } from "@/components/ui/texture-button";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
+import { AltArrowRight, ArrowRightUp } from "@solar-icons/react";
+import LocaleSwitcher from "@/components/LocaleSwitcher";
+import CurvedMenu from "@/components/CurvedMenu";
 
 export default function Navbar() {
-  const t = useTranslations('Navbar');
-  const locale = useLocale();
-  const pathname = usePathname();
-  const router = useRouter();
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.classList.toggle("dark", savedTheme === "dark");
-    } else {
-      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      setTheme(isDark ? "dark" : "light");
-      document.documentElement.classList.toggle("dark", isDark);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
-  };
-
-  const handleLocaleChange = (newLocale: string) => {
-    router.replace(pathname, { locale: newLocale });
-  };
+  const t = useTranslations("Navbar");
 
   const menuItems = [
-    { name: t('ecosystem'), hasDropdown: false },
-    { name: t('economics'), hasDropdown: true },
-    { name: t('developers'), hasDropdown: false },
-    { name: t('governance'), hasDropdown: true },
+    { name: t("ecosystem"), hasDropdown: false },
+    { name: t("economics"), hasDropdown: true },
+    { name: t("developers"), hasDropdown: false },
+    { name: t("governance"), hasDropdown: true },
   ];
 
   return (
-    <nav data-site-nav className="sticky top-0 flex items-center justify-between py-3 px-6 md:px-10 w-full z-[100] bg-white/80 backdrop-blur-md border-b border-[#d9d9dd] will-change-transform">
-      {/* Left Side: Logo */}
-      <Link href="/" className="flex-1 flex items-center gap-4">
-         <span className="font-poppins font-bold tracking-tight text-xl text-[#212121]">
-          RIMBA DIGITAL
-        </span>
-      </Link>
-
-      {/* Center Menu */}
-      <ul className="hidden md:flex items-center gap-8 text-[#212121]/70 font-poppins font-normal text-[12px] lowercase tracking-normal">
-        {menuItems.map((item) => (
-          <li
-            key={item.name}
-            className="cursor-pointer hover:text-[#346739] transition-colors flex items-center gap-1 group"
-          >
-            {item.name}
-            {item.hasDropdown && (
-              <IconChevronRight className="w-3 h-3 transition-transform group-hover:rotate-90" />
-            )}
-          </li>
-        ))}
-      </ul>
-
-      {/* Right Side: Theme Toggle + Language + Button */}
-      <div className="flex-1 flex justify-end items-center gap-6">
-        <div className="flex items-center gap-2 text-[#212121]/40 font-poppins font-bold text-[10px] uppercase ">
-          <button 
-            onClick={() => handleLocaleChange('id')}
-            className={`hover:text-[#346739] transition-colors ${locale === 'id' ? 'text-[#346739] underline underline-offset-4' : ''}`}
-          >
-            ID
-          </button>
-          <span>/</span>
-          <button 
-            onClick={() => handleLocaleChange('en')}
-            className={`hover:text-[#346739] transition-colors ${locale === 'en' ? 'text-[#346739] underline underline-offset-4' : ''}`}
-          >
-            EN
-          </button>
+    <nav
+      data-site-nav
+      className="sticky top-0 w-full z-[100] bg-white/80 backdrop-blur-md border-b border-[#d9d9dd] will-change-transform"
+    >
+      <div className="max-w-[1400px] mx-auto flex items-center justify-between py-3.5 px-6 md:px-10">
+        {/* Logo */}
+        <div className="flex-1">
+          <Link href="/" className="-ml-3 md:ml-0 inline-block hover:opacity-85 transition-opacity">
+            <img
+              src="https://contents.rimba.app/assets/rimba-logo.webp"
+              alt="Rimba Digital"
+              className="block h-16 md:h-[72px] -my-3 w-auto"
+            />
+          </Link>
         </div>
 
-        <button
-          onClick={toggleTheme}
-          className="p-2 text-[#212121]/40 hover:text-[#346739] transition-colors"
-          aria-label="Toggle Theme"
-        >
-          {theme === "light" ? (
-            <IconMoon className="w-4 h-4" />
-          ) : (
-            <IconSun className="w-4 h-4" />
-          )}
-        </button>
+        {/* Center menu (desktop only) */}
+        <ul className="hidden md:flex items-center gap-8 text-[#212121] font-normal text-sm">
+          {menuItems.map((item) => (
+            <li key={item.name}>
+              <button
+                type="button"
+                aria-haspopup={item.hasDropdown || undefined}
+                aria-expanded={item.hasDropdown ? false : undefined}
+                className="cursor-pointer hover:opacity-75 transition-opacity flex items-center gap-1 group py-2"
+              >
+                {item.name}
+                {item.hasDropdown && (
+                  <AltArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                )}
+              </button>
+            </li>
+          ))}
+        </ul>
 
-        <TextureButton size="sm" className="hidden md:flex rounded-full transition-all">
-          {t('login')}
-        </TextureButton>
+        {/* Right side: locale + login CTA + mobile hamburger */}
+        <div className="flex-1 flex justify-end items-center gap-3 md:gap-4">
+          <div className="hidden md:block">
+            <LocaleSwitcher />
+          </div>
+
+          <Link
+            href="/login"
+            className="group/btn hidden md:flex items-center gap-2 bg-[#212121] hover:bg-[#346739] text-white text-sm font-normal rounded-full pl-2 pr-6 py-2 transition-colors duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] cursor-pointer"
+          >
+            <span className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover/btn:rotate-[45deg] shrink-0">
+              <ArrowRightUp className="w-[18px] h-[18px]" />
+            </span>
+            {t("login")}
+          </Link>
+
+          {/* Curved hamburger menu — mobile only */}
+          <div className="md:hidden">
+            <CurvedMenu buttonColor="#212121" activeButtonColor="#ffffff" />
+          </div>
+        </div>
       </div>
     </nav>
   );

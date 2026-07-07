@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle,
-} from '@/components/ui/dialog';
+  Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
+} from '@/components/ui/sheet';
 import {
   Drawer, DrawerContent, DrawerHeader, DrawerTitle,
 } from '@/components/ui/drawer';
@@ -22,6 +22,7 @@ type Props = {
   open: boolean;
   onClose: () => void;
   item?: BudgetItem | null;
+  defaultCategory?: string;
   onSave: (data: CreateBudgetItemInput | UpdateBudgetItemInput) => Promise<void>;
   isSaving?: boolean;
 };
@@ -29,10 +30,11 @@ type Props = {
 const PAYMENT_STATUSES: PaymentStatus[] = ['unpaid', 'partial', 'paid'];
 
 function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
+  );
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)');
-    setIsMobile(mq.matches);
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
@@ -42,23 +44,26 @@ function useIsMobile() {
 
 function BudgetItemForm({
   item,
+  defaultCategory,
   onSave,
   onClose,
   isSaving,
 }: {
   item?: BudgetItem | null;
+  defaultCategory?: string;
   onSave: Props['onSave'];
   onClose: () => void;
   isSaving?: boolean;
 }) {
   const isEdit = !!item;
-  const [category, setCategory] = useState(item?.category ?? FIXED_CATEGORIES[0]);
+  const [category, setCategory] = useState(item?.category ?? defaultCategory ?? FIXED_CATEGORIES[0]);
   const [itemName, setItemName] = useState(item?.item_name ?? '');
   const [vendor, setVendor] = useState(item?.vendor ?? '');
   const [estimated, setEstimated] = useState(item?.estimated_amount?.toString() ?? '');
   const [actual, setActual] = useState(item?.actual_amount?.toString() ?? '');
   const [dueDate, setDueDate] = useState(item?.due_date ?? '');
   const [status, setStatus] = useState<PaymentStatus>(item?.payment_status ?? 'unpaid');
+  const [paidSoFar, setPaidSoFar] = useState(item?.paid_amount?.toString() ?? '');
   const [error, setError] = useState('');
 
   async function handleSubmit(e: React.FormEvent) {
@@ -67,15 +72,24 @@ function BudgetItemForm({
     if (!estimated || isNaN(Number(estimated)) || Number(estimated) < 0) {
       setError('Budgeted amount must be a non-negative number.'); return;
     }
+    const actualNum = Number(actual) || 0;
+    // paid_amount is canonical; status maps to it. Partial uses the entered amount,
+    // clamped to [0, actual] so it can never exceed what was spent.
+    let paidAmount = 0;
+    if (status === 'paid') paidAmount = actualNum;
+    else if (status === 'partial') {
+      paidAmount = Number(paidSoFar) || 0;
+      if (paidAmount < 0) { setError('Paid amount must be non-negative.'); return; }
+      if (paidAmount > actualNum) { setError('Paid amount can’t exceed the actual amount.'); return; }
+    }
     setError('');
     const data: CreateBudgetItemInput = {
       category,
       item_name: itemName.trim(),
       vendor: vendor.trim() || undefined,
       estimated_amount: Number(estimated),
-      actual_amount: Number(actual) || 0,
-      paid: status === 'paid',
-      payment_status: status,
+      actual_amount: actualNum,
+      paid_amount: paidAmount,
       due_date: dueDate || null,
     };
     await onSave(data);
@@ -162,6 +176,21 @@ function BudgetItemForm({
         </div>
       </div>
 
+      {status === 'partial' && (
+        <div>
+          <label className={labelCls}>Paid so far (Rp)</label>
+          <Input
+            type="number"
+            min="0"
+            value={paidSoFar}
+            onChange={e => setPaidSoFar(e.target.value)}
+            placeholder="0"
+            className={inputCls}
+          />
+          <p className="text-[11px] text-[#93939f] font-normal mt-1">How much of the actual amount is already paid.</p>
+        </div>
+      )}
+
       {error && <p className="text-[12px] text-[#b30000]">{error}</p>}
 
       <div className="flex items-center justify-end gap-2 pt-1">
@@ -176,40 +205,38 @@ function BudgetItemForm({
   );
 }
 
-export function BudgetItemModal({ open, onClose, item, onSave, isSaving }: Props) {
+export function BudgetItemModal({ open, onClose, item, defaultCategory, onSave, isSaving }: Props) {
   const isMobile = useIsMobile();
-  const title = item ? 'Edit item' : 'Add budget item';
+  const title = item ? 'Edit item' : 'Add an item';
+  const subtitle = item
+    ? 'Update the details and payment status.'
+    : 'Log an expense and we’ll keep your budget in sync.';
 
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={v => !v && onClose()}>
         <DrawerContent className="px-4 pb-6">
-          <DrawerHeader className="pb-0">
+          <DrawerHeader className="pb-0 text-left">
             <DrawerTitle className="text-[17px] font-bold text-bold">{title}</DrawerTitle>
+            <p className="text-[12px] text-[#93939f] font-normal">{subtitle}</p>
           </DrawerHeader>
-          <BudgetItemForm item={item} onSave={onSave} onClose={onClose} isSaving={isSaving} />
+          <BudgetItemForm item={item} defaultCategory={defaultCategory} onSave={onSave} onClose={onClose} isSaving={isSaving} />
         </DrawerContent>
       </Drawer>
     );
   }
 
   return (
-    <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      {/* Remove Radix zoom-in keyframe; use Framer spring instead */}
-      <DialogContent className="max-w-md rounded-[22px] p-0 !duration-0 data-[state=open]:!animate-none data-[state=closed]:!animate-none overflow-hidden">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ type: 'spring', duration: 0.4, bounce: 0.1 }}
-          className="p-6"
-        >
-          <DialogHeader>
-            <DialogTitle className="text-[17px] font-bold text-bold">{title}</DialogTitle>
-          </DialogHeader>
-          <BudgetItemForm item={item} onSave={onSave} onClose={onClose} isSaving={isSaving} />
-        </motion.div>
-      </DialogContent>
-    </Dialog>
+    <Sheet open={open} onOpenChange={v => !v && onClose()}>
+      <SheetContent side="right" className="w-full sm:max-w-md gap-0 bg-white p-0">
+        <SheetHeader className="border-b border-[#f2f2f2] px-6 py-5">
+          <SheetTitle className="text-[18px] font-bold text-bold">{title}</SheetTitle>
+          <SheetDescription className="text-[12px] text-[#93939f] font-normal">{subtitle}</SheetDescription>
+        </SheetHeader>
+        <div className="flex-1 overflow-y-auto px-6 pb-6">
+          <BudgetItemForm item={item} defaultCategory={defaultCategory} onSave={onSave} onClose={onClose} isSaving={isSaving} />
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }

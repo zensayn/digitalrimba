@@ -79,7 +79,7 @@ export function TemplateSelector({ onSelect }: TemplateSelectorProps) {
 
   const transition = {
     duration: 0.5,
-    ease: [0.32, 0.72, 0, 1] // ease-drawer
+    ease: [0.32, 0.72, 0, 1] as const // ease-drawer
   }
 
   const viewVariants = {

@@ -1,10 +1,28 @@
 import { betterAuth } from "better-auth";
 import { jwt } from "better-auth/plugins/jwt";
 import { Pool } from "pg";
+import { nextCookies } from "better-auth/next-js";
+import { createClient } from "redis";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
+
+// Optional Redis session cache (docker: digital-redis, host port 6380).
+// When REDIS_URL is set, better-auth keeps sessions in Redis instead of
+// hitting Postgres on every validation; unset = old behavior, nothing breaks.
+let redis = process.env.REDIS_URL
+  ? createClient({ url: process.env.REDIS_URL })
+  : null;
+if (redis) {
+  redis.on("error", (err) => console.error("redis:", err));
+  try {
+    await redis.connect();
+  } catch (err) {
+    console.error("redis: failed to connect, falling back to Postgres sessions", err);
+    redis = null;
+  }
+}
 
 const googleEnabled =
   !!process.env.GOOGLE_CLIENT_ID &&
@@ -16,6 +34,18 @@ export const auth = betterAuth({
 
   // Raw pg.Pool — better-auth wraps it in Kysely's PostgresDialect automatically.
   database: pool,
+
+  ...(redis && {
+    secondaryStorage: {
+      get: (key: string) => redis.get(key),
+      set: async (key: string, value: string, ttl?: number) => {
+        await redis.set(key, value, ttl ? { EX: ttl } : {});
+      },
+      delete: async (key: string) => {
+        await redis.del(key);
+      },
+    },
+  }),
 
   emailAndPassword: {
     enabled: true,
@@ -39,6 +69,7 @@ export const auth = betterAuth({
         expirationTime: "15m",
       },
     }),
+    nextCookies(),
   ],
 });
 
