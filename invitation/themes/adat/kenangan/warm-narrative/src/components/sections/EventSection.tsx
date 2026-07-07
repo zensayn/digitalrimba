@@ -7,7 +7,7 @@ import ParallaxScene from "@/components/shared/ParallaxScene";
 import { sceneFrame } from "@/components/shared/sceneFrame";
 import type { InvitationConfig } from "@/lib/config-types";
 
-const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
+import { ASSET_BASE as BASE, hideOnError } from "@/lib/assets";
 
 interface EventSectionProps {
   couple: InvitationConfig["couple"];
@@ -34,8 +34,8 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
   const [dateNum, dateMonth, dateYear] = event.date.split(" ");
 
   const bgAsset = isAkad
-    ? `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/CincinEmas.webp`
-    : `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/TempatPernikahan.webp`;
+    ? `${BASE}/CincinEmas.webp`
+    : `${BASE}/TempatPernikahan.webp`;
 
   const sceneBg = isAkad ? `${BASE}/AkadBg.webp` : `${BASE}/ResepsiBg.webp`;
   const sceneArch = isAkad ? `${BASE}/AkadArch.webp` : `${BASE}/ResepsiArch.webp`;
@@ -53,7 +53,8 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
 
   // Frame-first: let the sceneFrame's core pieces land before content reveals,
   // so the floral stage builds first and the text follows a beat later.
-  const REVEAL_AFTER_FRAME = 0.6;
+  // Ikut dipercepat bersama DELAY_SCALE di sceneFrame.ts (0.6 saat skala 1).
+  const REVEAL_AFTER_FRAME = 0.35;
 
   // Direction-aware fade: Akad slides from left, Resepsi from right
   const fade = (delay: number) => ({
@@ -170,7 +171,7 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
         {/* Ornamental divider */}
         <motion.div variants={fade(0.18)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} className="flex items-center w-full" style={{ gap: 10 }}>
           <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, var(--gold-dim))", opacity: 0.4 }} />
-          <img src={bgAsset} alt="" loading="lazy" decoding="async" style={{ width: 22, height: 22, objectFit: "contain", opacity: 0.55, flexShrink: 0 }} />
+          <img src={bgAsset} alt="" loading="lazy" decoding="async" onError={hideOnError} style={{ width: 22, height: 22, objectFit: "contain", opacity: 0.55, flexShrink: 0 }} />
           <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, var(--gold-dim), transparent)", opacity: 0.4 }} />
         </motion.div>
 
@@ -187,7 +188,7 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
           <p className="font-label" style={{ fontSize: "11px", letterSpacing: "0.14em", color: "var(--text-muted)", borderBottom: "1px solid var(--border)", paddingBottom: 6, width: "100%" }}>{event.time}</p>
           <p className="font-display" style={{ color: "var(--text)", fontSize: "clamp(15px, 4.5vw, 20px)", fontWeight: 400, fontStyle: "italic", letterSpacing: "0.04em", lineHeight: 1.2 }}>{event.venue}</p>
           <div className="flex items-start justify-center gap-2" style={{ marginTop: 2 }}>
-            <img src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/LocationPin.webp`} alt="" loading="lazy" decoding="async" style={{ width: 14, height: 14, objectFit: "contain", opacity: 0.75, flexShrink: 0, marginTop: 1 }} />
+            <img src={`${BASE}/LocationPin.webp`} alt="" loading="lazy" decoding="async" onError={hideOnError} style={{ width: 14, height: 14, objectFit: "contain", opacity: 0.75, flexShrink: 0, marginTop: 1 }} />
             <p className="font-label" style={{ color: "var(--text-muted)", fontSize: "11px", lineHeight: 1.5 }}>{event.address}</p>
           </div>
         </motion.div>
@@ -254,7 +255,7 @@ export default function EventSection({ couple, event, index, sectionId }: EventS
             Maps
           </a>
           <a href={calendarUrl} target="_blank" rel="noopener noreferrer" className="event-action-link flex items-center gap-2 transition-colors duration-300 font-label" style={{ color: "var(--gold-deep)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.2em", textTransform: "uppercase", padding: "6px 16px", textShadow: "0 1px 5px rgba(250,247,242,0.95), 0 0 10px rgba(250,247,242,0.85)" }}>
-            <img src={`${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative/Calendar.webp`} alt="" loading="lazy" decoding="async" style={{ width: 12, height: 12, objectFit: "contain", opacity: 0.8 }} />
+            <img src={`${BASE}/Calendar.webp`} alt="" loading="lazy" decoding="async" onError={hideOnError} style={{ width: 12, height: 12, objectFit: "contain", opacity: 0.8 }} />
             Kalender
           </a>
         </motion.div>

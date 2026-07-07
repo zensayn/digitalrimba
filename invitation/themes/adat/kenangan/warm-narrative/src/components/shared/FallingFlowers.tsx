@@ -3,7 +3,8 @@
 import { useRef } from "react";
 import { useInView } from "framer-motion";
 
-const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
+import { ASSET_BASE as BASE, hideOnError } from "@/lib/assets";
+
 const FLOWERS = [
   `${BASE}/BungaJatuh1.webp`,
   `${BASE}/BungaJatuh2.webp`,
@@ -34,10 +35,13 @@ export default function FallingFlowers({ count = 20, zIndex = 3 }: { count?: num
       src: FLOWERS[i % FLOWERS.length],
       left: `${(sr(i * 7 + 1) * 92 + 2).toFixed(2)}%`,
       width: Math.round(26 + sr(i * 13 + 2) * 38),
-      duration: `${(6 + sr(i * 17 + 3) * 9).toFixed(1)}s`,
-      delay: `${-(sr(i * 19 + 4) * 14).toFixed(1)}s`,
+      duration: `${(8 + sr(i * 17 + 3) * 12).toFixed(1)}s`,
+      delay: `${-(sr(i * 19 + 4) * 18).toFixed(1)}s`,
       animName,
-      keyframes: `@keyframes ${animName}{0%{transform:translateY(-80px) translateX(0) rotate(${rotStart}deg);opacity:0}8%{opacity:.82}30%{transform:translateY(28vh) translateX(${sway}px) rotate(${rotStart + 110}deg)}60%{transform:translateY(60vh) translateX(${Math.round(-sway * 0.55)}px) rotate(${rotStart + 235}deg)}92%{opacity:.65}100%{transform:translateY(112vh) translateX(${Math.round(sway * 0.3)}px) rotate(${rotStart + 360}deg);opacity:0}}`,
+      // Jatuh sampai 145vh — melewati ujung mask wrapper (140svh), jadi tiap
+      // kelopak sudah tak terlihat sebelum loop ulang. Fade-out tidak lagi di
+      // keyframe; mask gradient wrapper yang memudarkannya berdasarkan posisi.
+      keyframes: `@keyframes ${animName}{0%{transform:translateY(-80px) translateX(0) rotate(${rotStart}deg);opacity:0}8%{opacity:.82}30%{transform:translateY(36vh) translateX(${sway}px) rotate(${rotStart + 110}deg)}60%{transform:translateY(78vh) translateX(${Math.round(-sway * 0.55)}px) rotate(${rotStart + 235}deg)}100%{transform:translateY(145vh) translateX(${Math.round(sway * 0.3)}px) rotate(${rotStart + 360}deg);opacity:.82}}`,
     };
   });
 
@@ -47,7 +51,21 @@ export default function FallingFlowers({ count = 20, zIndex = 3 }: { count?: num
     <div
       ref={wrapRef}
       aria-hidden="true"
-      style={{ position: "absolute", inset: 0, zIndex, pointerEvents: "none" }}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        // 100svh Cover + 40svh pertama section berikutnya: kelopak menyeberangi
+        // seam (section pemilik harus TIDAK overflow:hidden), lalu mask
+        // memudarkannya berbasis posisi — solid sampai seam (98svh), habis di
+        // 140svh. Ubah dua angka gradient ini untuk mengatur jarak fade.
+        height: "140svh",
+        maskImage: "linear-gradient(to bottom, #000 0, #000 98svh, transparent 140svh)",
+        WebkitMaskImage: "linear-gradient(to bottom, #000 0, #000 98svh, transparent 140svh)",
+        zIndex,
+        pointerEvents: "none",
+      }}
     >
       <style dangerouslySetInnerHTML={{ __html: css }} />
       {petals.map((p) => (
@@ -55,6 +73,7 @@ export default function FallingFlowers({ count = 20, zIndex = 3 }: { count?: num
           key={p.id}
           src={p.src}
           alt=""
+          onError={hideOnError}
           style={{
             position: "absolute",
             top: 0,

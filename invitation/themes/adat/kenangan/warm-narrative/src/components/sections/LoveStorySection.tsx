@@ -4,7 +4,7 @@ import { m as motion } from "framer-motion";
 import ParallaxScene from "@/components/shared/ParallaxScene";
 import type { InvitationConfig } from "@/lib/config-types";
 
-const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
+import { ASSET_BASE as BASE, hideOnError } from "@/lib/assets";
 const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -95,6 +95,7 @@ function ChapterBlock({ chapter, index, isLast, isFirst }: { chapter: Chapter; i
           aria-hidden="true"
           loading="lazy"
           decoding="async"
+          onError={hideOnError}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-8%" }}
@@ -167,8 +168,8 @@ export default function LoveStorySection({ loveStory }: { loveStory: InvitationC
       <ParallaxScene
         layers={[
           { src: `${BASE}/LoveStoryBg.webp`, depth: 0.03, zIndex: 0 },
-          { src: `${BASE}/SakuraCornerL.webp`, depth: 0.11, opacity: 0.82, zIndex: 1, overhang: true, box: { bottom: "-5svh", left: "-6%", width: "40%" } },
-          { src: `${BASE}/SakuraCornerR2.webp`, depth: 0.11, opacity: 0.82, zIndex: 1, overhang: true, box: { bottom: "-5svh", right: "-6%", width: "40%" } },
+          { src: `${BASE}/SakuraCornerL.webp`, depth: 0.11, opacity: 0.82, zIndex: 1, overhang: true, box: { bottom: "-2svh", left: "-6%", width: "40%" } },
+          { src: `${BASE}/SakuraCornerR2.webp`, depth: 0.11, opacity: 0.82, zIndex: 1, overhang: true, box: { bottom: "-2svh", right: "-6%", width: "40%" } },
         ]}
       />
       <div className="paper-overlay" />

@@ -11,7 +11,7 @@ import FallingFlowers from "@/components/shared/FallingFlowers";
 import ParallaxScene from "@/components/shared/ParallaxScene";
 import type { InvitationConfig } from "@/lib/config-types";
 
-const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/adat/kenangan/warm-narrative`;
+import { ASSET_BASE as BASE } from "@/lib/assets";
 
 // ── Countdown ──────────────────────────────────────────────────────────────────
 function useCountdown(targetDateString: string) {
@@ -142,7 +142,9 @@ export default function CoverSection({
       id="cover"
       className="snap-section"
       ref={sectionRef}
-      style={{ background: "transparent", overflow: "hidden" }}
+      // Jangan beri overflow:hidden — FallingFlowers menggantung 40svh ke
+      // section berikutnya (fade via mask), sama seperti pola seam overhang.
+      style={{ background: "transparent" }}
     >
       {/* Painterly sakura scene — parallax background + framing arch */}
       <ParallaxScene
@@ -154,8 +156,6 @@ export default function CoverSection({
           { src: `${BASE}/SakuraColumnR.webp`, depth: 0.08, priority: true, opacity: 0.8, zIndex: 1, box: { top: "-2%", right: "-13%", height: "102svh", enterY: 0 } },
           { src: `${BASE}/SakuraTopL.webp`, depth: 0.11, opacity: 0.9, zIndex: 2, box: { top: "-3%", left: "-5%", width: "40%" } },
           { src: `${BASE}/SakuraTopR.webp`, depth: 0.12, opacity: 0.9, zIndex: 2, box: { top: "-3%", right: "-5%", width: "40%" } },
-          // Rest ON the bottom edge, not past it — the section clips overflow
-          // (falling petals), and a negative offset would chop them flat.
           { src: `${BASE}/SakuraCornerL.webp`, depth: 0.13, opacity: 0.9, zIndex: 2, box: { bottom: "0%", left: "-7%", width: "44%" } },
           { src: `${BASE}/SakuraCornerR.webp`, depth: 0.14, opacity: 0.9, zIndex: 2, box: { bottom: "0%", right: "-7%", width: "44%" } },
         ]}
