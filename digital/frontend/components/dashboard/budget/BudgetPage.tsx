@@ -3,12 +3,16 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence, type Variants } from 'motion/react';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import {
   fetchBudgetSummary, fetchBudgetItems,
   createBudgetItem, updateBudgetItem, deleteBudgetItem,
-  type BudgetItem, type CreateBudgetItemInput, type UpdateBudgetItemInput, type PaymentStatus,
+  type BudgetItem, type CreateBudgetItemInput, type UpdateBudgetItemInput,
 } from '@/lib/api/budget';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+} from '@/components/ui/dialog';
 import {
   TABS, EASE_OUT, formatRupiah, formatRupiahFull,
   type BudgetTab,
@@ -17,6 +21,8 @@ import { SummaryTab } from './SummaryTab';
 import { ItemsTab } from './ItemsTab';
 import { PaymentsTab } from './PaymentsTab';
 import { BudgetItemModal } from './BudgetItemModal';
+import { TextureButton } from '@/components/ui/texture-button';
+import { AddCircle } from '@solar-icons/react';
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -35,6 +41,8 @@ export default function BudgetPage() {
   const [activeTab, setActiveTab] = useState<BudgetTab>('summary');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<BudgetItem | null>(null);
+  const [defaultCategory, setDefaultCategory] = useState<string | undefined>(undefined);
+  const [pendingDelete, setPendingDelete] = useState<BudgetItem | null>(null);
 
   const summaryQ = useQuery({ queryKey: ['budget', 'summary'], queryFn: fetchBudgetSummary });
   const itemsQ   = useQuery({ queryKey: ['budget', 'items'],   queryFn: fetchBudgetItems });
@@ -45,7 +53,7 @@ export default function BudgetPage() {
   const totalBudgeted  = summary?.total_budgeted ?? 0;
   const totalActual    = summary?.total_actual   ?? 0;
   const remaining      = totalBudgeted - totalActual;
-  const paidAmount     = items.filter(i => i.payment_status === 'paid').reduce((s, i) => s + i.actual_amount, 0);
+  const paidAmount     = summary?.total_paid ?? 0;
   const paidPct        = totalActual > 0 ? Math.round((paidAmount / totalActual) * 100) : 0;
   const overspendCount = (summary?.categories ?? []).filter(c => c.overspend).length;
 
@@ -56,27 +64,33 @@ export default function BudgetPage() {
 
   const createMutation = useMutation({
     mutationFn: (data: CreateBudgetItemInput) => createBudgetItem(data),
-    onSuccess: () => { invalidate(); setModalOpen(false); setEditingItem(null); },
+    onSuccess: () => { invalidate(); setModalOpen(false); setEditingItem(null); setDefaultCategory(undefined); },
+    onError: () => toast.error("Couldn't add that item. Please try again."),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateBudgetItemInput }) => updateBudgetItem(id, data),
-    onSuccess: () => { invalidate(); setModalOpen(false); setEditingItem(null); },
+    onSuccess: () => { invalidate(); setModalOpen(false); setEditingItem(null); setDefaultCategory(undefined); },
+    onError: () => toast.error("Couldn't save your changes. Please try again."),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteBudgetItem(id),
-    onSuccess: invalidate,
+    onSuccess: () => { invalidate(); toast.success('Item deleted.'); },
+    onError: () => toast.error("Couldn't delete that item. Please try again."),
   });
 
-  const statusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: PaymentStatus }) =>
-      updateBudgetItem(id, { payment_status: status, paid: status === 'paid' }),
+  // paid_amount is canonical; the Category Budget tab cycles fully-paid ⇄ unpaid.
+  // Partial payments are entered with an amount via the item modal. // ponytail: cycle is binary here on purpose
+  const paidMutation = useMutation({
+    mutationFn: ({ id, paid_amount }: { id: string; paid_amount: number }) =>
+      updateBudgetItem(id, { paid_amount }),
     onSuccess: invalidate,
+    onError: () => toast.error("Couldn't update payment. Please try again."),
   });
 
-  function openAdd() { setEditingItem(null); setModalOpen(true); }
-  function openEdit(item: BudgetItem) { setEditingItem(item); setModalOpen(true); }
+  function openAdd(category?: string) { setEditingItem(null); setDefaultCategory(category); setModalOpen(true); }
+  function openEdit(item: BudgetItem) { setEditingItem(item); setDefaultCategory(undefined); setModalOpen(true); }
 
   async function handleSave(data: CreateBudgetItemInput | UpdateBudgetItemInput) {
     if (editingItem) {
@@ -125,16 +139,41 @@ export default function BudgetPage() {
     >
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 pt-8 md:pt-10">
 
+        {/* ── PAGE HEADER ── */}
+        <motion.div variants={sectionVariants} className="mb-7 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-[28px] md:text-[34px] font-medium text-bold leading-none">Wedding budget</h1>
+            <p className="text-[13px] md:text-sm text-[#75758a] font-normal mt-2.5">
+              Track every expense and stay on plan.
+            </p>
+          </div>
+          <TextureButton
+            variant="primary"
+            size="sm"
+            className="rounded-full px-5 h-10 text-[13px] shrink-0 gap-1.5"
+            onClick={() => openAdd()}
+          >
+            <AddCircle size={16} /> Add item
+          </TextureButton>
+        </motion.div>
+
         {/* ── METRICS STRIP ── */}
         <motion.div variants={sectionVariants} className="mb-7">
-          <div className="grid grid-cols-2 md:grid-cols-5 border border-neutral-100 rounded-2xl overflow-hidden divide-y md:divide-y-0 md:divide-x divide-neutral-100">
-            {metrics.map(m => (
-              <div key={m.label} className="flex flex-col gap-1 px-5 py-4 md:py-5">
-                <span className="text-[9px] font-bold uppercase text-neutral-400">{m.label}</span>
-                <span className={cn('text-2xl md:text-3xl font-bold leading-none mt-1', m.valueClass ?? 'text-bold')}>
+          <div className="grid grid-cols-2 md:grid-cols-5 border-y border-neutral-100 divide-x divide-neutral-100">
+            {metrics.map((m, i) => (
+              <div
+                key={m.label}
+                className={cn(
+                  'flex flex-col gap-1 px-5 py-4 md:py-5',
+                  // first cell carries no left rule; mobile second column keeps its divider
+                  i === 0 && 'border-l-0',
+                )}
+              >
+                <span className="text-[10px] font-medium uppercase text-[#93939f] leading-none">{m.label}</span>
+                <span className={cn('text-2xl md:text-[28px] font-medium leading-none mt-2', m.valueClass ?? 'text-bold')}>
                   {m.value}
                 </span>
-                <span className="text-[11px] text-neutral-400 mt-0.5">{m.sub}</span>
+                <span className="text-[11px] text-[#93939f] font-normal mt-1">{m.sub}</span>
               </div>
             ))}
           </div>
@@ -182,7 +221,10 @@ export default function BudgetPage() {
               >
                 <SummaryTab
                   categories={summary?.categories ?? []}
-                  isLoading={summaryQ.isLoading}
+                  summary={summary}
+                  items={items}
+                  isLoading={summaryQ.isLoading || itemsQ.isLoading}
+                  onAdd={openAdd}
                 />
               </motion.div>
             )}
@@ -200,7 +242,7 @@ export default function BudgetPage() {
                   isLoading={itemsQ.isLoading}
                   onAdd={openAdd}
                   onEdit={openEdit}
-                  onDelete={id => deleteMutation.mutate(id)}
+                  onDelete={setPendingDelete}
                 />
               </motion.div>
             )}
@@ -215,8 +257,12 @@ export default function BudgetPage() {
               >
                 <PaymentsTab
                   items={items}
+                  summary={summary}
                   isLoading={itemsQ.isLoading}
-                  onStatusChange={(id, status) => statusMutation.mutateAsync({ id, status }).then(() => undefined)}
+                  onTogglePaid={(id, paid_amount) => paidMutation.mutateAsync({ id, paid_amount }).then(() => undefined)}
+                  onAdd={openAdd}
+                  onEdit={openEdit}
+                  onDelete={setPendingDelete}
                 />
               </motion.div>
             )}
@@ -229,11 +275,44 @@ export default function BudgetPage() {
       {/* ── MODAL ── */}
       <BudgetItemModal
         open={modalOpen}
-        onClose={() => { setModalOpen(false); setEditingItem(null); }}
+        onClose={() => { setModalOpen(false); setEditingItem(null); setDefaultCategory(undefined); }}
         item={editingItem}
+        defaultCategory={defaultCategory}
         onSave={handleSave}
         isSaving={createMutation.isPending || updateMutation.isPending}
       />
+
+      {/* ── Delete confirmation ── */}
+      <Dialog open={!!pendingDelete} onOpenChange={v => !v && setPendingDelete(null)}>
+        <DialogContent className="sm:max-w-sm rounded-[20px]">
+          <DialogHeader>
+            <DialogTitle className="text-[17px] font-bold text-bold">Delete this item?</DialogTitle>
+            <DialogDescription className="text-[13px] text-[#75758a]">
+              {pendingDelete ? `“${pendingDelete.item_name}” will be removed from your budget. This can’t be undone.` : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <TextureButton
+              type="button" variant="outline" size="sm"
+              className="rounded-full px-5 h-10 text-[13px]"
+              onClick={() => setPendingDelete(null)}
+            >
+              Cancel
+            </TextureButton>
+            <TextureButton
+              type="button" variant="destructive" size="sm"
+              className="rounded-full px-5 h-10 text-[13px]"
+              disabled={deleteMutation.isPending}
+              onClick={() => {
+                if (pendingDelete) deleteMutation.mutate(pendingDelete.id);
+                setPendingDelete(null);
+              }}
+            >
+              {deleteMutation.isPending ? 'Deleting…' : 'Delete item'}
+            </TextureButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }

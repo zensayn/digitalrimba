@@ -40,6 +40,13 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
 type NavItem = {
   href: string;
@@ -55,7 +62,6 @@ const navGroups: { label: string | null; items: NavItem[] }[] = [
     label: null,
     items: [
       { href: '/dashboard', label: 'Overview', Icon: Home2, badge: 'BETA' },
-      { href: '/dashboard/invitation', label: 'Invitations', Icon: Letter },
       { href: '/dashboard/guests', label: 'Guests', Icon: UsersGroupRounded },
     ],
   },
@@ -67,9 +73,21 @@ const navGroups: { label: string | null; items: NavItem[] }[] = [
     ],
   },
   {
+    label: 'DESIGN',
+    items: [
+      { href: '/dashboard/invitation', label: 'Invitations', Icon: Letter },
+      { href: '/dashboard/qr-passes', label: 'QR & Passes', Icon: QrCode },
+    ],
+  },
+  {
+    label: 'OPERATIONS',
+    items: [
+      { href: '/dashboard/checkin-qr', label: 'Check-in Console', Icon: Chart2 },
+    ],
+  },
+  {
     label: 'SYSTEM',
     items: [
-      { href: '/dashboard/checkin-qr', label: 'Check-in QR', Icon: QrCode },
       { href: '/dashboard/settings', label: 'Settings', Icon: Settings },
     ],
   },
@@ -117,7 +135,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         <MobileSidebarBackHandler />
         {/* ── Sidebar ── */}
         <Sidebar collapsible="icon" className="border-r border-neutral-200 bg-white [&_[data-slot=sidebar-inner]]:bg-white">
-          <SidebarHeader className="px-4 group-data-[collapsible=icon]:px-2 py-6 space-y-6">
+          <SidebarHeader className="px-4 group-data-[collapsible=icon]:px-2 py-6">
             <div className="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
               <span className="font-poppins font-bold text-2xl tracking-tighter text-black flex items-center gap-1 group-data-[collapsible=icon]:hidden">
                 <span className="w-4 h-4 bg-black rounded-sm" />
@@ -125,44 +143,18 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               </span>
               <SidebarTrigger className="h-8 w-8 text-neutral-400 hover:text-black" />
             </div>
-
-            {/* Workspace Switcher */}
-            <div className="flex items-center gap-3 p-2 rounded-[22px] ring-1 ring-foreground/10 hover:bg-neutral-50 transition-all cursor-pointer group
-                            group-data-[collapsible=icon]:p-1.5 group-data-[collapsible=icon]:rounded-2xl group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-1">
-              {imageUrl ? (
-                <img
-                  src={imageUrl}
-                  alt={displayName}
-                  className="w-10 h-10 group-data-[collapsible=icon]:w-6 group-data-[collapsible=icon]:h-6 rounded-full object-cover shrink-0 aspect-square transition-all"
-                />
-              ) : (
-                <div className="w-10 h-10 group-data-[collapsible=icon]:w-6 group-data-[collapsible=icon]:h-6 rounded-full bg-neutral-100 flex items-center justify-center text-sm font-semibold shrink-0 aspect-square transition-all">
-                  {displayName[0]?.toUpperCase()}
-                </div>
-              )}
-              <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
-                <p className="text-[13px] font-semibold text-black truncate leading-tight">
-                  Independent workspace
-                </p>
-                <p className="text-[11px] text-neutral-400 truncate">
-                  {displayName}
-                </p>
-              </div>
-              <AltArrowRight size={16} className="text-neutral-300 group-data-[collapsible=icon]:hidden" />
-              <AltArrowDown size={14} className="hidden group-data-[collapsible=icon]:block text-neutral-400" />
-            </div>
           </SidebarHeader>
 
           <SidebarContent className="px-2">
             {navGroups.map((group, idx) => (
-              <SidebarGroup key={idx}>
+              <SidebarGroup key={idx} className="py-1">
                 {group.label && (
                   <SidebarGroupLabel className="px-2 mb-1 text-[10px] font-bold  text-neutral-400 group-data-[collapsible=icon]:hidden uppercase">
                     {group.label}
                   </SidebarGroupLabel>
                 )}
                 <SidebarGroupContent>
-                  <SidebarMenu>
+                  <SidebarMenu className="gap-0.5">
                     {group.items.map(({ href, label, Icon, badge, hasAction, detail }, i) => {
                       const active = isActive(href, pathname);
                       return (
@@ -214,20 +206,6 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             ))}
           </SidebarContent>
 
-          <SidebarFooter className="p-4 pt-2">
-            <SidebarMenu className="mt-2">
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={handleSignOut}
-                  tooltip="Sign out"
-                  className="gap-3 h-10 rounded-full px-4 text-[13px] text-neutral-400 hover:text-red-600 hover:bg-red-50 focus:text-neutral-400 focus:bg-transparent group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center transition-all duration-100"
-                >
-                  <Logout size={20} weight="Linear" />
-                  <span className="group-data-[collapsible=icon]:hidden">Sign out</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarFooter>
           <SidebarRail />
         </Sidebar>
 
@@ -255,12 +233,46 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                 <button className="relative p-2 text-neutral-400 hover:text-black transition-colors">
                   <ChatDots size={22} weight="Linear" />
                 </button>
-                <button className="relative p-2 text-neutral-400 hover:text-black transition-colors">
+                <button className="relative p-2 text-neutral-400 hover:text-black transition-colors mr-1">
                   <Bell size={22} weight="Linear" />
                   <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white">
                     9+
                   </span>
                 </button>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="outline-none focus:ring-2 focus:ring-[#346739]/20 rounded-full shrink-0 select-none cursor-pointer">
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={displayName}
+                          className="w-8 h-8 rounded-full object-cover border border-neutral-200"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-[#edfce9] flex items-center justify-center text-xs font-semibold text-[#346739] border border-neutral-200">
+                          {displayName[0]?.toUpperCase()}
+                        </div>
+                      )}
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 p-1 bg-white border border-neutral-200 shadow-lg">
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/settings" className="flex items-center gap-2 w-full text-neutral-700 hover:text-black">
+                        <Settings size={16} />
+                        Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="my-1 border-t border-neutral-100" />
+                    <DropdownMenuItem
+                      onClick={handleSignOut}
+                      className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                    >
+                      <Logout size={16} />
+                      Sign out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </header>
