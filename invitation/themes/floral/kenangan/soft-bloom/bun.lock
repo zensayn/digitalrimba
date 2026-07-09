@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "floral-kuncup-soft-bloom",
+      "name": "floral-kenangan-soft-bloom",
       "dependencies": {
         "@opennextjs/cloudflare": "^1.20.0",
         "framer-motion": "^12.38.0",

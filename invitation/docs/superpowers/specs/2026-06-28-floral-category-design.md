@@ -16,25 +16,25 @@ dibedakan oleh **kekayaan komponen + animasi** (komponen dibuat menyusul):
 
 | Folder | Tier | Harga | Level komponen & animasi |
 |--------|------|-------|--------------------------|
-| `kuncup/` | 1 · Basic | Basic | Komponen standar, layout bersih, animasi minimal (fade / scroll reveal) |
-| `mekar/` | 2 · Standard | Rp300rb | Komponen lebih kaya, animasi sedang (parallax, stagger, transisi antar-section) |
-| `puspa/` | 3 · Premium | Rp700rb | Komponen "wah" + animasi premium (interaktif, petal-fall/partikel, motion kompleks) |
+| `kenangan/` | 1 · Basic | Basic | Komponen standar, layout bersih, animasi minimal (fade / scroll reveal) |
+| `kisah/` | 2 · Standard | Rp300rb | Komponen lebih kaya, animasi sedang (parallax, stagger, transisi antar-section) |
+| `warisan/` | 3 · Premium | Rp700rb | Komponen "wah" + animasi premium (interaktif, petal-fall/partikel, motion kompleks) |
 
-Nama tier (Set A — Indonesia puitis) mengikuti metafora "makin mekar = makin kaya":
-- **Kuncup** — tunas yang baru merekah.
-- **Mekar** — bunga merekah penuh.
-- **Puspa** — bunga agung (klasik/Sansekerta), mahakarya.
+Nama tier mengikuti struktur tema adat:
+- **Kenangan** — Tier 1 · Basic.
+- **Kisah** — Tier 2 · Standard.
+- **Warisan** — Tier 3 · Premium.
 
 ## Struktur Folder
 
 ```
 themes/floral/
 ├── README.md              ← indeks kategori (improvement; adat tidak punya ini)
-├── kuncup/
+├── kenangan/
 │   └── README.md          ← Tier 1 · Basic
-├── mekar/
+├── kisah/
 │   └── README.md          ← Tier 2 · Standard · Rp300rb
-└── puspa/
+└── warisan/
     └── README.md          ← Tier 3 · Premium · Rp700rb
 ```
 

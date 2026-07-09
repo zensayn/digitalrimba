@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import MusicPlayer from "@/components/shared/MusicPlayer";
+import OpeningGate from "@/components/shared/OpeningGate";
 import DesktopCover from "@/components/shared/DesktopCover";
 import PaperBackdrop from "@/components/shared/PaperBackdrop";
 import RevealController from "@/components/shared/RevealController";
@@ -50,6 +51,9 @@ export default function Page() {
 
   return (
     <div className="app-shell">
+      {/* Gerbang pembuka: sapaan tamu + tombol "Buka Undangan" → klik = gesture
+          yang mengizinkan musik autoplay (event `invitation-open`) */}
+      <OpeningGate couple={config.couple} />
       {/* Panel cover dekoratif — hanya tampil di layar lebar (PC/laptop) */}
       <DesktopCover couple={config.couple} weddingDate={config.weddingDate} />
 

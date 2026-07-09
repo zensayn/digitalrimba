@@ -88,7 +88,7 @@ export default function ClosingSection({ couple }: { couple: InvitationConfig["c
         </motion.p>
       </div>
 
-      {/* Footer brand — logo Rimba dari R2 (floral/kuncup/soft-bloom/LogoRimba.webp).
+      {/* Footer brand — logo Rimba dari R2 (floral/kenangan/soft-bloom/LogoRimba.webp).
           Aset aslinya persegi dengan latar hutan gelap penuh (tidak transparan),
           jadi di-crop ke band tengah (tempat wordmark) dan ditampilkan sebagai
           badge kecil membulat agar tidak jadi kotak gelap besar di atas pastel. */}

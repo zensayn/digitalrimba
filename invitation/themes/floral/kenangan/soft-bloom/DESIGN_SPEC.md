@@ -1,4 +1,4 @@
-# Soft Bloom · Tema (Kategori Floral · Tier Kuncup)
+# Soft Bloom · Tema (Kategori Floral · Tier Kenangan)
 ## Design Specification
 
 > **Tier 1 — Basic** · Kategori Floral
@@ -50,7 +50,7 @@ yang riang.
 
 ---
 
-### Sections (10 — sesuai tier kuncup)
+### Sections (10 — sesuai tier kenangan)
 
 1. Cover — Nama + tanggal, `SudutBunga` di sudut, bunga liar jatuh halus
 2. Greeting — Salam pembuka + nama tamu personal

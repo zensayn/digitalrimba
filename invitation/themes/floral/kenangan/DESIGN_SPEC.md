@@ -1,10 +1,10 @@
-# Kuncup · Kategori Floral
+# Kenangan · Kategori Floral
 ## Design Specification (Tier)
 
 > **Tier 1 — Basic**
-> "Tunas yang baru merekah."
+> "Tier pembuka yang bersih, ringan, dan mudah dibaca."
 
-Spec ini mendefinisikan **karakter tier Kuncup** secara umum. Tiap tema di dalam
+Spec ini mendefinisikan **karakter tier Kenangan** secara umum. Tiap tema di dalam
 tier punya konsep visualnya sendiri — lihat `DESIGN_SPEC.md` di folder tema
 masing-masing (mis. `soft-bloom/DESIGN_SPEC.md`).
 
@@ -18,7 +18,7 @@ segar — undangan manis dan rapi tanpa banyak ornamen, dengan harga terjangkau.
 
 **Pembeda tier = level komponen & animasi (Tier 1):** komponen standar, layout
 single-column bersih, animasi minimal (fade + scroll reveal). Tidak ada parallax,
-partikel berat, WebGL, atau efek mahal — itu jatah tier Mekar & Puspa.
+partikel berat, WebGL, atau efek mahal — itu jatah tier Kisah & Warisan.
 
 ---
 

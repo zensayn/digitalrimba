@@ -1,6 +1,6 @@
 # Soft Bloom
 
-> **Kategori Floral · Tier Kuncup (Tier 1 — Basic)**
+> **Kategori Floral · Tier Kenangan (Tier 1 — Basic)**
 > Konsep: **Wildflower Pastel** — bunga liar pastel (daisy, lavender, ranunculus,
 > cosmos, forget-me-not) di atas latar terang yang lapang.
 
@@ -28,7 +28,7 @@ Ornamen wildflower `.webp` transparan. Sumbernya diatur di `src/lib/assets.ts`:
 - **Dev lokal:** otomatis ambil dari `public/images/` (env CDN tidak diset) —
   `bun dev` langsung tampil tanpa akses jaringan ke R2.
 - **Produksi:** set `NEXT_PUBLIC_THEMES_CDN` saat build → aset diambil dari R2
-  (`<CDN>/floral/kuncup/soft-bloom/<file>`).
+  (`<CDN>/floral/kenangan/soft-bloom/<file>`).
 
 Aset yang dipakai: `SudutBunga`, `BungaJatuh1–3`, `PembatasBunga`, `BingkaiFoto`,
 `TangkaiKuncup`, `WreathInisial`. Background wash = CSS `radial-gradient`
@@ -36,7 +36,7 @@ Aset yang dipakai: `SudutBunga`, `BungaJatuh1–3`, `PembatasBunga`, `BingkaiFot
 
 ---
 
-## Sections (9 — tier kuncup)
+## Sections (9 — tier kenangan)
 
 `cover` · `greeting` · `couple` · `akad` · `resepsi` · `gallery` · `rsvp` · `gift` · `closing`
 

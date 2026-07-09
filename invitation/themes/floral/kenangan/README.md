@@ -1,12 +1,12 @@
-# Mekar · Kategori Floral
+# Kenangan · Kategori Floral
 
-> **Tier 2 — Standard · Rp300rb**
-> Saat bunga merekah penuh.
+> **Tier 1 — Basic**
+> Tier pembuka yang bersih, ringan, dan mudah dibaca.
 
 Setiap subfolder di bawah ini adalah tema desain yang mandiri (Next.js app tersendiri).
 
-**Level komponen & animasi:** komponen lebih kaya dengan animasi sedang
-(parallax, stagger, transisi antar-section). Lebih hidup dari Kuncup, tetap rapi.
+**Level komponen & animasi:** komponen standar, layout bersih, animasi minimal
+(fade / scroll reveal). Fokus pada keterbacaan dan kecepatan.
 
 ---
 
@@ -14,7 +14,7 @@ Setiap subfolder di bawah ini adalah tema desain yang mandiri (Next.js app terse
 
 | Folder | Tema | Aesthetic | Status |
 |--------|------|-----------|--------|
-| _(belum ada)_ | — | — | — |
+| `soft-bloom/` | Soft Bloom | Wildflower Pastel — lilac · butter · powder-blue | ✅ Template jadi |
 
 ---
 

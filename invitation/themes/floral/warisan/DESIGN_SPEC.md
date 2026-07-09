@@ -1,8 +1,8 @@
-# Puspa · Kategori Floral
+# Warisan · Kategori Floral
 ## Design Specification
 
 > **Tier 3 — Premium · Rp 700rb**
-> "Bunga agung, mahakarya yang merekah."
+> "Tier premium yang paling kaya secara visual dan gerak."
 
 ---
 
@@ -96,9 +96,9 @@ kompleks. Boleh memakai canvas/WebGL untuk efek kelopak.
 
 ---
 
-### Differensiator vs Mekar
+### Differensiator vs Kisah
 
-| Fitur | Mekar | Puspa |
+| Fitur | Kisah | Warisan |
 |-------|-------|-------|
 | Palette | Krem warm | Garden Noir + emas |
 | Gallery | Masonry grid | Sinematik / 3D petal field |

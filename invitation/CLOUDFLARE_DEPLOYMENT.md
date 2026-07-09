@@ -27,7 +27,7 @@ Jangan deploy langsung setelah hanya menjalankan `bun dev`. `bun run preview` di
 | Warm Narrative | `themes/adat/kenangan/warm-narrative` | `rimba-warm-narrative` | [warm-narrative.rimba.io](https://warm-narrative.rimba.io) | Live |
 | Sacred Luxe | `themes/adat/kenangan/sacred-luxe` | `rimba-sacred-luxe` | [sacred-luxe.rimba.io](https://sacred-luxe.rimba.io) | Live |
 | Sinema Kisah | `themes/adat/kisah/sinema-kisah` | `rimba-sinema-kisah` | [sinema-kisah.rimba.io](https://sinema-kisah.rimba.io) | Live |
-| Soft Bloom | `themes/floral/kuncup/soft-bloom` | `rimba-soft-bloom` | [soft-bloom.rimba.io](https://soft-bloom.rimba.io) | Live |
+| Soft Bloom | `themes/floral/kenangan/soft-bloom` | `rimba-soft-bloom` | [soft-bloom.rimba.io](https://soft-bloom.rimba.io) | Live |
 
 Perbarui tabel ini setelah Worker atau domain baru diaktifkan.
 
@@ -68,7 +68,7 @@ Contoh tema lain:
 ```powershell
 Set-Location themes\adat\kenangan\sacred-luxe
 Set-Location themes\adat\kisah\sinema-kisah
-Set-Location themes\floral\kuncup\soft-bloom
+Set-Location themes\floral\kenangan\soft-bloom
 ```
 
 Semua perintah berikut dijalankan dari folder tema yang sedang dikerjakan.

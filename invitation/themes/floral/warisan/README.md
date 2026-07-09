@@ -1,12 +1,12 @@
-# Kuncup · Kategori Floral
+# Warisan · Kategori Floral
 
-> **Tier 1 — Basic**
-> Tunas yang baru merekah.
+> **Tier 3 — Premium · Rp700rb**
+> Tier premium yang paling kaya secara visual dan gerak.
 
 Setiap subfolder di bawah ini adalah tema desain yang mandiri (Next.js app tersendiri).
 
-**Level komponen & animasi:** komponen standar, layout bersih, animasi minimal
-(fade / scroll reveal). Fokus pada keterbacaan dan kecepatan.
+**Level komponen & animasi:** komponen "wah" + animasi premium — interaktif,
+petal-fall/partikel, motion kompleks. Tier paling kaya secara visual dan gerak.
 
 ---
 
@@ -14,7 +14,7 @@ Setiap subfolder di bawah ini adalah tema desain yang mandiri (Next.js app terse
 
 | Folder | Tema | Aesthetic | Status |
 |--------|------|-----------|--------|
-| `soft-bloom/` | Soft Bloom | Wildflower Pastel — lilac · butter · powder-blue | ✅ Template jadi |
+| _(belum ada)_ | — | — | — |
 
 ---
 

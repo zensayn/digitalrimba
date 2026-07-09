@@ -1,12 +1,12 @@
-# Puspa · Kategori Floral
+# Kisah · Kategori Floral
 
-> **Tier 3 — Premium · Rp700rb**
-> Bunga agung, mahakarya yang merekah.
+> **Tier 2 — Standard · Rp300rb**
+> Narasi visual yang lebih kaya.
 
 Setiap subfolder di bawah ini adalah tema desain yang mandiri (Next.js app tersendiri).
 
-**Level komponen & animasi:** komponen "wah" + animasi premium — interaktif,
-petal-fall/partikel, motion kompleks. Tier paling kaya secara visual dan gerak.
+**Level komponen & animasi:** komponen lebih kaya dengan animasi sedang
+(parallax, stagger, transisi antar-section). Lebih hidup dari Kenangan, tetap rapi.
 
 ---
 

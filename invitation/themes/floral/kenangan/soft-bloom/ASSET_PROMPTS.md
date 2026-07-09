@@ -1,7 +1,7 @@
 # Soft Bloom (Wildflower Pastel) — Prompt Generate Aset Gambar
 
 Panduan generate elemen dekoratif untuk template **soft-bloom** (kategori floral ·
-tier kuncup · Tier 1 Basic). Generate di ChatGPT, lalu konversi ke `.webp`
+tier kenangan · Tier 1 Basic). Generate di ChatGPT, lalu konversi ke `.webp`
 transparan dan upload ke R2.
 
 > **Konsep: Bunga Liar Pastel (Wildflower).** Ceria, segar, playful — campuran
@@ -162,7 +162,7 @@ Fully transparent background outside and inside the ring.
 
 ### 5. ○ `TangkaiKuncup.webp` — Tangkai kuncup bunga liar
 
-**Pakai di:** aksen kecil / penanda section (motif khas tier "kuncup").
+**Pakai di:** aksen kecil / penanda section (motif khas tier "kenangan").
 **Rasio:** 1:1 (1024×1024), elemen kecil ter-pusat.
 
 ```
@@ -570,19 +570,19 @@ cwebp -q 90 -alpha_q 100 SudutBunga.png -o SudutBunga.webp
 
 Atau via Squoosh (web) / Sharp. Simpan PNG asli sebagai backup lokal.
 
-**2. Taruh file di project** (untuk dev lokal): `themes/floral/kuncup/soft-bloom/public/images/`
+**2. Taruh file di project** (untuk dev lokal): `themes/floral/kenangan/soft-bloom/public/images/`
 
 **3. Upload ke R2** (path mirror struktur kode):
 
 ```bash
-npx wrangler r2 object put rimba-themes/floral/kuncup/soft-bloom/SudutBunga.webp \
+npx wrangler r2 object put rimba-themes/floral/kenangan/soft-bloom/SudutBunga.webp \
   --file ./public/images/SudutBunga.webp --content-type image/webp --remote
 ```
 
 **4. Referensi di komponen** (lewat env CDN, lihat `docs/r2-image-storage.md`):
 
 ```tsx
-const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/floral/kuncup/soft-bloom`;
+const BASE = `${process.env.NEXT_PUBLIC_THEMES_CDN}/floral/kenangan/soft-bloom`;
 <img src={`${BASE}/SudutBunga.webp`} alt="" />
 ```
 

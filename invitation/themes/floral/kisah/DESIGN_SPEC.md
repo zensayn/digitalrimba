@@ -1,8 +1,8 @@
-# Mekar · Kategori Floral
+# Kisah · Kategori Floral
 ## Design Specification
 
 > **Tier 2 — Standard · Rp 300rb**
-> "Saat bunga merekah penuh."
+> "Narasi visual yang lebih kaya."
 
 ---
 
@@ -10,7 +10,7 @@
 
 Hangat, elegan, dan hidup. Palet krem dengan dusty rose dan garden green,
 diperkaya ilustrasi botanical bergaris dan sentuhan emas lembut. Lebih berwarna
-dan berlapis dari Kuncup, namun tetap rapi dan anggun.
+dan berlapis dari Kenangan, namun tetap rapi dan anggun.
 
 **Level komponen & animasi (Tier 2):** komponen lebih kaya, animasi sedang —
 parallax lembut, stagger, transisi antar-section, dan kelopak melayang sesekali.
@@ -82,9 +82,9 @@ parallax lembut, stagger, transisi antar-section, dan kelopak melayang sesekali.
 
 ---
 
-### Differensiator vs Kuncup
+### Differensiator vs Kenangan
 
-| Fitur | Kuncup | Mekar |
+| Fitur | Kenangan | Kisah |
 |-------|--------|-------|
 | Palette | Putih airy | Krem + dusty rose |
 | Gallery | Grid sederhana | Masonry + hover |
