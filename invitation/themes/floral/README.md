@@ -12,12 +12,11 @@ tema-tema desain yang mandiri (masing-masing app Next.js tersendiri).
 
 | Folder | Tier | Harga | Level komponen & animasi |
 |--------|------|-------|--------------------------|
-| `kuncup/` | 1 · Basic | Basic | Komponen standar, animasi minimal |
-| `mekar/` | 2 · Standard | Rp300rb | Komponen lebih kaya, animasi sedang |
-| `puspa/` | 3 · Premium | Rp700rb | Komponen "wah", animasi premium |
+| `kenangan/` | 1 · Basic | Basic | Komponen standar, animasi minimal |
+| `kisah/` | 2 · Standard | Rp300rb | Komponen lebih kaya, animasi sedang |
+| `warisan/` | 3 · Premium | Rp700rb | Komponen "wah", animasi premium |
 
-Metafora: **makin mekar, makin kaya** — Kuncup (tunas) → Mekar (merekah penuh) →
-Puspa (bunga agung).
+Nama tier mengikuti struktur tema adat: Kenangan → Kisah → Warisan.
 
 ---
 
@@ -33,7 +32,7 @@ bun dev
 
 ## Panduan Menambah Tema Baru
 
-1. Masuk ke tier yang sesuai: `cd kuncup` (atau `mekar` / `puspa`)
+1. Masuk ke tier yang sesuai: `cd kenangan` (atau `kisah` / `warisan`)
 2. Buat folder tema: `mkdir nama-tema`
 3. Init Next.js: `cd nama-tema && bun x create-next-app@latest ./`
 4. Tambahkan baris baru di tabel "Tema yang Tersedia" pada README tier tersebut

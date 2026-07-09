@@ -224,7 +224,7 @@ The `rimba.io` zone must live in the same Cloudflare account for the custom doma
 ## Per-Theme Deploy
 
 ```bash
-cd themes/floral/<tier>/<template>      # e.g. themes/floral/mekar/rose-garden
+cd themes/floral/<tier>/<template>      # e.g. themes/floral/kisah/rose-garden
 
 # 1. Set the Worker name: edit wrangler.jsonc "name" -> "rimba-<template>"
 # 2. Ensure .env.local has the CDN vars (see docs/r2-image-storage.md):

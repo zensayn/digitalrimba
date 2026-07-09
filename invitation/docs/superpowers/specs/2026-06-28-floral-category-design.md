@@ -16,31 +16,33 @@ dibedakan oleh **kekayaan komponen + animasi** (komponen dibuat menyusul):
 
 | Folder | Tier | Harga | Level komponen & animasi |
 |--------|------|-------|--------------------------|
-| `kuncup/` | 1 · Basic | Basic | Komponen standar, layout bersih, animasi minimal (fade / scroll reveal) |
-| `mekar/` | 2 · Standard | Rp300rb | Komponen lebih kaya, animasi sedang (parallax, stagger, transisi antar-section) |
-| `puspa/` | 3 · Premium | Rp700rb | Komponen "wah" + animasi premium (interaktif, petal-fall/partikel, motion kompleks) |
+| `kenangan/` | 1 · Basic | Basic | Komponen standar, layout bersih, animasi minimal (fade / scroll reveal) |
+| `kisah/` | 2 · Standard | Rp300rb | Komponen lebih kaya, animasi sedang (parallax, stagger, transisi antar-section) |
+| `warisan/` | 3 · Premium | Rp700rb | Komponen "wah" + animasi premium (interaktif, petal-fall/partikel, motion kompleks) |
 
-Nama tier (Set A — Indonesia puitis) mengikuti metafora "makin mekar = makin kaya":
-- **Kuncup** — tunas yang baru merekah.
-- **Mekar** — bunga merekah penuh.
-- **Puspa** — bunga agung (klasik/Sansekerta), mahakarya.
+Nama tier mengikuti struktur tema adat:
+- **Kenangan** — Tier 1 · Basic.
+- **Kisah** — Tier 2 · Standard.
+- **Warisan** — Tier 3 · Premium.
 
 ## Struktur Folder
 
-```
+```text
 themes/floral/
 ├── README.md              ← indeks kategori (improvement; adat tidak punya ini)
-├── kuncup/
-│   └── README.md          ← Tier 1 · Basic
-├── mekar/
+├── kenangan/
+│   ├── README.md          ← Tier 1 · Basic
+│   └── soft-bloom/
+│       └── README.md      ← Soft Bloom
+├── kisah/
 │   └── README.md          ← Tier 2 · Standard · Rp300rb
-└── puspa/
+└── warisan/
     └── README.md          ← Tier 3 · Premium · Rp700rb
 ```
 
-Tier folder hanya berisi `README.md` dulu. Folder tema (app Next.js) menyusul saat
-komponen dibuat — persis seperti `adat/kisah/` & `adat/warisan/` yang saat ini baru
-mencantumkan tema berstatus 🔜 Planned.
+Tier folder berisi README tier dan dapat berisi folder tema mandiri. Saat ini
+`kenangan/soft-bloom/` sudah menjadi app Next.js floral pertama; tier lain dapat
+menyusul dengan pola struktur yang sama.
 
 ## Format README Tier
 
