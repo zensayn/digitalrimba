@@ -147,18 +147,9 @@ function StaticImage({
   return (
     // Raw theme assets already come from the optimized R2 pipeline; using a
     // plain img here avoids mounting a Motion component for depth-zero layers.
+    // `alt` is restated so jsx-a11y/alt-text can see it through the spread.
     // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={common.src}
-      alt=""
-      aria-hidden="true"
-      draggable={common.draggable}
-      loading={common.loading}
-      decoding={common.decoding}
-      fetchPriority={common.fetchPriority}
-      onError={common.onError}
-      style={{ ...style, transform }}
-    />
+    <img {...common} alt="" style={{ ...style, transform }} />
   );
 }
 
