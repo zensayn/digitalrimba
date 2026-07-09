@@ -1,54 +1,30 @@
 "use client";
 
 import Link from "next/link";
-
-type Stage = {
-  phase: string;
-  name: string;
-  description: string;
-  live?: boolean;
-};
-
-const STAGES: Stage[] = [
-  {
-    phase: "Now",
-    name: "Wedding Invitations",
-    description:
-      "Our flagship — hand-crafted digital invitations with WhatsApp RSVP, guest tracking, and QR check-in.",
-    live: true,
-  },
-  {
-    phase: "Next",
-    name: "Digital RSVP Coordinator",
-    description:
-      "The RSVP engine behind our invitations, as a standalone tool for any gathering.",
-  },
-  {
-    phase: "Later",
-    name: "Event Landing Pages",
-    description:
-      "Editorial pages for every celebration — galas, launches, community events.",
-  },
-];
+import { useTranslations } from "next-intl";
 
 export default function ServiceScope() {
+  const t = useTranslations("ServiceScope");
+
+  const stages = [
+    { phase: t("phaseNow"), name: t("stage1Name"), description: t("stage1Desc"), live: true },
+    { phase: t("phaseNext"), name: t("stage2Name"), description: t("stage2Desc") },
+    { phase: t("phaseLater"), name: t("stage3Name"), description: t("stage3Desc") },
+  ];
+
   return (
     <section className="bg-white text-[#212121] py-20 px-6 md:px-12 lg:px-24 border-t border-neutral-100">
       <div className="max-w-[1300px] mx-auto space-y-16">
         {/* Split editorial header — Grok "path of progress" pattern */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-24 items-end">
           <div className="space-y-4">
-            <p className="text-sm font-medium uppercase text-[#93939f]">
-              Our Service Scope
-            </p>
+            <p className="text-sm font-medium uppercase text-[#93939f]">{t("label")}</p>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-amoria font-normal tracking-tight leading-tight text-[#0a0a0a]">
-              One platform, built to scale
+              {t("title")}
             </h2>
           </div>
           <p className="text-base leading-relaxed text-[#616161] max-w-md lg:justify-self-end">
-            Everything we build for weddings — RSVP, guest logistics, beautiful
-            pages — is a foundation. The same platform will carry every
-            celebration that comes after.
+            {t("desc")}
           </p>
         </div>
 
@@ -63,7 +39,7 @@ export default function ServiceScope() {
             }}
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8 md:pt-8">
-            {STAGES.map((s) => (
+            {stages.map((s) => (
               <div key={s.name} className="space-y-3">
                 <div className="flex items-center gap-3">
                   <span
@@ -100,7 +76,7 @@ export default function ServiceScope() {
                     href="/dashboard/invitation"
                     className="inline-block pt-1 text-sm font-medium text-[#346739] underline underline-offset-4 decoration-[#346739]/30 hover:decoration-[#346739]"
                   >
-                    Explore the product
+                    {t("liveCta")}
                   </Link>
                 )}
               </div>

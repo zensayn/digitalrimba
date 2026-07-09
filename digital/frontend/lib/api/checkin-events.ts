@@ -77,9 +77,11 @@ export async function getCheckinEvent(): Promise<CheckinEventConfig | null> {
   return res.json();
 }
 
-/** Returns the full guest roster with live arrival details. */
+/** Returns the full guest roster with live arrival details. Mirrors
+ *  getCheckinEvent: 404 = check-in not configured yet, not an error. */
 export async function getCheckinGuests(): Promise<CheckinGuest[]> {
   const res = await authedFetch(`${BASE}/api/checkin/events/guests`);
+  if (res.status === 404) return [];
   if (!res.ok) throw new Error(`getCheckinGuests failed: ${res.status}`);
   return res.json();
 }

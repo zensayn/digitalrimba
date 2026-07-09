@@ -89,28 +89,9 @@ func (s *PostgresRsvpStore) ListRsvps(ctx context.Context, weddingID string) ([]
 	return entries, rows.Err()
 }
 
-// RsvpWeddingIDForUser reuses the guest store's resolution queries (same package).
+// RsvpWeddingIDForUser reuses the guest store's resolution flow (same package).
 func (s *PostgresRsvpStore) RsvpWeddingIDForUser(ctx context.Context, userID string) (string, error) {
-	var weddingID string
-	err := s.db.QueryRow(ctx, guestWeddingIDForUserSQL, userID).Scan(&weddingID)
-	if err == nil {
-		return weddingID, nil
-	}
-	if errors.Is(err, pgx.ErrNoRows) {
-		return "", ErrGuestWeddingNotFound
-	}
-	if !isUndefinedColumnOrTable(err) {
-		return "", err
-	}
-
-	fallbackErr := s.db.QueryRow(ctx, guestWeddingIDForOwnerSQL, userID).Scan(&weddingID)
-	if errors.Is(fallbackErr, pgx.ErrNoRows) {
-		return "", ErrGuestWeddingNotFound
-	}
-	if fallbackErr != nil {
-		return "", fallbackErr
-	}
-	return weddingID, nil
+	return resolveWeddingIDForUser(ctx, s.db, userID)
 }
 
 const guestRsvpByTokenSQL = `

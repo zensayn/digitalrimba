@@ -107,7 +107,7 @@ type CheckinCounts struct {
 
 type CheckinStore interface {
 	GetCheckinEventByCode(context.Context, string) (CheckinEvent, error)
-	MarkGuestArrived(context.Context, string, ScanDetails, time.Time) (CheckinGuest, bool, CheckinCounts, error)
+	MarkGuestArrived(ctx context.Context, weddingID, qrToken string, details ScanDetails, now time.Time) (CheckinGuest, bool, CheckinCounts, error)
 	GetCheckinCounts(context.Context, string) (CheckinCounts, error)
 	SearchGuestsByName(ctx context.Context, weddingID, query string) ([]CheckinGuest, error)
 	LookupGuestByQRToken(ctx context.Context, weddingID, qrToken string) (CheckinGuest, error)
@@ -458,9 +458,14 @@ func (h *CheckinHandler) Auth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Seed for sequential envelope tag codes; the client increments locally.
+	// A store error must not silently restart numbering at 1 — envelope tags
+	// identify physical gifts, so fail the login instead.
+	// ponytail: seed+client-increment can still collide across two kiosks
+	// logged in simultaneously; move to server-side reservation if that happens.
 	maxTag, err := h.store.MaxGiftTag(r.Context(), event.WeddingID)
 	if err != nil {
-		maxTag = 0
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
 	}
 
 	writeJSON(w, http.StatusOK, struct {
@@ -512,11 +517,12 @@ func (h *CheckinHandler) Scan(w http.ResponseWriter, r *http.Request) {
 		GiftTagCode:      giftTagCode,
 		CheckedInByLabel: checkedInByLabel,
 	}
-	guest, already, counts, err := h.store.MarkGuestArrived(r.Context(), req.QRToken, details, h.now().UTC())
+	guest, already, counts, err := h.store.MarkGuestArrived(r.Context(), claims.WeddingID, req.QRToken, details, h.now().UTC())
 	if err != nil {
 		writeCheckinError(w, err)
 		return
 	}
+	// Belt and braces — the store already scopes the write by wedding_id.
 	if guest.WeddingID != claims.WeddingID {
 		http.Error(w, "wrong wedding", http.StatusForbidden)
 		return
@@ -650,14 +656,30 @@ func (h *CheckinHandler) WalkIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "name required", http.StatusBadRequest)
 		return
 	}
+	if len(req.Name) > 200 {
+		http.Error(w, "name too long", http.StatusBadRequest)
+		return
+	}
 	if req.PartySize < 1 {
 		req.PartySize = 1
+	}
+	if req.PartySize > 99 {
+		http.Error(w, "party_size must be between 1 and 99", http.StatusBadRequest)
+		return
+	}
+
+	// Same field limits as Scan.
+	giftTagCode := strings.TrimSpace(req.GiftTagCode)
+	checkedInByLabel := strings.TrimSpace(req.CheckedInByLabel)
+	if len(giftTagCode) > 100 || len(checkedInByLabel) > 200 {
+		http.Error(w, "field too long", http.StatusBadRequest)
+		return
 	}
 
 	details := ScanDetails{
 		SouvenirGiven:    req.SouvenirGiven,
-		GiftTagCode:      strings.TrimSpace(req.GiftTagCode),
-		CheckedInByLabel: strings.TrimSpace(req.CheckedInByLabel),
+		GiftTagCode:      giftTagCode,
+		CheckedInByLabel: checkedInByLabel,
 	}
 	guest, err := h.store.CreateWalkInGuest(r.Context(), claims.WeddingID, req.Name, req.PartySize, details, h.now().UTC())
 	if err != nil {

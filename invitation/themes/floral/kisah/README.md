@@ -1,6 +1,6 @@
 # Kisah · Kategori Floral
 
-> **Tier 2 — Standard · Rp300rb**
+> **Tier 2 — Standard · Rp 300rb**
 > Narasi visual yang lebih kaya.
 
 Setiap subfolder di bawah ini adalah tema desain yang mandiri (Next.js app tersendiri).

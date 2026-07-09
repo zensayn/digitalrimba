@@ -46,11 +46,26 @@
     "ctaTitle": "Get started",
     "ctaSubtitle": "Your invitation is 15 minutes away.",
     "frames": {
-      "frame1": { "title": "Pick a theme", "duration": "± 2 min" },
-      "frame2": { "title": "Tell your story", "duration": "± 10 min" },
-      "frame3": { "title": "Publish", "duration": "instant" },
-      "frame4": { "title": "Share on WhatsApp", "duration": "one tap" },
-      "frame5": { "title": "Watch RSVPs arrive", "duration": "automatic" }
+      "frame1": {
+        "title": "Pick a theme",
+        "duration": "± 2 min"
+      },
+      "frame2": {
+        "title": "Tell your story",
+        "duration": "± 10 min"
+      },
+      "frame3": {
+        "title": "Publish",
+        "duration": "instant"
+      },
+      "frame4": {
+        "title": "Share on WhatsApp",
+        "duration": "one tap"
+      },
+      "frame5": {
+        "title": "Watch RSVPs arrive",
+        "duration": "automatic"
+      }
     }
   },
   "OurServices": {
@@ -85,7 +100,14 @@
     "governance": "Governance",
     "bookDemo": "Book Demo",
     "login": "Login",
-    "languageLabel": "Language"
+    "languageLabel": "Language",
+    "templates": "Templates",
+    "services": "Services",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "navigationLabel": "Navigation"
   },
   "Auth": {
     "brandHeadline": "Deeply Rooted\nin Your Moments",
@@ -113,12 +135,10 @@
     "budgetUsed": "Budget Used",
     "account": "Account",
     "comingSoon": "Coming soon",
-
     "createInvitation": "Create Invitation",
     "createInvitationDesc": "Design a new premium web invitation.",
     "addGuests": "Add Guests",
     "addGuestsDesc": "Import or manually add guests to your list.",
-
     "invitationsDesc": "Manage your premium digital wedding invitations.",
     "newInvitation": "New Invitation",
     "searchInvitations": "Search invitations…",
@@ -129,7 +149,6 @@
     "noInvitationsTitle": "No Invitations Yet",
     "noInvitationsDesc": "Create your first digital invitation and choose from Leaf, Timber, or Heartwood series.",
     "createFirstInvitation": "Create First Invitation",
-
     "guestListDesc": "Track and organize your wedding guests.",
     "export": "Export",
     "addGuest": "Add Guest",
@@ -145,7 +164,6 @@
     "confirmedLabel": "Confirmed",
     "pendingLabel": "Pending",
     "declinedLabel": "Declined",
-
     "rsvpDesc": "Track confirmations and manage responses in real-time.",
     "refresh": "Refresh",
     "sendReminder": "Send Reminder",
@@ -158,7 +176,6 @@
     "generateQr": "Generate QR",
     "recentResponses": "Recent Responses",
     "attendeesCount": "attendees",
-
     "budgetDesc": "Plan, track, and manage your wedding expenditure.",
     "addCategory": "Add Category",
     "totalBudget": "Total Budget",
@@ -185,5 +202,61 @@
       "title": "Seamless at the door",
       "description": "Drop the clipboards. Secure check-in consoles scan passes at the door."
     }
+  },
+  "TemplatesShowcase": {
+    "label": "Invitation templates",
+    "title": "Begin with a beautiful template",
+    "desc": "Every Rimba invitation starts from a hand-crafted theme. Pick one, add your story, and it becomes yours.",
+    "cta": "Browse all templates",
+    "warmNarrativeCaption": "A warm, story-driven scroll with falling flowers and soft light.",
+    "sacredLuxeCaption": "Deep tones and gilded detail for an intimate, ceremonial mood.",
+    "sinemaKisahCaption": "Cinematic frames that let your story unfold scene by scene.",
+    "warisanCaption": "Heritage motifs and adat detail, set in an editorial layout."
+  },
+  "ProductSuite": {
+    "label": "Our Services",
+    "title": "Today, invitations. Tomorrow, your whole event.",
+    "desc": "Rimba starts with the invitation — and grows with everything that follows it.",
+    "availableNow": "Available now",
+    "flagshipTitle": "Wedding Invitations",
+    "flagshipDesc": "Hand-crafted digital invitations with smart RSVP over WhatsApp, guest tracking, and secure check-in at the door — the full journey from “save the date” to the last dance.",
+    "flagshipCta": "Explore invitations",
+    "comingSoon": "Coming soon",
+    "rsvpBubble": "We'll both be there! 🤍",
+    "guestTracking": "Guest tracking",
+    "confirmed": "confirmed",
+    "checkedIn": "Dinda & Raka checked in",
+    "checkedInMeta": "at the venue · just now",
+    "upcoming1Name": "Digital RSVP Coordinator",
+    "upcoming1Desc": "One command center for every guest reply — reminders, headcounts, and seating, handled for you.",
+    "upcoming2Name": "Event Landing Pages",
+    "upcoming2Desc": "A beautiful page for any celebration — birthdays, corporate galas, community gatherings."
+  },
+  "ServiceScope": {
+    "label": "Our Service Scope",
+    "title": "One platform, built to scale",
+    "desc": "Everything we build for weddings — RSVP, guest logistics, beautiful pages — is a foundation. The same platform will carry every celebration that comes after.",
+    "phaseNow": "Now",
+    "phaseNext": "Next",
+    "phaseLater": "Later",
+    "stage1Name": "Wedding Invitations",
+    "stage1Desc": "Our flagship — hand-crafted digital invitations with WhatsApp RSVP, guest tracking, and QR check-in.",
+    "stage2Name": "Digital RSVP Coordinator",
+    "stage2Desc": "The RSVP engine behind our invitations, as a standalone tool for any gathering.",
+    "stage3Name": "Event Landing Pages",
+    "stage3Desc": "Editorial pages for every celebration — galas, launches, community events.",
+    "liveCta": "Explore the product"
+  },
+  "Testimoni": {
+    "label": "Testimonials",
+    "title": "From couples who've already said yes",
+    "quote1": "Our guests thought we hired an agency. It was just us, one evening, and Rimba.",
+    "detail1": "We published the invitation the same night we picked the theme. Relatives RSVP'd on WhatsApp within minutes — my mother didn't have to explain anything to anyone.",
+    "name1": "Dinda & Raka",
+    "event1": "Jakarta · Kenangan collection",
+    "quote2": "The check-in queue at our venue simply didn't exist.",
+    "detail2": "Guests scanned their personal QR at the door and walked straight in. We watched the dashboard fill up from the family table — 340 guests, zero clipboards.",
+    "name2": "Sari & Bimo",
+    "event2": "Yogyakarta · Warisan collection"
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useEffect, useState } from "react";
+import MusicPlayer from "@/components/shared/MusicPlayer";
 import { renderSection } from "@/components/RenderSection";
 import { demoConfig, EDITABLE_KEYS } from "@/lib/resolve-config";
 import type { InvitationConfig } from "@/lib/config-types";
@@ -83,10 +84,14 @@ export default function PreviewPage() {
   const sectionIds = config.sections.order.filter((id) => config.sections.enabled[id]);
 
   return (
-    <div className="snap-container">
-      {sectionIds.map((id) => (
-        <Section key={id} id={id} config={config} />
-      ))}
-    </div>
+    <>
+      {/* Same music wiring as production so config.music edits are audible here. */}
+      <MusicPlayer src={config.music?.src} />
+      <div className="snap-container">
+        {sectionIds.map((id) => (
+          <Section key={id} id={id} config={config} />
+        ))}
+      </div>
+    </>
   );
 }

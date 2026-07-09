@@ -62,8 +62,22 @@ export default function ReviewSection2() {
               key={review.name}
               type="button"
               role="tab"
+              id={`review2-tab-${i}`}
               aria-selected={i === active}
+              aria-controls="review2-panel"
+              tabIndex={i === active ? 0 : -1}
               onClick={() => setActive(i)}
+              onKeyDown={(e) => {
+                // WAI-ARIA tabs: arrow keys move + activate, roving tabindex.
+                if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+                e.preventDefault();
+                const next =
+                  e.key === "ArrowRight"
+                    ? (i + 1) % reviews.length
+                    : (i - 1 + reviews.length) % reviews.length;
+                setActive(next);
+                document.getElementById(`review2-tab-${next}`)?.focus();
+              }}
               className={cn(
                 "rounded-full border px-4 py-2 font-poppins text-[12px] uppercase transition-colors duration-200 ease-out",
                 i === active
@@ -77,7 +91,12 @@ export default function ReviewSection2() {
         </div>
 
         {/* Quote panel — soft-stone, 32px layout-card radius */}
-        <div className="mt-8 rounded-[32px] bg-[#eeece7] p-6 md:p-12">
+        <div
+          id="review2-panel"
+          role="tabpanel"
+          aria-labelledby={`review2-tab-${active}`}
+          className="mt-8 rounded-[32px] bg-[#eeece7] p-6 md:p-12"
+        >
           {/* key remount restarts the enter transition on tab change */}
           <div
             key={active}

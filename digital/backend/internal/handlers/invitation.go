@@ -39,6 +39,13 @@ var reservedSlugs = map[string]bool{
 	"invitation": true, "invitations": true,
 }
 
+// isJSONObject reports whether raw is a JSON object — content rides through
+// a top-level `jsonb ||` merge, so arrays/scalars/null must never be stored.
+func isJSONObject(raw json.RawMessage) bool {
+	trimmed := strings.TrimSpace(string(raw))
+	return strings.HasPrefix(trimmed, "{") && json.Valid(raw)
+}
+
 // slugProblem returns "" for a claimable slug, else "invalid" or "reserved".
 func slugProblem(slug string) string {
 	if !validSlugRe.MatchString(slug) || strings.HasPrefix(slug, "draft-") {
@@ -51,11 +58,10 @@ func slugProblem(slug string) string {
 }
 
 // randomDraftSlug generates an unguessable placeholder slug for unpublished
-// invitations, e.g. "draft-3f9a1c2e".
-// 6 random bytes (12 hex chars) — draft slugs double as secret preview
-// links, so they must stay unguessable.
+// invitations. 16 random bytes (32 hex chars) — draft slugs double as secret
+// bearer preview links, so they need real entropy.
 func randomDraftSlug() (string, error) {
-	var b [6]byte
+	var b [16]byte
 	if _, err := rand.Read(b[:]); err != nil {
 		return "", err
 	}
@@ -178,6 +184,10 @@ func (h *InvitationHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if len(req.Content) == 0 {
 		req.Content = json.RawMessage(`{}`)
 	}
+	if !isJSONObject(req.Content) {
+		http.Error(w, "content must be a JSON object", http.StatusBadRequest)
+		return
+	}
 
 	// Drafts get an unguessable placeholder slug; the user picks the real
 	// domain name at publish time via PATCH.
@@ -230,12 +240,46 @@ func (h *InvitationHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if req.CoupleNames != nil {
+		*req.CoupleNames = strings.TrimSpace(*req.CoupleNames)
+		if *req.CoupleNames == "" {
+			http.Error(w, "couple_names required", http.StatusBadRequest)
+			return
+		}
+	}
+
+	if req.Content != nil && !isJSONObject(*req.Content) {
+		http.Error(w, "content must be a JSON object", http.StatusBadRequest)
+		return
+	}
+
+	// Publishing requires a real domain name: either this request picks one,
+	// or the invitation must already have a non-draft slug. Otherwise
+	// PATCH {"published":true} would put a draft-… placeholder live.
+	if req.Published != nil && *req.Published && req.Slug == nil {
+		existing, err := h.store.GetInvitation(r.Context(), chi.URLParam(r, "id"))
+		if err != nil {
+			writeInvitationError(w, err)
+			return
+		}
+		if existing.OwnerID != ownerID {
+			http.Error(w, "forbidden", http.StatusForbidden)
+			return
+		}
+		if strings.HasPrefix(existing.Slug, "draft-") {
+			http.Error(w, "slug required to publish", http.StatusBadRequest)
+			return
+		}
+	}
+
 	if req.Slug != nil {
 		*req.Slug = strings.ToLower(strings.TrimSpace(*req.Slug))
 		if problem := slugProblem(*req.Slug); problem != "" {
 			http.Error(w, "slug "+problem, http.StatusBadRequest)
 			return
 		}
+		// Friendly 409 for the common case. The UPDATE itself re-checks the
+		// lock atomically, so a concurrent publish can't slip a rename through.
 		existing, err := h.store.GetInvitation(r.Context(), chi.URLParam(r, "id"))
 		if err != nil {
 			writeInvitationError(w, err)
@@ -540,7 +584,13 @@ SET
         WHEN $4::boolean IS FALSE THEN NULL
         ELSE published_at
     END,
-    slug = COALESCE($6, slug),
+    -- Slug is locked once published: only apply $6 while still unpublished
+    -- (old row values) or when it isn't actually a rename. Enforced here,
+    -- atomically, because the handler's pre-check is racy on its own.
+    slug = CASE
+        WHEN $6::text IS NOT NULL AND (published_at IS NULL OR slug = $6::text) THEN $6::text
+        ELSE slug
+    END,
     couple_names = COALESCE($7, couple_names),
     updated_at = now()
 WHERE id = $1

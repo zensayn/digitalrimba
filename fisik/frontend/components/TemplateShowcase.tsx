@@ -15,7 +15,7 @@
 // ≤ Medium, tracking 0. Motion: emil-design-eng — transform/opacity only,
 // strong ease-out, :active scale feedback, hover gated to fine pointers.
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion } from "motion/react";
 import { ArrowRight } from "@solar-icons/react";
@@ -49,7 +49,6 @@ export default function TemplateShowcase({
   const [canNext, setCanNext] = useState(true);
 
   const visible = products.slice(0, limit);
-  if (visible.length === 0) return null;
 
   const updateArrows = () => {
     const el = railRef.current;
@@ -57,6 +56,16 @@ export default function TemplateShowcase({
     setCanPrev(el.scrollLeft > 4);
     setCanNext(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
   };
+
+  // Initialize arrow state on mount (and keep it right on resize) — otherwise
+  // "next" renders enabled even when the rail has nothing to scroll to.
+  useEffect(() => {
+    updateArrows();
+    window.addEventListener("resize", updateArrows);
+    return () => window.removeEventListener("resize", updateArrows);
+  }, []);
+
+  if (visible.length === 0) return null;
 
   const scroll = (dir: 1 | -1) => {
     const el = railRef.current;
@@ -107,14 +116,14 @@ export default function TemplateShowcase({
           {/* Desktop arrows — mobile swipes the rail directly */}
           <div className="hidden shrink-0 items-center gap-2 pb-1 md:flex">
             <RailArrow
-              label="Previous designs"
+              label={t("railPrev")}
               disabled={!canPrev}
               onClick={() => scroll(-1)}
             >
               <ArrowRight size={16} weight="Linear" className="rotate-180" />
             </RailArrow>
             <RailArrow
-              label="Next designs"
+              label={t("railNext")}
               disabled={!canNext}
               onClick={() => scroll(1)}
             >

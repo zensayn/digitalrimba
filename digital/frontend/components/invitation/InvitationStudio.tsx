@@ -322,6 +322,12 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
   }
 
   async function handlePublish(chosenSlug: string | null) {
+    // An in-flight upload will mutate the draft when it resolves — publishing
+    // now would persist a stale asset URL.
+    if (isUploading) {
+      setNotice({ type: "err", text: "Wait for the upload to finish before publishing." });
+      return;
+    }
     setIsPublishing(true);
     setNotice(null);
     try {
@@ -339,13 +345,18 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
   }
 
   function toggleSection(id: ThemeSectionId) {
-    setDraft((current) => ({
-      ...current,
-      sections: {
-        ...current.sections,
-        enabled: { ...current.sections.enabled, [id]: !current.sections.enabled[id] },
-      },
-    }));
+    setDraft((current) => {
+      // A missing flag renders as enabled (see the rail's `?? true`), so the
+      // first toggle must flip from that effective state, not from undefined.
+      const effective = current.sections.enabled[id] ?? true;
+      return {
+        ...current,
+        sections: {
+          ...current.sections,
+          enabled: { ...current.sections.enabled, [id]: !effective },
+        },
+      };
+    });
   }
 
   const handleTemplateSelect = (template: Template) => {
@@ -437,7 +448,7 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
           <button
             type="button"
             onClick={() => setShowPublish(true)}
-            disabled={isPublishing}
+            disabled={isPublishing || isUploading}
             className="font-poppins h-10 rounded-full bg-[#346739] px-5 text-xs font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-[#2d5a32] active:scale-[0.97] disabled:bg-[#e5e5e5] disabled:text-[#6a6a6a]"
           >
             {isPublishing ? "Publishing…" : isPublished ? "Update" : "Publish"}
@@ -592,6 +603,43 @@ function PublishDialog({
   // Result of the last remote availability check, keyed by the value it was
   // for — anything else derives during render (no setState-in-effect).
   const [remote, setRemote] = useState<{ for: string; status: SlugStatus } | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Dialog behavior: focus moves in on open, stays trapped, Escape closes,
+  // and focus returns to the opener on close.
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    const focusables = () =>
+      Array.from(
+        dialogRef.current?.querySelectorAll<HTMLElement>("button, input") ?? [],
+      ).filter((el) => !el.hasAttribute("disabled"));
+    focusables()[0]?.focus();
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        onCancel();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const els = focusables();
+      if (els.length === 0) return;
+      const first = els[0];
+      const last = els[els.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      opener?.focus();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const clientInvalid = !value || !SLUG_RE.test(value) || value.startsWith("draft-");
   const isOwnSlug = currentSlug !== null && value === currentSlug;
@@ -630,12 +678,24 @@ function PublishDialog({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-md rounded-[24px] bg-white p-6 shadow-[0_28px_80px_rgba(10,10,10,0.25)]">
-        <h3 className="font-poppins text-lg font-semibold tracking-tight">
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onCancel();
+      }}
+    >
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="publish-dialog-title"
+        aria-describedby="publish-dialog-desc"
+        className="w-full max-w-md rounded-[24px] bg-white p-6 shadow-[0_28px_80px_rgba(10,10,10,0.25)]"
+      >
+        <h3 id="publish-dialog-title" className="font-poppins text-lg font-semibold tracking-tight">
           {locked ? "Update your invitation" : "Publish your invitation"}
         </h3>
-        <p className="font-poppins mt-1 text-sm text-[#616161]">
+        <p id="publish-dialog-desc" className="font-poppins mt-1 text-sm text-[#616161]">
           {locked
             ? "Your invitation stays at the same address."
             : "Pick the web address your guests will visit. It can't be changed after publishing."}

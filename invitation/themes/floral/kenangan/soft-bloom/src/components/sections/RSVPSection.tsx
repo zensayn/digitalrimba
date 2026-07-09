@@ -109,6 +109,7 @@ export default function RSVPSection() {
                       key={opt}
                       type="button"
                       onClick={() => setAttendance(opt)}
+                      aria-pressed={attendance === opt}
                       className="flex-1 py-2.5 text-center transition-all duration-300 font-label"
                       style={{
                         border: `1px solid ${attendance === opt ? "var(--accent)" : "var(--border)"}`,

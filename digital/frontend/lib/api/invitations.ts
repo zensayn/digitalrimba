@@ -19,29 +19,46 @@ export type Invitation = {
 };
 
 let _cachedToken: { value: string; expiresAt: number } | null = null;
+let _tokenPromise: Promise<string> | null = null;
 
 async function getToken(): Promise<string> {
-  const now = Date.now();
-  if (_cachedToken && _cachedToken.expiresAt > now) {
+  if (_cachedToken && _cachedToken.expiresAt > Date.now()) {
     return _cachedToken.value;
   }
-  const res = await fetch('/api/auth/token');
-  if (!res.ok) throw new Error('Not signed in');
-  const { token } = (await res.json()) as { token: string };
-  _cachedToken = { value: token, expiresAt: now + 13 * 60 * 1000 };
-  return token;
+  // Share one in-flight request so concurrent cold callers don't each hit
+  // /api/auth/token.
+  if (!_tokenPromise) {
+    _tokenPromise = (async () => {
+      const res = await fetch('/api/auth/token', { signal: AbortSignal.timeout(10_000) });
+      if (!res.ok) throw new Error('Not signed in');
+      const { token } = (await res.json()) as { token: string };
+      _cachedToken = { value: token, expiresAt: Date.now() + 13 * 60 * 1000 };
+      return token;
+    })().finally(() => {
+      _tokenPromise = null;
+    });
+  }
+  return _tokenPromise;
 }
 
 async function authedFetch(url: string, options?: RequestInit): Promise<Response> {
-  const token = await getToken();
-  const headers: Record<string, string> = {
-    ...(options?.headers as Record<string, string> | undefined),
-    Authorization: `Bearer ${token}`,
+  const buildHeaders = (token: string): Record<string, string> => {
+    const headers: Record<string, string> = {
+      ...(options?.headers as Record<string, string> | undefined),
+      Authorization: `Bearer ${token}`,
+    };
+    if (options?.body !== undefined) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return headers;
   };
-  if (options?.body !== undefined) {
-    headers['Content-Type'] = 'application/json';
-  }
-  return fetch(url, { ...options, headers });
+
+  const res = await fetch(url, { ...options, headers: buildHeaders(await getToken()) });
+  if (res.status !== 401) return res;
+
+  // Cached token was revoked early — refresh once and retry.
+  _cachedToken = null;
+  return fetch(url, { ...options, headers: buildHeaders(await getToken()) });
 }
 
 export function errorStatus(err: unknown): number | undefined {

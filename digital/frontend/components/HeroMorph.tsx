@@ -5,10 +5,11 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { AltArrowRight, ArrowRightUp } from "@solar-icons/react";
+import { ArrowRightUp } from "@solar-icons/react";
 import { TextureButton } from "@/components/ui/texture-button";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
 import CurvedMenu from "@/components/CurvedMenu";
+import { NAV_ITEMS } from "@/lib/site-nav";
 import React from "react";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -92,12 +93,7 @@ const PLACEHOLDER_BRANDS = ["AMARTA", "SENJA", "LARAS", "GITA", "NUSANTARA", "WA
 const HeroHeader = React.forwardRef<HTMLElement>((_, ref) => {
   const t = useTranslations("Navbar");
 
-  const menuItems = [
-    { name: t("ecosystem"), hasDropdown: false },
-    { name: t("economics"), hasDropdown: true },
-    { name: t("developers"), hasDropdown: false },
-    { name: t("governance"), hasDropdown: true },
-  ];
+  const menuItems = NAV_ITEMS.map((item) => ({ name: t(item.key), href: item.href }));
 
   return (
     <header
@@ -118,14 +114,13 @@ const HeroHeader = React.forwardRef<HTMLElement>((_, ref) => {
       {/* Center menu (desktop only) */}
       <ul className="hidden md:flex items-center gap-8 text-white font-normal text-sm">
         {menuItems.map((item) => (
-          <li
-            key={item.name}
-            className="cursor-pointer hover:opacity-75 transition-opacity flex items-center gap-1 group py-2"
-          >
-            {item.name}
-            {item.hasDropdown && (
-              <AltArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-            )}
+          <li key={item.name}>
+            <Link
+              href={item.href}
+              className="cursor-pointer hover:opacity-75 transition-opacity flex items-center gap-1 py-2"
+            >
+              {item.name}
+            </Link>
           </li>
         ))}
       </ul>
@@ -335,7 +330,30 @@ export default function HeroMorph() {
 
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) {
+      // No morph: jump straight to the settled end state (video in its tile,
+      // grid + caption visible, fullscreen overlay text gone) instead of
+      // leaving the hero stuck fullscreen.
       if (heroHeader) gsap.set(heroHeader, { autoAlpha: 0 });
+      const slot = deskSlotRef.current;
+      if (slot) {
+        const s = section.getBoundingClientRect();
+        const r = slot.getBoundingClientRect();
+        gsap.set(hero, {
+          top: r.top - s.top,
+          left: r.left - s.left,
+          right: "auto",
+          bottom: "auto",
+          width: r.width,
+          height: r.height,
+          borderRadius: 16,
+        });
+      }
+      gsap.set(
+        [taglineRef.current, titleRef.current, actionsRef.current, trustRef.current, overlayRef.current],
+        { autoAlpha: 0 },
+      );
+      gsap.set(deskTileRefs.current, { opacity: 1, scale: 1, y: 0 });
+      if (deskCaptionRef.current) gsap.set(deskCaptionRef.current, { opacity: 1, y: 0 });
       heroVideoRef.current?.pause();
       return;
     }

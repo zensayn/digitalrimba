@@ -37,7 +37,12 @@ import {
   subscribeSession,
   writeSession,
 } from "@/lib/checkin/session";
-import { getMeta, setMeta, wipeOfflineData } from "@/lib/checkin/offline-db";
+import {
+  countPendingScans,
+  getMeta,
+  setMeta,
+  wipeOfflineData,
+} from "@/lib/checkin/offline-db";
 import { fuzzySearchGuests } from "@/lib/checkin/fuzzy-search";
 import {
   primeAudio,
@@ -47,7 +52,9 @@ import {
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
 const SCANNER_ID = "operator-checkin-reader";
-const GIFT_TAG_META_KEY = "nextGiftTag";
+// Scoped per event so two events checked in from the same device never
+// share an envelope-tag sequence.
+const giftTagMetaKey = (eventCode: string) => `nextGiftTag:${eventCode}`;
 
 const padTag = (n: number) => String(n).padStart(3, "0");
 
@@ -92,7 +99,10 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [walkInOpen, setWalkInOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [serverResults, setServerResults] = useState<CheckInGuest[]>([]);
+  const [serverResults, setServerResults] = useState<{
+    for: string;
+    results: CheckInGuest[];
+  }>({ for: "", results: [] });
   const [busy, setBusy] = useState(false);
   const [scanNotice, setScanNotice] = useState("");
   const [nextGiftTag, setNextGiftTag] = useState(1);
@@ -108,19 +118,19 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
   // ── Gift tag counter: survive refresh via IndexedDB meta ────────────────────
   useEffect(() => {
     if (!token) return;
-    void getMeta(GIFT_TAG_META_KEY).then((v) => {
+    void getMeta(giftTagMetaKey(eventCode)).then((v) => {
       const stored = typeof v === "number" ? v : 0;
       setNextGiftTag((current) => Math.max(current, stored, 1));
     });
-  }, [token]);
+  }, [token, eventCode]);
 
   const consumeGiftTag = useCallback(() => {
     const tag = padTag(nextGiftTag);
     const next = nextGiftTag + 1;
     setNextGiftTag(next);
-    void setMeta(GIFT_TAG_META_KEY, next);
+    void setMeta(giftTagMetaKey(eventCode), next);
     return tag;
-  }, [nextGiftTag]);
+  }, [nextGiftTag, eventCode]);
 
   // ── SSE live counter (authenticated fetch — avoids token in URL) ────────────
   useEffect(() => {
@@ -321,28 +331,28 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
   );
 
   useEffect(() => {
-    if (!trimmedQuery || !token || !navigator.onLine) return;
+    if (!trimmedQuery || !token || !online) return;
+    const query = trimmedQuery;
     const timer = setTimeout(() => {
-      searchGuests(token, trimmedQuery)
-        .then(setServerResults)
+      searchGuests(token, query)
+        .then((results) => setServerResults({ for: query, results }))
         .catch(() => {});
     }, 300);
     return () => clearTimeout(timer);
-  }, [trimmedQuery, token]);
+  }, [trimmedQuery, token, online]);
 
   const searchResults = useMemo(() => {
     if (!trimmedQuery) return [];
+    // Server results are keyed by the query they answered — anything else is
+    // a stale response and simply doesn't render.
+    const remote = serverResults.for === trimmedQuery ? serverResults.results : [];
     const seen = new Set(localResults.map((g) => g.id));
-    return [
-      ...localResults,
-      ...serverResults.filter((g) => !seen.has(g.id)),
-    ].slice(0, 8);
+    return [...localResults, ...remote.filter((g) => !seen.has(g.id))].slice(0, 8);
   }, [trimmedQuery, localResults, serverResults]);
 
   function handleSearchSelect(g: CheckInGuest) {
     openGuestSheet(g);
     setSearchQuery("");
-    setServerResults([]);
   }
 
   // ── Walk-in ──────────────────────────────────────────────────────────────────
@@ -375,7 +385,18 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
   );
 
   const endEvent = useCallback(async () => {
+    // Only wipe local data once every queued scan is safely on the server.
+    // flush() never throws — it leaves scans pending when offline — so the
+    // pending count after flushing is the source of truth. Throwing lets the
+    // kiosk menu surface the message and re-enable its buttons.
     await flush().catch(() => {});
+    const remaining = await countPendingScans().catch(() => 1);
+    if (remaining > 0) {
+      warningFeedback();
+      throw new Error(
+        "Masih ada scan offline yang belum tersinkron — sambungkan internet lalu coba lagi"
+      );
+    }
     await wipeOfflineData().catch(() => {});
     writeSession(eventCode, null);
     window.location.reload();
@@ -441,7 +462,8 @@ export function OperatorCheckIn({ eventCode }: OperatorCheckInProps) {
         {torchAvailable && (
           <button
             type="button"
-            aria-label="Nyalakan senter"
+            aria-label={torchOn ? "Matikan senter" : "Nyalakan senter"}
+            aria-pressed={torchOn}
             onClick={toggleTorch}
             className={`absolute top-3 right-3 z-10 h-10 w-10 rounded-full flex items-center justify-center transition-transform duration-150 ease-out active:scale-[0.97] ${
               torchOn ? "bg-white text-[#212121]" : "bg-white/15 text-white"
@@ -571,10 +593,10 @@ function PinScreen({ eventCode }: { eventCode: string }) {
       primeAudio();
       requestKioskFullscreen();
       // Seed the sequential envelope-tag counter from the server max.
-      const stored = await getMeta(GIFT_TAG_META_KEY).catch(() => 0);
+      const stored = await getMeta(giftTagMetaKey(eventCode)).catch(() => 0);
       const storedNum = typeof stored === "number" ? stored : 0;
       await setMeta(
-        GIFT_TAG_META_KEY,
+        giftTagMetaKey(eventCode),
         Math.max(res.nextGiftTag, storedNum, 1)
       ).catch(() => {});
       writeSession(eventCode, { token: res.token, label: label.trim() });
@@ -604,7 +626,7 @@ function PinScreen({ eventCode }: { eventCode: string }) {
             maxLength={6}
             placeholder="6-digit PIN"
             value={pin}
-            onChange={(e) => setPin(e.target.value)}
+            onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
             className="h-12 text-center text-xl tracking-widest font-mono rounded-xl"
             autoComplete="off"
           />

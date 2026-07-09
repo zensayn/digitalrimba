@@ -3,6 +3,8 @@
 // Cohere's own FAQ pattern: pinned heading left, hairline accordion rows right,
 // open row marked by a coral top rule. Native <details> — no JS state.
 
+import { WHATSAPP_URL } from "@/lib/contact";
+
 const FAQS = [
   {
     q: "Berapa lama prosesnya?",
@@ -32,7 +34,7 @@ const FAQS = [
 
 export default function FAQ() {
   return (
-    <section className="bg-white text-[#212121] py-20 px-6 md:px-12 lg:px-24 border-t border-neutral-100">
+    <section id="faq" className="bg-white text-[#212121] py-20 px-6 md:px-12 lg:px-24 border-t border-neutral-100">
       <div className="max-w-[1300px] mx-auto grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-12 lg:gap-24 items-start">
         <div className="space-y-4 lg:sticky lg:top-32">
           <p className="text-sm font-medium uppercase text-[#93939f]">FAQ</p>
@@ -42,7 +44,7 @@ export default function FAQ() {
           <p className="text-base leading-relaxed text-[#616161] max-w-sm">
             Masih ragu? Tanyakan langsung —{" "}
             <a
-              href="https://wa.me/6285750275751"
+              href={WHATSAPP_URL}
               className="font-medium text-[#212121] underline underline-offset-4 decoration-[#212121]/25 hover:decoration-[#ff7759] hover:text-[#ff7759] transition-colors duration-200"
             >
               kami balas lewat WhatsApp

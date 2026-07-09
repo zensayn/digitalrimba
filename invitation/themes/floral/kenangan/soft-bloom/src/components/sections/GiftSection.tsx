@@ -14,22 +14,37 @@ export default function GiftSection({ bankAccounts }: { bankAccounts: Invitation
   const isInView = useInView(ref, { once: true, margin: "-15%" });
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
+  const showCopied = (idx: number) => {
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 2000);
+  };
+
   const handleCopy = (text: string, idx: number) => {
     const clean = text.replace(/\s/g, "");
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(clean);
-    } else {
-      const el = document.createElement("textarea");
-      el.value = clean;
-      el.style.cssText = "position:fixed;opacity:0;pointer-events:none";
-      document.body.appendChild(el);
-      el.focus();
-      el.select();
-      document.execCommand("copy");
-      document.body.removeChild(el);
+      // Only show the checkmark once the async write actually succeeded;
+      // fall back to the textarea trick when it's rejected (permissions).
+      navigator.clipboard
+        .writeText(clean)
+        .then(() => showCopied(idx))
+        .catch(() => {
+          if (legacyCopy(clean)) showCopied(idx);
+        });
+      return;
     }
-    setCopiedIdx(idx);
-    setTimeout(() => setCopiedIdx(null), 2000);
+    if (legacyCopy(clean)) showCopied(idx);
+  };
+
+  const legacyCopy = (value: string): boolean => {
+    const el = document.createElement("textarea");
+    el.value = value;
+    el.style.cssText = "position:fixed;opacity:0;pointer-events:none";
+    document.body.appendChild(el);
+    el.focus();
+    el.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(el);
+    return ok;
   };
 
   // Reveal saat scroll dinonaktifkan — konten tampil langsung.

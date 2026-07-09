@@ -195,11 +195,13 @@
     "gallerySubtitle": "A curated edit of our most-loved invitation designs — each one ready to make your own. Browse the full collection anytime.",
     "collectionsLabel": "Collections",
     "collectionsCta": "View collection",
-    "collectionsCount": "{count} designs",
+    "collectionsCount": "{count, plural, one {# design} other {# designs}}",
     "collectionsDesc": "Every collection carries its own character — paper, texture, and finishing chosen to match. Explore the designs inside and make one your own.",
     "viewAll": "View all",
     "featuredLabel": "Top Seller",
-    "featuredCta": "Explore this design"
+    "featuredCta": "Explore this design",
+    "railPrev": "Previous designs",
+    "railNext": "Next designs"
   },
   "RealWeddings": {
     "eyebrow": "Real weddings",

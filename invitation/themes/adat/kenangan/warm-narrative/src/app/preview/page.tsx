@@ -3,6 +3,7 @@
 import { memo, useEffect, useState } from "react";
 import MotionProvider from "@/components/shared/MotionProvider";
 import DesktopCover from "@/components/shared/DesktopCover";
+import MusicPlayer from "@/components/shared/MusicPlayer";
 import SnapContainer from "@/components/shared/SnapContainer";
 import { renderSection } from "@/components/RenderSection";
 import { demoConfig, EDITABLE_KEYS } from "@/lib/resolve-config";
@@ -90,6 +91,8 @@ export default function PreviewPage() {
     // which would block live editing).
     <MotionProvider>
       <div className="app-shell">
+        {/* Same music wiring as production so config.music edits are audible here. */}
+        <MusicPlayer src={config.music?.src} />
         <DesktopCover couple={config.couple} weddingDate={config.weddingDate} />
         <SnapContainer>
           {sectionIds.map((id) => (

@@ -38,12 +38,14 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Cache gambar & font dari CDN melalui domain sendiri
+        // Aset public/ TIDAK memakai hash di nama file, jadi jangan pernah
+        // "immutable" — file yang diganti dengan nama sama akan tersangkut di
+        // cache browser/CDN sampai setahun. 1 hari + SWR aman untuk aset tema.
         source: "/:path*.(webp|png|jpg|jpeg|svg|woff2|woff)",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
           },
         ],
       },

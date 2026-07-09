@@ -11,6 +11,19 @@ import { fetchInvitations } from '@/lib/api/invitations';
 
 const INVITE_DOMAIN = process.env.NEXT_PUBLIC_INVITE_DOMAIN ?? 'rimba.io';
 
+// One CTA component for every "create a new invitation" affordance so the
+// icon, copy source, and destination can't drift apart.
+function NewInvitationButton({ label, className }: { label: string; className?: string }) {
+  return (
+    <Button size="sm" className={`gap-2 ${className ?? ''}`} asChild>
+      <Link href="/dashboard/invitation">
+        <AddCircle size={14} weight="Bold" />
+        {label}
+      </Link>
+    </Button>
+  );
+}
+
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
     draft: 'bg-clay-surface-strong text-clay-ink/60',
@@ -61,12 +74,7 @@ export default function InvitationsPage() {
             {t('invitationsDesc')}
           </p>
         </div>
-        <Button size="sm" className="gap-2 self-start" asChild>
-          <Link href="/dashboard/invitation">
-            <AddCircle size={14} weight="Bold" />
-            {t('newInvitation')}
-          </Link>
-        </Button>
+        <NewInvitationButton label={t('newInvitation')} className="self-start" />
       </div>
 
       {/* Search & Filter Bar */}
@@ -119,12 +127,7 @@ export default function InvitationsPage() {
           <p className="font-poppins text-sm text-clay-ink/40 mb-6 text-center max-w-sm">
             {t('noInvitationsDesc')}
           </p>
-          <Button size="sm" className="gap-2" asChild>
-            <Link href="/dashboard/invitation">
-              <AddCircle size={14} weight="Bold" />
-              {t('createFirstInvitation')}
-            </Link>
-          </Button>
+          <NewInvitationButton label={t('createFirstInvitation')} />
         </div>
       ) : filtered.length === 0 ? (
         <div className="py-20 text-center">

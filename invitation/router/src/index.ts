@@ -82,11 +82,13 @@ function notFound(): Response {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
-    // x-forwarded-host is a dev seam: wrangler dev rewrites both request.url
-    // and the Host header to the route's zone apex, so local tests pass the
-    // intended host explicitly. In production it lets a caller select a
-    // different (public, published) invitation at most — same checks apply.
-    const hostname = (request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? url.hostname)
+    // x-forwarded-host is a dev-only seam: wrangler dev rewrites both
+    // request.url and the Host header to the route's zone apex, so local
+    // tests pass the intended host explicitly. Only honored when
+    // THEME_DEV_ORIGIN marks a dev environment — in production the real
+    // Host decides, so callers can't select an arbitrary slug via header.
+    const forwardedHost = env.THEME_DEV_ORIGIN ? request.headers.get("x-forwarded-host") : null;
+    const hostname = (forwardedHost ?? request.headers.get("host") ?? url.hostname)
       .split(":")[0];
     const labels = hostname.split(".");
     const slug = labels[0].toLowerCase();
@@ -96,13 +98,21 @@ export default {
       return notFound();
     }
 
-    const apiRes = await fetch(`${env.API_URL}/api/invitations/${encodeURIComponent(slug)}`, {
-      cf: { cacheTtl: 60, cacheEverything: true },
-    } as RequestInit);
-    if (apiRes.status === 404) return notFound();
-    if (!apiRes.ok) return new Response("service unavailable", { status: 503 });
-
-    const invitation = (await apiRes.json()) as { content?: { templateId?: string } };
+    // Timeout + parse guard: a stalled or malformed API response must fail
+    // fast to a 503, not hang the edge request or throw a 1101.
+    let invitation: { content?: { templateId?: string } };
+    try {
+      const apiRes = await fetch(`${env.API_URL}/api/invitations/${encodeURIComponent(slug)}`, {
+        cf: { cacheTtl: 60, cacheEverything: true },
+        signal: AbortSignal.timeout(5000),
+      } as RequestInit);
+      if (apiRes.status === 404) return notFound();
+      if (!apiRes.ok) return new Response("service unavailable", { status: 503 });
+      invitation = (await apiRes.json()) as { content?: { templateId?: string } };
+    } catch (err) {
+      console.error(`router: invitation lookup failed for ${slug}:`, err);
+      return new Response("service unavailable", { status: 503 });
+    }
 
     const headers = new Headers(request.headers);
     headers.set("x-rimba-slug", slug);

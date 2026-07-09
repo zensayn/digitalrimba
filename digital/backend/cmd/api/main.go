@@ -56,7 +56,7 @@ func main() {
 
 	// Optional Redis cache (REDIS_URL) over the check-in read hot path; the
 	// backend runs unchanged without it.
-	if rdb, err := cache.New(ctx); err != nil {
+	if rdb, err := cache.New(ctx, os.Getenv("REDIS_URL")); err != nil {
 		log.Printf("redis cache disabled: %v", err)
 	} else if rdb != nil {
 		defer rdb.Close()

@@ -54,13 +54,13 @@ func scanCheckinGuest(row pgx.Row) (CheckinGuest, error) {
 	return g, err
 }
 
-func (s *PostgresCheckinStore) MarkGuestArrived(ctx context.Context, qrToken string, details ScanDetails, now time.Time) (CheckinGuest, bool, CheckinCounts, error) {
+func (s *PostgresCheckinStore) MarkGuestArrived(ctx context.Context, weddingID, qrToken string, details ScanDetails, now time.Time) (CheckinGuest, bool, CheckinCounts, error) {
 	g, err := scanCheckinGuest(s.db.QueryRow(ctx, `
 		SELECT `+checkinGuestColumns+`
 		FROM guests g
 		LEFT JOIN checkin c ON c.guest_id = g.id
-		WHERE g.qr_token = $1::uuid
-	`, qrToken))
+		WHERE g.qr_token = $1::uuid AND g.wedding_id = $2::uuid
+	`, qrToken, weddingID))
 	if errors.Is(err, pgx.ErrNoRows) {
 		return CheckinGuest{}, false, CheckinCounts{}, ErrCheckinGuestNotFound
 	}
@@ -100,13 +100,18 @@ func (s *PostgresCheckinStore) MarkGuestArrived(ctx context.Context, qrToken str
 	}
 
 	// ON CONFLICT DO NOTHING hit a race: another request checked this guest in
-	// between our initial read and this insert. Re-fetch so we report the real
-	// already-arrived state instead of a bare, timestamp-less "success".
-	var raceArrivedAt time.Time
-	if err := s.db.QueryRow(ctx, `SELECT checked_in_at FROM checkin WHERE guest_id = $1::uuid`, g.ID).Scan(&raceArrivedAt); err != nil {
+	// between our initial read and this insert. Re-fetch the full row so every
+	// detail (souvenir, pax, gift tag, operator label) reflects the winning
+	// scan, not our stale pre-insert read.
+	g, err = scanCheckinGuest(s.db.QueryRow(ctx, `
+		SELECT `+checkinGuestColumns+`
+		FROM guests g
+		JOIN checkin c ON c.guest_id = g.id
+		WHERE g.id = $1::uuid AND g.wedding_id = $2::uuid
+	`, g.ID, weddingID))
+	if err != nil {
 		return CheckinGuest{}, false, CheckinCounts{}, err
 	}
-	g.ArrivedAt = &raceArrivedAt
 
 	counts, err := s.GetCheckinCounts(ctx, g.WeddingID)
 	return g, true, counts, err
@@ -195,17 +200,19 @@ func (s *PostgresCheckinStore) CreateWalkInGuest(ctx context.Context, weddingID,
 		    INSERT INTO checkin (guest_id, wedding_id, checked_in_at, souvenir_claimed,
 		                         actual_pax, proxy_name, gift_tag_code, checked_in_by_label,
 		                         created_at, updated_at)
-		    SELECT id, wedding_id, $4, $5, NULL, NULL, NULLIF($6, ''), NULLIF($7, ''), $4, $4
+		    -- Walk-ins are physically present, so the entered party size is
+		    -- their actual pax.
+		    SELECT id, wedding_id, $4, $5, $3, NULL, NULLIF($6, ''), NULLIF($7, ''), $4, $4
 		    FROM new_guest
-		    RETURNING checked_in_at, souvenir_claimed, gift_tag_code, checked_in_by_label
+		    RETURNING checked_in_at, souvenir_claimed, actual_pax, gift_tag_code, checked_in_by_label
 		)
 		SELECT ng.id::text, ng.wedding_id::text, ng.qr_token::text, ng.name, COALESCE(ng.guest_group, ''), ng.party_size,
-		       nc.checked_in_at, nc.souvenir_claimed,
+		       nc.checked_in_at, nc.souvenir_claimed, nc.actual_pax,
 		       COALESCE(nc.gift_tag_code, ''), COALESCE(nc.checked_in_by_label, '')
 		FROM new_guest ng CROSS JOIN new_checkin nc
 	`, weddingID, name, partySize, now, details.SouvenirGiven, details.GiftTagCode, details.CheckedInByLabel).Scan(
 		&g.ID, &g.WeddingID, &g.QRToken, &g.Name, &g.Tag, &g.PartySize,
-		&arrivedAt, &g.SouvenirGiven, &g.GiftTagCode, &g.CheckedInByLabel,
+		&arrivedAt, &g.SouvenirGiven, &g.ActualPax, &g.GiftTagCode, &g.CheckedInByLabel,
 	)
 	if err != nil {
 		return CheckinGuest{}, err

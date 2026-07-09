@@ -186,7 +186,9 @@ export default function RealWeddings2() {
       <div className="mx-auto w-full max-w-[1240px]">
         {/* ── Desktop: collage field with the headline in the middle ────── */}
         <div className="relative hidden lg:block" style={{ aspectRatio: "1240 / 860" }}>
-          {WEDDINGS.map((w, i) => {
+          {/* Only as many photos as have layout slots — an unmatched edit to
+              either array must not crash the render. */}
+          {WEDDINGS.slice(0, LAYOUT.length).map((w, i) => {
             const pos = LAYOUT[i];
             return (
               <motion.figure

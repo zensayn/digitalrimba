@@ -276,7 +276,11 @@ export function InvitationForm({ section, config, onChange, isUploading, uploadF
     onChange({ ...config, [key]: value });
 
   return (
-    <form className="grid gap-5" onSubmit={(event) => event.preventDefault()}>
+    <form onSubmit={(event) => event.preventDefault()}>
+    {/* Uploads resolve asynchronously against the config they captured, so
+        freeze the form while one is in flight — otherwise a slow upload can
+        overwrite edits made in the meantime. */}
+    <fieldset disabled={isUploading} className="m-0 grid gap-5 border-0 p-0">
       {section === "cover" && (
         <>
           <Field index={0}>
@@ -422,19 +426,15 @@ export function InvitationForm({ section, config, onChange, isUploading, uploadF
             />
           </Field>
           <Field index={3}>
-            <TextInput
-              label="Please avoid (comma-separated)"
-              value={config.dressCode.avoid.join(", ")}
-              onChange={(v) =>
-                set("dressCode", {
-                  ...config.dressCode,
-                  avoid: v
-                    .split(",")
-                    .map((item) => item.trim())
-                    .filter(Boolean),
-                })
-              }
-              placeholder="Putih, Hitam polos"
+            <span className={labelClass}>Please avoid</span>
+            <ListEditor
+              items={config.dressCode.avoid}
+              onChange={(avoid) => set("dressCode", { ...config.dressCode, avoid })}
+              makeEmpty={() => ""}
+              addLabel="Add item to avoid"
+              renderItem={(item, update) => (
+                <TextInput label="Avoid" value={item} onChange={update} placeholder="Putih" />
+              )}
             />
           </Field>
         </>
@@ -501,6 +501,7 @@ export function InvitationForm({ section, config, onChange, isUploading, uploadF
           />
         </Field>
       )}
+    </fieldset>
     </form>
   );
 }

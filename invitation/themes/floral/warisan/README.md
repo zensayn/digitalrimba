@@ -1,6 +1,6 @@
 # Warisan · Kategori Floral
 
-> **Tier 3 — Premium · Rp700rb**
+> **Tier 3 — Premium · Rp 700rb**
 > Tier premium yang paling kaya secara visual dan gerak.
 
 Setiap subfolder di bawah ini adalah tema desain yang mandiri (Next.js app tersendiri).

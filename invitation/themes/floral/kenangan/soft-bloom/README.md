@@ -36,9 +36,9 @@ Aset yang dipakai: `SudutBunga`, `BungaJatuh1–3`, `PembatasBunga`, `BingkaiFot
 
 ---
 
-## Sections (9 — tier kenangan)
+## Sections (10 — tier kenangan)
 
-`cover` · `greeting` · `couple` · `akad` · `resepsi` · `gallery` · `rsvp` · `gift` · `closing`
+`cover` · `greeting` · `couple` · `akad` · `resepsi` · `dresscode` · `gallery` · `rsvp` · `gift` · `closing`
 
 Atur urutan & aktif/nonaktif di `invitation.config.json` → `sections`.
 

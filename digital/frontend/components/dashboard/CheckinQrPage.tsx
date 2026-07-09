@@ -25,9 +25,12 @@ export default function CheckinQrPage() {
 
   // Initial load + live polling so "arrived" tracks the operator station.
   // Poll failures are silent; only the first load surfaces an error.
+  // Self-scheduling (not setInterval) so requests never overlap and a slow,
+  // older response can't overwrite a newer one.
   useEffect(() => {
     let alive = true
     let firstLoad = true
+    let timer: ReturnType<typeof setTimeout> | undefined
     const load = () =>
       getCheckinEvent()
         .then((c) => {
@@ -38,14 +41,16 @@ export default function CheckinQrPage() {
             setError(err instanceof Error ? err.message : 'Failed to load check-in config')
         })
         .finally(() => {
-          if (alive) setLoading(false)
           firstLoad = false
+          if (alive) {
+            setLoading(false)
+            timer = setTimeout(() => void load(), POLL_MS)
+          }
         })
     void load()
-    const interval = setInterval(load, POLL_MS)
     return () => {
       alive = false
-      clearInterval(interval)
+      clearTimeout(timer)
     }
   }, [])
 
@@ -65,9 +70,14 @@ export default function CheckinQrPage() {
   }
 
   function copyToClipboard(kind: 'url' | 'pin', value: string) {
-    void navigator.clipboard.writeText(value)
-    setCopied(kind)
-    setTimeout(() => setCopied(null), 2000)
+    // Only show "copied" once the async write actually succeeded.
+    navigator.clipboard
+      .writeText(value)
+      .then(() => {
+        setCopied(kind)
+        setTimeout(() => setCopied(null), 2000)
+      })
+      .catch(() => setError('Copy failed — copy it manually.'))
   }
 
   async function handleDownloadPdf() {

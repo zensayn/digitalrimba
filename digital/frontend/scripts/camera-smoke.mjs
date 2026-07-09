@@ -33,17 +33,32 @@ await page.goto(`http://localhost:3000/checkin/${EVENT_CODE}`, {
   waitUntil: "networkidle",
 });
 
+// Wait for the scanner video to actually be live instead of sleeping a fixed
+// 5s — faster when the camera comes up quickly, and on timeout the detailed
+// state check below still reports exactly what's wrong.
+const waitForLiveVideo = () =>
+  page
+    .waitForFunction(
+      () => {
+        const el = document.getElementById("operator-checkin-reader");
+        const v = el?.querySelector("video");
+        return !!v && v.clientWidth > 0 && v.clientHeight > 0 && !v.paused && v.readyState === 4;
+      },
+      { timeout: 15_000 }
+    )
+    .catch(() => {});
+
 const pin = page.getByTestId("pin-input");
 if (await pin.isVisible().catch(() => false)) {
   await pin.fill(PIN);
   await page.getByTestId("pin-submit").click();
 }
-await page.waitForTimeout(5000);
+await waitForLiveVideo();
 
 // Reload with the persisted session: scanner mounts with enabled=true and
 // React StrictMode double-invokes the effect — the historically racy path.
 await page.reload({ waitUntil: "networkidle" });
-await page.waitForTimeout(5000);
+await waitForLiveVideo();
 
 const state = await page.evaluate(() => {
   const el = document.getElementById("operator-checkin-reader");

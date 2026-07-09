@@ -1,10 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 // YLLW "design concepts" pattern: unframed editorial columns — name + price as
 // an inline headline over photography, character prose below. No cards.
-// ponytail: prices are PLACEHOLDERS — replace with real Rp before launch.
+// Prices follow the canonical tier table in invitation/DESIGN_SYSTEM.md.
 
 // One shared feature list — checked or dimmed per tier, so the upgrade path
 // reads at a glance without a comparison table.
@@ -32,7 +33,7 @@ type Tier = {
 const TIERS: Tier[] = [
   {
     name: "Kenangan",
-    price: "Rp 99rb",
+    price: "Rp 150rb",
     character: "For the moments you want kept",
     image:
       "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80",
@@ -48,7 +49,7 @@ const TIERS: Tier[] = [
   },
   {
     name: "Kisah",
-    price: "Rp 199rb",
+    price: "Rp 300rb",
     character: "For the story worth telling",
     image:
       "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
@@ -65,7 +66,7 @@ const TIERS: Tier[] = [
   },
   {
     name: "Warisan",
-    price: "Rp 349rb",
+    price: "Rp 700rb",
     character: "For the heritage that endures",
     image:
       "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80",
@@ -83,7 +84,7 @@ const TIERS: Tier[] = [
 
 export default function Pricings() {
   return (
-    <section className="bg-white text-[#212121] py-20 px-6 md:px-12 lg:px-24 border-t border-neutral-100">
+    <section id="pricing" className="bg-white text-[#212121] py-20 px-6 md:px-12 lg:px-24 border-t border-neutral-100">
       <div className="max-w-[1300px] mx-auto space-y-14">
         {/* Split editorial header */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-end">
@@ -117,11 +118,12 @@ export default function Pricings() {
               </div>
 
               <div className="relative overflow-hidden rounded-[8px] aspect-[4/5]">
-                <img
+                <Image
                   src={t.image}
                   alt={`${t.name} collection`}
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                  fill
+                  sizes="(min-width: 768px) 33vw, 100vw"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 />
                 {t.popular && (
                   <span className="absolute top-4 left-4 rounded-full bg-white/95 px-3 py-1 text-xs font-medium text-[#ff7759]">

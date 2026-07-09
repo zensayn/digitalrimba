@@ -39,13 +39,19 @@ export async function resolveConfig(slug: string | null): Promise<InvitationConf
   if (!apiUrl) return demoConfig;
 
   try {
+    // A stalled API must degrade to the demo config, not hang the render.
     const res = await fetch(`${apiUrl}/api/invitations/${encodeURIComponent(slug)}`, {
       next: { revalidate: 60 },
+      signal: AbortSignal.timeout(3000),
     });
-    if (!res.ok) return demoConfig;
+    if (!res.ok) {
+      console.error(`resolveConfig: API returned ${res.status} for slug ${slug}, serving demo config`);
+      return demoConfig;
+    }
     const invitation = (await res.json()) as { content?: Partial<InvitationConfig> };
     return overlayConfig(invitation.content ?? {});
-  } catch {
+  } catch (err) {
+    console.error(`resolveConfig: lookup failed for slug ${slug}, serving demo config:`, err);
     return demoConfig;
   }
 }

@@ -11,7 +11,7 @@ import {
 } from '@solar-icons/react';
 import { cn } from '@/lib/utils';
 import type { BudgetItem, PaymentStatus } from '@/lib/api/budget';
-import { FIXED_CATEGORIES, STATUS_CONFIG, EASE_OUT, formatRupiah, getCategoryMeta, dueDateStatus } from './types';
+import { FIXED_CATEGORIES, STATUS_CONFIG, EASE_OUT, formatRupiah, getCategoryMeta, dueDateStatus, formatDueDate } from './types';
 
 const STATUS_FILTERS: Array<{ id: 'all' | PaymentStatus; label: string }> = [
   { id: 'all',     label: 'All statuses' },
@@ -225,7 +225,15 @@ export function ItemsTab({ items, isLoading, onAdd, onEdit, onDelete }: Props) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.18, ease: EASE_OUT, delay: idx * 0.012 }}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => onEdit(item)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onEdit(item);
+                      }
+                    }}
                     className="flex flex-wrap md:flex-nowrap items-center gap-x-4 gap-y-1 px-5 py-3.5 hover:bg-[#fafafa] transition-colors cursor-pointer group"
                   >
                     {/* Item + vendor */}
@@ -252,9 +260,7 @@ export function ItemsTab({ items, isLoading, onAdd, onEdit, onDelete }: Props) {
                         due === 'overdue' ? 'text-[#b30000] font-medium' : due === 'soon' ? 'text-[#c98a0f] font-medium' : 'text-[#75758a]',
                       )}>
                         {due && <span className={cn('size-1.5 rounded-full', due === 'overdue' ? 'bg-[#b30000]' : 'bg-[#c98a0f]')} />}
-                        {item.due_date
-                          ? new Date(item.due_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-                          : '—'}
+                        {item.due_date ? formatDueDate(item.due_date) : '—'}
                       </span>
                     </div>
 

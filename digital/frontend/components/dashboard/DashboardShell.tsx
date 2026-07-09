@@ -242,7 +242,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="outline-none focus:ring-2 focus:ring-[#346739]/20 rounded-full shrink-0 select-none cursor-pointer">
+                    <button
+                      aria-label="Account menu"
+                      className="outline-none focus:ring-2 focus:ring-[#346739]/20 rounded-full shrink-0 select-none cursor-pointer"
+                    >
                       {imageUrl ? (
                         <img
                           src={imageUrl}

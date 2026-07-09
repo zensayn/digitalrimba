@@ -1,9 +1,9 @@
 "use client";
 
+import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { motion, type Variants } from 'motion/react';
 import {
-  ChatDots,
   AltArrowRight,
   AddCircle,
   Flag,
@@ -138,9 +138,11 @@ export default function OverviewPage() {
               {getGreeting()}, {coupleName}.
             </h1>
           </div>
-          <TextureButton variant="primary" className="h-10 w-full rounded-full px-6 text-xs md:w-auto">
-            Invite Partner
-          </TextureButton>
+          <Link href="/dashboard/settings" className="w-full md:w-auto">
+            <TextureButton variant="primary" className="h-10 w-full rounded-full px-6 text-xs">
+              Invite Partner
+            </TextureButton>
+          </Link>
         </motion.header>
 
         {/* ── MAIN GRID ── */}
@@ -201,9 +203,11 @@ export default function OverviewPage() {
                   <h2 className="text-lg font-semibold tracking-tight text-[#212121]">Up next</h2>
                   <p className="text-[12px] text-[#75758a]">Priority tasks for your current planning stage.</p>
                 </div>
-                <TextureButton variant="outline" className="h-8 shrink-0 rounded-full px-4 text-[11px]">
-                  Full Timeline
-                </TextureButton>
+                <Link href="/dashboard/timeline" className="shrink-0">
+                  <TextureButton variant="outline" className="h-8 rounded-full px-4 text-[11px]">
+                    Full Timeline
+                  </TextureButton>
+                </Link>
               </div>
               <div className="divide-y divide-[#e5e7eb] border-y border-[#e5e7eb]">
                 {tasks.length > 0 ? tasks.map((task) => (
@@ -289,20 +293,20 @@ export default function OverviewPage() {
               <BudgetMetrics data={overview.budget} />
             </motion.section>
 
-            {/* Shortcuts */}
+            {/* Shortcuts — "Message Organizer" removed until a messaging feature exists */}
             <motion.section variants={itemVariants} className="space-y-3">
-              <TextureButton variant="primary" className="h-12 w-full justify-start gap-3 px-5 text-[13px] font-semibold">
-                <AddCircle size={20} weight="Bold" />
-                Add New Expense
-              </TextureButton>
-              <TextureButton variant="outline" className="h-12 w-full justify-start gap-3 rounded-full px-5 text-[13px] font-semibold">
-                <ChatDots size={20} weight="Bold" className="text-[#93939f]" />
-                Message Organizer
-              </TextureButton>
-              <TextureButton variant="outline" className="h-12 w-full justify-start gap-3 rounded-full px-5 text-[13px] font-semibold">
-                <Letter size={20} weight="Bold" className="text-[#93939f]" />
-                Send Invitations
-              </TextureButton>
+              <Link href="/dashboard/budget" className="block">
+                <TextureButton variant="primary" className="h-12 w-full justify-start gap-3 px-5 text-[13px] font-semibold">
+                  <AddCircle size={20} weight="Bold" />
+                  Add New Expense
+                </TextureButton>
+              </Link>
+              <Link href="/dashboard/invitations" className="block">
+                <TextureButton variant="outline" className="h-12 w-full justify-start gap-3 rounded-full px-5 text-[13px] font-semibold">
+                  <Letter size={20} weight="Bold" className="text-[#93939f]" />
+                  Send Invitations
+                </TextureButton>
+              </Link>
             </motion.section>
           </div>
         </main>

@@ -144,6 +144,25 @@ export function emptyInvitationConfig(): InvitationConfig {
   };
 }
 
+// Recursively overlays stored values on default values: plain objects merge
+// key-by-key (missing keys keep their defaults), arrays and scalars replace.
+function mergeDefaults<T>(base: T, stored: Partial<T>): T {
+  const out = { ...base } as Record<string, unknown>;
+  for (const [key, value] of Object.entries(stored as Record<string, unknown>)) {
+    if (value === undefined) continue;
+    const baseValue = out[key];
+    if (
+      value !== null && typeof value === "object" && !Array.isArray(value) &&
+      baseValue !== null && typeof baseValue === "object" && !Array.isArray(baseValue)
+    ) {
+      out[key] = mergeDefaults(baseValue, value as Partial<typeof baseValue>);
+    } else {
+      out[key] = value;
+    }
+  }
+  return out as T;
+}
+
 type LegacyContent = {
   brideName?: string;
   groomName?: string;
@@ -158,13 +177,23 @@ type LegacyContent = {
 // Maps the pre-rich-config flat content shape into an InvitationConfig.
 // Only the studio loader uses this; the row becomes rich on its next save.
 export function fromLegacyContent(raw: unknown): InvitationConfig {
+  // Persisted rows are untyped JSONB — guard the shape before casting so a
+  // malformed row degrades to an empty config instead of crashing the studio.
+  if (raw !== null && raw !== undefined && (typeof raw !== "object" || Array.isArray(raw))) {
+    console.warn("fromLegacyContent: malformed stored content, using defaults", raw);
+    return emptyInvitationConfig();
+  }
   const content = (raw ?? {}) as Partial<InvitationConfig> & LegacyContent;
   const config = emptyInvitationConfig();
 
-  if (content.couple) {
-    // Already rich: overlay the stored top-level keys onto the empty base so
-    // any keys added after this row was saved still have defaults.
-    return { ...config, ...content, templateId: content.templateId };
+  if (content.couple && typeof content.couple === "object") {
+    // Already rich: deep-overlay the stored config onto the empty base so
+    // fields added after this row was saved — including ones nested inside
+    // existing objects like couple/events/dressCode — still get defaults.
+    return {
+      ...mergeDefaults(config, content as Partial<InvitationConfig>),
+      templateId: content.templateId,
+    };
   }
 
   config.templateId = content.templateId;

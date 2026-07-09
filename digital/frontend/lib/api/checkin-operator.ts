@@ -75,8 +75,9 @@ export function normalizeGuest(raw: Record<string, unknown>): CheckInGuest {
     arrivedAt: raw.arrived_at ? String(raw.arrived_at) : null,
     souvenirCollected: Boolean(raw.souvenir_given ?? raw.souvenir_claimed),
     qrToken: String(raw.qr_token ?? ""),
-    partySize: raw.party_size ? Number(raw.party_size) : 1,
-    actualPax: raw.actual_pax ? Number(raw.actual_pax) : undefined,
+    // != null (not truthy) so a legitimate numeric 0 survives normalization.
+    partySize: raw.party_size != null ? Number(raw.party_size) : 1,
+    actualPax: raw.actual_pax != null ? Number(raw.actual_pax) : undefined,
     proxyName: raw.proxy_name ? String(raw.proxy_name) : undefined,
     giftTagCode: raw.gift_tag_code ? String(raw.gift_tag_code) : undefined,
     checkedInByLabel: raw.checked_in_by_label
