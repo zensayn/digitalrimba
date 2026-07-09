@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { AltArrowDown, AddCircle, TrashBinMinimalistic, Pen, Pen2 } from '@solar-icons/react';
 import { cn } from '@/lib/utils';
 import { upsertCategoryBudget, type BudgetItem, type BudgetSummary } from '@/lib/api/budget';
-import { FIXED_CATEGORIES, STATUS_CONFIG, EASE_OUT, formatRupiah, getCategoryMeta } from './types';
+import { FIXED_CATEGORIES, STATUS_CONFIG, EASE_OUT, formatRupiah, getCategoryMeta, parseDateOnly } from './types';
 import { ProgressBar } from './primitives';
 
 type Props = {
@@ -121,8 +121,17 @@ export function PaymentsTab({ items, summary, isLoading, onTogglePaid, onAdd, on
             <div key={cat.name}>
               {/* ── Category row ── */}
               <div
+                role="button"
+                tabIndex={0}
+                aria-expanded={isExpanded}
                 onClick={() => toggleExpand(cat.name)}
-                className="px-4 md:px-5 py-4 flex items-center gap-4 cursor-pointer hover:bg-[#fafafa] transition-colors"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleExpand(cat.name);
+                  }
+                }}
+                className="px-4 md:px-5 py-4 flex flex-wrap sm:flex-nowrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-[#fafafa] transition-colors"
               >
                 {/* Emoji + name */}
                 <div className="flex items-center gap-3 w-[150px] md:w-[200px] shrink-0">
@@ -140,8 +149,9 @@ export function PaymentsTab({ items, summary, isLoading, onTogglePaid, onAdd, on
                   </div>
                 </div>
 
-                {/* Inline progress + editable planned budget */}
-                <div className="flex-1 min-w-0 hidden sm:block" onClick={e => e.stopPropagation()}>
+                {/* Inline progress + editable planned budget — wraps to its own
+                    full-width line on mobile instead of disappearing */}
+                <div className="w-full sm:w-auto sm:flex-1 min-w-0 order-last sm:order-none" onClick={e => e.stopPropagation()}>
                   {editingBudget === cat.name ? (
                     <div className="flex items-center gap-1.5">
                       <span className="text-[11px] text-[#93939f] font-medium shrink-0">Budget Rp</span>
@@ -257,7 +267,7 @@ export function PaymentsTab({ items, summary, isLoading, onTogglePaid, onAdd, on
                                   <p className="text-[11px] text-[#93939f] font-normal mt-0.5 truncate">
                                     {item.vendor || 'No vendor'}
                                     {item.due_date && (
-                                      <> · {new Date(item.due_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}</>
+                                      <> · {parseDateOnly(item.due_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}</>
                                     )}
                                   </p>
                                 </div>
@@ -287,7 +297,7 @@ export function PaymentsTab({ items, summary, isLoading, onTogglePaid, onAdd, on
                                 </button>
 
                                 {/* Edit / delete */}
-                                <div className="flex items-center gap-1 shrink-0 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="flex items-center gap-1 shrink-0 md:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                                   <button
                                     type="button"
                                     onClick={() => onEdit(item)}

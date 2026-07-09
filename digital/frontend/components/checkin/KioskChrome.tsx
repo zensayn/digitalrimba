@@ -229,14 +229,35 @@ function HiddenKioskMenu({
       } else {
         setError("PIN salah");
       }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal memverifikasi PIN");
     } finally {
       setBusy(false);
     }
   }, [pin, onVerifyPin]);
 
+  // Escape closes the sheet from anywhere.
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center">
-      <div className="w-full max-w-[375px] bg-white rounded-t-[22px] px-5 pt-4 pb-8 space-y-4">
+    <div
+      className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu Kiosk"
+        className="w-full max-w-[375px] bg-white rounded-t-[22px] px-5 pt-4 pb-8 space-y-4"
+      >
         <div className="w-9 h-1 bg-[#e8e4df] rounded-full mx-auto" />
         <h2 className="text-lg font-bold text-[#212121]">Menu Kiosk</h2>
 
@@ -254,7 +275,7 @@ function HiddenKioskMenu({
               maxLength={6}
               placeholder="PIN operator"
               value={pin}
-              onChange={(e) => setPin(e.target.value)}
+              onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
               className="h-12 text-center text-xl font-mono rounded-xl"
               autoFocus
               autoComplete="off"

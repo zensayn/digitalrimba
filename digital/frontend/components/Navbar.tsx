@@ -2,19 +2,15 @@
 
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { AltArrowRight, ArrowRightUp } from "@solar-icons/react";
+import { ArrowRightUp } from "@solar-icons/react";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
 import CurvedMenu from "@/components/CurvedMenu";
+import { NAV_ITEMS } from "@/lib/site-nav";
 
 export default function Navbar() {
   const t = useTranslations("Navbar");
 
-  const menuItems = [
-    { name: t("ecosystem"), hasDropdown: false },
-    { name: t("economics"), hasDropdown: true },
-    { name: t("developers"), hasDropdown: false },
-    { name: t("governance"), hasDropdown: true },
-  ];
+  const menuItems = NAV_ITEMS.map((item) => ({ name: t(item.key), href: item.href }));
 
   return (
     <nav
@@ -37,17 +33,12 @@ export default function Navbar() {
         <ul className="hidden md:flex items-center gap-8 text-[#212121] font-normal text-sm">
           {menuItems.map((item) => (
             <li key={item.name}>
-              <button
-                type="button"
-                aria-haspopup={item.hasDropdown || undefined}
-                aria-expanded={item.hasDropdown ? false : undefined}
-                className="cursor-pointer hover:opacity-75 transition-opacity flex items-center gap-1 group py-2"
+              <Link
+                href={item.href}
+                className="cursor-pointer hover:opacity-75 transition-opacity flex items-center gap-1 py-2"
               >
                 {item.name}
-                {item.hasDropdown && (
-                  <AltArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                )}
-              </button>
+              </Link>
             </li>
           ))}
         </ul>

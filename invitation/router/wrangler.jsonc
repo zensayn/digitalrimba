@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "rimba-invitation-router",
+  "main": "src/index.ts",
+  "workers_dev": false,
+  "preview_urls": false,
+  "compatibility_date": "2026-06-25",
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  // Zone-wide wildcard (NOT custom_domain). Requires a proxied placeholder
+  // DNS record for *.rimba.io in the Cloudflare dashboard. The theme demo
+  // domains (warm-narrative.rimba.io etc.) are Custom Domains on their own
+  // workers, which take precedence over this wildcard route.
+  "routes": [
+    {
+      "pattern": "*.rimba.io/*",
+      "zone_name": "rimba.io"
+    }
+  ],
+  "services": [
+    { "binding": "THEME_WARM_NARRATIVE", "service": "rimba-warm-narrative" },
+    { "binding": "THEME_SACRED_LUXE", "service": "rimba-sacred-luxe" },
+    { "binding": "THEME_SINEMA_KISAH", "service": "rimba-sinema-kisah" }
+  ],
+  "vars": {
+    "API_URL": "https://api.rimba.io"
+    // For local dev only, set THEME_DEV_ORIGIN (e.g. http://localhost:3901)
+    // to forward to a locally running theme dev server instead of the
+    // service bindings: wrangler dev --var THEME_DEV_ORIGIN:http://localhost:3901
+  }
+}

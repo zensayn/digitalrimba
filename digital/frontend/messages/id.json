@@ -46,11 +46,26 @@
     "ctaTitle": "Mulai sekarang",
     "ctaSubtitle": "Undanganmu tinggal 15 menit lagi.",
     "frames": {
-      "frame1": { "title": "Pilih tema", "duration": "± 2 menit" },
-      "frame2": { "title": "Ceritakan kisahmu", "duration": "± 10 menit" },
-      "frame3": { "title": "Publikasikan", "duration": "instan" },
-      "frame4": { "title": "Bagikan lewat WhatsApp", "duration": "sekali ketuk" },
-      "frame5": { "title": "Pantau RSVP masuk", "duration": "otomatis" }
+      "frame1": {
+        "title": "Pilih tema",
+        "duration": "± 2 menit"
+      },
+      "frame2": {
+        "title": "Ceritakan kisahmu",
+        "duration": "± 10 menit"
+      },
+      "frame3": {
+        "title": "Publikasikan",
+        "duration": "instan"
+      },
+      "frame4": {
+        "title": "Bagikan lewat WhatsApp",
+        "duration": "sekali ketuk"
+      },
+      "frame5": {
+        "title": "Pantau RSVP masuk",
+        "duration": "otomatis"
+      }
     }
   },
   "OurServices": {
@@ -85,7 +100,14 @@
     "governance": "Tata Kelola",
     "bookDemo": "Jadwalkan Demo",
     "login": "Masuk",
-    "languageLabel": "Bahasa"
+    "languageLabel": "Bahasa",
+    "templates": "Template",
+    "services": "Layanan",
+    "pricing": "Harga",
+    "faq": "FAQ",
+    "openMenu": "Buka menu",
+    "closeMenu": "Tutup menu",
+    "navigationLabel": "Navigasi"
   },
   "Auth": {
     "brandHeadline": "Berakar Kuat\nDi Setiap Momenmu",
@@ -113,22 +135,20 @@
     "budgetUsed": "Anggaran Terpakai",
     "account": "Akun",
     "comingSoon": "Segera hadir",
-
     "createInvitation": "Buat Undangan",
     "createInvitationDesc": "Desain undangan web premium baru.",
     "addGuests": "Tambah Tamu",
     "addGuestsDesc": "Impor atau tambahkan tamu secara manual.",
-
     "invitationsDesc": "Kelola undangan pernikahan digital premium Anda.",
     "newInvitation": "Undangan Baru",
     "searchInvitations": "Cari undangan…",
     "allTiers": "Semua Kasta",
     "createdOn": "Dibuat pada",
     "guestsLinked": "tamu tertaut",
+    "noSearchMatches": "Tidak ada undangan yang cocok dengan pencarian Anda.",
     "noInvitationsTitle": "Belum Ada Undangan",
     "noInvitationsDesc": "Buat undangan digital pertama Anda dan pilih dari seri Leaf, Timber, atau Heartwood.",
     "createFirstInvitation": "Buat Undangan Pertama",
-
     "guestListDesc": "Lacak dan kelola daftar tamu pernikahan Anda.",
     "export": "Ekspor",
     "addGuest": "Tambah Tamu",
@@ -144,7 +164,6 @@
     "confirmedLabel": "Dikonfirmasi",
     "pendingLabel": "Menunggu",
     "declinedLabel": "Ditolak",
-
     "rsvpDesc": "Lacak konfirmasi dan kelola respons secara real-time.",
     "refresh": "Perbarui",
     "sendReminder": "Kirim Pengingat",
@@ -157,7 +176,6 @@
     "generateQr": "Buat QR",
     "recentResponses": "Respons Terbaru",
     "attendeesCount": "tamu",
-
     "budgetDesc": "Rencanakan, lacak, dan kelola pengeluaran pernikahan Anda.",
     "addCategory": "Tambah Kategori",
     "totalBudget": "Total Anggaran",
@@ -184,5 +202,61 @@
       "title": "Mulus di pintu masuk",
       "description": "Tinggalkan clipboard. Konsol check-in aman memindai pass di pintu masuk."
     }
+  },
+  "TemplatesShowcase": {
+    "label": "Template undangan",
+    "title": "Mulai dari template yang indah",
+    "desc": "Setiap undangan Rimba berawal dari tema yang dirancang dengan teliti. Pilih satu, tambahkan kisah Anda, dan jadikan milik Anda.",
+    "cta": "Lihat semua template",
+    "warmNarrativeCaption": "Gulir hangat bergaya narasi dengan bunga berguguran dan cahaya lembut.",
+    "sacredLuxeCaption": "Nuansa gelap dan detail keemasan untuk suasana sakral yang intim.",
+    "sinemaKisahCaption": "Bingkai sinematik yang membiarkan kisah Anda mengalir adegan demi adegan.",
+    "warisanCaption": "Motif warisan dan detail adat dalam tata letak editorial."
+  },
+  "ProductSuite": {
+    "label": "Layanan Kami",
+    "title": "Hari ini undangan. Besok, seluruh acara Anda.",
+    "desc": "Rimba dimulai dari undangan — dan tumbuh bersama semua yang mengikutinya.",
+    "availableNow": "Tersedia sekarang",
+    "flagshipTitle": "Undangan Pernikahan",
+    "flagshipDesc": "Undangan digital yang dirancang dengan teliti, dengan RSVP pintar lewat WhatsApp, pelacakan tamu, dan check-in aman di pintu masuk — perjalanan lengkap dari “save the date” hingga tarian terakhir.",
+    "flagshipCta": "Jelajahi undangan",
+    "comingSoon": "Segera",
+    "rsvpBubble": "Kami hadir berdua! 🤍",
+    "guestTracking": "Pelacakan tamu",
+    "confirmed": "terkonfirmasi",
+    "checkedIn": "Dinda & Raka sudah check-in",
+    "checkedInMeta": "di lokasi · baru saja",
+    "upcoming1Name": "Koordinator RSVP Digital",
+    "upcoming1Desc": "Satu pusat kendali untuk setiap balasan tamu — pengingat, jumlah tamu, dan pengaturan kursi, semua diurus untuk Anda.",
+    "upcoming2Name": "Halaman Acara",
+    "upcoming2Desc": "Halaman yang indah untuk setiap perayaan — ulang tahun, gala perusahaan, acara komunitas."
+  },
+  "ServiceScope": {
+    "label": "Cakupan Layanan Kami",
+    "title": "Satu platform, dibangun untuk berkembang",
+    "desc": "Semua yang kami bangun untuk pernikahan — RSVP, logistik tamu, halaman yang indah — adalah fondasi. Platform yang sama akan melayani setiap perayaan berikutnya.",
+    "phaseNow": "Sekarang",
+    "phaseNext": "Berikutnya",
+    "phaseLater": "Nanti",
+    "stage1Name": "Undangan Pernikahan",
+    "stage1Desc": "Layanan utama kami — undangan digital dengan RSVP WhatsApp, pelacakan tamu, dan check-in QR.",
+    "stage2Name": "Koordinator RSVP Digital",
+    "stage2Desc": "Mesin RSVP di balik undangan kami, sebagai alat mandiri untuk acara apa pun.",
+    "stage3Name": "Halaman Acara",
+    "stage3Desc": "Halaman editorial untuk setiap perayaan — gala, peluncuran, acara komunitas.",
+    "liveCta": "Jelajahi produknya"
+  },
+  "Testimoni": {
+    "label": "Testimoni",
+    "title": "Dari pasangan yang sudah mengatakan ya",
+    "quote1": "Tamu kami mengira kami menyewa agensi. Padahal hanya kami berdua, satu malam, dan Rimba.",
+    "detail1": "Kami menerbitkan undangan di malam yang sama saat memilih tema. Kerabat langsung RSVP lewat WhatsApp dalam hitungan menit — ibu saya tidak perlu menjelaskan apa pun ke siapa pun.",
+    "name1": "Dinda & Raka",
+    "event1": "Jakarta · Koleksi Kenangan",
+    "quote2": "Antrean check-in di venue kami benar-benar tidak ada.",
+    "detail2": "Tamu memindai QR pribadi mereka di pintu dan langsung masuk. Kami melihat dashboard terisi dari meja keluarga — 340 tamu, tanpa papan jalan.",
+    "name2": "Sari & Bimo",
+    "event2": "Yogyakarta · Koleksi Warisan"
   }
 }

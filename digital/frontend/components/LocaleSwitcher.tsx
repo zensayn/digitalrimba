@@ -21,6 +21,13 @@ const LOCALES: { code: Locale; label: string; countryCode: string }[] = [
   { code: "en", label: "English", countryCode: "GB" },
 ];
 
+// usePathname() drops the query string and hash — reattach them so switching
+// locale keeps the user on the exact same view (filters, anchors, etc.).
+function withQueryAndHash(pathname: string): string {
+  if (typeof window === "undefined") return pathname;
+  return pathname + window.location.search + window.location.hash;
+}
+
 function Flag({ countryCode, label }: { countryCode: string; label: string }) {
   return (
     <ReactCountryFlag
@@ -50,7 +57,7 @@ export default function LocaleSwitcher() {
 
   const change = (next: Locale) => {
     if (next === currentLocale) return;
-    router.replace(pathname, { locale: next, scroll: false });
+    router.replace(withQueryAndHash(pathname), { locale: next, scroll: false });
   };
 
   // Trigger pill is white so it reads over the dark hero video.
@@ -98,7 +105,7 @@ export function LocaleSwitcherList({ onSelect }: { onSelect?: () => void }) {
   const currentLocale = useLocale() as Locale;
 
   const change = (next: Locale) => {
-    if (next !== currentLocale) router.replace(pathname, { locale: next, scroll: false });
+    if (next !== currentLocale) router.replace(withQueryAndHash(pathname), { locale: next, scroll: false });
     onSelect?.();
   };
 

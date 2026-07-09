@@ -30,7 +30,7 @@ ALTER TABLE public.budget_items
 CREATE TABLE public.budget_category_budgets (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   wedding_id uuid NOT NULL REFERENCES public.weddings(id) ON DELETE CASCADE,
-  category text NOT NULL,
+  category text NOT NULL CHECK (btrim(category) <> ''),
   planned_amount numeric(12, 2) NOT NULL DEFAULT 0 CHECK (planned_amount >= 0),
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
@@ -45,7 +45,10 @@ ALTER TABLE public.budget_items ADD COLUMN paid boolean NOT NULL DEFAULT false;
 UPDATE public.budget_items SET paid = (actual_amount > 0 AND paid_amount >= actual_amount);
 
 ALTER TABLE public.budget_items DROP COLUMN payment_status;
-ALTER TABLE public.budget_items ADD COLUMN payment_status text NOT NULL DEFAULT 'unpaid';
+-- Restore the same domain protection 00006 gave the plain column.
+ALTER TABLE public.budget_items
+  ADD COLUMN payment_status text NOT NULL DEFAULT 'unpaid'
+  CHECK (payment_status IN ('unpaid', 'partial', 'paid'));
 UPDATE public.budget_items SET payment_status = CASE
     WHEN paid_amount <= 0 THEN 'unpaid'
     WHEN actual_amount > 0 AND paid_amount >= actual_amount THEN 'paid'

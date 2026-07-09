@@ -6,19 +6,18 @@ package cache
 import (
 	"context"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/redis/go-redis/v9"
 )
 
-// New opens a Redis client using REDIS_URL from the environment.
+// New opens a Redis client for the given URL (callers read REDIS_URL once in
+// main and pass it through, like every other config value).
 //
-// If REDIS_URL is unset, it returns (nil, nil) — the cache is optional and the
-// backend serves directly from Postgres. A non-nil error means REDIS_URL was
-// set but the connection could not be established.
-func New(ctx context.Context) (*redis.Client, error) {
-	url := os.Getenv("REDIS_URL")
+// An empty url returns (nil, nil) — the cache is optional and the backend
+// serves directly from Postgres. A non-nil error means a URL was provided but
+// the connection could not be established.
+func New(ctx context.Context, url string) (*redis.Client, error) {
 	if url == "" {
 		return nil, nil
 	}

@@ -1,35 +1,26 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-
-// ponytail: static content, no CMS — wire to real product pages when they exist
-const UPCOMING = [
-  {
-    name: "Digital RSVP Coordinator",
-    description:
-      "One command center for every guest reply — reminders, headcounts, and seating, handled for you.",
-  },
-  {
-    name: "Event Landing Pages",
-    description:
-      "A beautiful page for any celebration — birthdays, corporate galas, community gatherings.",
-  },
-];
+import { useTranslations } from "next-intl";
 
 export default function ProductSuite() {
+  const t = useTranslations("ProductSuite");
+
+  const upcoming = [
+    { name: t("upcoming1Name"), description: t("upcoming1Desc") },
+    { name: t("upcoming2Name"), description: t("upcoming2Desc") },
+  ];
+
   return (
-    <section className="bg-white text-[#212121] py-20 px-6 md:px-12 lg:px-24 border-t border-neutral-100">
+    <section id="services" className="bg-white text-[#212121] py-20 px-6 md:px-12 lg:px-24 border-t border-neutral-100">
       <div className="max-w-[1300px] mx-auto space-y-6">
         <div className="max-w-3xl space-y-4 pb-6">
-          <p className="text-sm font-medium uppercase text-[#93939f]">
-            Layanan Kami
-          </p>
+          <p className="text-sm font-medium uppercase text-[#93939f]">{t("label")}</p>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-amoria font-normal tracking-tight leading-tight text-[#0a0a0a]">
-            Today, invitations. Tomorrow, your whole event.
+            {t("title")}
           </h2>
-          <p className="text-lg leading-relaxed text-[#616161]">
-            Rimba starts with the invitation — and grows with everything that
-            follows it.
-          </p>
+          <p className="text-lg leading-relaxed text-[#616161]">{t("desc")}</p>
         </div>
 
         {/* Flagship — full-bleed photo card with floating RSVP UI (WhatsApp "Message privately" pattern) */}
@@ -48,21 +39,17 @@ export default function ProductSuite() {
           {/* Copy — left */}
           <div className="relative z-10 p-8 md:p-14 lg:p-16 max-w-lg space-y-6 text-white">
             <span className="inline-block px-3 py-1 rounded-full bg-[#edfce9] text-[#003c33] text-xs font-medium">
-              Available now
+              {t("availableNow")}
             </span>
             <h3 className="text-4xl md:text-5xl font-amoria font-normal tracking-tight leading-[1.05]">
-              Wedding Invitations
+              {t("flagshipTitle")}
             </h3>
-            <p className="text-base leading-relaxed text-white/80">
-              Hand-crafted digital invitations with smart RSVP over WhatsApp,
-              guest tracking, and secure check-in at the door — the full
-              journey from &ldquo;save the date&rdquo; to the last dance.
-            </p>
+            <p className="text-base leading-relaxed text-white/80">{t("flagshipDesc")}</p>
             <Link
               href="/dashboard/invitation"
               className="inline-block px-6 py-3 rounded-full bg-white text-[#003c33] text-sm font-medium transition-transform duration-150 ease-out active:scale-[0.97]"
             >
-              Explore invitations
+              {t("flagshipCta")}
             </Link>
           </div>
 
@@ -73,20 +60,14 @@ export default function ProductSuite() {
           >
             {/* Incoming RSVP bubble */}
             <div className="absolute top-[14%] right-[8%] rounded-2xl rounded-tr-sm bg-white px-4 py-3 shadow-lg max-w-[240px]">
-              <p className="text-sm text-[#212121]">
-                Kami hadir berdua! 🤍
-              </p>
-              <p className="mt-1 text-right text-[10px] text-[#93939f]">
-                19:02 ✓✓
-              </p>
+              <p className="text-sm text-[#212121]">{t("rsvpBubble")}</p>
+              <p className="mt-1 text-right text-[10px] text-[#93939f]">19:02 ✓✓</p>
             </div>
             {/* Guest-count console chip */}
             <div className="absolute top-[42%] right-[22%] rounded-2xl bg-[#0a0a0a]/85 backdrop-blur px-4 py-3 text-white shadow-lg">
-              <p className="text-[10px] uppercase text-white/50">
-                Guest tracking
-              </p>
+              <p className="text-[10px] uppercase text-white/50">{t("guestTracking")}</p>
               <p className="text-lg font-medium leading-tight">
-                128 <span className="text-sm font-normal text-white/70">confirmed</span>
+                128 <span className="text-sm font-normal text-white/70">{t("confirmed")}</span>
               </p>
             </div>
             {/* Check-in confirmation bubble */}
@@ -95,10 +76,8 @@ export default function ProductSuite() {
                 ✓
               </span>
               <div>
-                <p className="text-sm font-medium text-[#003c33]">
-                  Dinda &amp; Raka checked in
-                </p>
-                <p className="text-[10px] text-[#346739]/70">at the venue · just now</p>
+                <p className="text-sm font-medium text-[#003c33]">{t("checkedIn")}</p>
+                <p className="text-[10px] text-[#346739]/70">{t("checkedInMeta")}</p>
               </div>
             </div>
           </div>
@@ -106,20 +85,13 @@ export default function ProductSuite() {
 
         {/* Future slots — quiet stone cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {UPCOMING.map((p) => (
-            <div
-              key={p.name}
-              className="rounded-[28px] bg-[#eeece7] p-8 md:p-10 space-y-4"
-            >
+          {upcoming.map((p) => (
+            <div key={p.name} className="rounded-[28px] bg-[#eeece7] p-8 md:p-10 space-y-4">
               <span className="inline-block px-3 py-1 rounded-full border border-[#d9d9dd] text-xs font-medium text-[#75758a]">
-                Segera
+                {t("comingSoon")}
               </span>
-              <h3 className="text-xl md:text-2xl font-bold tracking-tight text-[#212121]">
-                {p.name}
-              </h3>
-              <p className="text-sm leading-relaxed text-[#616161] max-w-sm">
-                {p.description}
-              </p>
+              <h3 className="text-xl md:text-2xl font-bold tracking-tight text-[#212121]">{p.name}</h3>
+              <p className="text-sm leading-relaxed text-[#616161] max-w-sm">{p.description}</p>
             </div>
           ))}
         </div>

@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import type { BudgetCategorySummary, BudgetItem, BudgetSummary } from '@/lib/api/budget';
-import { formatRupiah, formatRupiahFull, mergeWithFixed, getCategoryMeta } from './types';
+import { formatRupiah, formatRupiahFull, mergeWithFixed, getCategoryMeta, parseDateOnly } from './types';
 import { ArcGauge, ProgressBar } from './primitives';
 import { AddCircle } from '@solar-icons/react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip } from 'recharts';
@@ -41,7 +41,8 @@ export function SummaryTab({ categories, summary, items = [], isLoading, onAdd }
       .slice(0, 5);
   }, [items]);
 
-  // Cumulative spend over time (sorted by due date). Empty until real items exist.
+  // Cumulative cash out over time (sorted by due date). paid_amount is the
+  // canonical payment field — actual_amount is cost incurred, not money spent.
   const chartData = useMemo(() => {
     if (items.length === 0) return [];
     const sorted = [...items].sort((a, b) => {
@@ -51,7 +52,7 @@ export function SummaryTab({ categories, summary, items = [], isLoading, onAdd }
     });
     let running = 0;
     const pts = sorted.map(item => {
-      running += item.actual_amount;
+      running += item.paid_amount;
       return { name: item.item_name, spent: running };
     });
     pts.unshift({ name: '', spent: 0 });
@@ -194,7 +195,7 @@ export function SummaryTab({ categories, summary, items = [], isLoading, onAdd }
                     <div className="min-w-0">
                       <p className="text-[13px] font-medium text-bold truncate">{item.item_name}</p>
                       <p className="text-[11px] text-[#93939f] font-normal mt-0.5">
-                        {item.due_date ? new Date(item.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : item.category}
+                        {item.due_date ? parseDateOnly(item.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : item.category}
                       </p>
                     </div>
                   </div>

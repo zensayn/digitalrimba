@@ -81,7 +81,7 @@ export default function BudgetPage() {
   });
 
   // paid_amount is canonical; the Category Budget tab cycles fully-paid ⇄ unpaid.
-  // Partial payments are entered with an amount via the item modal. // ponytail: cycle is binary here on purpose
+  // Partial payments are entered with an amount via the item modal.
   const paidMutation = useMutation({
     mutationFn: ({ id, paid_amount }: { id: string; paid_amount: number }) =>
       updateBudgetItem(id, { paid_amount }),

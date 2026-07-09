@@ -60,7 +60,7 @@ export default function AboutTimeline() {
       desc: t("m5Desc"),
       imageUrl: "https://images.unsplash.com/photo-1583795484071-3c453e3a7c71?q=80&w=1000&auto=format&fit=crop"
     }
-  ];
+  ].reverse(); // ponytail: source keys are newest-first (m1=2026…m5=2001); reverse so the rail reads old → new, left to right
 
   const [active, setActive] = useState(0);
   const railRef = useRef<HTMLDivElement>(null);

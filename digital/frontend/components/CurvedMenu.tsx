@@ -8,6 +8,7 @@ import { Link } from "@/i18n/routing";
 import { ArrowRightUp } from "@solar-icons/react";
 import { TextureButton } from "@/components/ui/texture-button";
 import { LocaleSwitcherList } from "@/components/LocaleSwitcher";
+import { NAV_ITEMS } from "@/lib/site-nav";
 
 // Shared cubic-bezier curve, typed as a 4-tuple so motion's Variants accepts it.
 const EASE_CURVE: [number, number, number, number] = [0.76, 0, 0.24, 1];
@@ -72,12 +73,7 @@ export default function CurvedMenu({ buttonColor = "#212121", activeButtonColor 
     };
   }, [isActive]);
 
-  const menuItems = [
-    { name: t("ecosystem"), href: "#" },
-    { name: t("economics"), href: "#" },
-    { name: t("developers"), href: "#" },
-    { name: t("governance"), href: "#" },
-  ];
+  const menuItems = NAV_ITEMS.map((item) => ({ name: t(item.key), href: item.href }));
 
   const initialPath = `M100 0 L100 ${dimensions.height} Q-100 ${dimensions.height / 2} 100 0`;
   const targetPath = `M100 0 L100 ${dimensions.height} Q100 ${dimensions.height / 2} 100 0`;
@@ -144,7 +140,7 @@ export default function CurvedMenu({ buttonColor = "#212121", activeButtonColor 
           borderColor: isActive ? "rgba(255,255,255,0.15)" : undefined,
           backgroundColor: isActive ? "rgba(24,24,27,0.85)" : undefined,
         }}
-        aria-label={isActive ? "Close menu" : "Open menu"}
+        aria-label={isActive ? t("closeMenu") : t("openMenu")}
         aria-expanded={isActive}
       >
         <span
@@ -178,6 +174,7 @@ export default function CurvedMenu({ buttonColor = "#212121", activeButtonColor 
               ref={drawerRef}
               role="dialog"
               aria-modal="true"
+              aria-label={t("navigationLabel")}
               variants={menuSlide}
               initial="initial"
               animate="enter"
@@ -193,7 +190,7 @@ export default function CurvedMenu({ buttonColor = "#212121", activeButtonColor 
               <button
                 ref={closeButtonRef}
                 onClick={close}
-                aria-label="Close menu"
+                aria-label={t("closeMenu")}
                 className="absolute top-8 right-8 z-10 w-11 h-11 rounded-full flex items-center justify-center border border-white/15 bg-white/10 backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer outline-none"
               >
                 <span className="relative block w-5 h-5">
@@ -210,7 +207,7 @@ export default function CurvedMenu({ buttonColor = "#212121", activeButtonColor 
               {/* Links */}
               <div className="flex flex-col gap-12 mt-20">
                 <div className="border-b border-zinc-800 pb-4">
-                  <span className="font-poppins text-xs uppercase tracking-wider text-zinc-500 font-medium">Navigation</span>
+                  <span className="font-poppins text-xs uppercase tracking-wider text-zinc-500 font-medium">{t("navigationLabel")}</span>
                 </div>
 
                 <nav className="flex flex-col gap-6">

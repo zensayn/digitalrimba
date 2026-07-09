@@ -20,10 +20,13 @@ export default function CheckinArrivalsPage() {
   const [filter, setFilter] = useState<Filter>('all')
 
   // Initial load + polling, same contract as CheckinQrPage: poll failures
-  // are silent, only the first load surfaces an error.
+  // are silent, only the first load surfaces an error. Self-scheduling (not
+  // setInterval) so requests never overlap and a slow, older response can't
+  // overwrite a newer roster.
   useEffect(() => {
     let alive = true
     let firstLoad = true
+    let timer: ReturnType<typeof setTimeout> | undefined
     const load = () =>
       getCheckinGuests()
         .then((g) => {
@@ -35,12 +38,12 @@ export default function CheckinArrivalsPage() {
         })
         .finally(() => {
           firstLoad = false
+          if (alive) timer = setTimeout(() => void load(), POLL_MS)
         })
     void load()
-    const interval = setInterval(load, POLL_MS)
     return () => {
       alive = false
-      clearInterval(interval)
+      clearTimeout(timer)
     }
   }, [])
 

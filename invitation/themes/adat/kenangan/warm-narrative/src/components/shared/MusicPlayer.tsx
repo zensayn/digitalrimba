@@ -9,15 +9,16 @@ const SONG_TITLE  = "I Love You 3000";
 const SONG_ARTIST = "Stephanie Poetri";
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default function MusicPlayer() {
+export default function MusicPlayer({ src }: { src?: string }) {
   const [playing, setPlaying]         = useState(false);
   const [visible, setVisible]         = useState(false);
   const [ready, setReady]             = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const audioRef                      = useRef<HTMLAudioElement | null>(null);
+  const musicSrc                      = src || MUSIC_SRC;
 
   useEffect(() => {
-    const audio    = new Audio(MUSIC_SRC);
+    const audio    = new Audio(musicSrc);
     audio.loop     = true;
     // "metadata" saja: mp3 ±3 MB — kalau preload "auto" ia ikut berebut
     // bandwidth dengan gambar cover/LCP di detik-detik pertama. Download penuh
@@ -39,7 +40,7 @@ export default function MusicPlayer() {
       audio.pause();
       audio.src = "";
     };
-  }, []);
+  }, [musicSrc]);
 
   const toggle = () => {
     const audio = audioRef.current;

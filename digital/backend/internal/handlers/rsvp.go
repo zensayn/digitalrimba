@@ -123,6 +123,10 @@ func (h *RsvpHandler) Submit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "attendee_count must be between 0 and 20", http.StatusBadRequest)
 		return
 	}
+	if req.Attending && req.AttendeeCount == 0 {
+		http.Error(w, "attendee_count must be at least 1 when attending", http.StatusBadRequest)
+		return
+	}
 	if len(req.Message) > 500 {
 		http.Error(w, "message too long", http.StatusBadRequest)
 		return
@@ -144,10 +148,12 @@ func (h *RsvpHandler) Submit(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *RsvpHandler) writeGuestPayload(w http.ResponseWriter, ctx context.Context, guest RsvpGuest) {
+	// Wishes are optional enrichment — a failed load must not turn a
+	// successfully persisted RSVP into a 500.
 	wishes, err := h.store.ListWishes(ctx, guest.WeddingID)
 	if err != nil {
-		writeRsvpError(w, err)
-		return
+		log.Printf("rsvp: wishes load failed (non-fatal): %v", err)
+		wishes = []Wish{}
 	}
 	writeJSON(w, http.StatusOK, publicRsvpResponse{
 		Name:          guest.Name,

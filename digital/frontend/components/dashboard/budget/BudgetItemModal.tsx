@@ -72,13 +72,19 @@ function BudgetItemForm({
     if (!estimated || isNaN(Number(estimated)) || Number(estimated) < 0) {
       setError('Budgeted amount must be a non-negative number.'); return;
     }
-    const actualNum = Number(actual) || 0;
+    // Validate explicitly — `Number(x) || 0` would silently turn invalid or
+    // negative input into 0 instead of surfacing the mistake.
+    const actualNum = actual.trim() === '' ? 0 : Number(actual);
+    if (Number.isNaN(actualNum) || actualNum < 0) {
+      setError('Actual amount must be a non-negative number.'); return;
+    }
     // paid_amount is canonical; status maps to it. Partial uses the entered amount,
     // clamped to [0, actual] so it can never exceed what was spent.
     let paidAmount = 0;
     if (status === 'paid') paidAmount = actualNum;
     else if (status === 'partial') {
-      paidAmount = Number(paidSoFar) || 0;
+      paidAmount = paidSoFar.trim() === '' ? 0 : Number(paidSoFar);
+      if (Number.isNaN(paidAmount)) { setError('Paid amount must be a valid number.'); return; }
       if (paidAmount < 0) { setError('Paid amount must be non-negative.'); return; }
       if (paidAmount > actualNum) { setError('Paid amount can’t exceed the actual amount.'); return; }
     }

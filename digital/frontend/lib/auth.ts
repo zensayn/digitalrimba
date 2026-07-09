@@ -45,6 +45,11 @@ export const auth = betterAuth({
         await redis.del(key);
       },
     },
+    // Redis is a cache, not the source of truth: keep writing sessions to
+    // Postgres so losing Redis never logs everyone out.
+    session: {
+      storeSessionInDatabase: true,
+    },
   }),
 
   emailAndPassword: {

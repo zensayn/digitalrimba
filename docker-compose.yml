@@ -43,8 +43,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      # Redis is an optional cache — the backend must still start without it.
       digital-redis:
-        condition: service_healthy
+        condition: service_started
     environment:
       DATABASE_URL: postgresql://rimba:rimba_secret@postgres:5432/rimba_db
       REDIS_URL: redis://digital-redis:6379

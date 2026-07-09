@@ -63,6 +63,25 @@ export function formatRupiahFull(value: number): string {
 }
 
 /**
+ * Parses a date-only string (YYYY-MM-DD) as a LOCAL calendar date.
+ * `new Date('2026-07-09')` parses as UTC midnight, which shifts the day in
+ * timezones behind UTC — this keeps display and urgency on the same day
+ * everywhere.
+ */
+export function parseDateOnly(dueDate: string): Date {
+  const [year, month, day] = dueDate.slice(0, 10).split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+export function formatDueDate(dueDate: string): string {
+  return parseDateOnly(dueDate).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+/**
  * Due-date urgency for an unpaid item. `overdue` = past due, `soon` = within 14
  * days. Fully-paid items are never flagged. Days compared at date granularity.
  */
@@ -73,8 +92,7 @@ export function dueDateStatus(
   if (!dueDate || paymentStatus === 'paid') return null;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const due = new Date(dueDate);
-  due.setHours(0, 0, 0, 0);
+  const due = parseDateOnly(dueDate);
   const days = Math.round((due.getTime() - today.getTime()) / 86_400_000);
   if (days < 0) return 'overdue';
   if (days <= 14) return 'soon';

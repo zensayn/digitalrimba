@@ -7,33 +7,32 @@ import { isNonLocalizedAppRoute, isProtectedRoute } from "./lib/proxy-route-matc
 const intl = createIntlMiddleware(routing);
 
 export default function proxy(request: NextRequest) {
-  try {
-    const { pathname } = request.nextUrl;
-    const session = getSessionCookie(request);
+  const { pathname } = request.nextUrl;
 
-    // 1. API routes — pass through immediately, never locale-prefix them.
-    //    Without this, /api/auth/... would become /id/api/auth/... and 404.
-    if (pathname.startsWith("/api/")) {
-      console.log("[Proxy Middleware] API Route:", pathname, "-> NextResponse.next()");
-      return NextResponse.next();
-    }
-
-    // 2. Auth guard — redirect unauthenticated users before any locale processing.
-    if (isProtectedRoute(pathname) && !session) {
-      return NextResponse.redirect(new URL("/id/auth", request.url));
-    }
-
-    // 3. Non-localized app routes — bypass next-intl to avoid locale redirect loops.
-    if (isNonLocalizedAppRoute(pathname)) {
-      return NextResponse.next();
-    }
-
-    // 4. Everything else — locale routing via next-intl.
-    return intl(request);
-  } catch (err: unknown) {
-    console.error("[Proxy Middleware] ERROR:", err);
+  // 1. API routes — pass through immediately, never locale-prefix them.
+  //    Without this, /api/auth/... would become /id/api/auth/... and 404.
+  if (pathname.startsWith("/api/")) {
     return NextResponse.next();
   }
+
+  // 2. Auth guard — fail closed: a cookie we can't parse is unauthenticated.
+  let session: ReturnType<typeof getSessionCookie> = null;
+  try {
+    session = getSessionCookie(request);
+  } catch (err: unknown) {
+    console.error("[Proxy Middleware] session cookie parse failed:", err);
+  }
+  if (isProtectedRoute(pathname) && !session) {
+    return NextResponse.redirect(new URL("/id/auth", request.url));
+  }
+
+  // 3. Non-localized app routes — bypass next-intl to avoid locale redirect loops.
+  if (isNonLocalizedAppRoute(pathname)) {
+    return NextResponse.next();
+  }
+
+  // 4. Everything else — locale routing via next-intl.
+  return intl(request);
 }
 
 export const config = {

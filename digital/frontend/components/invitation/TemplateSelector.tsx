@@ -33,33 +33,38 @@ export type Template = {
   image: string
   category: string
   theme: string
+  demoUrl: string
 }
 
-const templates: Template[] = [
+// Real themes from the invitation/ workspace, deployed as Cloudflare Workers.
+export const templates: Template[] = [
   {
-    id: "minimal-editorial",
-    name: "Minimal Editorial",
-    description: "A clean, typography-focused design for modern couples who appreciate simplicity.",
-    image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop",
-    category: "Modern",
-    theme: "Light",
+    id: "warm-narrative",
+    name: "Warm Narrative",
+    description: "Warm parchment aesthetic with layered sakura parallax and serif storytelling. Kenangan series.",
+    image: "/templates/warm-narrative.jpg",
+    category: "Adat",
+    theme: "Kenangan",
+    demoUrl: "https://warm-narrative.rimba.io",
   },
   {
-    id: "classic-botanical",
-    name: "Classic Botanical",
-    description: "Timeless floral illustrations paired with elegant serif fonts for a romantic feel.",
-    image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=800&auto=format&fit=crop",
-    category: "Romantic",
-    theme: "Green",
+    id: "sacred-luxe",
+    name: "Sacred Luxe",
+    description: "Dark neo-noir aesthetic with champagne gold accents and elegant Cormorant type. Kenangan series.",
+    image: "/templates/sacred-luxe.jpg",
+    category: "Adat",
+    theme: "Kenangan",
+    demoUrl: "https://sacred-luxe.rimba.io",
   },
   {
-    id: "luxury-gold",
-    name: "Luxury Gold",
-    description: "Premium gold leaf accents and deep textures for an ultra-sophisticated celebration.",
-    image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=800&auto=format&fit=crop",
-    category: "Luxury",
-    theme: "Dark",
-  }
+    id: "sinema-kisah",
+    name: "Sinema Kisah",
+    description: "Cinematic dark theme where every chapter of your story unfolds like a film. Kisah series.",
+    image: "/templates/sinema-kisah.jpg",
+    category: "Adat",
+    theme: "Kisah",
+    demoUrl: "https://sinema-kisah.rimba.io",
+  },
 ]
 
 type TemplateSelectorProps = {
@@ -196,7 +201,7 @@ export function TemplateSelector({ onSelect }: TemplateSelectorProps) {
                         <TextureButton
                           variant="secondary"
                           className="w-full h-11 rounded-[32px] text-[11px] font-semibold"
-                          onClick={() => onSelect(template)}
+                          onClick={() => window.open(template.demoUrl, "_blank", "noopener")}
                         >
                           Preview
                         </TextureButton>
@@ -259,7 +264,7 @@ export function TemplateSelector({ onSelect }: TemplateSelectorProps) {
                           variant="secondary"
                           size="sm"
                           className="h-9 rounded-[8px] text-[10px] font-bold"
-                          onClick={() => onSelect(template)}
+                          onClick={() => window.open(template.demoUrl, "_blank", "noopener")}
                         >
                           Preview
                         </TextureButton>

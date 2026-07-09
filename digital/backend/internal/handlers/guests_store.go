@@ -114,8 +114,19 @@ func (s *PostgresGuestStore) DeleteGuests(ctx context.Context, weddingID string,
 }
 
 func (s *PostgresGuestStore) GuestWeddingIDForUser(ctx context.Context, userID string) (string, error) {
+	return resolveWeddingIDForUser(ctx, s.db, userID)
+}
+
+type weddingIDQuerier interface {
+	QueryRow(context.Context, string, ...any) pgx.Row
+}
+
+// resolveWeddingIDForUser maps a user to their wedding via wedding_members,
+// falling back to the owner column while that migration hasn't run. Shared by
+// the guest and RSVP stores so the fallback logic lives in one place.
+func resolveWeddingIDForUser(ctx context.Context, db weddingIDQuerier, userID string) (string, error) {
 	var weddingID string
-	err := s.db.QueryRow(ctx, guestWeddingIDForUserSQL, userID).Scan(&weddingID)
+	err := db.QueryRow(ctx, guestWeddingIDForUserSQL, userID).Scan(&weddingID)
 	if err == nil {
 		return weddingID, nil
 	}
@@ -126,7 +137,7 @@ func (s *PostgresGuestStore) GuestWeddingIDForUser(ctx context.Context, userID s
 		return "", err
 	}
 
-	fallbackErr := s.db.QueryRow(ctx, guestWeddingIDForOwnerSQL, userID).Scan(&weddingID)
+	fallbackErr := db.QueryRow(ctx, guestWeddingIDForOwnerSQL, userID).Scan(&weddingID)
 	if errors.Is(fallbackErr, pgx.ErrNoRows) {
 		return "", ErrGuestWeddingNotFound
 	}

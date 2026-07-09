@@ -76,7 +76,13 @@ export function useScanQueue(token: string | null) {
     async (payload: ScanPayload): Promise<SubmitScanResult> => {
       if (!token) throw new Error("not authenticated");
       const queue = async (): Promise<SubmitScanResult> => {
-        await enqueueScan({ ...payload, queuedAt: Date.now() });
+        try {
+          await enqueueScan({ ...payload, queuedAt: Date.now() });
+        } catch {
+          // IndexedDB write failed — surface a clear message so the operator
+          // knows this scan was NOT recorded anywhere.
+          throw new Error("Gagal menyimpan scan offline — coba lagi");
+        }
         await refreshCount();
         return { queued: true };
       };

@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -149,10 +150,17 @@ func TestCheckinHandlers(t *testing.T) {
 				if response.Guest.ProxyName != "Pak Budi" || response.Guest.GiftTagCode != "007" || response.Guest.CheckedInByLabel != "Meja Depan" {
 					t.Fatalf("details not persisted: %+v", response.Guest)
 				}
-				// counts must be pax-aware: 4 actual pax arrived of 3 total party size
 				stored := store.guests["qr-1"]
 				if stored.ActualPax == nil || *stored.ActualPax != 4 {
 					t.Fatalf("store actual_pax = %v; want 4", stored.ActualPax)
+				}
+				// counts must be pax-aware: 4 actual pax arrived (party size 2, qr-2 not arrived)
+				counts, err := store.GetCheckinCounts(context.Background(), "wed-1")
+				if err != nil {
+					t.Fatalf("counts: %v", err)
+				}
+				if counts.ArrivedPax != 4 || counts.TotalPax != 3 {
+					t.Fatalf("arrived_pax = %d, total_pax = %d; want 4, 3", counts.ArrivedPax, counts.TotalPax)
 				}
 			},
 		},
@@ -572,12 +580,12 @@ func (s *memoryCheckinStore) GetCheckinEventByCode(_ context.Context, code strin
 	return s.event, nil
 }
 
-func (s *memoryCheckinStore) MarkGuestArrived(_ context.Context, qr string, details ScanDetails, now time.Time) (CheckinGuest, bool, CheckinCounts, error) {
+func (s *memoryCheckinStore) MarkGuestArrived(_ context.Context, weddingID, qr string, details ScanDetails, now time.Time) (CheckinGuest, bool, CheckinCounts, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	guest, ok := s.guests[qr]
-	if !ok {
+	if !ok || guest.WeddingID != weddingID {
 		return CheckinGuest{}, false, CheckinCounts{}, ErrCheckinGuestNotFound
 	}
 	if guest.ArrivedAt != nil {
@@ -672,6 +680,7 @@ func (s *memoryCheckinStore) CreateWalkInGuest(_ context.Context, weddingID, nam
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	qr := fmt.Sprintf("walkin-%d", len(s.guests)+1)
+	// Mirrors PostgresCheckinStore: a walk-in's party size is their actual pax.
 	g := CheckinGuest{
 		ID:               fmt.Sprintf("guest-%d", len(s.guests)+1),
 		WeddingID:        weddingID,
@@ -681,6 +690,8 @@ func (s *memoryCheckinStore) CreateWalkInGuest(_ context.Context, weddingID, nam
 		PartySize:        partySize,
 		ArrivedAt:        &now,
 		SouvenirGiven:    details.SouvenirGiven,
+		ActualPax:        &partySize,
+		ProxyName:        details.ProxyName,
 		GiftTagCode:      details.GiftTagCode,
 		CheckedInByLabel: details.CheckedInByLabel,
 	}
@@ -697,8 +708,8 @@ func (s *memoryCheckinStore) MaxGiftTag(_ context.Context, weddingID string) (in
 		if g.WeddingID != weddingID {
 			continue
 		}
-		var n int
-		if _, err := fmt.Sscanf(g.GiftTagCode, "%d", &n); err == nil && n > max {
+		// Strict full-string parse, like the ~'^[0-9]+$' filter in SQL.
+		if n, err := strconv.Atoi(strings.TrimSpace(g.GiftTagCode)); err == nil && n > max {
 			max = n
 		}
 	}

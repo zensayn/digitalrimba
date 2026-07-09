@@ -8,7 +8,7 @@ import { Download, GalleryAdd, TrashBinMinimalistic } from "@solar-icons/react";
 import { cn } from "@/lib/utils";
 
 const PASS_DATA = "https://rimba.app/pass/PASS-9981-AD";
-// ponytail: solid canvas color so the ticket punch-notches can match it exactly
+// Solid canvas color so the ticket punch-notches can match it exactly.
 const CANVAS = "#f6f4ef";
 
 type PassTheme = "emerald" | "minimal" | "warm" | "midnight";
@@ -97,6 +97,10 @@ const MARKER_CENTERS: { type: CornerDotType; label: string; core: string }[] = [
   { type: "dot", label: "Circle", core: "rounded-full" },
 ];
 
+// ponytail: design persists per-device in localStorage; swap for a backend
+// endpoint when pass designs need to follow the account.
+const DESIGN_STORAGE_KEY = "rimba-qr-pass-design";
+
 export default function QrPassesPage() {
   const [activeTab, setActiveTab] = useState<"qr" | "pass">("qr");
   const [selectedTheme, setSelectedTheme] = useState<PassTheme>("emerald");
@@ -109,9 +113,30 @@ export default function QrPassesPage() {
   const [showSeat, setShowSeat] = useState(true);
   const [includeVenue, setIncludeVenue] = useState(true);
   const [saved, setSaved] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
 
   const theme = THEMES[selectedTheme];
+
+  // Restore the last saved design (post-mount to avoid a hydration mismatch).
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DESIGN_STORAGE_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw) as Record<string, unknown>;
+      if (typeof d.selectedTheme === "string" && d.selectedTheme in THEMES) {
+        setSelectedTheme(d.selectedTheme as PassTheme);
+      }
+      if (typeof d.dotType === "string") setDotType(d.dotType as DotType);
+      if (typeof d.cornerSquareType === "string") setCornerSquareType(d.cornerSquareType as CornerSquareType);
+      if (typeof d.cornerDotType === "string") setCornerDotType(d.cornerDotType as CornerDotType);
+      if (typeof d.qrColor === "string") setQrColor(d.qrColor);
+      if (typeof d.logo === "string") setLogo(d.logo);
+      if (typeof d.showTable === "boolean") setShowTable(d.showTable);
+      if (typeof d.showSeat === "boolean") setShowSeat(d.showSeat);
+      if (typeof d.includeVenue === "boolean") setIncludeVenue(d.includeVenue);
+    } catch {
+      // Corrupt saved design — fall back to defaults.
+    }
+  }, []);
 
   const qrContainerRef = useRef<HTMLDivElement>(null);
   const qrRef = useRef<QRCodeStyling | null>(null);
@@ -171,16 +196,34 @@ export default function QrPassesPage() {
   }
 
   function handleDownload(extension: "png" | "svg") {
-    qrRef.current?.download({ name: "rimba-pass-qr", extension });
+    if (!qrRef.current) {
+      toast.error("The QR code is still loading. Please try again in a moment.");
+      return;
+    }
+    qrRef.current.download({ name: "rimba-pass-qr", extension });
   }
 
   function handleSave() {
-    setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
+    try {
+      localStorage.setItem(
+        DESIGN_STORAGE_KEY,
+        JSON.stringify({
+          selectedTheme,
+          dotType,
+          cornerSquareType,
+          cornerDotType,
+          qrColor,
+          logo,
+          showTable,
+          showSeat,
+          includeVenue,
+        })
+      );
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    }, 1200);
+    } catch {
+      toast.error("Couldn't save the design on this device.");
+    }
   }
 
   return (
@@ -348,6 +391,7 @@ export default function QrPassesPage() {
                           type="button"
                           onClick={() => setQrColor(color)}
                           aria-label={`QR color ${color}`}
+                          aria-pressed={isActive}
                           className={cn(
                             "w-9 h-9 rounded-full transition-[transform,box-shadow] duration-150 ease-out active:scale-[0.94]",
                             isActive
@@ -383,6 +427,7 @@ export default function QrPassesPage() {
                           type="button"
                           onClick={() => setDotType(style.type)}
                           title={style.label}
+                          aria-pressed={isActive}
                           className={cn(
                             "flex flex-col items-center gap-1.5 rounded-xl border py-3 transition-colors duration-150 ease-out active:scale-[0.97]",
                             isActive
@@ -415,6 +460,7 @@ export default function QrPassesPage() {
                             type="button"
                             onClick={() => setCornerSquareType(style.type)}
                             title={style.label}
+                            aria-pressed={isActive}
                             className={cn(
                               "flex flex-col items-center gap-1.5 rounded-xl border py-3 transition-colors duration-150 ease-out active:scale-[0.97]",
                               isActive
@@ -441,6 +487,7 @@ export default function QrPassesPage() {
                             type="button"
                             onClick={() => setCornerDotType(style.type)}
                             title={style.label}
+                            aria-pressed={isActive}
                             className={cn(
                               "flex flex-col items-center gap-1.5 rounded-xl border py-3 transition-colors duration-150 ease-out active:scale-[0.97]",
                               isActive
@@ -500,6 +547,7 @@ export default function QrPassesPage() {
                           key={themeKey}
                           type="button"
                           onClick={() => setSelectedTheme(themeKey)}
+                          aria-pressed={isActive}
                           className={cn(
                             "text-left p-3 rounded-2xl border transition-colors duration-150 ease-out active:scale-[0.98]",
                             isActive
@@ -570,10 +618,9 @@ export default function QrPassesPage() {
               <button
                 type="button"
                 onClick={handleSave}
-                disabled={isSaving}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#346739] px-6 py-3 text-sm font-medium text-white transition-[transform,background-color] duration-150 ease-out hover:bg-[#2b5730] active:scale-[0.97] disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#346739] px-6 py-3 text-sm font-medium text-white transition-[transform,background-color] duration-150 ease-out hover:bg-[#2b5730] active:scale-[0.97]"
               >
-                {isSaving ? "Saving..." : saved ? "✓ Design Saved" : "Save Design"}
+                {saved ? "✓ Design Saved" : "Save Design"}
               </button>
             </div>
           </section>

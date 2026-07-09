@@ -56,7 +56,7 @@ func main() {
 
 	// Optional Redis cache (REDIS_URL) over the check-in read hot path; the
 	// backend runs unchanged without it.
-	if rdb, err := cache.New(ctx); err != nil {
+	if rdb, err := cache.New(ctx, os.Getenv("REDIS_URL")); err != nil {
 		log.Printf("redis cache disabled: %v", err)
 	} else if rdb != nil {
 		defer rdb.Close()
@@ -116,6 +116,9 @@ func main() {
 		dashboardHandler.RegisterRoutes(r)
 		weddingProfileHandler.RegisterRoutes(r)
 		r.Post("/api/invitations", invHandler.Create)
+		r.Get("/api/invitations", invHandler.List)
+		r.Get("/api/invitations/by-id/{id}", invHandler.Get)
+		r.Get("/api/invitations/slug-check", invHandler.SlugCheck)
 		r.Patch("/api/invitations/{id}", invHandler.Update)
 		r.Delete("/api/invitations/{id}", invHandler.Delete)
 		guestHandler.RegisterRoutes(r)

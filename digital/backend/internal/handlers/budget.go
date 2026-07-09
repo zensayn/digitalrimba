@@ -346,10 +346,12 @@ func (h *BudgetHandler) UpsertCategoryBudget(w http.ResponseWriter, r *http.Requ
 		http.Error(w, "category required", http.StatusBadRequest)
 		return
 	}
-	planned := 0.0
-	if req.PlannedAmount != nil {
-		planned = *req.PlannedAmount
+	// An omitted planned_amount must not silently reset an existing plan to 0.
+	if req.PlannedAmount == nil {
+		http.Error(w, "planned_amount required", http.StatusBadRequest)
+		return
 	}
+	planned := *req.PlannedAmount
 	if planned < 0 {
 		http.Error(w, "planned_amount must be non-negative", http.StatusBadRequest)
 		return
@@ -421,7 +423,11 @@ func createBudgetParams(weddingID string, req createBudgetItemRequest) (CreateBu
 	case req.PaidAmount != nil:
 		paidAmount = *req.PaidAmount
 	case (req.PaymentStatus != nil && *req.PaymentStatus == "paid") || (req.Paid != nil && *req.Paid):
+		// "Paid" with no actual recorded means the estimate was paid, not 0.
 		paidAmount = actualAmount
+		if req.ActualAmount == nil && req.Actual == nil {
+			paidAmount = estimatedAmount
+		}
 	}
 	if paidAmount < 0 {
 		return CreateBudgetItemParams{}, errors.New("amounts must be non-negative")
@@ -852,7 +858,7 @@ WITH item_totals AS (
     GROUP BY category
 ),
 planned AS (
-    SELECT category AS name, planned_amount::float8 AS planned
+    SELECT category AS name, planned_amount::float8 AS planned, true AS has_plan
     FROM budget_category_budgets
     WHERE wedding_id = $1::uuid
 ),
@@ -862,14 +868,17 @@ merged AS (
         COALESCE(i.estimated, 0) AS estimated,
         COALESCE(i.actual, 0) AS actual,
         COALESCE(i.paid, 0) AS paid,
-        COALESCE(p.planned, 0) AS planned
+        COALESCE(p.planned, 0) AS planned,
+        COALESCE(p.has_plan, false) AS has_plan
     FROM item_totals i
     FULL OUTER JOIN planned p ON i.name = p.name
 ),
 final AS (
+    -- "Plan exists" (row present), not "plan is positive": an explicit
+    -- planned_amount of 0 is a real plan and must not fall back to estimates.
     SELECT
         name, estimated, actual, paid, planned,
-        CASE WHEN planned > 0 THEN planned ELSE estimated END AS budgeted
+        CASE WHEN has_plan THEN planned ELSE estimated END AS budgeted
     FROM merged
 )
 SELECT

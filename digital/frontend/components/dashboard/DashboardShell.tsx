@@ -75,7 +75,7 @@ const navGroups: { label: string | null; items: NavItem[] }[] = [
   {
     label: 'DESIGN',
     items: [
-      { href: '/dashboard/invitation', label: 'Invitations', Icon: Letter },
+      { href: '/dashboard/invitations', label: 'Invitations', Icon: Letter },
       { href: '/dashboard/qr-passes', label: 'QR & Passes', Icon: QrCode },
     ],
   },
@@ -242,7 +242,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="outline-none focus:ring-2 focus:ring-[#346739]/20 rounded-full shrink-0 select-none cursor-pointer">
+                    <button
+                      aria-label="Account menu"
+                      className="outline-none focus:ring-2 focus:ring-[#346739]/20 rounded-full shrink-0 select-none cursor-pointer"
+                    >
                       {imageUrl ? (
                         <img
                           src={imageUrl}
