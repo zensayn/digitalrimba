@@ -539,6 +539,83 @@ Periksa:
 4. rollback jika berdampak ke pengguna;
 5. investigasi root cause setelah layanan pulih.
 
+## Undangan per-slug: router worker (`{slug}.rimba.io`)
+
+Undangan yang sudah di-publish dari dashboard disajikan di subdomain miliknya sendiri
+(mis. `alya-bima.rimba.io`) lewat worker router di `invitation/router/`.
+
+### Arsitektur
+
+```text
+{slug}.rimba.io
+   │  (zone route *.rimba.io/*)
+   ▼
+rimba-invitation-router
+   │  GET {API_URL}/api/invitations/{slug}   ← hanya untuk membaca content.templateId
+   │  (respons API ber-Cache-Control 60s → di-cache edge)
+   ▼
+service binding tema (rimba-warm-narrative / rimba-sacred-luxe / rimba-sinema-kisah)
+   │  request diteruskan + header `x-rimba-slug: {slug}`
+   ▼
+tema fetch {API_URL}/api/invitations/{slug} sendiri (edge cache yang sama),
+overlay content di atas invitation.config.json, render server-side
+```
+
+Kontrak penting: **payload config tidak pernah lewat HTTP header** — hanya slug.
+Header punya batas ukuran (~8-16KB); love story panjang + galeri besar akan
+menyebabkan 431 jika config dikirim via header.
+
+Tanpa header `x-rimba-slug` (akses langsung ke domain demo), tema me-render
+`invitation.config.json` bawaannya persis seperti sebelumnya.
+
+### Rute `/preview` (live preview studio)
+
+Setiap tema punya rute `/preview` (client component, terpisah dari halaman
+produksi yang tetap server-first): dashboard menampilkannya dalam iframe dan
+mengirim draft via `postMessage` (`RIMBA_DRAFT_UPDATE` / `RIMBA_DRAFT_READY`).
+Origin pengirim divalidasi exact-match terhadap `NEXT_PUBLIC_STUDIO_ORIGINS`
+(build-time, di `.env` tiap tema) — tambahkan origin dashboard production
+sebelum build production.
+
+### Setup sekali di dashboard Cloudflare (manual)
+
+1. DNS: tambahkan record wildcard proxied untuk `*.rimba.io`
+   (mis. `A * 192.0.2.1`, proxied — placeholder; worker route yang melayani).
+2. Pastikan ketiga worker tema sudah ter-deploy (service binding router menunjuk ke namanya).
+
+### Deploy router
+
+```powershell
+cd invitation/router
+bun install
+bunx wrangler deploy
+```
+
+### Environment variables terkait
+
+| Variabel | Lokasi | Fungsi |
+|---|---|---|
+| `API_URL` | `vars` di wrangler.jsonc router **dan** tiap tema | Base URL Go API (`https://api.rimba.io`) |
+| `NEXT_PUBLIC_STUDIO_ORIGINS` | `.env` tiap tema (build-time) | Allowlist origin postMessage `/preview` |
+
+Catatan: Go API men-set `Cache-Control: public, max-age=60` untuk undangan
+published — perubahan setelah re-publish butuh ±1 menit untuk tampil di domain live.
+
+### Dev lokal
+
+```powershell
+# jalankan salah satu tema
+cd invitation/themes/adat/kenangan/warm-narrative
+API_URL=http://localhost:8090 bun run dev -- --port 3901
+
+# jalankan router, forward ke tema dev (bukan service binding)
+cd invitation/router
+bunx wrangler dev --port 8787 --var THEME_DEV_ORIGIN:http://localhost:3901 --var API_URL:http://localhost:8090
+
+# uji (wrangler dev menimpa Host, pakai X-Forwarded-Host)
+curl --compressed -H "X-Forwarded-Host: {slug}.rimba.io" http://localhost:8787/
+```
+
 ## Referensi
 
 - [Next.js on Cloudflare Workers](https://developers.cloudflare.com/workers/framework-guides/web-apps/nextjs/)

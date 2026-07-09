@@ -11,8 +11,11 @@ import CraftMaterials from "@/components/CraftMaterials";
 import CraftProcess from "@/components/CraftProcess";
 import TemplateCatalog from "@/components/TemplateCatalog";
 import TemplateGallery from "@/components/TemplateGallery";
+import TemplateShowcase from "@/components/TemplateShowcase";
 import RealWeddings from "@/components/RealWeddings";
+import RealWeddings2 from "@/components/RealWeddings2";
 import ReviewSection from "@/components/ReviewSection";
+import ReviewSection2 from "@/components/ReviewSection2";
 import FaqSection from "@/components/FaqSection";
 import BottomCTA from "@/components/BottomCTA";
 import ConsultationBooking from "@/components/ConsultationBooking";
@@ -42,14 +45,23 @@ export default async function App() {
       <CraftMaterials />
       {/* Face Formula-style editorial gallery — comparison candidate, sits above
           the existing dark-band carousel. Keep the one that wins, drop the other. */}
+      {/* Swap-style image rail — comparison candidate against the
+          TemplateGallery grid below. Keep the winner, drop the other. */}
+      <TemplateShowcase products={products} priceBySlug={priceBySlug} />
       <TemplateGallery
         products={products}
         collections={collections}
         priceBySlug={priceBySlug}
       />
+      {/* Readymag-style dark collage — comparison candidate against the
+          polaroid RealWeddings below. Keep the winner, drop the other. */}
+      <RealWeddings2 />
       {/* Social-proof masonry — real couples; teaser linking to /gallery */}
       <RealWeddings />
       <HowItWorks />
+      {/* Fresha-style reviews rail — comparison candidate against the
+          vertical-slider ReviewSection above. Keep the winner, drop the other. */}
+      <ReviewSection2 />
       <ReviewSection />
       <FaqSection />
       <ConsultationBooking />

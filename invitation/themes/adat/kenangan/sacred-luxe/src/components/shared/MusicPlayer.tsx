@@ -18,14 +18,15 @@ const SONG_TITLE  = "Judul Lagu";
 const SONG_ARTIST = "Nama Artis";
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default function MusicPlayer() {
+export default function MusicPlayer({ src }: { src?: string }) {
   const [playing, setPlaying] = useState(false);
   const [visible, setVisible] = useState(false);
   const [ready, setReady]     = useState(false);
   const audioRef              = useRef<HTMLAudioElement | null>(null);
+  const musicSrc              = src || MUSIC_SRC;
 
   useEffect(() => {
-    const audio    = new Audio(MUSIC_SRC);
+    const audio    = new Audio(musicSrc);
     audio.loop     = true;
     audio.preload  = "auto";
     audio.oncanplaythrough = () => setReady(true);
@@ -46,7 +47,7 @@ export default function MusicPlayer() {
       audio.pause();
       audio.src = "";
     };
-  }, []);
+  }, [musicSrc]);
 
   const toggle = () => {
     const audio = audioRef.current;

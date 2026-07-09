@@ -253,7 +253,7 @@ export default function SinemaExperience({ config }: { config: InvitationConfig 
 
   return (
     <>
-      <MusicPlayer />
+      <MusicPlayer src={config.music?.src} />
 
       <div className="slide-viewport">
         <div

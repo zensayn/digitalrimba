@@ -91,4 +91,9 @@ export interface InvitationConfig {
     order: string[];
     enabled: Record<string, boolean>;
   };
+  // Optional per-invitation background music (studio-uploaded). Absent in the
+  // bundled demo config, which uses MusicPlayer's built-in track.
+  music?: {
+    src: string;
+  };
 }

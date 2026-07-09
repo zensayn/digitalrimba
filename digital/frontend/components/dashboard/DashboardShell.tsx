@@ -75,7 +75,7 @@ const navGroups: { label: string | null; items: NavItem[] }[] = [
   {
     label: 'DESIGN',
     items: [
-      { href: '/dashboard/invitation', label: 'Invitations', Icon: Letter },
+      { href: '/dashboard/invitations', label: 'Invitations', Icon: Letter },
       { href: '/dashboard/qr-passes', label: 'QR & Passes', Icon: QrCode },
     ],
   },

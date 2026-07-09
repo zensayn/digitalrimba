@@ -1,11 +1,11 @@
-import SinemaExperience from "@/components/SinemaExperience";
-import type { InvitationConfig } from "@/lib/config-types";
-import configJson from "../invitation.config.json";
+import { headers } from "next/headers";
 import { Suspense } from "react";
+import SinemaExperience from "@/components/SinemaExperience";
+import { resolveConfig } from "@/lib/resolve-config";
 
-const config = configJson as InvitationConfig;
+export default async function Page() {
+  const config = await resolveConfig((await headers()).get("x-rimba-slug"));
 
-export default function Page() {
   return (
     <Suspense fallback={null}>
       <SinemaExperience config={config} />

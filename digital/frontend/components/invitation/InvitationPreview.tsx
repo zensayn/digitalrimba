@@ -1,30 +1,24 @@
 "use client";
 
-export type InvitationDraft = {
-  brideName: string;
-  groomName: string;
-  date: string;
-  venue: string;
-  story: string;
-  imageUrl: string;
-  musicUrl: string;
-  updatedAt: string;
-};
+import type { InvitationConfig } from "@/lib/invitation-config";
 
 type InvitationPreviewProps = {
-  draft: InvitationDraft;
+  config: InvitationConfig;
 };
 
-export function InvitationPreview({ draft }: InvitationPreviewProps) {
+// Fallback preview used only when no template is selected — the real preview
+// is the theme's /preview iframe.
+export function InvitationPreview({ config }: InvitationPreviewProps) {
+  const brideName = config.couple.bride.name;
+  const groomName = config.couple.groom.name;
   const coupleNames =
-    draft.brideName || draft.groomName
-      ? `${draft.brideName || "Bride"} & ${draft.groomName || "Groom"}`
-      : "Bride & Groom";
+    brideName || groomName ? `${brideName || "Bride"} & ${groomName || "Groom"}` : "Bride & Groom";
+  const story = config.loveStory[0]?.description ?? "";
+  const coverImage = config.gallery[0]?.src ?? "";
 
   return (
     <article
       data-testid="invitation-preview"
-      data-updated-at={draft.updatedAt}
       className="relative min-h-[680px] overflow-hidden rounded-[28px] border border-[#0a0a0a]/10 bg-[#fffaf0] shadow-[0_28px_80px_rgba(10,10,10,0.18)]"
     >
       <div className="absolute inset-x-0 top-0 h-48 bg-[#1a3a3a]" />
@@ -45,26 +39,22 @@ export function InvitationPreview({ draft }: InvitationPreviewProps) {
               <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-[#6a6a6a]">
                 Date
               </span>
-              {draft.date || "Select a date"}
+              {config.weddingDate || "Select a date"}
             </p>
             <p>
               <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-[#6a6a6a]">
                 Venue
               </span>
-              {draft.venue || "Add venue"}
+              {config.events.resepsi.venue || "Add venue"}
             </p>
           </div>
         </div>
 
         <div className="mt-6 grid flex-1 gap-5">
           <div className="overflow-hidden rounded-[22px] border border-[#0a0a0a]/10 bg-[#f5f0e0]">
-            {draft.imageUrl ? (
+            {coverImage ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={draft.imageUrl}
-                alt="Couple"
-                className="h-64 w-full object-cover"
-              />
+              <img src={coverImage} alt="Couple" className="h-64 w-full object-cover" />
             ) : (
               <div className="flex h-64 items-center justify-center bg-[#1a3a3a] px-6 text-center text-sm font-semibold text-[#fffaf0]">
                 Couple image preview
@@ -77,8 +67,7 @@ export function InvitationPreview({ draft }: InvitationPreviewProps) {
               Our Story
             </p>
             <p className="mt-3 text-sm leading-7 text-[#3a3a3a]">
-              {draft.story ||
-                "Write a warm story for guests. The preview refreshes as the studio form changes."}
+              {story || "Write a warm story for guests. The preview refreshes as the studio form changes."}
             </p>
           </div>
 
@@ -87,7 +76,7 @@ export function InvitationPreview({ draft }: InvitationPreviewProps) {
               Music
             </p>
             <p className="mt-2 text-sm text-[#fffaf0]/75">
-              {draft.musicUrl ? `Music uploaded: ${draft.musicUrl}` : "No music uploaded"}
+              {config.music.src ? `Music uploaded: ${config.music.src}` : "No music uploaded"}
             </p>
           </div>
         </div>
