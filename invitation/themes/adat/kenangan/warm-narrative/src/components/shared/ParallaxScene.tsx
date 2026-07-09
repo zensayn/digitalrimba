@@ -1,6 +1,12 @@
 "use client";
 
-import { useRef, type CSSProperties, type ReactNode, type SyntheticEvent } from "react";
+import {
+  useRef,
+  type CSSProperties,
+  type ReactNode,
+  type RefObject,
+  type SyntheticEvent,
+} from "react";
 import {
   m as motion,
   useScroll,
@@ -80,6 +86,82 @@ export interface ParallaxLayer {
   };
 }
 
+interface CommonImageProps {
+  src: string;
+  alt: "";
+  "aria-hidden": true;
+  draggable: false;
+  loading: "eager" | "lazy";
+  decoding: "async";
+  fetchPriority: "high" | "low";
+  onError: (e: SyntheticEvent<HTMLImageElement>) => void;
+}
+
+function ParallaxImage({
+  common,
+  progress,
+  range,
+  style,
+  scaleX = 1,
+  rotate = 0,
+}: {
+  common: CommonImageProps;
+  progress: MotionValue<number>;
+  range: number;
+  style: CSSProperties;
+  scaleX?: number;
+  rotate?: number;
+}) {
+  const y = useTransform(progress, [0, 1], [range, -range]);
+
+  return (
+    <motion.img
+      {...common}
+      style={{
+        ...style,
+        y,
+        scaleX,
+        rotate,
+        willChange: "transform",
+      }}
+    />
+  );
+}
+
+function StaticImage({
+  common,
+  style,
+  scaleX = 1,
+  rotate = 0,
+}: {
+  common: CommonImageProps;
+  style: CSSProperties;
+  scaleX?: number;
+  rotate?: number;
+}) {
+  const transform =
+    scaleX !== 1 || rotate !== 0
+      ? `scaleX(${scaleX}) rotate(${rotate}deg)`
+      : undefined;
+
+  return (
+    // Raw theme assets already come from the optimized R2 pipeline; using a
+    // plain img here avoids mounting a Motion component for depth-zero layers.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={common.src}
+      alt=""
+      aria-hidden="true"
+      draggable={common.draggable}
+      loading={common.loading}
+      decoding={common.decoding}
+      fetchPriority={common.fetchPriority}
+      onError={common.onError}
+      style={{ ...style, transform }}
+    />
+  );
+}
+
 function Layer({
   layer,
   progress,
@@ -94,7 +176,6 @@ function Layer({
   index?: number;
 }) {
   const range = layer.depth * 100; // vh of travel each direction
-  const y = useTransform(progress, [0, 1], [range, -range]);
   // Each foreground piece watches its OWN visibility, so it animates in only
   // when it is actually scrolled to (not when the section top first appears),
   // and replays every time it re-enters view.
@@ -104,7 +185,7 @@ function Layer({
   // (instead of waiting until you've scrolled ~halfway through the section).
   const boxInView = useInView(boxRef, { once: false, margin: "18% 0px 18% 0px" });
 
-  const common = {
+  const common: CommonImageProps = {
     src: layer.src,
     alt: "",
     "aria-hidden": true as const,
@@ -193,18 +274,31 @@ function Layer({
         }}
       >
         <div className={windClass} style={windStyle}>
-          <motion.img
-            {...common}
-            style={{
-              display: "block",
-              width: heightDriven ? "auto" : "100%",
-              height: heightDriven ? "100%" : "auto",
-              y: applyParallax ? y : 0,
-              scaleX: b.flipX ? -1 : 1,
-              rotate: b.rotate ?? 0,
-              willChange: applyParallax ? "transform" : undefined,
-            }}
-          />
+          {applyParallax ? (
+            <ParallaxImage
+              common={common}
+              progress={progress}
+              range={range}
+              scaleX={b.flipX ? -1 : 1}
+              rotate={b.rotate ?? 0}
+              style={{
+                display: "block",
+                width: heightDriven ? "auto" : "100%",
+                height: heightDriven ? "100%" : "auto",
+              }}
+            />
+          ) : (
+            <StaticImage
+              common={common}
+              scaleX={b.flipX ? -1 : 1}
+              rotate={b.rotate ?? 0}
+              style={{
+                display: "block",
+                width: heightDriven ? "auto" : "100%",
+                height: heightDriven ? "100%" : "auto",
+              }}
+            />
+          )}
         </div>
       </motion.div>
     );
@@ -212,61 +306,56 @@ function Layer({
 
   // Cover mode — full-bleed background. Oversize + offset so parallax travel
   // never exposes an empty edge.
-  return (
-    <motion.img
-      {...common}
-      style={{
-        position: "absolute",
-        left: 0,
-        right: 0,
-        top: reduced ? 0 : `-${range}vh`,
-        width: "100%",
-        height: reduced ? "100%" : `calc(100% + ${range * 2}vh)`,
-        objectFit: layer.objectFit ?? "cover",
-        objectPosition: layer.objectPosition ?? "center",
-        opacity: layer.opacity ?? 1,
-        zIndex: layer.zIndex ?? 0,
-        pointerEvents: "none",
-        y: reduced ? 0 : y,
-        willChange: reduced ? undefined : "transform",
-      }}
+  const coverStyle: CSSProperties = {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: reduced ? 0 : `-${range}vh`,
+    width: "100%",
+    height: reduced ? "100%" : `calc(100% + ${range * 2}vh)`,
+    objectFit: layer.objectFit ?? "cover",
+    objectPosition: layer.objectPosition ?? "center",
+    opacity: layer.opacity ?? 1,
+    zIndex: layer.zIndex ?? 0,
+    pointerEvents: "none",
+  };
+
+  return !reduced && layer.depth > 0 ? (
+    <ParallaxImage
+      common={common}
+      progress={progress}
+      range={range}
+      style={coverStyle}
     />
+  ) : (
+    <StaticImage common={common} style={coverStyle} />
   );
 }
 
-/**
- * Layered painterly background for a section. Renders image layers absolutely
- * behind the section content and drives each layer's vertical offset from the
- * section's scroll progress within the snap container.
- *
- * Layers mount only once the section nears the viewport (lazy network), and
- * parallax is disabled entirely under prefers-reduced-motion.
- */
-export default function ParallaxScene({
-  layers,
-  children,
-  fadeTop = 6,
-  fadeBottom = 6,
-}: {
+interface ParallaxSceneProps {
   layers: ParallaxLayer[];
   children?: ReactNode;
   /** Height (svh) the scene feathers into the page background at the top edge. */
   fadeTop?: number;
   /** Height (svh) the scene feathers into the page background at the bottom edge. */
   fadeBottom?: number;
+}
+
+function ActiveScene({
+  sceneRef,
+  layers,
+  fadeTop,
+  fadeBottom,
+  inView,
+}: {
+  sceneRef: RefObject<HTMLDivElement | null>;
+  layers: ParallaxLayer[];
+  fadeTop: number;
+  fadeBottom: number;
+  inView: boolean;
 }) {
-  const sceneRef = useRef<HTMLDivElement>(null);
   const container = useParallaxContainer();
   const reduced = useReducedMotion() ?? false;
-  // Mount early (network lead time) and keep mounted. Each foreground piece
-  // then gates its own entrance on its own position (see Layer), so top and
-  // bottom pieces animate at the moment they are each reached.
-  const mounted = useInView(sceneRef, { once: true, margin: "600px 0px" });
-  // Ambient wind runs only while the scene is (nearly) on screen — the wide
-  // margin resumes the loops well before entry (Safari's IntersectionObserver
-  // lags during fast momentum scrolls) so nothing looks frozen, while scenes
-  // scrolled far past stop burning frames (.scene-paused, see globals.css).
-  const inView = useInView(sceneRef, { margin: "60% 0px 60% 0px" });
   const pausedClass = inView ? undefined : "scene-paused";
 
   const { scrollYProgress } = useScroll({
@@ -291,7 +380,6 @@ export default function ParallaxScene({
   return (
     <>
       <div
-        ref={sceneRef}
         aria-hidden="true"
         className={pausedClass}
         style={{
@@ -302,29 +390,24 @@ export default function ParallaxScene({
           pointerEvents: "none",
         }}
       >
-        {mounted && (
-          <>
-            {/* Full-bleed background layers — feathered into the page background */}
-            <div style={{ position: "absolute", inset: 0, maskImage: mask, WebkitMaskImage: mask }}>
-              {coverLayers.map((layer, i) => (
-                <Layer key={i} layer={layer} progress={scrollYProgress} reduced={reduced} index={i} />
-              ))}
-            </div>
-            {/* Foreground kit pieces — not feathered, shown fully at the corners.
-                Each slides in from its edge (once reached) with a slight stagger. */}
-            {boxLayers.map((layer, i) => (
-              <Layer
-                key={i}
-                layer={layer}
-                progress={scrollYProgress}
-                reduced={reduced}
-                delay={i * 0.08}
-                index={i}
-              />
-            ))}
-          </>
-        )}
-        {children}
+        {/* Full-bleed background layers — feathered into the page background */}
+        <div style={{ position: "absolute", inset: 0, maskImage: mask, WebkitMaskImage: mask }}>
+          {coverLayers.map((layer, i) => (
+            <Layer key={i} layer={layer} progress={scrollYProgress} reduced={reduced} index={i} />
+          ))}
+        </div>
+        {/* Foreground kit pieces — not feathered, shown fully at the corners.
+            Each slides in from its edge (once reached) with a slight stagger. */}
+        {boxLayers.map((layer, i) => (
+          <Layer
+            key={i}
+            layer={layer}
+            progress={scrollYProgress}
+            reduced={reduced}
+            delay={i * 0.08}
+            index={i}
+          />
+        ))}
       </div>
       {/* Seam overhang — un-clipped sibling so the bottom garland can hang over
           the section boundary as ONE continuous piece instead of being chopped
@@ -336,19 +419,66 @@ export default function ParallaxScene({
           className={pausedClass}
           style={{ position: "absolute", inset: 0, zIndex: 5, pointerEvents: "none" }}
         >
-          {mounted &&
-            overhangLayers.map((layer, i) => (
-              <Layer
-                key={i}
-                layer={layer}
-                progress={scrollYProgress}
-                reduced={reduced}
-                delay={(boxLayers.length + i) * 0.08}
-                index={boxLayers.length + i}
-              />
-            ))}
+          {overhangLayers.map((layer, i) => (
+            <Layer
+              key={i}
+              layer={layer}
+              progress={scrollYProgress}
+              reduced={reduced}
+              delay={(boxLayers.length + i) * 0.08}
+              index={boxLayers.length + i}
+            />
+          ))}
         </div>
       )}
     </>
+  );
+}
+
+/**
+ * Layered painterly background for a section. The anchor always keeps the
+ * section geometry observable, while the expensive image/MotionValue tree only
+ * exists near the viewport. Layer definitions and visible component counts are
+ * unchanged.
+ */
+export default function ParallaxScene({
+  layers,
+  children,
+  fadeTop = 6,
+  fadeBottom = 6,
+}: ParallaxSceneProps) {
+  const sceneRef = useRef<HTMLDivElement>(null);
+  // Keep a generous two-viewport runway so fast momentum and reverse scrolling
+  // remount scenes from the browser cache before they become visible.
+  const nearView = useInView(sceneRef, {
+    once: false,
+    margin: "200% 0px 200% 0px",
+  });
+  const inView = useInView(sceneRef, {
+    once: false,
+    margin: "60% 0px 60% 0px",
+  });
+
+  return (
+    <div
+      ref={sceneRef}
+      aria-hidden="true"
+      style={{
+        position: "absolute",
+        inset: 0,
+        pointerEvents: "none",
+      }}
+    >
+      {nearView && (
+        <ActiveScene
+          sceneRef={sceneRef}
+          layers={layers}
+          fadeTop={fadeTop}
+          fadeBottom={fadeBottom}
+          inView={inView}
+        />
+      )}
+      {children}
+    </div>
   );
 }
