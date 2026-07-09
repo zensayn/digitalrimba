@@ -8,14 +8,11 @@ import FallingFlowers from "@/components/shared/FallingFlowers";
 import FloralDivider from "@/components/shared/FloralDivider";
 import SceneBackground from "@/components/shared/SceneBackground";
 import { asset } from "@/lib/assets";
+import { hideBrokenImage } from "@/lib/image-fallback";
 import type { InvitationConfig } from "@/lib/config-types";
 
 // Kemiringan polaroid selang-seling → terasa scrapbook tertempel, bukan grid kaku.
 const TILTS = [-1.2, 2.1, -2.3, 1.7, -1.9, 1.4, -2.1, 1.8];
-
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
 
 export default function GallerySection({ gallery }: { gallery: InvitationConfig["gallery"] }) {
   return (
@@ -114,7 +111,7 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
                   <img
                     src={asset(corner.file)}
                     alt=""
-                    onError={hide}
+                    onError={hideBrokenImage}
                     className="ambient-anim"
                     style={{
                       display: "block",
@@ -144,7 +141,7 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
                   <img
                     src={asset(accent)}
                     alt=""
-                    onError={hide}
+                    onError={hideBrokenImage}
                     className="ambient-anim"
                     style={{
                       display: "block",

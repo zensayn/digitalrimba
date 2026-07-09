@@ -27,7 +27,7 @@ Nama tier mengikuti struktur tema adat:
 
 ## Struktur Folder
 
-```
+```text
 themes/floral/
 ├── README.md              ← indeks kategori (improvement; adat tidak punya ini)
 ├── kenangan/

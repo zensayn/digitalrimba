@@ -6,10 +6,7 @@
 // supaya mirror + goyang tidak saling menimpa. Fallback aman.
 
 import { asset } from "@/lib/assets";
-
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
+import { hideBrokenImage } from "@/lib/image-fallback";
 
 const CONF = {
   left: { anim: "sway", dur: 5.6, flip: false },
@@ -55,7 +52,7 @@ export default function CardVines({
             <img
               src={asset(file)}
               alt=""
-              onError={hide}
+              onError={hideBrokenImage}
               className="ambient-anim"
               style={{
                 display: "block",

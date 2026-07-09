@@ -1,4 +1,5 @@
 # Warisan · Kategori Floral
+
 ## Design Specification
 
 > **Tier 3 — Premium · Rp 700rb**
@@ -96,7 +97,7 @@ kompleks. Boleh memakai canvas/WebGL untuk efek kelopak.
 
 ---
 
-### Differensiator vs Kisah
+### Differentiator vs Kisah
 
 | Fitur | Kisah | Warisan |
 |-------|-------|-------|

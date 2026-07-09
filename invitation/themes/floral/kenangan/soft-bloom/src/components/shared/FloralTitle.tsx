@@ -7,10 +7,7 @@
 // sama-sama berhias bunga.
 
 import { asset } from "@/lib/assets";
-
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
+import { hideBrokenImage } from "@/lib/image-fallback";
 
 export default function FloralTitle({
   children,
@@ -37,7 +34,7 @@ export default function FloralTitle({
       src={asset("TangkaiKuncup.webp")}
       alt=""
       aria-hidden="true"
-      onError={hide}
+      onError={hideBrokenImage}
       style={{
         width: flowerSize,
         height: flowerSize,

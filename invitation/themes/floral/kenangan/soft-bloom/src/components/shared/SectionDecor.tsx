@@ -4,6 +4,7 @@
 // Membuat tiap section terbingkai & "hidup", bukan sekadar kolom teks.
 
 import { asset } from "@/lib/assets";
+import { hideBrokenImage } from "@/lib/image-fallback";
 
 type Corner = "tl" | "tr" | "bl" | "br";
 
@@ -30,10 +31,6 @@ const POS: Record<Corner, React.CSSProperties> = {
 
 // Durasi bervariasi (3–6 dtk) supaya tiap sudut bergoyang tak serempak — organik.
 const DUR = [6, 4.4, 5.4, 4.8];
-
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
 
 export default function SectionDecor({
   corners = ["tl", "br"],
@@ -68,7 +65,7 @@ export default function SectionDecor({
           <img
             src={asset(file)}
             alt=""
-            onError={hide}
+            onError={hideBrokenImage}
             className="ambient-anim"
             style={{
               display: "block",

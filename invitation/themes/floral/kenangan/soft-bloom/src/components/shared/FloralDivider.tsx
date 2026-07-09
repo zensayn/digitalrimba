@@ -8,10 +8,7 @@
 // kembali dikendalikan layout, bukan padding gambar.
 
 import { asset } from "@/lib/assets";
-
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
+import { hideBrokenImage } from "@/lib/image-fallback";
 
 export default function FloralDivider({
   width = "60vw",
@@ -30,7 +27,7 @@ export default function FloralDivider({
       <img
         src={asset("PembatasBunga.webp")}
         alt=""
-        onError={hide}
+        onError={hideBrokenImage}
         style={{ display: "block", width: "100%", height: "auto", marginTop: "-25.4%" }}
       />
     </div>

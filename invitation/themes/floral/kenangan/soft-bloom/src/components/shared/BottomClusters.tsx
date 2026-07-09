@@ -4,10 +4,7 @@
 // dari pangkalnya seperti tertiup angin. Fallback aman.
 
 import { asset } from "@/lib/assets";
-
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
+import { hideBrokenImage } from "@/lib/image-fallback";
 
 const CONF: { side: "left" | "right"; flip: boolean; anim: string; dur: number }[] = [
   { side: "left", flip: false, anim: "sway", dur: 5.4 },
@@ -45,7 +42,7 @@ export default function BottomClusters({
           <img
             src={asset(file)}
             alt=""
-            onError={hide}
+            onError={hideBrokenImage}
             className="ambient-anim"
             style={{
               display: "block",

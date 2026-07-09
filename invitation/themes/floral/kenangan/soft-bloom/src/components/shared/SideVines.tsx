@@ -4,12 +4,9 @@
 // bergoyang halus dari pangkal atasnya. Fallback aman.
 
 import { asset } from "@/lib/assets";
+import { hideBrokenImage } from "@/lib/image-fallback";
 
 type Side = "left" | "right";
-
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
 
 export default function SideVines({
   sides = ["left", "right"],
@@ -44,7 +41,7 @@ export default function SideVines({
           <img
             src={asset(file)}
             alt=""
-            onError={hide}
+            onError={hideBrokenImage}
             className="ambient-anim"
             style={{
               display: "block",

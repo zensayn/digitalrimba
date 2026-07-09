@@ -4,14 +4,11 @@
 // Aset Kupu.webp opsional — jika belum ada, elemen otomatis disembunyikan.
 
 import { asset } from "@/lib/assets";
+import { hideBrokenImage } from "@/lib/image-fallback";
 
 function sr(seed: number) {
   const x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
-}
-
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
 }
 
 export default function Butterflies({ count = 2, zIndex = 2 }: { count?: number; zIndex?: number }) {
@@ -57,7 +54,7 @@ export default function Butterflies({ count = 2, zIndex = 2 }: { count?: number;
           <img
             src={asset("Kupu.webp")}
             alt=""
-            onError={hide}
+            onError={hideBrokenImage}
             className="ambient-anim"
             style={{
               display: "block",

@@ -8,6 +8,7 @@ import FloralDivider from "@/components/shared/FloralDivider";
 import FloralTitle from "@/components/shared/FloralTitle";
 import FullFrame from "@/components/shared/FullFrame";
 import { asset } from "@/lib/assets";
+import { hideBrokenImageContainer } from "@/lib/image-fallback";
 import type { InvitationConfig } from "@/lib/config-types";
 
 export default function ClosingSection({ couple }: { couple: InvitationConfig["couple"] }) {
@@ -106,10 +107,7 @@ export default function ClosingSection({ couple }: { couple: InvitationConfig["c
             src={asset("LogoRimba.webp")}
             alt="Rimba Digital"
             loading="lazy"
-            onError={(e) => {
-              const wrap = e.currentTarget.parentElement;
-              if (wrap) wrap.style.display = "none";
-            }}
+            onError={hideBrokenImageContainer}
             style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
           />
         </div>

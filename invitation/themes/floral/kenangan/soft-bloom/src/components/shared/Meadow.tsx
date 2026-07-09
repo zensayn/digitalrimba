@@ -5,6 +5,7 @@
 // Semua pakai fallback aman.
 
 import { asset } from "@/lib/assets";
+import { hideBrokenImage } from "@/lib/image-fallback";
 
 const SPRIGS = ["Sprig1.webp", "TangkaiKuncup.webp", "BungaJatuh1.webp", "BungaJatuh2.webp", "BungaJatuh3.webp"];
 const ANIMS = ["sway", "swayAlt", "swaySoft"];
@@ -12,10 +13,6 @@ const ANIMS = ["sway", "swayAlt", "swaySoft"];
 function sr(seed: number) {
   const x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
-}
-
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
 }
 
 export default function Meadow({
@@ -44,7 +41,7 @@ export default function Meadow({
         <img
           src={asset("MeadowStrip.webp")}
           alt=""
-          onError={hide}
+          onError={hideBrokenImage}
           style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: "auto", display: "block" }}
         />
       )}
@@ -54,7 +51,7 @@ export default function Meadow({
             key={s.id}
             src={s.src}
             alt=""
-            onError={hide}
+            onError={hideBrokenImage}
             className="ambient-anim"
             style={{
               position: "absolute",

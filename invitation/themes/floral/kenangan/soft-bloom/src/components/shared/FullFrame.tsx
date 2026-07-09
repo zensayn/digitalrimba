@@ -4,10 +4,7 @@
 // Bernapas sangat halus. Fallback aman.
 
 import { asset } from "@/lib/assets";
-
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
+import { hideBrokenImage } from "@/lib/image-fallback";
 
 export default function FullFrame({
   file = "BingkaiPenuh.webp",
@@ -29,7 +26,7 @@ export default function FullFrame({
       <img
         src={asset(file)}
         alt=""
-        onError={hide}
+        onError={hideBrokenImage}
         className="ambient-anim"
         style={{
           position: "absolute",

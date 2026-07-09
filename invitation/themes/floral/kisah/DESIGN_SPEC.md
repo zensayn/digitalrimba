@@ -1,4 +1,5 @@
 # Kisah · Kategori Floral
+
 ## Design Specification
 
 > **Tier 2 — Standard · Rp 300rb**
@@ -82,7 +83,7 @@ parallax lembut, stagger, transisi antar-section, dan kelopak melayang sesekali.
 
 ---
 
-### Differensiator vs Kenangan
+### Differentiator vs Kenangan
 
 | Fitur | Kenangan | Kisah |
 |-------|--------|-------|

@@ -13,10 +13,7 @@
 // Fallback aman: kalau file tak ada, garland disembunyikan (tanpa error).
 
 import { asset } from "@/lib/assets";
-
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
+import { hideBrokenImage } from "@/lib/image-fallback";
 
 // Tiap jahitan bergiliran ganti komposisi supaya batas antar-section tidak seragam.
 const VARIANTS = [
@@ -67,7 +64,7 @@ export default function SectionSeam({ index = 0, zIndex = 6 }: { index?: number;
         <img
           src={asset(v.file)}
           alt=""
-          onError={hide}
+          onError={hideBrokenImage}
           className="ambient-anim"
           style={{
             display: "block",

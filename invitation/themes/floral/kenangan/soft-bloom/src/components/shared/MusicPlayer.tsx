@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Music } from "lucide-react";
 import { asset } from "@/lib/assets";
+import { hideBrokenImage } from "@/lib/image-fallback";
 
 // ── GANTI SESUAI TEMA ─────────────────────────────────────────────────────────
 const MUSIC_SRC   = "/music/theme.mp3";
@@ -129,7 +130,7 @@ export default function MusicPlayer() {
               src={asset("WreathInisial.webp")}
               alt=""
               aria-hidden="true"
-              onError={(e) => { e.currentTarget.style.display = "none"; }}
+              onError={hideBrokenImage}
               className="ambient-anim"
               style={{
                 position: "absolute",

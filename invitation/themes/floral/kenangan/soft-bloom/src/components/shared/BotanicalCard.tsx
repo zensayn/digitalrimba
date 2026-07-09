@@ -5,11 +5,8 @@
 // panel belum ada, jatuh ke gaya kertas halus `.botanical-card` (tanpa error).
 
 import { asset } from "@/lib/assets";
+import { hideBrokenImage } from "@/lib/image-fallback";
 import CardVines from "./CardVines";
-
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
 
 export default function BotanicalCard({
   children,
@@ -30,7 +27,7 @@ export default function BotanicalCard({
           src={asset("KartuBunga.webp")}
           alt=""
           aria-hidden="true"
-          onError={hide}
+          onError={hideBrokenImage}
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "fill", zIndex: 0, pointerEvents: "none" }}
         />
         <div style={{ position: "relative", zIndex: 1, padding: "clamp(30px, 11%, 54px) clamp(30px, 13%, 52px)" }}>

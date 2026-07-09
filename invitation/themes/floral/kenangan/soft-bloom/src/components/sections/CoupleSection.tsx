@@ -8,6 +8,7 @@ import TopFrame from "@/components/shared/TopFrame";
 import SceneBackground from "@/components/shared/SceneBackground";
 import Bird from "@/components/shared/Bird";
 import { asset } from "@/lib/assets";
+import { hideBrokenImage } from "@/lib/image-fallback";
 import type { InvitationConfig, PersonConfig } from "@/lib/config-types";
 
 function Person({ person }: { person: PersonConfig }) {
@@ -48,7 +49,7 @@ function Person({ person }: { person: PersonConfig }) {
           <img
             src={person.photo}
             alt=""
-            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+            onError={hideBrokenImage}
             style={{ position: "relative", width: "100%", height: "100%", objectFit: "cover" }}
           />
         </div>

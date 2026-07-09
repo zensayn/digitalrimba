@@ -6,7 +6,7 @@
 // memutar lagu (autoplay butuh gesture di browser HP). Selama gerbang tampil,
 // scroll dikunci supaya undangan tidak bisa diintip lewat gulir.
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SceneBackground from "@/components/shared/SceneBackground";
 import TopFrame from "@/components/shared/TopFrame";
@@ -16,18 +16,23 @@ import SideVines from "@/components/shared/SideVines";
 import GuestName from "@/components/shared/GuestName";
 import { asset } from "@/lib/assets";
 import type { InvitationConfig } from "@/lib/config-types";
+import { hideBrokenImage } from "@/lib/image-fallback";
 
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
-
-export default function OpeningGate({ couple }: { couple: InvitationConfig["couple"] }) {
+export default function OpeningGate({
+  couple,
+  open,
+  onOpen,
+}: {
+  couple: InvitationConfig["couple"];
+  open: boolean;
+  onOpen: () => void;
+}) {
   const { groom, bride } = couple;
-  const [opened, setOpened] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Kunci scroll dokumen selama gerbang masih menutup
   useEffect(() => {
-    if (opened) return;
+    if (!open) return;
     const html = document.documentElement;
     const prevHtml = html.style.overflow;
     const prevBody = document.body.style.overflow;
@@ -37,23 +42,38 @@ export default function OpeningGate({ couple }: { couple: InvitationConfig["coup
       html.style.overflow = prevHtml;
       document.body.style.overflow = prevBody;
     };
-  }, [opened]);
+  }, [open]);
 
-  const open = () => {
+  useEffect(() => {
+    if (!open) return;
+    buttonRef.current?.focus({ preventScroll: true });
+  }, [open]);
+
+  const keepFocusOnButton = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Tab") return;
+    event.preventDefault();
+    buttonRef.current?.focus();
+  };
+
+  const openInvitation = () => {
     // Dispatch DI DALAM handler klik (gesture) → audio.play() lolos autoplay policy
     document.dispatchEvent(new CustomEvent("invitation-open"));
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-    setOpened(true);
+    onOpen();
   };
 
   return (
     <AnimatePresence>
-      {!opened && (
+      {open && (
         <motion.div
           // Dekorasi di dalam gerbang memakai [data-enter] — tandai in-view
           // langsung supaya entrance-nya jalan tanpa menunggu RevealController.
           className="reveal-scope"
           data-inview="true"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="opening-gate-title"
+          onKeyDown={keepFocusOnButton}
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, y: "-6%" }}
           transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
@@ -108,7 +128,7 @@ export default function OpeningGate({ couple }: { couple: InvitationConfig["coup
               <img
                 src={asset("WreathInisial.webp")}
                 alt=""
-                onError={hide}
+                onError={hideBrokenImage}
                 className="ambient-anim"
                 style={{
                   position: "absolute",
@@ -140,6 +160,7 @@ export default function OpeningGate({ couple }: { couple: InvitationConfig["coup
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.0, delay: 0.45 }}
               className="font-display"
+              id="opening-gate-title"
               style={{ fontSize: "clamp(34px, 10vw, 56px)", fontWeight: 400, lineHeight: 1.05, color: "var(--text)", letterSpacing: "-0.01em" }}
             >
               {groom.name}
@@ -154,7 +175,7 @@ export default function OpeningGate({ couple }: { couple: InvitationConfig["coup
               src={asset("PembatasBunga.webp")}
               alt=""
               aria-hidden="true"
-              onError={hide}
+              onError={hideBrokenImage}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.8 }}
@@ -190,7 +211,7 @@ export default function OpeningGate({ couple }: { couple: InvitationConfig["coup
                 src={asset("GarlandBunga.webp")}
                 alt=""
                 aria-hidden="true"
-                onError={hide}
+                onError={hideBrokenImage}
                 className="ambient-anim"
                 style={{
                   position: "absolute",
@@ -204,7 +225,8 @@ export default function OpeningGate({ couple }: { couple: InvitationConfig["coup
               />
               <button
                 type="button"
-                onClick={open}
+                ref={buttonRef}
+                onClick={openInvitation}
                 className="btn-bloom"
                 style={{ position: "relative", background: "var(--accent)", color: "var(--bg)", boxShadow: "var(--shadow-soft)" }}
               >
@@ -215,7 +237,7 @@ export default function OpeningGate({ couple }: { couple: InvitationConfig["coup
                 src={asset("BungaJatuh1.webp")}
                 alt=""
                 aria-hidden="true"
-                onError={hide}
+                onError={hideBrokenImage}
                 className="ambient-anim"
                 style={{
                   position: "absolute",
@@ -231,7 +253,7 @@ export default function OpeningGate({ couple }: { couple: InvitationConfig["coup
                 src={asset("BungaJatuh3.webp")}
                 alt=""
                 aria-hidden="true"
-                onError={hide}
+                onError={hideBrokenImage}
                 className="ambient-anim"
                 style={{
                   position: "absolute",

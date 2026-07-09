@@ -4,10 +4,7 @@
 // Bergoyang sangat halus dari puncak. Fallback aman.
 
 import { asset } from "@/lib/assets";
-
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
+import { hideBrokenImage } from "@/lib/image-fallback";
 
 export default function TopFrame({
   file = "BingkaiAtas.webp",
@@ -39,7 +36,7 @@ export default function TopFrame({
       <img
         src={asset(file)}
         alt=""
-        onError={hide}
+        onError={hideBrokenImage}
         className="ambient-anim"
         style={{
           display: "block",

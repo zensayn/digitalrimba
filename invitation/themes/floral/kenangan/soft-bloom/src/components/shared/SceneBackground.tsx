@@ -4,10 +4,7 @@
 // tetap terbaca. Fallback aman kalau gambar belum ada.
 
 import { asset } from "@/lib/assets";
-
-function hide(e: React.SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
+import { hideBrokenImage } from "@/lib/image-fallback";
 
 export default function SceneBackground({
   file = "LatarPadang.webp",
@@ -25,7 +22,7 @@ export default function SceneBackground({
       <img
         src={asset(file)}
         alt=""
-        onError={hide}
+        onError={hideBrokenImage}
         style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
       />
       {/* Scrim: lebih tebal di atas (area teks), menipis ke bawah (padang terlihat) */}
