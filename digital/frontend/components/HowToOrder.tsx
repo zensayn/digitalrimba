@@ -94,7 +94,7 @@ export default function HowToOrder() {
         ))}
         {/* closing CTA card */}
         <Link
-          href="/dashboard/invitation"
+          href="/dashboard/invitations/new"
           className="relative snap-start shrink-0 w-[240px] md:w-[280px] aspect-[3/4] rounded-[22px] bg-[#edfce9] flex flex-col items-start justify-between p-6 transition-transform duration-150 ease-out active:scale-[0.98]"
         >
           <span className="font-amoria text-4xl text-[#003c33]/40">→</span>

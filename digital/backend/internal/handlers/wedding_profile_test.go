@@ -38,8 +38,12 @@ func TestWeddingProfileRoutes(t *testing.T) {
 	t.Run("put creates a draft wedding profile for authenticated user", func(t *testing.T) {
 		store := newMemoryWeddingProfileStore()
 		req := requestWithUser(http.MethodPut, "/api/weddings/profile", `{
+			"host_name":" Sari ",
 			"couple_name":" Alya & Bima ",
+			"story":" We met at a kopi stand in Bandung. ",
+			"vibe":"intimate",
 			"event_date":"2026-08-24",
+			"guest_estimate":"50-150",
 			"venue_name":"Rimba Glass House",
 			"venue_address":"Jakarta"
 		}`, "user-1")
@@ -55,6 +59,18 @@ func TestWeddingProfileRoutes(t *testing.T) {
 		}
 		if got.Wedding.CoupleName != "Alya & Bima" {
 			t.Fatalf("couple_name = %q; want Alya & Bima", got.Wedding.CoupleName)
+		}
+		if got.Wedding.HostName != "Sari" {
+			t.Fatalf("host_name = %q; want Sari (trimmed)", got.Wedding.HostName)
+		}
+		if got.Wedding.Story != "We met at a kopi stand in Bandung." {
+			t.Fatalf("story = %q; want trimmed story", got.Wedding.Story)
+		}
+		if got.Wedding.Vibe != "intimate" {
+			t.Fatalf("vibe = %q; want intimate", got.Wedding.Vibe)
+		}
+		if got.Wedding.GuestEstimate != "50-150" {
+			t.Fatalf("guest_estimate = %q; want 50-150", got.Wedding.GuestEstimate)
 		}
 		if got.Wedding.Slug != "alya-bima" {
 			t.Fatalf("slug = %q; want alya-bima", got.Wedding.Slug)
@@ -141,8 +157,12 @@ func (s *memoryWeddingProfileStore) SaveWeddingProfile(_ context.Context, params
 			Tier:    "leaf",
 		}
 	}
+	wedding.HostName = params.HostName
 	wedding.CoupleName = params.CoupleName
+	wedding.Story = params.Story
+	wedding.Vibe = params.Vibe
 	wedding.EventDate = params.EventDate
+	wedding.GuestEstimate = params.GuestEstimate
 	wedding.VenueName = params.VenueName
 	wedding.VenueAddress = params.VenueAddress
 	s.byUser[params.OwnerID] = wedding

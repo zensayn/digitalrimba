@@ -15,15 +15,19 @@ import (
 var ErrWeddingSlugTaken = errors.New("wedding slug already exists")
 
 type WeddingProfile struct {
-	ID           string `json:"id"`
-	OwnerID      string `json:"owner_id,omitempty"`
-	Slug         string `json:"slug"`
-	CoupleName   string `json:"couple_name"`
-	EventDate    string `json:"event_date"`
-	VenueName    string `json:"venue_name"`
-	VenueAddress string `json:"venue_address"`
-	Tier         string `json:"tier"`
-	Status       string `json:"status"`
+	ID            string `json:"id"`
+	OwnerID       string `json:"owner_id,omitempty"`
+	Slug          string `json:"slug"`
+	HostName      string `json:"host_name"`
+	CoupleName    string `json:"couple_name"`
+	Story         string `json:"story"`
+	Vibe          string `json:"vibe"`
+	EventDate     string `json:"event_date"`
+	GuestEstimate string `json:"guest_estimate"`
+	VenueName     string `json:"venue_name"`
+	VenueAddress  string `json:"venue_address"`
+	Tier          string `json:"tier"`
+	Status        string `json:"status"`
 }
 
 type WeddingProfileResponse struct {
@@ -31,12 +35,16 @@ type WeddingProfileResponse struct {
 }
 
 type SaveWeddingProfileParams struct {
-	OwnerID      string
-	Slug         string
-	CoupleName   string
-	EventDate    string
-	VenueName    string
-	VenueAddress string
+	OwnerID       string
+	Slug          string
+	HostName      string
+	CoupleName    string
+	Story         string
+	Vibe          string
+	EventDate     string
+	GuestEstimate string
+	VenueName     string
+	VenueAddress  string
 }
 
 type WeddingProfileStore interface {
@@ -96,18 +104,13 @@ func (h *WeddingProfileHandler) Save(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req struct {
-		CoupleName   string `json:"couple_name"`
-		EventDate    string `json:"event_date"`
-		VenueName    string `json:"venue_name"`
-		VenueAddress string `json:"venue_address"`
-	}
+	var req saveWeddingProfileRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
 
-	params, err := saveWeddingProfileParams(userID, req.CoupleName, req.EventDate, req.VenueName, req.VenueAddress)
+	params, err := saveWeddingProfileParams(userID, req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -148,8 +151,12 @@ func (s *PostgresWeddingProfileStore) SaveWeddingProfile(ctx context.Context, pa
 		saveWeddingProfileSQL,
 		params.OwnerID,
 		params.Slug,
+		params.HostName,
 		params.CoupleName,
+		params.Story,
+		params.Vibe,
 		params.EventDate,
+		params.GuestEstimate,
 		params.VenueName,
 		params.VenueAddress,
 	))
@@ -159,9 +166,20 @@ func (s *PostgresWeddingProfileStore) SaveWeddingProfile(ctx context.Context, pa
 	return wedding, err
 }
 
-func saveWeddingProfileParams(ownerID, coupleName, eventDate, venueName, venueAddress string) (SaveWeddingProfileParams, error) {
-	coupleName = strings.TrimSpace(coupleName)
-	eventDate = strings.TrimSpace(eventDate)
+type saveWeddingProfileRequest struct {
+	HostName      string `json:"host_name"`
+	CoupleName    string `json:"couple_name"`
+	Story         string `json:"story"`
+	Vibe          string `json:"vibe"`
+	EventDate     string `json:"event_date"`
+	GuestEstimate string `json:"guest_estimate"`
+	VenueName     string `json:"venue_name"`
+	VenueAddress  string `json:"venue_address"`
+}
+
+func saveWeddingProfileParams(ownerID string, req saveWeddingProfileRequest) (SaveWeddingProfileParams, error) {
+	coupleName := strings.TrimSpace(req.CoupleName)
+	eventDate := strings.TrimSpace(req.EventDate)
 	if coupleName == "" {
 		return SaveWeddingProfileParams{}, errors.New("couple_name required")
 	}
@@ -171,12 +189,16 @@ func saveWeddingProfileParams(ownerID, coupleName, eventDate, venueName, venueAd
 		}
 	}
 	return SaveWeddingProfileParams{
-		OwnerID:      ownerID,
-		Slug:         slugFromWeddingName(coupleName),
-		CoupleName:   coupleName,
-		EventDate:    eventDate,
-		VenueName:    strings.TrimSpace(venueName),
-		VenueAddress: strings.TrimSpace(venueAddress),
+		OwnerID:       ownerID,
+		Slug:          slugFromWeddingName(coupleName),
+		HostName:      strings.TrimSpace(req.HostName),
+		CoupleName:    coupleName,
+		Story:         strings.TrimSpace(req.Story),
+		Vibe:          strings.TrimSpace(req.Vibe),
+		EventDate:     eventDate,
+		GuestEstimate: strings.TrimSpace(req.GuestEstimate),
+		VenueName:     strings.TrimSpace(req.VenueName),
+		VenueAddress:  strings.TrimSpace(req.VenueAddress),
 	}, nil
 }
 
@@ -186,8 +208,12 @@ func scanWeddingProfile(row rowScanner) (WeddingProfile, error) {
 		&wedding.ID,
 		&wedding.OwnerID,
 		&wedding.Slug,
+		&wedding.HostName,
 		&wedding.CoupleName,
+		&wedding.Story,
+		&wedding.Vibe,
 		&wedding.EventDate,
+		&wedding.GuestEstimate,
 		&wedding.VenueName,
 		&wedding.VenueAddress,
 		&wedding.Tier,
@@ -216,8 +242,12 @@ const weddingProfileSelectColumns = `
 id::text,
 owner_user_id,
 slug,
+COALESCE(host_name, ''),
 couple_name,
+COALESCE(story, ''),
+COALESCE(vibe, ''),
 COALESCE(event_date::text, ''),
+COALESCE(guest_estimate, ''),
 COALESCE(venue_name, ''),
 COALESCE(venue_address, ''),
 tier,
@@ -236,8 +266,12 @@ const saveWeddingProfileSQL = `
 INSERT INTO weddings (
 	owner_user_id,
 	slug,
+	host_name,
 	couple_name,
+	story,
+	vibe,
 	event_date,
+	guest_estimate,
 	venue_name,
 	venue_address,
 	created_at,
@@ -245,17 +279,25 @@ INSERT INTO weddings (
 ) VALUES (
 	$1,
 	$2,
-	$3,
-	NULLIF($4, '')::date,
+	NULLIF($3, ''),
+	$4,
 	NULLIF($5, ''),
 	NULLIF($6, ''),
+	NULLIF($7, '')::date,
+	NULLIF($8, ''),
+	NULLIF($9, ''),
+	NULLIF($10, ''),
 	now(),
 	now()
 )
 ON CONFLICT (owner_user_id) DO UPDATE
 SET
+	host_name = EXCLUDED.host_name,
 	couple_name = EXCLUDED.couple_name,
+	story = EXCLUDED.story,
+	vibe = EXCLUDED.vibe,
 	event_date = EXCLUDED.event_date,
+	guest_estimate = EXCLUDED.guest_estimate,
 	venue_name = EXCLUDED.venue_name,
 	venue_address = EXCLUDED.venue_address,
 	updated_at = now()

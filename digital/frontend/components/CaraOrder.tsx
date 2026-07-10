@@ -63,7 +63,7 @@ export default function CaraOrder() {
             {t("subheading")}
           </p>
           <Link
-            href="/dashboard/invitation"
+            href="/dashboard/invitations/new"
             className="inline-block px-6 py-3 rounded-full bg-[#003c33] text-white text-sm font-medium transition-transform duration-150 ease-out active:scale-[0.97]"
           >
             {t("cta")}

@@ -46,7 +46,7 @@ export default function ProductSuite() {
             </h3>
             <p className="text-base leading-relaxed text-white/80">{t("flagshipDesc")}</p>
             <Link
-              href="/dashboard/invitation"
+              href="/dashboard/invitations/new"
               className="inline-block px-6 py-3 rounded-full bg-white text-[#003c33] text-sm font-medium transition-transform duration-150 ease-out active:scale-[0.97]"
             >
               {t("flagshipCta")}

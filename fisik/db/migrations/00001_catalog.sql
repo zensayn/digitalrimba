@@ -27,12 +27,15 @@ CREATE TABLE public.catalog_products (
     updated_at      timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX catalog_products_collection_id_idx ON public.catalog_products(collection_id);
+-- Enforce "the single hero per collection".
+CREATE UNIQUE INDEX catalog_products_top_seller_idx
+    ON public.catalog_products(collection_id) WHERE top_seller;
 
 CREATE TABLE public.catalog_product_images (
     id          uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
     product_id  uuid        NOT NULL REFERENCES public.catalog_products(id) ON DELETE CASCADE,
     object_key  text        NOT NULL,               -- relative R2 key
-    position    int         NOT NULL,               -- 1-based, from the -NN suffix
+    position    int         NOT NULL CHECK (position >= 1), -- 1-based, from the -NN suffix
     alt         text        NOT NULL DEFAULT '',
     UNIQUE (product_id, position)
 );

@@ -9,17 +9,21 @@ const SONG_TITLE  = "I Love You 3000";
 const SONG_ARTIST = "Stephanie Poetri";
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default function MusicPlayer({ src }: { src?: string }) {
+export default function MusicPlayer({ src, start, end }: { src?: string; start?: number; end?: number }) {
   const [playing, setPlaying]         = useState(false);
   const [visible, setVisible]         = useState(false);
   const [ready, setReady]             = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const audioRef                      = useRef<HTMLAudioElement | null>(null);
   const musicSrc                      = src || MUSIC_SRC;
+  // Studio trim window: playback starts at `start` and loops back there
+  // after `end`. Without a trim the native loop plays the whole file.
+  const trimStart                     = start ?? 0;
+  const hasTrim                       = trimStart > 0 || end != null;
 
   useEffect(() => {
     const audio    = new Audio(musicSrc);
-    audio.loop     = true;
+    audio.loop     = !hasTrim;
     // "metadata" saja: mp3 ±3 MB — kalau preload "auto" ia ikut berebut
     // bandwidth dengan gambar cover/LCP di detik-detik pertama. Download penuh
     // baru dimulai saat undangan dibuka (play() memicu load otomatis).
@@ -27,9 +31,22 @@ export default function MusicPlayer({ src }: { src?: string }) {
     audio.oncanplaythrough = () => setReady(true);
     audioRef.current = audio;
 
+    const onTime = () => {
+      if (end != null && audio.currentTime >= end) audio.currentTime = trimStart;
+    };
+    const onEnded = () => {
+      audio.currentTime = trimStart;
+      audio.play().catch(() => {});
+    };
+    if (hasTrim) {
+      audio.addEventListener("timeupdate", onTime);
+      audio.addEventListener("ended", onEnded);
+    }
+
     const showTimer = setTimeout(() => setVisible(true), 2000);
 
     const onOpen = () => {
+      if (hasTrim) audio.currentTime = trimStart;
       audio.play().then(() => setPlaying(true)).catch(() => {});
     };
     document.addEventListener("invitation-open", onOpen);
@@ -37,10 +54,17 @@ export default function MusicPlayer({ src }: { src?: string }) {
     return () => {
       clearTimeout(showTimer);
       document.removeEventListener("invitation-open", onOpen);
+      audio.removeEventListener("timeupdate", onTime);
+      audio.removeEventListener("ended", onEnded);
       audio.pause();
       audio.src = "";
+      // The studio live-preview re-runs this effect on every trim edit; the
+      // replacement Audio starts paused and unbuffered, so stale
+      // playing/ready would leave the UI claiming music that isn't there.
+      setPlaying(false);
+      setReady(false);
     };
-  }, [musicSrc]);
+  }, [musicSrc, trimStart, end, hasTrim]);
 
   const toggle = () => {
     const audio = audioRef.current;
@@ -49,6 +73,7 @@ export default function MusicPlayer({ src }: { src?: string }) {
       audio.pause();
       setPlaying(false);
     } else {
+      if (hasTrim && audio.currentTime < trimStart) audio.currentTime = trimStart;
       audio.play().catch(() => {});
       setPlaying(true);
     }

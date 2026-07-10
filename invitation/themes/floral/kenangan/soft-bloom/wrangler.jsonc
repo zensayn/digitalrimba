@@ -21,6 +21,9 @@
     }
   ],
   "vars": {
-    "NEXT_PUBLIC_THEMES_CDN": "https://assets-themes.rimba.io"
+    "NEXT_PUBLIC_THEMES_CDN": "https://assets-themes.rimba.io",
+    // Go API the theme fetches invitation content from when the wildcard
+    // router forwards a request with an x-rimba-slug header.
+    "API_URL": "https://api.rimba.io"
   }
 }

@@ -41,7 +41,7 @@ async function getToken(): Promise<string> {
   return _tokenPromise;
 }
 
-async function authedFetch(url: string, options?: RequestInit): Promise<Response> {
+export async function authedFetch(url: string, options?: RequestInit): Promise<Response> {
   const buildHeaders = (token: string): Record<string, string> => {
     const headers: Record<string, string> = {
       ...(options?.headers as Record<string, string> | undefined),
@@ -65,7 +65,7 @@ export function errorStatus(err: unknown): number | undefined {
   return (err as { status?: number } | null)?.status;
 }
 
-function statusError(message: string, status: number): Error {
+export function statusError(message: string, status: number): Error {
   return Object.assign(new Error(`${message}: ${status}`), { status });
 }
 

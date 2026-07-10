@@ -47,6 +47,9 @@ func main() {
 	weddingProfileStore := internalhandlers.NewPostgresWeddingProfileStore(pool)
 	weddingProfileHandler := internalhandlers.NewWeddingProfileHandler(weddingProfileStore)
 
+	musicStore := internalhandlers.NewPostgresMusicTrackStore(pool)
+	musicHandler := internalhandlers.NewMusicHandler(musicStore)
+
 	checkinKey := []byte(os.Getenv("CHECKIN_SESSION_KEY"))
 	if len(checkinKey) == 0 {
 		log.Fatal("CHECKIN_SESSION_KEY is required")
@@ -79,7 +82,7 @@ func main() {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if allowedOrigin != "" {
 				w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
-				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 				w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
 				w.Header().Set("Access-Control-Max-Age", "3600")
 			}
@@ -115,6 +118,7 @@ func main() {
 
 		dashboardHandler.RegisterRoutes(r)
 		weddingProfileHandler.RegisterRoutes(r)
+		musicHandler.RegisterRoutes(r)
 		r.Post("/api/invitations", invHandler.Create)
 		r.Get("/api/invitations", invHandler.List)
 		r.Get("/api/invitations/by-id/{id}", invHandler.Get)

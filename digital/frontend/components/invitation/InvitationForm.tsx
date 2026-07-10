@@ -2,7 +2,8 @@
 
 import { ChangeEvent, useRef } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { GalleryMinimalistic, MusicNote, AddCircle, TrashBinMinimalistic } from "@solar-icons/react";
+import { GalleryMinimalistic, AddCircle, TrashBinMinimalistic } from "@solar-icons/react";
+import { MusicPicker } from "@/components/invitation/MusicPicker";
 import type {
   BankAccount,
   DressCodeColor,
@@ -23,7 +24,8 @@ type InvitationFormProps = {
   config: InvitationConfig;
   onChange: (next: InvitationConfig) => void;
   isUploading: boolean;
-  uploadFile: (file: File) => Promise<string | null>;
+  uploadStage?: "processing" | "uploading" | null;
+  uploadFile: (file: File, maxBytes?: number) => Promise<string | null>;
 };
 
 const labelClass = "font-poppins text-xs font-semibold uppercase text-[#6a6a6a]";
@@ -118,7 +120,7 @@ function UploadButton({
         disabled={isUploading}
         className="font-poppins flex h-11 items-center justify-center gap-2 rounded-full border border-[#d9d9dd] bg-[#eeece7] px-4 text-sm font-medium transition-[background-color,transform] duration-150 hover:bg-[#e5e2db] active:scale-[0.98] disabled:opacity-60"
       >
-        {accept.startsWith("audio") ? <MusicNote size={16} /> : <GalleryMinimalistic size={16} />}
+        <GalleryMinimalistic size={16} />
         {isUploading ? "Uploading…" : value ? `Replace ${label.toLowerCase()}` : `Upload ${label.toLowerCase()}`}
       </button>
     </div>
@@ -271,7 +273,7 @@ function EventFields({
   );
 }
 
-export function InvitationForm({ section, config, onChange, isUploading, uploadFile }: InvitationFormProps) {
+export function InvitationForm({ section, config, onChange, isUploading, uploadStage, uploadFile }: InvitationFormProps) {
   const set = <K extends keyof InvitationConfig>(key: K, value: InvitationConfig[K]) =>
     onChange({ ...config, [key]: value });
 
@@ -490,14 +492,12 @@ export function InvitationForm({ section, config, onChange, isUploading, uploadF
       {section === "music" && (
         <Field index={0}>
           <span className={labelClass}>Background music</span>
-          <UploadButton
-            label="music"
-            value={config.music.src}
-            accept="audio/*"
-            preview="text"
+          <MusicPicker
+            value={config.music}
+            onChange={(music) => set("music", music)}
             isUploading={isUploading}
+            uploadStage={uploadStage}
             uploadFile={uploadFile}
-            onUploaded={(url) => set("music", { src: url })}
           />
         </Field>
       )}

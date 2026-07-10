@@ -171,7 +171,7 @@ export default function Pricings() {
               </ul>
 
               <Link
-                href="/dashboard/invitation"
+                href="/dashboard/invitations/new"
                 className="inline-flex items-center gap-2 text-sm font-medium text-[#212121] underline underline-offset-4 decoration-[#212121]/25 transition-colors duration-200 hover:decoration-[#ff7759] hover:text-[#ff7759]"
               >
                 Pilih {t.name} →

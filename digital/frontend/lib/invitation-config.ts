@@ -76,6 +76,16 @@ export type InvitationConfig = {
   };
   music: {
     src: string;
+    title?: string;
+    artist?: string;
+    trackId?: string;
+    // Trim window in seconds — playback starts at startSec and loops back
+    // there after endSec. Absent = play the whole track.
+    startSec?: number;
+    endSec?: number;
+    // ISO timestamp of the rights declaration accepted when the user uploaded
+    // their own track. Absent for catalog tracks.
+    consentAt?: string;
   };
   templateId?: string;
 };

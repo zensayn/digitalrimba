@@ -76,7 +76,11 @@ export function InvitationPreview({ config }: InvitationPreviewProps) {
               Music
             </p>
             <p className="mt-2 text-sm text-[#fffaf0]/75">
-              {config.music.src ? `Music uploaded: ${config.music.src}` : "No music uploaded"}
+              {config.music.src
+                ? config.music.title
+                  ? `♪ ${config.music.title}${config.music.artist ? ` — ${config.music.artist}` : ""}`
+                  : `Music uploaded: ${config.music.src}`
+                : "No music selected"}
             </p>
           </div>
         </div>

@@ -49,7 +49,12 @@ export async function resolveConfig(slug: string | null): Promise<InvitationConf
       return demoConfig;
     }
     const invitation = (await res.json()) as { content?: Partial<InvitationConfig> };
-    return overlayConfig(invitation.content ?? {});
+    // Shape guard: overlayConfig only copies known top-level keys, so a plain
+    // object is all we require; anything else degrades to the demo config.
+    // ponytail: no zod schema — the API is ours; add one if configs ever come
+    // from untrusted writers.
+    const content = invitation?.content;
+    return overlayConfig(content && typeof content === "object" && !Array.isArray(content) ? content : {});
   } catch (err) {
     console.error(`resolveConfig: lookup failed for slug ${slug}, serving demo config:`, err);
     return demoConfig;

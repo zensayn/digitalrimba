@@ -18,9 +18,26 @@ import GiftSection from "@/components/sections/GiftSection";
 import ClosingSection from "@/components/sections/ClosingSection";
 import type { InvitationConfig } from "@/lib/config-types";
 
-export default function InvitationExperience({ config }: { config: InvitationConfig }) {
-  const [gateClosed, setGateClosed] = useState(true);
-  const sectionIds = config.sections.order.filter((id) => config.sections.enabled[id]);
+// Section ids this theme ships. Studio drafts carry the full editor order
+// (incl. lovestory, which soft-bloom doesn't have) — unknown ids must be
+// skipped here, or they'd render as empty slots with doubled seams.
+const KNOWN_SECTIONS = new Set([
+  "cover", "greeting", "couple", "akad", "resepsi",
+  "dresscode", "gallery", "rsvp", "gift", "closing",
+]);
+
+export default function InvitationExperience({
+  config,
+  initiallyOpen = false,
+}: {
+  config: InvitationConfig;
+  // Studio /preview skips the opening gate — it would block live editing.
+  initiallyOpen?: boolean;
+}) {
+  const [gateClosed, setGateClosed] = useState(!initiallyOpen);
+  const sectionIds = config.sections.order.filter(
+    (id) => KNOWN_SECTIONS.has(id) && config.sections.enabled[id],
+  );
 
   function renderSection(id: string) {
     switch (id) {
@@ -66,7 +83,13 @@ export default function InvitationExperience({ config }: { config: InvitationCon
 
         {/* Undangan: kolom sempit fokus-HP; di desktop discroll di sisi kanan */}
         <main className="content-scroll">
-          <MusicPlayer />
+          <MusicPlayer
+            src={config.music?.src}
+            title={config.music?.title}
+            artist={config.music?.artist}
+            start={config.music?.startSec}
+            end={config.music?.endSec}
+          />
           <div className="snap-container">
             {/* Latar kertas menerus — menyatukan seluruh section jadi satu dunia */}
             <PaperBackdrop />

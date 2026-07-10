@@ -23,6 +23,7 @@ import {
 import { InvitationPreview } from "./InvitationPreview";
 import { TemplateSelector, templates, type Template } from "./TemplateSelector";
 import { InvitationForm, type EditorSectionId } from "./InvitationForm";
+import { MUSIC_MAX_BYTES } from "./MusicPicker";
 import { fetchInvitation, checkSlug, errorStatus } from "@/lib/api/invitations";
 import {
   emptyInvitationConfig,
@@ -183,9 +184,16 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(props.initialTemplate);
   const [activeSection, setActiveSection] = useState<EditorSectionId>("cover");
   const [previewLoaded, setPreviewLoaded] = useState(false);
+  // Below lg the editor shows one pane at a time; the iframe stays mounted
+  // (just display:none) so switching never reloads the theme or drops the
+  // postMessage bridge.
+  const [mobilePane, setMobilePane] = useState<"edit" | "preview">("edit");
   const [draft, setDraft] = useState<InvitationConfig>(props.initialDraft);
   const [isPublishing, setIsPublishing] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  // "processing" while converting to webp/mp3 (audio can take seconds on a
+  // slow phone), "uploading" during the R2 PUT — so the UI can say which.
+  const [uploadStage, setUploadStage] = useState<"processing" | "uploading" | null>(null);
+  const isUploading = uploadStage !== null;
   const [invitationId, setInvitationId] = useState<string | null>(props.initialInvitationId);
   const [slug, setSlug] = useState<string | null>(props.initialSlug);
   const [publishedAt, setPublishedAt] = useState<string | null>(props.initialPublishedAt);
@@ -233,6 +241,93 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draft, themeOrigin]);
 
+  async function toWebp(file: File): Promise<File> {
+    // Only raster stills worth converting. Skip audio, existing webp,
+    // svg (vector), gif (animation would be flattened).
+    if (!/^image\/(png|jpe?g)$/.test(file.type)) return file;
+    if (typeof OffscreenCanvas === "undefined") return file;
+    // Pre-decode cap mirrors toMp3: decoding a giant still balloons to
+    // width×height×4 bytes of pixels and can OOM mobile Safari. Pass through
+    // so the post-conversion size cap rejects it with a clear message.
+    if (file.size > 20 * 1024 * 1024) return file;
+    let worker: Worker;
+    try {
+      worker = new Worker(new URL("./webp.worker.ts", import.meta.url));
+    } catch {
+      return file; // CSP/embed context blocks workers → upload the original
+    }
+    try {
+      const blob = await new Promise<Blob | null>((resolve) => {
+        // A hung worker resolves null after 30s → upload the original file.
+        const timer = setTimeout(() => resolve(null), 30_000);
+        worker.onmessage = (e: MessageEvent<Blob | null>) => {
+          clearTimeout(timer);
+          resolve(e.data);
+        };
+        worker.onerror = () => {
+          clearTimeout(timer);
+          resolve(null);
+        };
+        worker.postMessage(file);
+      });
+      if (!blob || blob.size >= file.size) return file; // conversion failed or lost
+      return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".webp", { type: "image/webp" });
+    } finally {
+      worker.terminate();
+    }
+  }
+
+  async function encodeMp3InWorker(buf: AudioBuffer): Promise<Blob | null> {
+    // Hand the PCM to the worker as transferred ArrayBuffers — structured
+    // cloning would duplicate hundreds of MB of decoded audio in RAM.
+    const channels: ArrayBuffer[] = [];
+    for (let c = 0; c < Math.min(buf.numberOfChannels, 2); c++) {
+      channels.push(buf.getChannelData(c).buffer as ArrayBuffer);
+    }
+    const worker = new Worker(new URL("./mp3.worker.ts", import.meta.url));
+    try {
+      return await new Promise<Blob | null>((resolve) => {
+        // mp3 encoding is slow on long tracks; 60s before giving up → null
+        // falls back to uploading the original file.
+        const timer = setTimeout(() => resolve(null), 60_000);
+        worker.onmessage = (e: MessageEvent<Blob | null>) => {
+          clearTimeout(timer);
+          resolve(e.data);
+        };
+        worker.onerror = () => {
+          clearTimeout(timer);
+          resolve(null);
+        };
+        worker.postMessage({ channels, sampleRate: buf.sampleRate }, channels);
+      });
+    } finally {
+      worker.terminate();
+    }
+  }
+
+  async function toMp3(file: File, maxBytes: number): Promise<File> {
+    if (!file.type.startsWith("audio/")) return file;
+    // Generation-loss guard: an mp3 already under the caller's cap uploads
+    // as-is — re-encoding mp3→mp3 causes audible artifacts. Format + final
+    // size decide, not bitrate.
+    if (file.type === "audio/mpeg" && file.size <= maxBytes) return file;
+    // Pre-decode cap: decodeAudioData expands compressed audio to raw PCM
+    // (~10 MB per stereo minute); a 30 MB AAC could balloon past 300 MB and
+    // crash mobile Safari, wiping studio progress. Pass through so the music
+    // cap rejects it with a clear message instead.
+    if (file.size > 20 * 1024 * 1024) return file;
+    try {
+      // OfflineAudioContext pins the rate to 44.1 kHz — decodeAudioData
+      // resamples for us, and lamejs is happiest at 44100.
+      const buf = await new OfflineAudioContext(1, 1, 44100).decodeAudioData(await file.arrayBuffer());
+      const blob = await encodeMp3InWorker(buf);
+      if (!blob || blob.size >= file.size) return file; // conversion failed or lost
+      return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".mp3", { type: "audio/mpeg" });
+    } catch {
+      return file; // undecodable → upload original, the size cap still applies
+    }
+  }
+
   async function uploadToR2(file: File): Promise<string> {
     const presignRes = await fetch(
       `/api/upload/presign?filename=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}`,
@@ -256,17 +351,22 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
     return publicUrl;
   }
 
-  async function uploadFile(file: File): Promise<string | null> {
+  async function uploadFile(file: File, maxBytes = 15 * 1024 * 1024): Promise<string | null> {
     // Files go straight from the browser to R2; only the URL is stored in the
-    // DB. Cap size so a stray huge file doesn't hammer the upload worker.
-    const maxBytes = 15 * 1024 * 1024;
-    if (file.size > maxBytes) {
-      setNotice({ type: "err", text: "File is too large — keep it under 15 MB." });
-      return null;
-    }
-    setIsUploading(true);
+    // DB. Cap size so a stray huge file doesn't hammer the upload worker
+    // (images 15 MB default; music passes 5 MB).
+    setUploadStage("processing");
     setNotice(null);
     try {
+      // Images become WebP and heavy audio becomes 128 kbps MP3 first, so the
+      // size cap applies to the bytes that actually go to R2.
+      file = await toWebp(file);
+      file = await toMp3(file, maxBytes);
+      if (file.size > maxBytes) {
+        setNotice({ type: "err", text: `File is too large — keep it under ${Math.round(maxBytes / (1024 * 1024))} MB.` });
+        return null;
+      }
+      setUploadStage("uploading");
       const url = await uploadToR2(file);
       setNotice({ type: "ok", text: "File uploaded." });
       return url;
@@ -274,7 +374,7 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
       setNotice({ type: "err", text: err instanceof Error ? err.message : "Upload failed." });
       return null;
     } finally {
-      setIsUploading(false);
+      setUploadStage(null);
     }
   }
 
@@ -363,6 +463,7 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
     setSelectedTemplate(template);
     setPreviewLoaded(false);
     setActiveSection("cover");
+    setMobilePane("edit");
     setStep("edit");
   };
 
@@ -373,7 +474,7 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
   if (step === "select") {
     return (
       <main className="min-h-screen bg-white text-[#212121]">
-        <div className="p-8 lg:p-12">
+        <div className="p-5 sm:p-8 lg:p-12">
           <TemplateSelector onSelect={handleTemplateSelect} />
         </div>
       </main>
@@ -457,9 +558,14 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
       </header>
 
       {/* Preview column is fixed at phone width so themes render their mobile layout; form takes the rest. */}
-      <div className="grid min-h-0 flex-1 overflow-y-auto lg:grid-cols-[248px_1fr_min(430px,34vw)] lg:overflow-visible">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:grid lg:grid-cols-[248px_1fr_min(430px,34vw)] lg:overflow-visible">
         {/* Section rail */}
-        <nav className="border-b border-[#e5e7eb] bg-white px-3 py-3 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-4 lg:py-6">
+        <nav
+          className={cn(
+            "border-b border-[#e5e7eb] bg-white px-3 py-3 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-4 lg:py-6",
+            mobilePane === "preview" && "hidden lg:block",
+          )}
+        >
           <p className="font-poppins mb-2 hidden px-3 text-[11px] font-semibold uppercase text-[#93939f] lg:block">
             Customize
           </p>
@@ -513,7 +619,13 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
         </nav>
 
         {/* Form panel */}
-        <section className="border-b border-[#e5e7eb] bg-white px-5 py-6 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-8 lg:py-8">
+        <section
+          className={cn(
+            // pb-24 keeps the last field clear of the mobile pane switcher.
+            "border-b border-[#e5e7eb] bg-white px-5 py-6 pb-24 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-8 lg:py-8 lg:pb-8",
+            mobilePane === "preview" && "hidden lg:block",
+          )}
+        >
           <AnimatePresence mode="wait">
             <motion.div
               className="mx-auto w-full max-w-xl"
@@ -535,6 +647,7 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
                   config={draft}
                   onChange={setDraft}
                   isUploading={isUploading}
+                  uploadStage={uploadStage}
                   uploadFile={uploadFile}
                 />
               </div>
@@ -543,7 +656,12 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
         </section>
 
         {/* Live theme preview — full-bleed canvas */}
-        <section className="relative min-h-[70vh] bg-[#04241e] lg:min-h-0">
+        <section
+          className={cn(
+            "relative bg-[#04241e] lg:block lg:min-h-0",
+            mobilePane === "edit" ? "hidden" : "min-h-0 flex-1",
+          )}
+        >
           {!previewLoaded && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="absolute inset-0 animate-pulse bg-gradient-to-b from-white/10 to-transparent" />
@@ -567,6 +685,43 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
           )}
         </section>
       </div>
+
+      {/* Mobile pane switcher — desktop shows all three columns at once. */}
+      <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 rounded-full border border-[#d9d9dd] bg-white p-1 shadow-[0_10px_36px_rgba(10,10,10,0.18)] lg:hidden">
+        {(["edit", "preview"] as const).map((pane) => (
+          <button
+            key={pane}
+            type="button"
+            onClick={() => setMobilePane(pane)}
+            aria-pressed={mobilePane === pane}
+            className={cn(
+              "font-poppins rounded-full px-5 py-2 text-xs font-semibold capitalize transition-colors duration-150",
+              mobilePane === pane ? "bg-[#346739] text-white" : "text-[#616161]",
+            )}
+          >
+            {pane}
+          </button>
+        ))}
+      </div>
+
+      {/* Mobile notice toast — the header notice is md+ only. */}
+      <AnimatePresence>
+        {notice && (
+          <motion.p
+            role="status"
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18, ease: EASE_OUT }}
+            className={cn(
+              "font-poppins absolute bottom-20 left-1/2 z-20 w-max max-w-[85vw] -translate-x-1/2 truncate rounded-full px-4 py-2 text-xs font-medium shadow-[0_10px_36px_rgba(10,10,10,0.14)] md:hidden",
+              notice.type === "ok" ? "bg-[#edfce9] text-[#346739]" : "bg-[#fce8e6] text-[#b30000]",
+            )}
+          >
+            {notice.text}
+          </motion.p>
+        )}
+      </AnimatePresence>
 
       {showPublish && (
         <PublishDialog

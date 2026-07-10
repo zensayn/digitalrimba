@@ -19,15 +19,19 @@ export async function GET(request: NextRequest) {
 
   const workerUrl = process.env.R2_WORKER_URL;
   const uploadToken = process.env.R2_UPLOAD_SECRET;
+  // Files are served from the bucket's custom domain, not the upload worker.
+  // Required like the others — a silent fallback would mint URLs pointing at
+  // production assets from a misconfigured dev/staging env.
+  const publicBase = process.env.R2_PUBLIC_BASE_URL;
 
-  if (!workerUrl || !uploadToken) {
+  if (!workerUrl || !uploadToken || !publicBase) {
     return NextResponse.json({ error: "Upload not configured" }, { status: 503 });
   }
 
   return NextResponse.json({
     uploadUrl: `${workerUrl}/${key}`,
     uploadToken,
-    publicUrl: `${workerUrl}/${key}`,
+    publicUrl: `${publicBase}/${key}`,
     contentType,
   });
 }
