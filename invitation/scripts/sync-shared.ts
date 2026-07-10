@@ -13,22 +13,10 @@ type ThemeConfig = {
 
 const THEMES: ThemeConfig[] = [
   {
-    name: "sacred-luxe",
-    path: "themes/adat/kenangan/sacred-luxe",
-    hasSrc: true,
-    hasInfiniteMenu: true,
-  },
-  {
     name: "warm-narrative",
     path: "themes/adat/kenangan/warm-narrative",
     hasSrc: true,
     hasInfiniteMenu: true,
-  },
-  {
-    name: "sinema-kisah",
-    path: "themes/adat/kisah/sinema-kisah",
-    hasSrc: false,
-    hasInfiniteMenu: false,
   },
 ];
 

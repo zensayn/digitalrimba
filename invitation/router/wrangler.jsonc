@@ -20,9 +20,7 @@
     }
   ],
   "services": [
-    { "binding": "THEME_WARM_NARRATIVE", "service": "rimba-warm-narrative" },
-    { "binding": "THEME_SACRED_LUXE", "service": "rimba-sacred-luxe" },
-    { "binding": "THEME_SINEMA_KISAH", "service": "rimba-sinema-kisah" }
+    { "binding": "THEME_WARM_NARRATIVE", "service": "rimba-warm-narrative" }
   ],
   "vars": {
     "API_URL": "https://api.rimba.io"

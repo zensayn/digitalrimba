@@ -47,24 +47,6 @@ export const templates: Template[] = [
     theme: "Kenangan",
     demoUrl: "https://warm-narrative.rimba.io",
   },
-  {
-    id: "sacred-luxe",
-    name: "Sacred Luxe",
-    description: "Dark neo-noir aesthetic with champagne gold accents and elegant Cormorant type. Kenangan series.",
-    image: "/templates/sacred-luxe.jpg",
-    category: "Adat",
-    theme: "Kenangan",
-    demoUrl: "https://sacred-luxe.rimba.io",
-  },
-  {
-    id: "sinema-kisah",
-    name: "Sinema Kisah",
-    description: "Cinematic dark theme where every chapter of your story unfolds like a film. Kisah series.",
-    image: "/templates/sinema-kisah.jpg",
-    category: "Adat",
-    theme: "Kisah",
-    demoUrl: "https://sinema-kisah.rimba.io",
-  },
 ]
 
 type TemplateSelectorProps = {
