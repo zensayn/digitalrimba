@@ -1,93 +1,74 @@
 # Kisah · Kategori Adat
-## Design Specification
+
+## Design Specification (Tier)
 
 > **Tier 2 — Standard · Rp 300rb**
 > "Terangkai dalam kisah."
 
----
-
-### Aesthetic: "Warm Narrative"
-
-Seperti lembaran buku cerita yang indah — hangat, editorial, penuh tekstur. Setiap section terasa seperti babak baru dalam sebuah narasi. Cocok untuk pasangan yang ingin undangan terasa personal dan berkesan, dengan tampilan yang lebih kaya dari tier Kenangan.
+Spec ini mendefinisikan **karakter tier Kisah**, bukan satu tema tertentu.
+Palet, tipografi, dan kosakata motion adalah milik tema — lihat `DESIGN_SPEC.md`
+di folder tema masing-masing.
 
 ---
 
-### Color Tokens
+### Karakter Tier
 
-| Token | Hex | Nama |
-|-------|-----|------|
-| --bg | #FAF7F2 | Warm Parchment |
-| --surface | #F2EDE4 | Cream |
-| --surface-2 | #E8E0D4 | Linen |
-| --gold | #C07830 | Copper Gold |
-| --gold-light | #D4A056 | Warm Amber |
-| --text | #2A2218 | Dark Walnut |
-| --text-muted | #6B5E4E | Warm Brown |
-| --text-dim | #A0917E | Taupe |
-| --border | rgba(192,120,48,0.2) | Copper Border |
+Tier tengah. Kisah memberi ruang bagi cerita: perjalanan pasangan, galeri
+kenangan, dan dua sesi acara yang berdiri sendiri-sendiri.
+
+**Pembeda tier = section yang berhak muncul.** Tier tidak menyentuh estetika
+maupun motion. Sebuah tema bebas memakai parallax, partikel, atau WebGL di tier
+mana pun; yang dibatasi tier hanyalah daftar section yang aktif.
 
 ---
 
-### Typography
+### Entitlement Section
 
-| Element | Font | Weight |
-|---------|------|--------|
-| Hero Names | Playfair Display | 400 |
-| Section Title | Playfair Display | 500 |
-| Body | Source Serif 4 | 400 |
-| Labels | Inter | 500 |
-| Script/Quote | EB Garamond italic | 400 |
+Sumber kebenaran: `DESIGN_SYSTEM.md` §4.2. Kisah mencakup seluruh entitlement
+Kenangan, ditambah:
 
----
+| Section | Isi |
+|---------|-----|
+| `lovestory` | Perjalanan pasangan |
+| `gallery` | Galeri foto maksimal 25 foto, plus maksimal satu video |
+| `akad` | Sesi akad, terpisah dari resepsi |
+| `resepsi` | Sesi resepsi, terpisah dari akad |
 
-### Sections
-
-1. Cover — Nama dengan warm glow, countdown elegan
-2. Greeting — Bismillah dengan ornamen frame klasik
-3. Couple — Foto dengan shadow hangat, orang tua
-4. Love Story — Timeline vertikal (scroll), bukan carousel
-5. Event (Akad) — Detail dengan map warm-tinted
-6. Event (Resepsi) — Detail dengan map warm-tinted
-7. Dress Code — Palet warna swatch + ilustrasi
-8. Gallery — Masonry grid 2-kolom
-9. RSVP — Form dengan underline input hangat
-10. Gift — Bank card dengan copper accent
-11. Closing — Quote + hashtag + brand
+Section `event` tunggal milik Kenangan digantikan oleh pasangan `akad` dan
+`resepsi`. Di luar section, Kisah menambah custom lagu (upload sendiri), ikon
+acara custom, dan masa aktif dua tahun.
 
 ---
 
-### Animation Style
+### Yang Tidak Berhak Muncul di Kisah
 
-- Fade-in dengan parallax ringan saat scroll
-- Stagger: 0.15s per item
-- Durasi transisi: 0.7s easeOut
-- Tidak ada efek WebGL — performa lebih ringan
+| Section | Milik tier |
+|---------|------------|
+| `dresscode` | Warisan |
 
----
-
-### Ornamental Elements
-
-- Frame klasik (thin double-border)
-- Gold divider dengan motif titik
-- Sudut ornamen bergaya Art Nouveau
-- Tekstur kertas subtle di background
+Galeri unlimited, Kirim Kado, Turut Mengundang, dan Rundown juga milik Warisan.
 
 ---
 
-### Differensiator vs Kenangan
+### Yang Didukung Tema ≠ Yang Termasuk Paket
 
-| Fitur | Kenangan | Kisah |
-|-------|----------|-------|
-| Palette | Dark Neo-Noir | Light Warm |
-| Gallery | WebGL 3D globe | Masonry grid |
-| Love Story | Horizontal carousel | Vertical timeline |
-| Ornamen | Minimalist corner | Art Nouveau frame |
-| Font | Cormorant Garamond | Playfair Display |
+Sebuah tema boleh merender lebih banyak section daripada yang berhak muncul pada
+tier ini. Entitlement menyaringnya saat runtime lewat `sections.enabled`.
+Kelebihan kemampuan tema bukan pelanggaran tier.
 
 ---
 
-### Status Tema
+### Tema di Tier Ini
 
-| Folder | Tema | Status |
-|--------|------|--------|
-| `warm-narrative/` | Warm Narrative | 🔜 Planned |
+| Folder | Tema | Aesthetic | Status |
+|--------|------|-----------|--------|
+| — | — | — | belum ada |
+
+---
+
+### Referensi
+
+- Entitlement per paket: `DESIGN_SYSTEM.md` §4
+- Token semantik bersama: `DESIGN_SYSTEM.md` §8.1
+- Alasan tier diukur dari entitlement:
+  `docs/superpowers/specs/2026-07-10-adat-kenangan-tier-spec-design.md`

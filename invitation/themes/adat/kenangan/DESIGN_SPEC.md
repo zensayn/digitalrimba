@@ -1,97 +1,96 @@
 # Kenangan · Kategori Adat
-## Design Specification
+
+## Design Specification (Tier)
 
 > **Tier 1 — Basic · Rp 150rb**
 > "Setiap momen jadi kenangan."
 
----
-
-### Aesthetic: Neo-Adat Noir "Sacred Luxe"
-
-Gelap, elegan, dan penuh kedalaman. Terinspirasi dari kuil Jawa yang diterangi cahaya lilin emas — perpaduan tradisi adat Indonesia dengan estetika dark luxury modern. Cocok untuk pasangan yang ingin undangan terasa eksklusif dan berbeda dari yang lain, dengan harga yang terjangkau.
+Spec ini mendefinisikan **karakter tier Kenangan**, bukan satu tema tertentu.
+Palet, tipografi, dan kosakata motion adalah milik tema — lihat `DESIGN_SPEC.md`
+di folder tema masing-masing (mis. `warm-narrative/DESIGN_SPEC.md`).
 
 ---
 
-### Color Tokens
+### Karakter Tier
 
-| Token | Hex | Nama |
-|-------|-----|------|
-| --bg | #0A0A08 | Deep Obsidian |
-| --surface | #121210 | Charcoal |
-| --surface-2 | #1A1A17 | Dark Ash |
-| --gold | #C9A84C | Antique Gold |
-| --gold-light | #E8D5A0 | Champagne Gold |
-| --gold-dim | #7A6330 | Aged Bronze |
-| --text | #F0EDE6 | Ivory |
-| --text-muted | #9A9A8E | Silver Gray |
-| --text-dim | #5A5A50 | Whisper |
-| --border | rgba(201,168,76,0.15) | Gold Border |
+Tier pembuka. Kenangan adalah undangan yang utuh dan selesai, bukan versi lumpuh
+dari tier di atasnya. Pasangan yang memilihnya mendapat undangan yang benar-benar
+jadi, hanya dengan babak cerita yang lebih ringkas.
+
+**Pembeda tier = section yang berhak muncul.** Tier tidak menyentuh estetika
+maupun motion. Sebuah tema bebas memakai parallax, partikel, atau WebGL di tier
+mana pun; yang dibatasi tier hanyalah daftar section yang aktif.
 
 ---
 
-### Typography
+### Entitlement Section (8)
 
-| Element | Font | Weight |
-|---------|------|--------|
-| Hero Names | Cormorant Garamond | 300 |
-| Section Title | Cormorant Garamond | 300–400 |
-| Body | Inter | 300 |
-| Labels | Inter | 300–400 |
-| Script/Quote | EB Garamond italic | 400 |
+Sumber kebenaran: `DESIGN_SYSTEM.md` §4.1. Spec ini menerjemahkannya menjadi
+daftar section, tidak mendefinisikannya ulang.
 
----
+| Section | Isi |
+|---------|-----|
+| `cover` | Nama mempelai, tanggal, countdown |
+| `greeting` | Salam pembuka + nama tamu personal |
+| `couple` | Foto, nama lengkap, orang tua, link Instagram |
+| `event` | Satu section acara: maps lokasi + add to calendar |
+| `rsvp` | Konfirmasi kehadiran |
+| `weddingwish` | Ucapan dan doa |
+| `gift` | Amplop Digital |
+| `closing` | Penutup + hashtag |
 
-### Sections
-
-1. Cover — Countdown, nama dengan gold shimmer, corner ornamen
-2. Greeting — Bismillah hero besar + nama tamu personal
-3. Couple — Foto bulat + nama lengkap + orang tua
-4. Love Story — Horizontal swipe carousel + auto-advance
-5. Event (Akad) — Tanggal hero besar + map + save to calendar
-6. Event (Resepsi) — Tanggal hero besar + map + save to calendar
-7. Dress Code — Color swatch + tema pakaian
-8. Gallery — WebGL 3D globe interaktif
-9. RSVP — Form dengan gold input + konfirmasi kehadiran
-10. Gift — Bank card dengan copy to clipboard
-11. Closing — Ayat Al-Quran + hashtag + brand
+Lagu autoplay dari katalog dan pilihan bahasa Indonesia/Inggris berlaku di
+seluruh tier, bukan section tersendiri.
 
 ---
 
-### Animation Style
+### Yang Tidak Berhak Muncul di Kenangan
 
-- Framer Motion `useInView` stagger per elemen
-- Stagger: 0.18s per item
-- Durasi: 0.85–0.9s easeOut
-- Gold shimmer loop animation pada nama
-- Waveform animasi di music player
+| Section | Milik tier |
+|---------|------------|
+| `lovestory` | Kisah |
+| `gallery` | Kisah (maks 25 foto) · Warisan (unlimited) |
+| `dresscode` | Warisan |
 
----
-
-### Ornamental Elements
-
-- Corner ornaments SVG (4 sudut)
-- Gold divider gradient (transparent → gold → transparent)
-- Diamond ornamen (◆) sebagai pemisah section
-- Roman numeral dekoratif di background
-- Noise texture overlay
-- Radial vignette
+Sesi `akad` dan `resepsi` yang **terpisah** juga fitur Kisah
+(`DESIGN_SYSTEM.md` §4.2). Karena itu Kenangan hanya berhak atas satu section
+acara.
 
 ---
 
-### Effects
+### Yang Didukung Tema ≠ Yang Termasuk Paket
 
-- Gold shimmer text animation
-- Noise texture overlay (0.04 opacity)
-- Radial vignette gradient
-- WebGL 3D globe di gallery
-- Music player dengan audio lokal
+Sebuah tema boleh merender lebih banyak section daripada yang berhak muncul pada
+tier ini. Entitlement menyaringnya saat runtime lewat `sections.enabled`.
+Kelebihan kemampuan tema bukan pelanggaran tier.
 
 ---
 
-### Status Tema
+### Tema di Tier Ini
 
 | Folder | Tema | Aesthetic | Status |
 |--------|------|-----------|--------|
-| `sacred-luxe/` | Sacred Luxe | Neo-Adat Noir — Dark Obsidian + Champagne Gold | ✅ Active |
-| `obsidian-rose/` | Obsidian Rose | Dark + Rose Gold + Floral | 🔜 Planned |
-| `batik-noir/` | Batik Noir | Dark + Batik Pattern + Burnt Sienna | 🔜 Planned |
+| `warm-narrative/` | Warm Narrative | Warm Parchment + Copper — editorial, bertekstur | ✅ Active |
+
+---
+
+### Utang Implementasi
+
+Dicatat agar dokumen ini tidak berbohong. Penyelesaiannya di luar cakupan spec.
+
+| Section | Keadaan | Sebab |
+|---------|---------|-------|
+| `weddingwish` | belum ada di `RenderSection.tsx` | Kenangan berhak atasnya, tema belum membuatnya |
+| `event` | tema punya `akad` dan `resepsi` terpisah | sesi terpisah adalah fitur Kisah |
+| `lovestory` | ada di tema, di luar entitlement | milik Kisah |
+| `gallery` | ada di tema, di luar entitlement | milik Kisah |
+| `dresscode` | ada di tema, di luar entitlement | milik Warisan |
+
+---
+
+### Referensi
+
+- Entitlement per paket: `DESIGN_SYSTEM.md` §4
+- Token semantik bersama: `DESIGN_SYSTEM.md` §8.1
+- Alasan tier diukur dari entitlement:
+  `docs/superpowers/specs/2026-07-10-adat-kenangan-tier-spec-design.md`

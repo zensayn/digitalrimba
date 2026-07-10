@@ -126,7 +126,7 @@ Taruh file MP3 di `public/music/`.
 
 Jika tema sudah jadi dan ada klien baru yang memesan tema yang sama:
 
-1. Copy folder tema: `cp -r sacred-luxe sacred-luxe-budi-ani`
+1. Copy folder tema: `cp -r warm-narrative warm-narrative-budi-ani`
 2. Edit `invitation.config.json` — ganti semua data pasangan, event, galeri
 3. Ganti foto di `public/images/`
 4. Ganti lagu di `public/music/` (opsional)
