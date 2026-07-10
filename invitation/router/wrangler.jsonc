@@ -20,7 +20,8 @@
     }
   ],
   "services": [
-    { "binding": "THEME_WARM_NARRATIVE", "service": "rimba-warm-narrative" }
+    { "binding": "THEME_WARM_NARRATIVE", "service": "rimba-warm-narrative" },
+    { "binding": "THEME_SOFT_BLOOM", "service": "rimba-soft-bloom" }
   ],
   "vars": {
     "API_URL": "https://api.rimba.io"

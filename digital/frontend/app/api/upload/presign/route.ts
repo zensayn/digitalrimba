@@ -24,10 +24,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Upload not configured" }, { status: 503 });
   }
 
+  // Files are served from the bucket's custom domain, not the upload worker.
+  const publicBase = process.env.R2_PUBLIC_BASE_URL ?? "https://assets-invitations.rimba.io";
+
   return NextResponse.json({
     uploadUrl: `${workerUrl}/${key}`,
     uploadToken,
-    publicUrl: `${workerUrl}/${key}`,
+    publicUrl: `${publicBase}/${key}`,
     contentType,
   });
 }

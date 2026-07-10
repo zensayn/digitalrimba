@@ -1,6 +1,8 @@
+import { headers } from "next/headers";
 import InvitationExperience from "@/components/shared/InvitationExperience";
-import { config } from "@/data/invitation";
+import { resolveConfig } from "@/lib/resolve-config";
 
-export default function Page() {
+export default async function Page() {
+  const config = await resolveConfig((await headers()).get("x-rimba-slug"));
   return <InvitationExperience config={config} />;
 }

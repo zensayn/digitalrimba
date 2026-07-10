@@ -76,7 +76,7 @@ export default function TemplatesShowcase() {
 
         <div className="text-center">
           <Link
-            href="/dashboard/invitation"
+            href="/dashboard/invitations/new"
             className="inline-block px-6 py-3 rounded-full bg-[#212121] text-white text-sm font-medium transition-transform duration-150 ease-out active:scale-[0.97] hover:bg-black"
           >
             {t("cta")}

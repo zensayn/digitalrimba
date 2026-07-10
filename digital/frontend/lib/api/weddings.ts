@@ -3,8 +3,12 @@ const BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
 export type WeddingProfile = {
   id: string;
   slug: string;
+  host_name: string;
   couple_name: string;
+  story: string;
+  vibe: string;
   event_date: string;
+  guest_estimate: string;
   venue_name: string;
   venue_address: string;
   tier: string;
@@ -12,8 +16,12 @@ export type WeddingProfile = {
 };
 
 export type SaveWeddingProfileInput = {
+  host_name?: string;
   couple_name: string;
+  story?: string;
+  vibe?: string;
   event_date?: string;
+  guest_estimate?: string;
   venue_name?: string;
   venue_address?: string;
 };

@@ -1,0 +1,71 @@
+name: rimba-digital
+
+services:
+  digital-postgres:
+    image: postgres:16-alpine
+    container_name: rimba-digital-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rimba
+      POSTGRES_PASSWORD: rimba_secret
+      POSTGRES_DB: rimba_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - digital_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rimba -d rimba_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 1536MB Redis cache: better-auth sessions (frontend secondaryStorage) +
+  # backend check-in read caching. Host port 6380 so the frontend dev server
+  # on the host can reach it (6379 left free).
+  digital-redis:
+    image: redis:7-alpine
+    container_name: rimba-digital-redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 1536mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    container_name: rimba-digital-backend
+    restart: unless-stopped
+    depends_on:
+      digital-postgres:
+        condition: service_healthy
+      # Redis is an optional cache — the backend must still start without it.
+      digital-redis:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql://rimba:rimba_secret@digital-postgres:5432/rimba_db
+      REDIS_URL: redis://digital-redis:6379
+      JWKS_URL: http://host.docker.internal:3000/api/auth/jwks
+      CHECKIN_SESSION_KEY: rimba-checkin-dev-secret-change-in-prod
+      ALLOWED_ORIGIN: http://localhost:3000
+      S3_API: https://bbfe2e9f8f01720f3ec3d64b880d77b8.r2.cloudflarestorage.com/rimba
+      PORT: "8080"
+    ports:
+      - "8090:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  # Pre-existing volume from the old shared root compose — keeps all digital data.
+  digital_data:
+    external: true
+    name: rimba_rimba_digital_data

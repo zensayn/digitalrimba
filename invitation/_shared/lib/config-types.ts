@@ -91,4 +91,17 @@ export interface InvitationConfig {
     order: string[];
     enabled: Record<string, boolean>;
   };
+  // Optional per-invitation background music (studio catalog pick or upload).
+  // Absent in the bundled demo config, which uses MusicPlayer's built-in
+  // track. Themes read src + the startSec/endSec trim window (playback
+  // starts at startSec and loops back there after endSec); title/artist/
+  // trackId are studio display data.
+  music?: {
+    src: string;
+    title?: string;
+    artist?: string;
+    trackId?: string;
+    startSec?: number;
+    endSec?: number;
+  };
 }

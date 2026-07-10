@@ -92,7 +92,7 @@ export default function PreviewPage() {
     <MotionProvider>
       <div className="app-shell">
         {/* Same music wiring as production so config.music edits are audible here. */}
-        <MusicPlayer src={config.music?.src} />
+        <MusicPlayer src={config.music?.src} start={config.music?.startSec} end={config.music?.endSec} />
         <DesktopCover couple={config.couple} weddingDate={config.weddingDate} />
         <SnapContainer>
           {sectionIds.map((id) => (

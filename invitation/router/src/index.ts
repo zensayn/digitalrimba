@@ -13,6 +13,7 @@ interface Env {
   API_URL: string;
   THEME_DEV_ORIGIN?: string;
   THEME_WARM_NARRATIVE: Fetcher;
+  THEME_SOFT_BLOOM: Fetcher;
 }
 
 // Subdomains that must never resolve as invitation slugs. Kept in sync with
@@ -30,6 +31,7 @@ const RESERVED_SUBDOMAINS = new Set([
   "assets-themes",
   "assets-invitations",
   "warm-narrative",
+  "soft-bloom",
   "sacred-luxe",
   "sinema-kisah",
   "rimba",
@@ -40,10 +42,12 @@ const RESERVED_SUBDOMAINS = new Set([
 
 const DEFAULT_TEMPLATE = "warm-narrative";
 
-// warm-narrative is the only theme that ships today. An unknown templateId has
-// always fallen back to it rather than 404ing; add a case per theme as they land.
+// An unknown templateId has always fallen back to warm-narrative rather than
+// 404ing; add a case per theme as they land.
 function themeFor(env: Env, templateId: string | undefined): Fetcher | null {
   switch (templateId ?? DEFAULT_TEMPLATE) {
+    case "soft-bloom":
+      return env.THEME_SOFT_BLOOM ?? null;
     case "warm-narrative":
     default:
       return env.THEME_WARM_NARRATIVE ?? null;

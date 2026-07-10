@@ -9,8 +9,8 @@
 CREATE TABLE public.catalog_price_tiers (
     code        text    PRIMARY KEY,          -- 't1' | 't2' | 't3' | 't4'
     label       text    NOT NULL,             -- '50-99 pcs'
-    min_qty     int     NOT NULL,             -- 50
-    max_qty     int,                          -- 99 (NULL = open-ended, e.g. '500+')
+    min_qty     int     NOT NULL CHECK (min_qty > 0),      -- 50
+    max_qty     int     CHECK (max_qty IS NULL OR max_qty >= min_qty), -- 99 (NULL = open-ended, e.g. '500+')
     sort_order  int     NOT NULL DEFAULT 0
 );
 
@@ -23,7 +23,8 @@ CREATE TABLE public.catalog_price_versions (
     note            text        NOT NULL DEFAULT '',
     effective_from  timestamptz NOT NULL DEFAULT now(),
     effective_to    timestamptz,                       -- NULL = current/active
-    created_at      timestamptz NOT NULL DEFAULT now()
+    created_at      timestamptz NOT NULL DEFAULT now(),
+    CHECK (effective_to IS NULL OR effective_to > effective_from)
 );
 -- At most one active (open) version at a time.
 CREATE UNIQUE INDEX catalog_price_versions_active_idx

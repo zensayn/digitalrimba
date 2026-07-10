@@ -29,7 +29,7 @@ export default function FinalCTA() {
             Pilih tema hari ini — undanganmu tayang 15 menit kemudian.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link href="/dashboard/invitation">
+            <Link href="/dashboard/invitations/new">
               <TextureButton variant="secondary" size="lg" className="rounded-full">
                 Buat undanganmu sekarang
               </TextureButton>

@@ -19,8 +19,16 @@ import {
   AltArrowDown,
   AddCircle,
   ChatDots,
+  Notes,
+  Gallery,
+  GalleryWide,
+  Gift,
+  ChatRoundDots,
+  Checklist,
+  Stars,
+  Confetti,
 } from '@solar-icons/react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { IconProps } from '@solar-icons/react';
 import {
   Sidebar,
@@ -63,6 +71,19 @@ const navGroups: { label: string | null; items: NavItem[] }[] = [
     items: [
       { href: '/dashboard', label: 'Overview', Icon: Home2, badge: 'BETA' },
       { href: '/dashboard/guests', label: 'Guests', Icon: UsersGroupRounded },
+    ],
+  },
+  {
+    label: 'FEATURES',
+    items: [
+      { href: '/dashboard/additional-info', label: 'Additional Info', Icon: Notes },
+      { href: '/dashboard/gallery', label: 'Gallery', Icon: Gallery },
+      { href: '/dashboard/opening-cover', label: 'Opening Cover', Icon: GalleryWide },
+      { href: '/dashboard/gifts', label: 'Gifts', Icon: Gift },
+      { href: '/dashboard/guestbook', label: 'Guestbook', Icon: ChatRoundDots },
+      { href: '/dashboard/rundown', label: 'Rundown', Icon: Checklist },
+      { href: '/dashboard/rsvp-plus', label: 'RSVP+', Icon: Stars },
+      { href: '/dashboard/popup-greeting', label: 'Popup & Greeting', Icon: Confetti },
     ],
   },
   {

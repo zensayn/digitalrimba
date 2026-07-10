@@ -9,36 +9,34 @@ rimba/
   invitation/   # Guest-facing invitation view (placeholder — scaffold pending)
   admin/        # Admin / operator backoffice (placeholder — scaffold pending)
   docs/         # Monorepo-level docs
-  docker-compose.yml
 ```
 
 `fisik/` was brought in with `git subtree`, so its full commit history is preserved here — there is no submodule and no second repo.
 
 ## Running
 
-Both backends share **one** Postgres (`rimba_db`, container `rimba-digital-database`, host `:5433`)
-defined in the root `docker-compose.yml`. Their schemas coexist in `public`: digital owns
-`users`/`weddings`/`invitation`/… and fisik owns the `catalog_*` tables.
+Each app has its own compose stack (own Postgres, Redis, backend) — start/stop/reset them
+independently:
 
 ```bash
-# one database + both backends (digital on :8080, fisik on :8081)
-docker compose up postgres backend fisik-backend
+# digital: postgres :5433 (rimba_db) + redis :6380 + backend :8090
+cd digital && docker compose up -d --build
+
+# fisik: postgres :5434 (rimba_fisik_db) + internal redis + backend :8081
+cd fisik && docker compose up -d --build
 ```
 
-> **Migration ordering on a fresh volume:** the two backends apply goose migrations into the same
-> `goose_db_version` sequence (digital `00001`–`00005`, fisik `00006`). On a brand-new database,
-> apply digital's migrations *before* starting `fisik-backend`, otherwise fisik records version `6`
-> first and digital's `goose up` would skip `1`–`5`:
-> ```bash
-> docker compose up -d postgres
-> goose -dir digital/db/migrations postgres \
->   "postgresql://rimba:rimba_secret@localhost:5433/rimba_db" up
-> docker compose up backend fisik-backend     # fisik entrypoint applies 00006 + seeds
-> ```
+Fisik's entrypoint runs its goose migrations + catalog/pricing seeds on every start, so a fresh
+fisik database self-populates. Digital's migrations are applied manually from the host:
+
+```bash
+goose -dir digital/db/migrations postgres \
+  "postgresql://rimba:rimba_secret@localhost:5433/rimba_db" up
+```
 
 ### frontends
 ```bash
-cd digital/frontend && pnpm install && pnpm dev   # talks to digital backend on :8080
+cd digital/frontend && pnpm install && pnpm dev   # talks to digital backend on :8090
 cd fisik/frontend   && bun install  && bun dev     # talks to fisik backend on :8081 (.env.local)
 ```
 

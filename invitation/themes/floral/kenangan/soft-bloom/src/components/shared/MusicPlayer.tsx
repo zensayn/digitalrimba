@@ -12,23 +12,55 @@ const SONG_TITLE  = "Wildflower";
 const SONG_ARTIST = "Instrumental";
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default function MusicPlayer() {
+export default function MusicPlayer({
+  src,
+  title,
+  artist,
+  start,
+  end,
+}: {
+  src?: string;
+  title?: string;
+  artist?: string;
+  start?: number;
+  end?: number;
+}) {
   const [playing, setPlaying]         = useState(false);
   const [visible, setVisible]         = useState(false);
   const [ready, setReady]             = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const audioRef                      = useRef<HTMLAudioElement | null>(null);
+  const musicSrc                      = src || MUSIC_SRC;
+  // Studio trim window: playback starts at `start` and loops back there
+  // after `end`. Without a trim the native loop plays the whole file.
+  const trimStart                     = start ?? 0;
+  const hasTrim                       = trimStart > 0 || end != null;
 
   useEffect(() => {
-    const audio    = new Audio(MUSIC_SRC);
-    audio.loop     = true;
-    audio.preload  = "auto";
+    const audio    = new Audio(musicSrc);
+    audio.loop     = !hasTrim;
+    // "metadata" saja: mp3 katalog bisa beberapa MB — kalau preload "auto" ia
+    // berebut bandwidth dengan gambar cover/LCP di detik-detik pertama.
+    audio.preload  = "metadata";
     audio.oncanplaythrough = () => setReady(true);
     audioRef.current = audio;
+
+    const onTime = () => {
+      if (end != null && audio.currentTime >= end) audio.currentTime = trimStart;
+    };
+    const onEnded = () => {
+      audio.currentTime = trimStart;
+      audio.play().catch(() => {});
+    };
+    if (hasTrim) {
+      audio.addEventListener("timeupdate", onTime);
+      audio.addEventListener("ended", onEnded);
+    }
 
     const showTimer = setTimeout(() => setVisible(true), 2000);
 
     const onOpen = () => {
+      if (hasTrim) audio.currentTime = trimStart;
       audio.play().then(() => setPlaying(true)).catch(() => {});
     };
     document.addEventListener("invitation-open", onOpen);
@@ -36,10 +68,12 @@ export default function MusicPlayer() {
     return () => {
       clearTimeout(showTimer);
       document.removeEventListener("invitation-open", onOpen);
+      audio.removeEventListener("timeupdate", onTime);
+      audio.removeEventListener("ended", onEnded);
       audio.pause();
       audio.src = "";
     };
-  }, []);
+  }, [musicSrc, trimStart, end, hasTrim]);
 
   const toggle = () => {
     const audio = audioRef.current;
@@ -48,6 +82,7 @@ export default function MusicPlayer() {
       audio.pause();
       setPlaying(false);
     } else {
+      if (hasTrim && audio.currentTime < trimStart) audio.currentTime = trimStart;
       audio.play().catch(() => {});
       setPlaying(true);
     }
@@ -95,7 +130,7 @@ export default function MusicPlayer() {
                   boxShadow: "var(--shadow-card)",
                 }}
               >
-                {SONG_TITLE} · {SONG_ARTIST}
+                {title || SONG_TITLE} · {artist || SONG_ARTIST}
               </motion.div>
             )}
           </AnimatePresence>

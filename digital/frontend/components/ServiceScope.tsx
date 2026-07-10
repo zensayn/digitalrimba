@@ -73,7 +73,7 @@ export default function ServiceScope() {
                 </p>
                 {s.live && (
                   <Link
-                    href="/dashboard/invitation"
+                    href="/dashboard/invitations/new"
                     className="inline-block pt-1 text-sm font-medium text-[#346739] underline underline-offset-4 decoration-[#346739]/30 hover:decoration-[#346739]"
                   >
                     {t("liveCta")}

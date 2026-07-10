@@ -45,7 +45,17 @@ export const templates: Template[] = [
     image: "/templates/warm-narrative.jpg",
     category: "Adat",
     theme: "Kenangan",
-    demoUrl: "https://warm-narrative.rimba.io",
+    // Local dev: point at a `wrangler dev` serve of the theme (e.g. http://localhost:8787).
+    demoUrl: process.env.NEXT_PUBLIC_WARM_NARRATIVE_URL ?? "https://warm-narrative.rimba.io",
+  },
+  {
+    id: "soft-bloom",
+    name: "Soft Bloom",
+    description: "Soft wildflower botanicals on textured paper with a gated opening. Kenangan series.",
+    image: "/templates/soft-bloom.jpg",
+    category: "Floral",
+    theme: "Kenangan",
+    demoUrl: process.env.NEXT_PUBLIC_SOFT_BLOOM_URL ?? "https://soft-bloom.rimba.io",
   },
 ]
 

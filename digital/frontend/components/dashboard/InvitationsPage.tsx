@@ -16,7 +16,7 @@ const INVITE_DOMAIN = process.env.NEXT_PUBLIC_INVITE_DOMAIN ?? 'rimba.io';
 function NewInvitationButton({ label, className }: { label: string; className?: string }) {
   return (
     <Button size="sm" className={`gap-2 ${className ?? ''}`} asChild>
-      <Link href="/dashboard/invitation">
+      <Link href="/dashboard/invitations/new">
         <AddCircle size={14} weight="Bold" />
         {label}
       </Link>
@@ -200,7 +200,7 @@ export default function InvitationsPage() {
 
           {/* Create New Card */}
           <Link
-            href="/dashboard/invitation"
+            href="/dashboard/invitations/new"
             className="bg-clay-canvas rounded-[24px] border-2 border-dashed border-[#0a0a0a]/10 flex flex-col items-center justify-center min-h-[260px] gap-3 hover:border-clay-teal/30 hover:bg-clay-surface-card/50 transition-all group cursor-pointer"
           >
             <div className="w-12 h-12 rounded-full bg-clay-surface-card flex items-center justify-center group-hover:bg-clay-teal/10 transition-colors">

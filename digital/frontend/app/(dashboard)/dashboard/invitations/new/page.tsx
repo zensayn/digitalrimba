@@ -1,5 +1,5 @@
 import { InvitationStudio } from "@/components/invitation/InvitationStudio";
 
-export default function InvitationStudioPage() {
+export default function NewInvitationPage() {
   return <InvitationStudio />;
 }

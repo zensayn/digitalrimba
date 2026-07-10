@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // Same name as the previously deployed worker (source was lost) so
+  // `wrangler deploy` replaces it in place and the frontend's R2_WORKER_URL
+  // keeps working unchanged.
+  "name": "rimba-upload-v1",
+  "main": "src/index.ts",
+  "workers_dev": true,
+  "compatibility_date": "2026-06-25",
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "r2_buckets": [
+    { "binding": "BUCKET", "bucket_name": "rimba-invitations" }
+  ]
+  // Secret (not a var): wrangler secret put UPLOAD_SECRET
+  // Local dev: put UPLOAD_SECRET=... in .dev.vars (gitignored).
+}

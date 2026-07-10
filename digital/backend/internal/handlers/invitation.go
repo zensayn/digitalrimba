@@ -34,7 +34,7 @@ var validSlugRe = regexp.MustCompile(`^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$`)
 var reservedSlugs = map[string]bool{
 	"www": true, "api": true, "app": true, "admin": true, "mail": true,
 	"staging": true, "assets-themes": true, "assets-invitations": true,
-	"warm-narrative": true, "sacred-luxe": true, "sinema-kisah": true,
+	"warm-narrative": true, "soft-bloom": true, "sacred-luxe": true, "sinema-kisah": true,
 	"by-id": true, "slug-check": true, "rimba": true, "dashboard": true,
 	"invitation": true, "invitations": true,
 }
