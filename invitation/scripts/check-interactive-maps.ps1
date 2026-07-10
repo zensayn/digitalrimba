@@ -5,9 +5,7 @@ $violations = [System.Collections.Generic.List[string]]::new()
 
 $componentPaths = @(
   "_shared/components/InteractiveMap.tsx",
-  "themes/adat/kenangan/warm-narrative/src/components/shared/InteractiveMap.tsx",
-  "themes/adat/kenangan/sacred-luxe/src/components/shared/InteractiveMap.tsx",
-  "themes/adat/kisah/sinema-kisah/components/shared/InteractiveMap.tsx"
+  "themes/adat/kenangan/warm-narrative/src/components/shared/InteractiveMap.tsx"
 )
 
 foreach ($relativePath in $componentPaths) {
@@ -33,9 +31,7 @@ foreach ($relativePath in $componentPaths) {
 }
 
 $eventPaths = @(
-  "themes/adat/kenangan/warm-narrative/src/components/sections/EventSection.tsx",
-  "themes/adat/kenangan/sacred-luxe/src/components/sections/EventSection.tsx",
-  "themes/adat/kisah/sinema-kisah/components/slides/EventSlide.tsx"
+  "themes/adat/kenangan/warm-narrative/src/components/sections/EventSection.tsx"
 )
 
 foreach ($relativePath in $eventPaths) {

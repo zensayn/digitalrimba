@@ -5,8 +5,6 @@ $violations = [System.Collections.Generic.List[string]]::new()
 
 $themePages = @(
   "themes/adat/kenangan/warm-narrative/src/app/page.tsx",
-  "themes/adat/kenangan/sacred-luxe/src/app/page.tsx",
-  "themes/adat/kisah/sinema-kisah/app/page.tsx",
   "_boilerplate/src/app/page.tsx"
 )
 
@@ -28,9 +26,6 @@ foreach ($relativePath in $themePages) {
 
 $scanRoots = @(
   "themes/adat/kenangan/warm-narrative/src",
-  "themes/adat/kenangan/sacred-luxe/src",
-  "themes/adat/kisah/sinema-kisah/app",
-  "themes/adat/kisah/sinema-kisah/components",
   "_shared",
   "_boilerplate/src",
   "scripts/sync-shared.ts"
@@ -73,11 +68,7 @@ $staticRevealSections = @(
   "themes/adat/kenangan/warm-narrative/src/components/sections/GreetingSection.tsx",
   "themes/adat/kenangan/warm-narrative/src/components/sections/CoupleSection.tsx",
   "themes/adat/kenangan/warm-narrative/src/components/sections/DressCodeSection.tsx",
-  "themes/adat/kenangan/warm-narrative/src/components/sections/ClosingSection.tsx",
-  "themes/adat/kenangan/sacred-luxe/src/components/sections/GreetingSection.tsx",
-  "themes/adat/kenangan/sacred-luxe/src/components/sections/CoupleSection.tsx",
-  "themes/adat/kenangan/sacred-luxe/src/components/sections/DressCodeSection.tsx",
-  "themes/adat/kenangan/sacred-luxe/src/components/sections/ClosingSection.tsx"
+  "themes/adat/kenangan/warm-narrative/src/components/sections/ClosingSection.tsx"
 )
 
 foreach ($relativePath in $staticRevealSections) {
