@@ -33,11 +33,15 @@ daftar section, tidak mendefinisikannya ulang.
 | `cover` | Nama mempelai, tanggal, countdown |
 | `greeting` | Salam pembuka + nama tamu personal |
 | `couple` | Foto, nama lengkap, orang tua, link Instagram |
-| `event` | Satu section acara: maps lokasi + add to calendar |
-| `rsvp` | Konfirmasi kehadiran |
-| `weddingwish` | Ucapan dan doa |
+| `akad` | Detail akad: maps lokasi + add to calendar |
+| `resepsi` | Detail resepsi: maps lokasi + add to calendar |
+| `rsvp` | Konfirmasi kehadiran + Wedding Wish (ucapan dan doa) |
 | `gift` | Amplop Digital |
 | `closing` | Penutup + hashtag |
+
+Wedding Wish bukan section tersendiri. Ia field "Ucapan (opsional)" di dalam
+form RSVP, dan ucapan yang masuk ditampilkan kembali sebagai guestbook feed
+(`digital/backend/internal/handlers/rsvp.go`).
 
 Lagu autoplay dari katalog dan pilihan bahasa Indonesia/Inggris berlaku di
 seluruh tier, bukan section tersendiri.
@@ -52,9 +56,10 @@ seluruh tier, bukan section tersendiri.
 | `gallery` | Kisah (maks 25 foto) · Warisan (unlimited) |
 | `dresscode` | Warisan |
 
-Sesi `akad` dan `resepsi` yang **terpisah** juga fitur Kisah
-(`DESIGN_SYSTEM.md` §4.2). Karena itu Kenangan hanya berhak atas satu section
-acara.
+"Sesi Akad dan Resepsi terpisah" pada `DESIGN_SYSTEM.md` §4.2 **bukan** soal
+section. Yang dimaksud adalah dua undangan terpisah — satu untuk tamu akad,
+satu untuk tamu resepsi. Di Kenangan keduanya digabung dalam satu undangan,
+sehingga section `akad` dan `resepsi` tetap muncul berdampingan.
 
 ---
 
@@ -74,17 +79,12 @@ Kelebihan kemampuan tema bukan pelanggaran tier.
 
 ---
 
-### Utang Implementasi
+### Catatan atas warm-narrative
 
-Dicatat agar dokumen ini tidak berbohong. Penyelesaiannya di luar cakupan spec.
-
-| Section | Keadaan | Sebab |
-|---------|---------|-------|
-| `weddingwish` | belum ada di `RenderSection.tsx` | Kenangan berhak atasnya, tema belum membuatnya |
-| `event` | tema punya `akad` dan `resepsi` terpisah | sesi terpisah adalah fitur Kisah |
-| `lovestory` | ada di tema, di luar entitlement | milik Kisah |
-| `gallery` | ada di tema, di luar entitlement | milik Kisah |
-| `dresscode` | ada di tema, di luar entitlement | milik Warisan |
+`RenderSection.tsx` mengenali sebelas id: delapan entitlement Kenangan di atas,
+ditambah `lovestory`, `gallery`, dan `dresscode`. Ketiganya milik tier di
+atasnya dan dimatikan lewat `sections.enabled` saat undangan dijual sebagai
+Kenangan. Ini kelebihan kemampuan tema, bukan pelanggaran tier.
 
 ---
 

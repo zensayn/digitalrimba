@@ -69,13 +69,20 @@ menerjemahkannya menjadi daftar section.
 
 | Tier | Section yang aktif |
 |---|---|
-| Kenangan | `cover`, `greeting`, `couple`, `event`, `rsvp`, `weddingwish`, `gift`, `closing` |
-| Kisah | seluruh Kenangan + `lovestory`, `gallery` (maks 25 foto), satu video, sesi `akad` dan `resepsi` terpisah |
+| Kenangan | `cover`, `greeting`, `couple`, `akad`, `resepsi`, `rsvp`, `gift`, `closing` |
+| Kisah | seluruh Kenangan + `lovestory`, `gallery` (maks 25 foto), satu video |
 | Warisan | seluruh Kisah + `dresscode`, `gallery` unlimited, Kirim Kado, Turut Mengundang, Rundown |
 
-Catatan: "Sesi Akad dan Resepsi terpisah" adalah fitur Kisah menurut
-`DESIGN_SYSTEM.md` §4.2. Karena itu Kenangan hanya berhak atas satu section
-acara.
+Dua hal yang mudah disalahbaca pada `DESIGN_SYSTEM.md` §4, dan keduanya bukan
+section:
+
+- **Wedding Wish** bukan section. Ia field "Ucapan (opsional)" di dalam form
+  RSVP (`RSVPSection.tsx` baris 224), dan ucapan yang masuk ditampilkan kembali
+  sebagai guestbook feed (`digital/backend/internal/handlers/rsvp.go`).
+- **"Sesi Akad dan Resepsi terpisah"** (§4.2) berarti dua undangan terpisah —
+  satu untuk tamu akad, satu untuk tamu resepsi. Bukan dua section. Di Kenangan
+  keduanya digabung dalam satu undangan, dan section `akad` serta `resepsi`
+  tetap muncul berdampingan.
 
 ### 2.2 Yang didukung tema bukan yang termasuk paket
 
@@ -105,22 +112,26 @@ diduplikasi ke mana pun.
 
 ---
 
-## 4. Temuan yang Harus Tercatat, Bukan Ditutupi
-
-Spec tier Kenangan memuat tabel utang. Tanpa ini, dokumen kembali berbohong.
-
-| Section | Keadaan | Sebab |
-|---|---|---|
-| `weddingwish` | belum ada di `RenderSection.tsx` | Kenangan berhak atasnya menurut §4.1, tema belum membuatnya |
-| `event` | tema punya `akad` dan `resepsi` terpisah | sesi terpisah adalah fitur Kisah, bukan Kenangan |
-| `lovestory` | ada di tema, di luar entitlement | milik Kisah |
-| `gallery` | ada di tema, di luar entitlement | milik Kisah |
-| `dresscode` | ada di tema, di luar entitlement | milik Warisan |
+## 4. warm-narrative Sudah Patuh Entitlement
 
 `RenderSection.tsx` mengenali sebelas id: `cover`, `greeting`, `couple`,
 `lovestory`, `akad`, `resepsi`, `dresscode`, `gallery`, `rsvp`, `gift`,
-`closing`. Tidak ada `weddingwish`; satu-satunya jejak kata "ucapan" berada di
-dalam `RSVPSection.tsx`.
+`closing`.
+
+Sebelas itu terurai persis menjadi delapan entitlement Kenangan ditambah tiga
+section tier atas:
+
+| Section | Tier | Keadaan |
+|---|---|---|
+| `cover`, `greeting`, `couple`, `akad`, `resepsi`, `rsvp`, `gift`, `closing` | Kenangan | aktif |
+| `lovestory`, `gallery` | Kisah | dimatikan lewat `sections.enabled` |
+| `dresscode` | Warisan | dimatikan lewat `sections.enabled` |
+
+Tidak ada section yang hilang dan tidak ada yang menyimpang. Kelebihan tiga
+section adalah kelebihan kemampuan tema, bukan pelanggaran tier — sesuai §2.2.
+
+Wedding Wish tidak muncul di daftar itu karena ia bukan section, melainkan
+field di dalam RSVP. Lihat §2.1.
 
 ---
 
@@ -163,7 +174,7 @@ dimuat.
 
 | File | Aksi |
 |---|---|
-| `themes/adat/kenangan/DESIGN_SPEC.md` | tulis ulang sebagai spec tier + tabel utang |
+| `themes/adat/kenangan/DESIGN_SPEC.md` | tulis ulang sebagai spec tier |
 | `themes/adat/kenangan/README.md` | baru; indeks tier, mendaftar `warm-narrative` |
 | `themes/adat/kenangan/warm-narrative/DESIGN_SPEC.md` | baru; art direction, token dua lapis, kosakata motion |
 | `themes/adat/kisah/DESIGN_SPEC.md` | tulis ulang sebagai spec tier; blok Aesthetic, Color Tokens, dan Typography dilepas |
@@ -179,7 +190,7 @@ tema.
 - `themes/adat/warisan/DESIGN_SPEC.md`;
 - pembersihan tema fiktif dari README (`obsidian-rose`, `batik-noir`,
   `javanese-dusk`, `sacred-heritage`, `keraton-noir`);
-- membangun section `weddingwish` atau menggabungkan `akad` dan `resepsi`;
+- mewujudkan "pisah undangan" pada tier Kisah (dua undangan untuk satu pesanan);
 - menyelaraskan `floral` ke model entitlement;
 - restrukturisasi folder pada `2026-07-09` §4, yang mengeluarkan tier dari path;
 - tema adat baru.
@@ -188,8 +199,10 @@ tema.
 
 ## 8. Yang Masih Terbuka
 
-- **Nasib tabel utang §4.** Apakah `weddingwish` dibangun, atau entitlement
-  Kenangan pada `DESIGN_SYSTEM.md` §4.1 yang direvisi.
+- **Rumusan `DESIGN_SYSTEM.md` §4 mudah disalahbaca.** "Wedding Wish" terbaca
+  seperti section padahal ia field di dalam RSVP, dan "Sesi Akad dan Resepsi
+  terpisah" terbaca seperti dua section padahal ia dua undangan. Keduanya sudah
+  diluruskan di sini, tetapi §4 sendiri belum diperjelas.
 - **`floral` memakai model tier yang berbeda.** Setelah keputusan ini, `adat`
   memakai entitlement sementara `floral/README.md` masih memakai kekayaan
   komponen dan animasi. Salah satu harus mengalah, tetapi bukan di sini.

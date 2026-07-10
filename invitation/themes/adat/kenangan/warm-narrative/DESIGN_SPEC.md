@@ -97,8 +97,9 @@ daftar section yang aktif — entitlement tier yang menentukan itu lewat
 `cover` · `greeting` · `couple` · `lovestory` · `akad` · `resepsi` ·
 `dresscode` · `gallery` · `rsvp` · `gift` · `closing`
 
-> Tema ini belum memiliki `weddingwish`, padahal tier Kenangan berhak atasnya.
-> Utang ini tercatat di `../DESIGN_SPEC.md`.
+> Delapan di antaranya adalah entitlement Kenangan; `lovestory` dan `gallery`
+> milik Kisah, `dresscode` milik Warisan. Wedding Wish tidak punya id sendiri —
+> ia field "Ucapan (opsional)" di dalam `RSVPSection.tsx`.
 
 ---
 

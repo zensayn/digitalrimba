@@ -31,12 +31,14 @@ Kenangan, ditambah:
 |---------|-----|
 | `lovestory` | Perjalanan pasangan |
 | `gallery` | Galeri foto maksimal 25 foto, plus maksimal satu video |
-| `akad` | Sesi akad, terpisah dari resepsi |
-| `resepsi` | Sesi resepsi, terpisah dari akad |
 
-Section `event` tunggal milik Kenangan digantikan oleh pasangan `akad` dan
-`resepsi`. Di luar section, Kisah menambah custom lagu (upload sendiri), ikon
-acara custom, dan masa aktif dua tahun.
+"Sesi Akad dan Resepsi terpisah" pada `DESIGN_SYSTEM.md` §4.2 bukan section
+tambahan, melainkan **dua undangan terpisah**: satu untuk tamu akad, satu untuk
+tamu resepsi. Di Kenangan keduanya digabung dalam satu undangan. Section `akad`
+dan `resepsi` sendiri sudah berhak muncul sejak Kenangan.
+
+Di luar section, Kisah menambah custom lagu (upload sendiri), ikon acara custom,
+dan masa aktif dua tahun.
 
 ---
 
