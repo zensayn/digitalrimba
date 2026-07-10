@@ -1,0 +1,128 @@
+{
+  "couple": {
+    "groom": {
+      "name": "GROOM_FIRSTNAME",
+      "fullName": "Full Name Groom",
+      "parents": "Putra Bapak ... & Ibu ...",
+      "photo": "/images/groom.jpg",
+      "instagram": "@groom.handle"
+    },
+    "bride": {
+      "name": "BRIDE_FIRSTNAME",
+      "fullName": "Full Name Bride",
+      "parents": "Putri Bapak ... & Ibu ...",
+      "photo": "/images/bride.jpg",
+      "instagram": "@bride.handle"
+    },
+    "hashtag": "#GroomBride2026",
+    "quote": "Tulis kutipan atau ayat favorit pasangan di sini."
+  },
+  "events": {
+    "akad": {
+      "title": "Akad Nikah",
+      "day": "Sabtu",
+      "date": "1 Januari 2026",
+      "time": "08.00 – 10.00 WIB",
+      "venue": "Nama Masjid / Tempat Akad",
+      "address": "Jl. Alamat Lengkap, Kota",
+      "mapsUrl": "https://maps.google.com/?q=LAT,LNG",
+      "embedUrl": "https://maps.google.com/maps?q=LAT,LNG&z=16&output=embed",
+      "startISO": "20260101T010000Z",
+      "endISO": "20260101T030000Z"
+    },
+    "resepsi": {
+      "title": "Resepsi",
+      "day": "Sabtu",
+      "date": "1 Januari 2026",
+      "time": "11.00 – 15.00 WIB",
+      "venue": "Nama Gedung / Tempat Resepsi",
+      "address": "Jl. Alamat Lengkap, Kota",
+      "mapsUrl": "https://maps.google.com/?q=LAT,LNG",
+      "embedUrl": "https://maps.google.com/maps?q=LAT,LNG&z=16&output=embed",
+      "startISO": "20260101T040000Z",
+      "endISO": "20260101T080000Z"
+    }
+  },
+  "weddingDate": "2026-01-01T08:00:00",
+  "gallery": [
+    { "src": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80", "alt": "Foto 1" },
+    { "src": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=600&q=80", "alt": "Foto 2" },
+    { "src": "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=600&q=80", "alt": "Foto 3" },
+    { "src": "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=600&q=80", "alt": "Foto 4" },
+    { "src": "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=600&q=80", "alt": "Foto 5" }
+  ],
+  "bankAccounts": [
+    { "bank": "BCA", "name": "Nama Penerima", "number": "1234 5678 9012" },
+    { "bank": "Mandiri", "name": "Nama Penerima", "number": "9876 5432 1098" }
+  ],
+  "loveStory": [
+    {
+      "chapter": "Awal Bertemu",
+      "year": "20XX",
+      "description": "Cerita singkat tentang pertemuan pertama.",
+      "image": "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "chapter": "Jatuh Cinta",
+      "year": "20XX",
+      "description": "Momen ketika perasaan itu mulai tumbuh.",
+      "image": "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "chapter": "Bersama",
+      "year": "20XX",
+      "description": "Perjalanan indah yang dilalui berdua.",
+      "image": "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "chapter": "Lamaran",
+      "year": "20XX",
+      "description": "Momen ia berkata iya.",
+      "image": "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=600&q=80"
+    }
+  ],
+  "dressCode": {
+    "theme": "Nama Tema Dress Code",
+    "description": "Deskripsi singkat panduan busana untuk tamu undangan.",
+    "colors": [
+      { "hex": "#FFFFFF", "name": "Warna 1" },
+      { "hex": "#CCCCCC", "name": "Warna 2" },
+      { "hex": "#999999", "name": "Warna 3" },
+      { "hex": "#666666", "name": "Warna 4" }
+    ],
+    "avoid": ["Warna yang dihindari 1", "Warna yang dihindari 2"]
+  },
+  "theme": {
+    "colors": {
+      "bg":          "#REPLACE_BG",
+      "surface":     "#REPLACE_SURFACE",
+      "surface2":    "#REPLACE_SURFACE2",
+      "gold":        "#REPLACE_ACCENT",
+      "goldLight":   "#REPLACE_ACCENT_LIGHT",
+      "goldDim":     "#REPLACE_ACCENT_DIM",
+      "text":        "#REPLACE_TEXT",
+      "textMuted":   "#REPLACE_TEXT_MUTED",
+      "textDim":     "#REPLACE_TEXT_DIM"
+    },
+    "typography": {
+      "displayFont": "REPLACE_DISPLAY_FONT",
+      "bodyFont":    "REPLACE_BODY_FONT"
+    }
+  },
+  "sections": {
+    "order": ["cover", "greeting", "couple", "lovestory", "akad", "resepsi", "dresscode", "gallery", "rsvp", "gift", "closing"],
+    "enabled": {
+      "cover":     true,
+      "greeting":  true,
+      "couple":    true,
+      "lovestory": true,
+      "akad":      true,
+      "resepsi":   true,
+      "dresscode": true,
+      "gallery":   true,
+      "rsvp":      true,
+      "gift":      true,
+      "closing":   true
+    }
+  }
+}

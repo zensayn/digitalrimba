@@ -1,0 +1,240 @@
+/* ─── Google Fonts ───────────────────────────────────────────────────────────
+ * TEMPLATE: Ganti font sesuai tier/tema. Contoh:
+ *   Kenangan (Tier 1): Poppins
+ *   Kisah    (Tier 2): Playfair Display + Source Sans Pro
+ *   Warisan  (Tier 3): Cormorant Garamond + Inter
+ * ───────────────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=REPLACE_DISPLAY_FONT:wght@300;400;600&family=REPLACE_BODY_FONT:wght@300;400;500&display=swap');
+
+@import "tailwindcss";
+
+/* ─── Design Tokens ──────────────────────────────────────────────────────────
+ * TEMPLATE: Nilai awal dari invitation.config.json → theme.
+ * Akan di-override secara live oleh buildCssVars() dari RimbaConfigProvider.
+ * Wajib ada semua variabel ini, nilai bisa disesuaikan per tier.
+ * ───────────────────────────────────────────────────────────────────────── */
+:root {
+  --bg:          #REPLACE_BG;
+  --surface:     #REPLACE_SURFACE;
+  --surface-2:   #REPLACE_SURFACE2;
+  --gold:        #REPLACE_ACCENT;
+  --gold-light:  #REPLACE_ACCENT_LIGHT;
+  --gold-dim:    #REPLACE_ACCENT_DIM;
+  --text:        #REPLACE_TEXT;
+  --text-muted:  #REPLACE_TEXT_MUTED;
+  --text-dim:    #REPLACE_TEXT_DIM;
+  --border:      rgba(0,0,0,0.12);
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ─── Typography helpers ─────────────────────────────────────────────────── */
+.font-display {
+  font-family: var(--font-display, serif);
+}
+
+/* ─── Snap Scroll Container ──────────────────────────────────────────────── */
+.snap-container {
+  height: 100dvh;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  /* Snap dihandle JS controller, bukan CSS snap */
+}
+
+.snap-container::-webkit-scrollbar { width: 2px; }
+.snap-container::-webkit-scrollbar-track { background: var(--bg); }
+.snap-container::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+.snap-section {
+  height: 100dvh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Safe area untuk notch/home bar */
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: env(safe-area-inset-top);
+}
+
+/* ─── Accent gradient text ───────────────────────────────────────────────── */
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 40%, var(--gold) 70%, var(--gold-dim) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Shimmer animation ──────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.text-gold-shimmer {
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 25%, var(--gold) 50%, var(--gold-light) 75%, var(--gold) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+/* ─── Dividers ───────────────────────────────────────────────────────────── */
+.gold-divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.gold-divider-full {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.3;
+}
+
+/* ─── Noise overlay ──────────────────────────────────────────────────────── */
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: overlay;
+}
+
+/* ─── Vignette ───────────────────────────────────────────────────────────── */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes pulse-accent {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+  50%       { box-shadow: 0 0 20px 6px rgba(0,0,0,0.1); }
+}
+
+/* ─── Ornament line ──────────────────────────────────────────────────────── */
+.ornament-line {
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+  flex-shrink: 0;
+}
+
+/* ─── Form elements ──────────────────────────────────────────────────────── */
+.input-gold {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 0;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 14px;
+  font-weight: 300;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input-gold::placeholder { color: var(--text-dim); letter-spacing: 0.05em; }
+.input-gold:focus { border-bottom-color: var(--gold); }
+
+textarea.input-gold { resize: none; line-height: 1.6; }
+
+/* ─── Button ─────────────────────────────────────────────────────────────── */
+.btn-gold {
+  position: relative;
+  padding: 12px 40px;
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold-light);
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.btn-gold::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+.btn-gold:hover::before { transform: scaleX(1); }
+.btn-gold:hover { color: var(--bg); }
+
+/* ─── Music player bar ───────────────────────────────────────────────────── */
+.music-player-bar {
+  position: fixed;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  right: 20px;
+  left: auto;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+/* ─── RSVP scrollable area ───────────────────────────────────────────────── */
+.overflow-y-auto::-webkit-scrollbar { display: none; }
+.overflow-y-auto { -ms-overflow-style: none; scrollbar-width: none; }
