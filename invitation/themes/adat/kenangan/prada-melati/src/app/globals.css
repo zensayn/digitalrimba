@@ -1,29 +1,30 @@
-/* ─── Google Fonts ───────────────────────────────────────────────────────────
- * TEMPLATE: Ganti font sesuai tier/tema. Contoh:
- *   Kenangan (Tier 1): Poppins
- *   Kisah    (Tier 2): Playfair Display + Source Sans Pro
- *   Warisan  (Tier 3): Cormorant Garamond + Inter
- * ───────────────────────────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=REPLACE_DISPLAY_FONT:wght@300;400;600&family=REPLACE_BODY_FONT:wght@300;400;500&display=swap');
+/* Font dimuat lewat next/font/google di layout.tsx, bukan @import. next/font
+   mendaftarkan tiap font di bawah nama yang ia generate sendiri, jadi rujuk
+   selalu --font-marcellus / --font-lora / --font-inter — BUKAN --font-display
+   atau --font-body, yang berisi nama literal dan tidak akan pernah resolve. */
 
 @import "tailwindcss";
 
 /* ─── Design Tokens ──────────────────────────────────────────────────────────
- * TEMPLATE: Nilai awal dari invitation.config.json → theme.
- * Akan di-override secara live oleh buildCssVars() dari RimbaConfigProvider.
- * Wajib ada semua variabel ini, nilai bisa disesuaikan per tier.
+ * Sembilan token di bawah adalah FALLBACK. buildCssVars() menimpanya saat
+ * runtime dari theme.colors pada invitation.config.json, jadi ubah nilainya
+ * di sana — kalau tidak, contrast-contract.test.mjs tidak akan melihat
+ * perubahanmu.
  * ───────────────────────────────────────────────────────────────────────── */
 :root {
-  --bg:          #REPLACE_BG;
-  --surface:     #REPLACE_SURFACE;
-  --surface-2:   #REPLACE_SURFACE2;
-  --gold:        #REPLACE_ACCENT;
-  --gold-light:  #REPLACE_ACCENT_LIGHT;
-  --gold-dim:    #REPLACE_ACCENT_DIM;
-  --text:        #REPLACE_TEXT;
-  --text-muted:  #REPLACE_TEXT_MUTED;
-  --text-dim:    #REPLACE_TEXT_DIM;
-  --border:      rgba(0,0,0,0.12);
+  --bg:          #2A1D12;
+  --surface:     #3A2A1B;
+  --surface-2:   #4A3524;
+  --gold:        #C9A227;
+  --gold-light:  #E3C766;
+  --gold-dim:    #A68430;
+  --text:        #F3E9D2;
+  --text-muted:  #C9BCA1;
+  --text-dim:    #B3AA9D;
+
+  /* Statik — tidak ditimpa buildCssVars. */
+  --border:       rgba(201, 162, 39, 0.22);
+  --fabric-grain: rgba(243, 233, 210, 0.03);
 }
 
 /* ─── Base ───────────────────────────────────────────────────────────────── */
@@ -43,16 +44,16 @@ html {
 body {
   background-color: var(--bg);
   color: var(--text);
-  font-family: var(--font-body, 'Inter', sans-serif);
-  font-weight: 300;
+  font-family: var(--font-lora), Georgia, serif;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
 /* ─── Typography helpers ─────────────────────────────────────────────────── */
-.font-display {
-  font-family: var(--font-display, serif);
-}
+.font-display { font-family: var(--font-marcellus), Georgia, serif; }
+.font-body    { font-family: var(--font-lora), Georgia, serif; }
+.font-label   { font-family: var(--font-inter), sans-serif; }
 
 /* ─── Snap Scroll Container ──────────────────────────────────────────────── */
 .snap-container {
@@ -173,9 +174,9 @@ body {
   border-bottom: 1px solid var(--border);
   color: var(--text);
   padding: 10px 0;
-  font-family: var(--font-body, 'Inter', sans-serif);
+  font-family: var(--font-inter), sans-serif;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   outline: none;
   transition: border-color 0.3s ease;
 }
@@ -192,7 +193,7 @@ textarea.input-gold { resize: none; line-height: 1.6; }
   background: transparent;
   border: 1px solid var(--gold);
   color: var(--gold-light);
-  font-family: var(--font-body, 'Inter', sans-serif);
+  font-family: var(--font-inter), sans-serif;
   font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.2em;
