@@ -58,6 +58,11 @@ export default function MusicPlayer({ src, start, end }: { src?: string; start?:
       audio.removeEventListener("ended", onEnded);
       audio.pause();
       audio.src = "";
+      // The studio live-preview re-runs this effect on every trim edit; the
+      // replacement Audio starts paused and unbuffered, so stale
+      // playing/ready would leave the UI claiming music that isn't there.
+      setPlaying(false);
+      setReady(false);
     };
   }, [musicSrc, trimStart, end, hasTrim]);
 

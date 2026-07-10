@@ -124,6 +124,10 @@ export function MusicPicker({ value, onChange, isUploading, uploadStage, uploadF
 
   const trimStart = value.startSec ?? 0;
   const trimEnd = value.endSec ?? duration ?? 0;
+  // Live bounds for the preview loop — a plain closure would keep looping
+  // against the window that was active when preview started.
+  const trimBoundsRef = useRef({ start: trimStart, end: value.endSec ?? null });
+  trimBoundsRef.current = { start: trimStart, end: value.endSec ?? null };
 
   // Loops the trimmed window exactly like the published invitation will.
   function toggleTrimPreview() {
@@ -135,8 +139,8 @@ export function MusicPicker({ value, onChange, isUploading, uploadStage, uploadF
     const audio = ensureAudio();
     if (!audio.src || !audio.src.includes(value.src)) audio.src = value.src;
     const start = trimStart;
-    const end = value.endSec ?? null;
     const onTime = () => {
+      const { start, end } = trimBoundsRef.current;
       if (end !== null && audio.currentTime >= end) audio.currentTime = start;
     };
     audio.addEventListener("timeupdate", onTime);

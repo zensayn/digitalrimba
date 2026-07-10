@@ -7,7 +7,9 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: rimba
-      # ponytail: dev default; export POSTGRES_PASSWORD to override anywhere real
+      # ponytail: dev default; export POSTGRES_PASSWORD to override anywhere
+      # real. Keep it URL-safe (no @ / # ? :) — it's spliced raw into
+      # DATABASE_URL below.
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rimba_secret}
       POSTGRES_DB: rimba_fisik_db
     # 5434 on the host (loopback only): 5433 belongs to digital's postgres.

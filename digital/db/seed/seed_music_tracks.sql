@@ -16,6 +16,10 @@
 
 \set ON_ERROR_STOP on
 
+-- One transaction: a failed upsert must roll back the deletes below, never
+-- leave the catalog partially emptied.
+BEGIN;
+
 -- Drop obsolete placeholder rows from earlier seed versions (dead URLs).
 -- Scoped to the catalog prefix + placeholder hash: user uploads live under
 -- invitations/<userId>/<uuid> and can never match this pattern.
@@ -57,3 +61,5 @@ ON CONFLICT (id) DO UPDATE SET
     duration_seconds = EXCLUDED.duration_seconds,
     sort             = EXCLUDED.sort,
     active           = EXCLUDED.active;
+
+COMMIT;

@@ -20,10 +20,13 @@ independently:
 
 ```bash
 # digital: postgres :5433 (rimba_db) + redis :6380 + backend :8090
-cd digital && docker compose up -d --build
+# The data volume is external (survives compose down -v) — create it once on
+# a fresh checkout:
+docker volume create rimba_rimba_digital_data
+(cd digital && docker compose up -d --build)
 
 # fisik: postgres :5434 (rimba_fisik_db) + internal redis + backend :8081
-cd fisik && docker compose up -d --build
+(cd fisik && docker compose up -d --build)
 ```
 
 Fisik's entrypoint runs its goose migrations + catalog/pricing seeds on every start, so a fresh
@@ -35,9 +38,10 @@ goose -dir digital/db/migrations postgres \
 ```
 
 ### frontends
+
 ```bash
-cd digital/frontend && pnpm install && pnpm dev   # talks to digital backend on :8090
-cd fisik/frontend   && bun install  && bun dev     # talks to fisik backend on :8081 (.env.local)
+(cd digital/frontend && pnpm install && pnpm dev)   # talks to digital backend on :8090
+(cd fisik/frontend   && bun install  && bun dev)    # talks to fisik backend on :8081 (.env.local)
 ```
 
 > Note: `digital/frontend` uses **pnpm** and `fisik/frontend` uses **Bun**. They are independent — run each from its own folder.

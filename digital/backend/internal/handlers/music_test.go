@@ -20,7 +20,9 @@ func TestMusicTrackRoutes(t *testing.T) {
 		assertStatus(t, rec.Code, http.StatusUnauthorized)
 	})
 
-	t.Run("lists active tracks", func(t *testing.T) {
+	// Active-row filtering lives in the SQL (WHERE active); the stub can't
+	// exercise it, so this case only covers auth + response serialization.
+	t.Run("serializes tracks from the store", func(t *testing.T) {
 		store := &stubMusicStore{tracks: []MusicTrack{
 			{ID: "t1", Title: "Canon in D", Artist: "Pachelbel", Category: "romantic", Src: "https://assets-invitations.rimba.io/music/catalog/canon-abc123.mp3"},
 		}}

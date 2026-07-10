@@ -7,10 +7,13 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: rimba
-      POSTGRES_PASSWORD: rimba_secret
+      # ponytail: dev default; export POSTGRES_PASSWORD to override anywhere
+      # real. Keep it URL-safe (no @ / # ? :) — it's spliced raw into
+      # DATABASE_URL below.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rimba_secret}
       POSTGRES_DB: rimba_db
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
       - digital_data:/var/lib/postgresql/data
     healthcheck:
@@ -28,7 +31,7 @@ services:
     restart: unless-stopped
     command: redis-server --maxmemory 1536mb --maxmemory-policy allkeys-lru
     ports:
-      - "6380:6379"
+      - "127.0.0.1:6380:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -47,10 +50,10 @@ services:
       digital-redis:
         condition: service_started
     environment:
-      DATABASE_URL: postgresql://rimba:rimba_secret@digital-postgres:5432/rimba_db
+      DATABASE_URL: postgresql://rimba:${POSTGRES_PASSWORD:-rimba_secret}@digital-postgres:5432/rimba_db
       REDIS_URL: redis://digital-redis:6379
       JWKS_URL: http://host.docker.internal:3000/api/auth/jwks
-      CHECKIN_SESSION_KEY: rimba-checkin-dev-secret-change-in-prod
+      CHECKIN_SESSION_KEY: ${CHECKIN_SESSION_KEY:-rimba-checkin-dev-secret-change-in-prod}
       ALLOWED_ORIGIN: http://localhost:3000
       S3_API: https://bbfe2e9f8f01720f3ec3d64b880d77b8.r2.cloudflarestorage.com/rimba
       PORT: "8080"
@@ -66,6 +69,8 @@ services:
 
 volumes:
   # Pre-existing volume from the old shared root compose — keeps all digital data.
+  # Fresh checkout: `docker volume create rimba_rimba_digital_data` first
+  # (external volumes are never auto-created; see README).
   digital_data:
     external: true
     name: rimba_rimba_digital_data

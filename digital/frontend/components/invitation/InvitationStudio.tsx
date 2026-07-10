@@ -246,7 +246,16 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
     // svg (vector), gif (animation would be flattened).
     if (!/^image\/(png|jpe?g)$/.test(file.type)) return file;
     if (typeof OffscreenCanvas === "undefined") return file;
-    const worker = new Worker(new URL("./webp.worker.ts", import.meta.url));
+    // Pre-decode cap mirrors toMp3: decoding a giant still balloons to
+    // width×height×4 bytes of pixels and can OOM mobile Safari. Pass through
+    // so the post-conversion size cap rejects it with a clear message.
+    if (file.size > 20 * 1024 * 1024) return file;
+    let worker: Worker;
+    try {
+      worker = new Worker(new URL("./webp.worker.ts", import.meta.url));
+    } catch {
+      return file; // CSP/embed context blocks workers → upload the original
+    }
     try {
       const blob = await new Promise<Blob | null>((resolve) => {
         // A hung worker resolves null after 30s → upload the original file.
@@ -296,12 +305,12 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
     }
   }
 
-  async function toMp3(file: File): Promise<File> {
+  async function toMp3(file: File, maxBytes: number): Promise<File> {
     if (!file.type.startsWith("audio/")) return file;
-    // Generation-loss guard: an mp3 already under the music cap uploads as-is —
-    // re-encoding mp3→mp3 causes audible artifacts. Format + final size decide,
-    // not bitrate.
-    if (file.type === "audio/mpeg" && file.size <= MUSIC_MAX_BYTES) return file;
+    // Generation-loss guard: an mp3 already under the caller's cap uploads
+    // as-is — re-encoding mp3→mp3 causes audible artifacts. Format + final
+    // size decide, not bitrate.
+    if (file.type === "audio/mpeg" && file.size <= maxBytes) return file;
     // Pre-decode cap: decodeAudioData expands compressed audio to raw PCM
     // (~10 MB per stereo minute); a 30 MB AAC could balloon past 300 MB and
     // crash mobile Safari, wiping studio progress. Pass through so the music
@@ -352,7 +361,7 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
       // Images become WebP and heavy audio becomes 128 kbps MP3 first, so the
       // size cap applies to the bytes that actually go to R2.
       file = await toWebp(file);
-      file = await toMp3(file);
+      file = await toMp3(file, maxBytes);
       if (file.size > maxBytes) {
         setNotice({ type: "err", text: `File is too large — keep it under ${Math.round(maxBytes / (1024 * 1024))} MB.` });
         return null;
@@ -454,6 +463,7 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
     setSelectedTemplate(template);
     setPreviewLoaded(false);
     setActiveSection("cover");
+    setMobilePane("edit");
     setStep("edit");
   };
 
@@ -698,6 +708,7 @@ function InvitationStudioEditor(props: InvitationStudioEditorProps) {
       <AnimatePresence>
         {notice && (
           <motion.p
+            role="status"
             initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}

@@ -399,7 +399,9 @@ function StepBody(p: StepBodyProps) {
     case "couple": {
       // The centerpiece — oversized editorial names, no boxes. Two underlined
       // lines joined by a big ampersand.
-      const commit = () => p.partnerOne.trim() && p.onCommit();
+      // Either partner enables Continue (coupleName joins whichever is set) —
+      // Enter must match the footer's rule, not require partner one.
+      const commit = () => (p.partnerOne.trim() || p.partnerTwo.trim()) && p.onCommit();
       return (
         <div className="flex flex-1 flex-col">
           <Headline>Who&apos;s getting married?</Headline>
@@ -688,6 +690,15 @@ function MomentScreen({
   return (
     <main
       onClick={onContinue}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onContinue();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label="Continue"
       className="flex min-h-[100dvh] cursor-pointer flex-col items-center justify-center bg-white px-8 text-center"
       style={{ color: INK }}
     >
