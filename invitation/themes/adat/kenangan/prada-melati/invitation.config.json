@@ -94,19 +94,19 @@
   },
   "theme": {
     "colors": {
-      "bg":          "#REPLACE_BG",
-      "surface":     "#REPLACE_SURFACE",
-      "surface2":    "#REPLACE_SURFACE2",
-      "gold":        "#REPLACE_ACCENT",
-      "goldLight":   "#REPLACE_ACCENT_LIGHT",
-      "goldDim":     "#REPLACE_ACCENT_DIM",
-      "text":        "#REPLACE_TEXT",
-      "textMuted":   "#REPLACE_TEXT_MUTED",
-      "textDim":     "#REPLACE_TEXT_DIM"
+      "bg":          "#2A1D12",
+      "surface":     "#3A2A1B",
+      "surface2":    "#4A3524",
+      "gold":        "#C9A227",
+      "goldLight":   "#E3C766",
+      "goldDim":     "#A68430",
+      "text":        "#F3E9D2",
+      "textMuted":   "#C9BCA1",
+      "textDim":     "#B3AA9D"
     },
     "typography": {
-      "displayFont": "REPLACE_DISPLAY_FONT",
-      "bodyFont":    "REPLACE_BODY_FONT"
+      "displayFont": "Marcellus",
+      "bodyFont":    "Lora"
     }
   },
   "sections": {

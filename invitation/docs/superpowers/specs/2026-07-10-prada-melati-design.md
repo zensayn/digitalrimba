@@ -186,16 +186,24 @@ di bawah ini ditimpa runtime oleh `buildCssVars` dari `theme.colors` pada
 | `--surface-2` | `#4A3524` | Sogan Terang |
 | `--gold` | `#C9A227` | Prada |
 | `--gold-light` | `#E3C766` | Prada Kilau |
-| `--gold-dim` | `#8A6E28` | Prada Tua |
+| `--gold-dim` | `#A68430` | Prada Tua |
 | `--text` | `#F3E9D2` | Gading |
 | `--text-muted` | `#C9BCA1` | Gading Redup |
-| `--text-dim` | `#8C8070` | Debu |
+| `--text-dim` | `#B3AA9D` | Debu |
 
 `--border` menyusul sebagai token statik, tidak ditimpa runtime.
 
-**Belum diverifikasi:** rasio kontras `--text-dim` di atas `--bg` terhadap
-kontrak aksesibilitas `DESIGN_SYSTEM.md` §9. Harus dihitung sebelum token
-dikunci, bukan diasumsikan.
+**Kontras terverifikasi** terhadap `DESIGN_SYSTEM.md` §9, dan dijaga oleh
+`scripts/__tests__/contrast-contract.test.mjs`. Dua nilai yang diusulkan mula-mula
+gagal dan sudah dikoreksi:
+
+| Token | Usul awal | Terburuk | Nilai terpakai | Terburuk |
+|---|---|---|---|---|
+| `--text-dim` | `#8C8070` | 2.98:1 ❌ | `#B3AA9D` | 5.01:1 ✅ |
+| `--gold-dim` | `#8A6E28` | 2.38:1 ❌ | `#A68430` | 3.27:1 ✅ |
+
+Ambang: token teks 4.5:1, `--gold-dim` 3:1 karena ia dekoratif. "Terburuk"
+diukur di atas `--surface-2`, permukaan paling terang.
 
 ---
 
@@ -276,8 +284,6 @@ Subdomain demo: `prada-melati.rimba.io`.
 
 ## 12. Yang Masih Terbuka
 
-- **`--text-dim` mungkin gagal kontras.** Kalau gagal, ia dinaikkan, dan tabel
-  §6 ikut berubah.
 - **Tekstur retak daun emas belum teruji.** Kalau hasil generate tampak seperti
   stiker datar, penawarnya adalah menaikkan `depth` L2 atau menambah tile serat
   kain pada L0 — bukan menambahkan bayangan.
