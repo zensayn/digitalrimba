@@ -45,7 +45,11 @@ CREATE TABLE IF NOT EXISTS public."jwks" (
     "publicKey" text NOT NULL,
     "privateKey" text NOT NULL,
     "createdAt" timestamptz NOT NULL,
-    "expiresAt" timestamptz
+    "expiresAt" timestamptz,
+    -- createJwk writes alg (always) and crv (EC/OKP keys); nullable per
+    -- better-auth 1.6.11+ so keyrings can match keys by algorithm.
+    "alg" text,
+    "crv" text
 );
 
 CREATE INDEX IF NOT EXISTS "session_userId_idx" ON public."session" ("userId");

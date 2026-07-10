@@ -11,7 +11,7 @@ set -euo pipefail
 
 DIR="${1:?usage: upload-music.sh <dir-of-mp3s>}"
 BUCKET="${BUCKET:-rimba-invitations}"
-PUBLIC_BASE="${PUBLIC_BASE:-https://assets-invitations.rimba.io}"
+PUBLIC_BASE="${PUBLIC_BASE:-${R2_PUBLIC_BASE_URL:-https://assets-invitations.rimba.io}}"
 
 for f in "$DIR"/*.mp3; do
   [ -e "$f" ] || { echo "no .mp3 files in $DIR" >&2; exit 1; }
