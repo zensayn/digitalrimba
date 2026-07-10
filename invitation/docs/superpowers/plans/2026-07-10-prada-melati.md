@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- Spec sumber: `docs/superpowers/specs/2026-07-10-prada-melati-design.md`. Setiap keputusan desain berasal dari sana.
+- Spec sumber: `themes/adat/kenangan/prada-melati/docs/superpowers/specs/2026-07-10-prada-melati-design.md`. Setiap keputusan desain berasal dari sana.
 - Kontrak aksesibilitas `DESIGN_SYSTEM.md` §9: kontras teks normal **minimal 4.5:1**, teks besar minimal 3:1. `prefers-reduced-motion: reduce` mematikan semua motion non-esensial.
 - Medium terkunci: siluet emas pipih. **Kedalaman tidak boleh datang dari bayangan.** Kalau scene terasa datar, naikkan `depth` L2 atau tambah serat kain di L0.
 - Path R2: bucket `rimba-themes`, prefix `adat/kenangan/prada-melati/`. Disajikan lewat `https://assets-themes.rimba.io`.
@@ -28,7 +28,7 @@ Kalau siluet emas pipih ternyata terlihat seperti stiker murah, seluruh art dire
 **Ini satu-satunya task yang butuh manusia.** Claude tidak dapat menggenerate gambar; ia hanya dapat menilainya lewat tool `Read`.
 
 **Files:**
-- Create: `invitation/docs/superpowers/plans/prada-medium-trial.md`
+- Create: `invitation/themes/adat/kenangan/prada-melati/docs/superpowers/specs/2026-07-10-prada-medium-trial.md`
 - Scratch (jangan di-commit): `<scratchpad>/prada-trial/`
 
 **Interfaces:**
@@ -37,25 +37,17 @@ Kalau siluet emas pipih ternyata terlihat seperti stiker murah, seluruh art dire
 
 - [ ] **Step 1: Generate tiga gambar percobaan**
 
-Jalankan ketiga prompt ini di image model pilihanmu. Setiap prompt sudah berdiri sendiri — style bible sudah tertanam. Simpan hasilnya sebagai PNG/WebP di folder scratch.
+Prompt-nya tinggal di spec §5d, bukan di sini. Menyalinnya ke plan akan melahirkan dua versi yang perlahan menyimpang.
 
-Prompt A — `PradaGunungan` (bentuk paling rumit, paling mungkin gagal):
+Buka `themes/adat/kenangan/prada-melati/docs/superpowers/specs/2026-07-10-prada-melati-design.md` §5d, lalu salin **tiga** prompt ini apa adanya ke image model pilihanmu. Setiap prompt sudah berdiri sendiri — style bible §3 tertanam di dalamnya.
 
-```text
-Javanese keraton wedding ornament, flat gold-leaf silhouette in the style of prada cloth and wayang beber. Subject: a single centered gunungan (kayon) — the mountain-shaped shadow-puppet motif — filled with intricate sulur scrolling foliage and small kawung circles. Rendered as burnished gold leaf with fine crackle and visible fabric grain, laid on deep sogan brown #2A1D12. No perspective, no cast shadows, no depth — flat graphic silhouette only. Warm, dark, ceremonial, expensive mood. No people, no text, no lettering, no numbers, no logos, no rectangular frame. Vertical composition, 1200x1800.
-```
+| Prompt | Kenapa ini yang diuji |
+|---|---|
+| `PradaGunungan.webp` | Bentuk paling rumit. Kalau model gagal, ia gagal di sini dulu |
+| `PradaSuluranCornerL.webp` | Menguji apakah "sudut" dipatuhi dan bagian tengah benar-benar kosong |
+| `RonceanMelatiL.webp` | Menguji apakah melati tetap gading dan tidak ikut keemasan |
 
-Prompt B — `PradaSuluranCornerL` (harus terbaca sebagai sudut, bukan objek tengah):
-
-```text
-Javanese keraton wedding ornament, flat gold-leaf silhouette in the style of prada cloth and wayang beber. Subject: sulur scrolling foliage growing from the bottom-left corner inward and upward, leaving the center empty. Rendered as burnished gold leaf with fine crackle and visible fabric grain, on deep sogan brown #2A1D12. No perspective, no cast shadows, no depth — flat graphic silhouette only. Warm, dark, ceremonial. No people, no text, no lettering, no numbers, no logos, no rectangular frame. Square composition, 1200x1200, transparent background.
-```
-
-Prompt C — `RonceanMelatiL` (benang merah; harus gading, bukan emas):
-
-```text
-Strands of jasmine garland (roncean melati) hanging down from the top edge, Javanese wedding style. Flat graphic silhouette, ivory white #F3E9D2 blossoms strung on fine thread, with subtle fabric grain texture. No gold. No perspective, no cast shadows, no depth. Dark sogan brown background #2A1D12. Vertical strands, leaving the center empty. No people, no text, no lettering, no numbers, no logos, no rectangular frame. Tall composition, 600x1800, transparent background.
-```
+Simpan hasilnya sebagai PNG/WebP di folder scratch. Tiga gambar sudah cukup: kalau ketiganya lulus, dua puluh lima sisanya memakai fondasi gaya yang sama.
 
 - [ ] **Step 2: Nilai ketiganya terhadap kriteria terima**
 
@@ -73,12 +65,12 @@ Gagal pada **Kepipihan** atau **Tekstur** = medium gugur. Gagal pada dua lainnya
 
 - [ ] **Step 3: Catat putusannya**
 
-Tulis `invitation/docs/superpowers/plans/prada-medium-trial.md` berisi: ketiga prompt di atas, putusan per kriteria, dan satu paragraf kesimpulan. Kalau `GAGAL`, tulis medium pengganti yang diusulkan dan **berhenti di sini** — spec §2.1 harus dibuka ulang lewat brainstorming, bukan ditambal di plan.
+Tulis `invitation/themes/adat/kenangan/prada-melati/docs/superpowers/specs/2026-07-10-prada-medium-trial.md` berisi: ketiga prompt di atas, putusan per kriteria, dan satu paragraf kesimpulan. Kalau `GAGAL`, tulis medium pengganti yang diusulkan dan **berhenti di sini** — spec §2.1 harus dibuka ulang lewat brainstorming, bukan ditambal di plan.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add invitation/docs/superpowers/plans/prada-medium-trial.md
+git add invitation/themes/adat/kenangan/prada-melati/docs
 git commit -m "docs(prada-melati): putusan uji medium prada gold-leaf"
 ```
 
@@ -245,7 +237,7 @@ Angka di bawah sudah dihitung: `--text-dim #8C8070` yang tertulis di spec §6 **
 **Files:**
 - Create: `invitation/themes/adat/kenangan/prada-melati/scripts/__tests__/contrast-contract.test.mjs`
 - Modify: `invitation/themes/adat/kenangan/prada-melati/invitation.config.json`
-- Modify: `invitation/docs/superpowers/specs/2026-07-10-prada-melati-design.md` (§6, §12)
+- Modify: `invitation/themes/adat/kenangan/prada-melati/docs/superpowers/specs/2026-07-10-prada-melati-design.md` (§6, §12)
 
 **Interfaces:**
 - Produces: `theme.colors` pada `invitation.config.json` — dibaca `buildCssVars`, dipakai seluruh task berikutnya.
@@ -338,7 +330,7 @@ Catatan: `goldDim #8A6E28` hanya 2.38:1 di atas `--surface-2`. Kalau tes kedua g
 
 - [ ] **Step 5: Perbaiki spec agar tidak berbohong**
 
-Di `docs/superpowers/specs/2026-07-10-prada-melati-design.md`:
+Di `themes/adat/kenangan/prada-melati/docs/superpowers/specs/2026-07-10-prada-melati-design.md`:
 
 - §6, baris `--text-dim`: ganti `#8C8070` menjadi `#B3AA9D`, nama tetap "Debu".
 - §6, hapus paragraf **Belum diverifikasi**, ganti dengan: `Kontras diverifikasi terhadap DESIGN_SYSTEM.md §9 dan dijaga oleh scripts/__tests__/contrast-contract.test.mjs.`
@@ -347,7 +339,7 @@ Di `docs/superpowers/specs/2026-07-10-prada-melati-design.md`:
 - [ ] **Step 6: Commit**
 
 ```bash
-git add invitation/themes/adat/kenangan/prada-melati invitation/docs/superpowers/specs/2026-07-10-prada-melati-design.md
+git add invitation/themes/adat/kenangan/prada-melati
 git commit -m "feat(prada-melati): kunci palet sogan, tegakkan kontrak kontras WCAG"
 ```
 
