@@ -93,7 +93,7 @@ export default function KelirScene({
             // Aktor duduk di zona ATAS (spec §4): hero besar di sumbu, ceplok di
             // actorY. Safe-zone teks ada di bawahnya, diatur oleh section.
             ...(isHero
-              ? { top: "5%", height: "56%", aspectRatio: "2 / 3" }
+              ? { top: preset.actorFromTop ? "0%" : "5%", height: "56%", aspectRatio: "2 / 3" }
               : { top: preset.actorY, width: `${(preset.actorScale ?? 0.6) * 100}%`, aspectRatio: "1 / 1" }),
           }}
         >

@@ -111,6 +111,8 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  /* Perluas kotak cat agar descender (mis. 'g') tak terpotong background-clip:text. */
+  padding-bottom: 0.15em;
 }
 
 /* ─── Shimmer animation ──────────────────────────────────────────────────── */

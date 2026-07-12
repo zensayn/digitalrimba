@@ -21,6 +21,8 @@ export interface KelirPreset {
   frame?: string;
   /** Basename hem band di tepi bawah, mis. "HemSulur". Kosong → "TumpalBand". */
   hem?: string;
+  /** Aktor hero menggantung dari tepi atas (Kayon terbalik) → anchor top:0, bukan 5%. */
+  actorFromTop?: boolean;
 }
 
 export const KELIR: Record<string, KelirPreset> = {
@@ -34,7 +36,7 @@ export const KELIR: Record<string, KelirPreset> = {
   gallery:   { actor: "MelatiSprig",      actorScale: 0.40, actorCorners: true, blencongY: "30%", blencongBright: 0.35, frame: "BingkaiTumpal", hem: "HemMelati" },
   rsvp:      { actor: "CeplokSulur",      actorScale: 0.66, actorY: "24%", blencongY: "28%", blencongBright: 0.40, hem: "HemSulur" },
   gift:      { actor: "CeplokMelati",     actorScale: 0.58, actorY: "28%", blencongY: "30%", blencongBright: 0.40, hem: "HemMelati" },
-  closing:   { actor: "AktorKayon",       actorScale: 1.0,                 blencongY: "88%", blencongBright: 1.0 },
+  closing:   { actor: "AktorKayon",       actorScale: 1.0, actorFromTop: true, blencongY: "88%", blencongBright: 1.0 },
 };
 
 export function kelirFor(id: string): KelirPreset | undefined {
