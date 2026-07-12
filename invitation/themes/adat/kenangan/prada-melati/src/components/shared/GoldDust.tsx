@@ -16,14 +16,14 @@ function sr(seed: number) {
 
 export default function GoldDust({ zIndex = 40 }: { zIndex?: number }) {
   const motes = Array.from({ length: COUNT }, (_, i) => {
-    const size = Math.round(12 + sr(i * 13 + 2) * 14); // 12–26px
+    const size = Math.round(8 + sr(i * 13 + 2) * 8); // 8–16px — halus, bukan konfeti
     const left = (sr(i * 7 + 1) * 96 + 2).toFixed(2); // 2–98%
     const dur = (14 + sr(i * 17 + 3) * 8).toFixed(1); // 14–22s
     const delay = (-sr(i * 19 + 4) * Number(dur)).toFixed(1); // negatif → langsung ramai
     const sway = Math.round((sr(i * 23 + 6) - 0.5) * 28); // -14..14px
     const rot = Math.round(sr(i * 11 + 5) * 360); // 0–360° awal
     const flip = sr(i * 29 + 8) > 0.5 ? -1 : 1; // scaleX — serpih tak berarah
-    const peak = (0.28 + sr(i * 31 + 9) * 0.22).toFixed(2); // 0.28–0.50 opacity
+    const peak = (0.18 + sr(i * 31 + 9) * 0.16).toFixed(2); // 0.18–0.34 opacity — debu, tipis
     const name = `gd_${i}`;
     const keyframes =
       `@keyframes ${name}{` +
