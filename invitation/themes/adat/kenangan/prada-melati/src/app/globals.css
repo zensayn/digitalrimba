@@ -249,6 +249,21 @@ textarea.input-gold { resize: none; line-height: 1.6; }
 .ronce { animation: ronce-sway 7.5s ease-in-out infinite; }
 .ronce-paused { animation-play-state: paused; }
 
+/* ─── Debu emas (naik seperti bara pelita) ───────────────────────────────── */
+.gold-dust {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.gold-dust-mote {
+  position: absolute;
+  top: 100%;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ronce { animation: none; }
+  .gold-dust { display: none; }
 }
