@@ -58,3 +58,22 @@ test("blencong: kedip tak beraturan 6 langkah + times + durasi 5s", () => {
 test("blencong: reduced-motion tetap beku (animate undefined)", () => {
   assert.match(kelir, /animate=\{reduced \? undefined :/, "reduced → animate undefined");
 });
+
+// ─── Task 3: Kilau idle shimmer ────────────────────────────────────────────
+const gilt = read("../../src/components/shared/GiltSweep.tsx");
+
+test("kilau: idle shimmer menempel saat tidak reduced (spec gerak §2.3)", () => {
+  assert.match(gilt, /reduced \? undefined : "gilt-idle"/, "kelas gilt-idle hanya saat tidak reduced");
+});
+
+test("globals: @keyframes giltIdle + matikan saat reduced-motion", () => {
+  // `globals` (dibaca di puncak berkas) sudah mencerminkan globals.css final saat
+  // seluruh test dijalankan di Task 3 — semua penyuntingan CSS sudah selesai.
+  assert.match(globals, /@keyframes giltIdle/, "harus ada keyframes giltIdle");
+  assert.match(globals, /\.gilt-idle\s*\{[^}]*animation:\s*giltIdle/, ".gilt-idle memakai animasi giltIdle");
+  assert.match(
+    globals,
+    /prefers-reduced-motion:\s*reduce[\s\S]*\.gilt-idle\s*\{\s*animation:\s*none/,
+    "reduced-motion harus mematikan .gilt-idle",
+  );
+});

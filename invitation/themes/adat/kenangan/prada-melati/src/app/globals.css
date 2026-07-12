@@ -263,7 +263,15 @@ textarea.input-gold { resize: none; line-height: 1.6; }
   will-change: transform, opacity;
 }
 
+/* ─── Kilau idle (logam berdenyut saat diam) ─────────────────────────────── */
+@keyframes giltIdle {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+.gilt-idle { animation: giltIdle 4.5s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   .ronce { animation: none; }
   .gold-dust { display: none; }
+  .gilt-idle { animation: none; }
 }

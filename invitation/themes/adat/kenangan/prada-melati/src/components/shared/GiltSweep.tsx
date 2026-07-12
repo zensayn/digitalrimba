@@ -44,6 +44,7 @@ export default function GiltSweep({ src, progress, className, style, imgStyle }:
       />
       <motion.div
         aria-hidden="true"
+        className={reduced ? undefined : "gilt-idle"}
         style={{
           position: "absolute",
           inset: 0,
