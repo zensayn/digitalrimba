@@ -257,6 +257,10 @@ Risikonya monoton. Penawarnya blencong dan aktor, **bukan** menambah kain.
 | Diam | ambient-wind (goyangan) | **bernapas** — blencong naik-turun pelan |
 | Global | kelopak jatuh | **roncean** menjuntai, bergoyang |
 
+> **Perluasan 2026-07-12:** tiga gerak ambient tambahan (debu emas naik, blencong
+> flicker, kilau idle) didefinisikan di `2026-07-12-prada-melati-motion-design.md`.
+> Semua tetap "cahaya, bukan lintasan" — tak ada parallax/kelopak jatuh.
+
 ### 5.1 Kilau
 
 Tidak butuh aset tambahan. Aset prada yang transparan itu sendiri dipakai
