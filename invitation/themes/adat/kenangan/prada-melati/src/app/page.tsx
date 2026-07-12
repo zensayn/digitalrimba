@@ -1,8 +1,10 @@
 // src/app/page.tsx
 // Server-first: baca config, render section yang enabled lewat RenderSection.
+// Desktop: panel cover kelir kiri + kolom undangan kanan (.app-shell).
 
 import MusicPlayer from "@/components/MusicPlayer";
 import GoldDust from "@/components/shared/GoldDust";
+import DesktopCover from "@/components/shared/DesktopCover";
 import SnapContainer from "@/components/shared/SnapContainer";
 import { renderSection } from "@/components/RenderSection";
 import type { InvitationConfig } from "@/lib/config-types";
@@ -17,9 +19,12 @@ export default function Page() {
     <>
       <MusicPlayer />
       <GoldDust />
-      <SnapContainer>
-        {sectionIds.map((id) => renderSection(id, config))}
-      </SnapContainer>
+      <div className="app-shell">
+        <DesktopCover couple={config.couple} weddingDate={config.weddingDate} />
+        <SnapContainer>
+          {sectionIds.map((id) => renderSection(id, config))}
+        </SnapContainer>
+      </div>
     </>
   );
 }

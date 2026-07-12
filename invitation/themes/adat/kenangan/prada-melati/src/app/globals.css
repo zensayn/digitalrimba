@@ -67,6 +67,30 @@ body {
 .snap-container::-webkit-scrollbar-track { background: var(--bg); }
 .snap-container::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
 
+/* ─── Layout shell (desktop 2-panel) ─────────────────────────────────────── */
+.app-shell { width: 100%; }
+.desktop-cover { display: none; }
+
+@media (min-width: 1024px) {
+  .app-shell {
+    display: flex;
+    justify-content: flex-start;
+  }
+  .desktop-cover {
+    display: block;
+    position: relative;
+    flex: 1 1 auto;
+    height: 100dvh;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+  }
+  .snap-container {
+    flex: 0 0 clamp(360px, 46vw, 420px);
+    max-width: 420px;
+    box-shadow: -24px 0 48px rgba(0, 0, 0, 0.35);
+  }
+}
+
 .snap-section {
   height: 100dvh;
   width: 100%;

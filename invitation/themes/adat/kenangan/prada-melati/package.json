@@ -11,6 +11,7 @@
     "test:contrast": "node --test scripts/__tests__/contrast-contract.test.mjs",
     "test:scene": "node --test scripts/__tests__/scene-kelir.test.mjs",
     "test:motion": "node --test scripts/__tests__/motion.test.mjs",
+    "test:desktop": "node --test scripts/__tests__/desktop.test.mjs",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
