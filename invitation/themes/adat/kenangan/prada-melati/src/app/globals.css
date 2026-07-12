@@ -239,3 +239,16 @@ textarea.input-gold { resize: none; line-height: 1.6; }
 /* ─── RSVP scrollable area ───────────────────────────────────────────────── */
 .overflow-y-auto::-webkit-scrollbar { display: none; }
 .overflow-y-auto { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ─── Roncean melati (sway) ──────────────────────────────────────────────── */
+@keyframes ronce-sway {
+  0%, 100% { transform: rotate(-1.1deg); }
+  50%      { transform: rotate(1.1deg); }
+}
+
+.ronce { animation: ronce-sway 7.5s ease-in-out infinite; }
+.ronce-paused { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ronce { animation: none; }
+}
