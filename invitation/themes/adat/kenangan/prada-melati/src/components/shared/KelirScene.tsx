@@ -73,7 +73,7 @@ export default function KelirScene({
         transition={
           reduced
             ? undefined
-            : { duration: 5, ease: "easeInOut", repeat: Infinity, times: [0, 0.15, 0.4, 0.6, 0.82, 1] }
+            : { duration: 5, ease: "easeInOut", repeat: Infinity, repeatType: "mirror", times: [0, 0.15, 0.4, 0.6, 0.82, 1] }
         }
       />
 

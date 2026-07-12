@@ -260,7 +260,6 @@ textarea.input-gold { resize: none; line-height: 1.6; }
   position: absolute;
   top: 100%;
   opacity: 0;
-  will-change: transform, opacity;
 }
 
 /* ─── Kilau idle (logam berdenyut saat diam) ─────────────────────────────── */
