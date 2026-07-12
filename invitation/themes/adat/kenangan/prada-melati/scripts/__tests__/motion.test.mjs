@@ -37,3 +37,24 @@ test("globals: .gold-dust fixed + reduced-motion sembunyikan (spec gerak §2.1)"
     "reduced-motion harus display:none untuk .gold-dust",
   );
 });
+
+// ─── Task 2: Blencong flicker ──────────────────────────────────────────────
+const kelir = read("../../src/components/shared/KelirScene.tsx");
+
+test("blencong: napas sinus lama diganti (spec gerak §2.2)", () => {
+  assert.doesNotMatch(
+    kelir,
+    /\[0\.85,\s*1,\s*0\.85\]/,
+    "opacity napas simetris lama harus hilang",
+  );
+});
+
+test("blencong: kedip tak beraturan 6 langkah + times + durasi 5s", () => {
+  assert.match(kelir, /opacity:\s*\[0\.9,\s*1,\s*0\.86,\s*0\.97,\s*0\.88,\s*1\]/, "opacity flicker 6 langkah");
+  assert.match(kelir, /times:\s*\[/, "harus pakai times tak rata");
+  assert.match(kelir, /duration:\s*5\b/, "durasi flicker 5s");
+});
+
+test("blencong: reduced-motion tetap beku (animate undefined)", () => {
+  assert.match(kelir, /animate=\{reduced \? undefined :/, "reduced → animate undefined");
+});

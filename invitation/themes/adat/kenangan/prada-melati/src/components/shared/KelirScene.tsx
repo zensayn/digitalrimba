@@ -58,7 +58,7 @@ export default function KelirScene({
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, background: "var(--bg)", zIndex: 0 }} />
       )}
 
-      {/* 2 — Blencong (bernapas): pendar hangat menembus tenunan. Nol byte. */}
+      {/* 2 — Blencong (berkedip): pendar hangat menembus tenunan. Nol byte. */}
       <motion.div
         aria-hidden="true"
         style={{
@@ -68,8 +68,13 @@ export default function KelirScene({
           zIndex: 1,
           background: `radial-gradient(60% 45% at 50% ${preset.blencongY}, rgba(227,199,102,${0.22 * preset.blencongBright}) 0%, rgba(201,162,39,${0.10 * preset.blencongBright}) 35%, transparent 70%)`,
         }}
-        animate={reduced ? undefined : { opacity: [0.85, 1, 0.85], scale: [1, 1.04, 1] }}
-        transition={reduced ? undefined : { duration: 6, ease: "easeInOut", repeat: Infinity }}
+        // Kedip pelita minyak: keyframe tak simetris, bukan napas sinus (spec gerak §2.2).
+        animate={reduced ? undefined : { opacity: [0.9, 1, 0.86, 0.97, 0.88, 1], scale: [1, 1.03, 1.01, 1.04, 1, 1.02] }}
+        transition={
+          reduced
+            ? undefined
+            : { duration: 5, ease: "easeInOut", repeat: Infinity, times: [0, 0.15, 0.4, 0.6, 0.82, 1] }
+        }
       />
 
       {/* 3 — Aktor (menancap + kilau). gallery pakai sprig 4-sudut; sisanya satu aktor. */}
