@@ -1,49 +1,49 @@
 {
   "couple": {
     "groom": {
-      "name": "GROOM_FIRSTNAME",
-      "fullName": "Full Name Groom",
-      "parents": "Putra Bapak ... & Ibu ...",
-      "photo": "/images/groom.jpg",
-      "instagram": "@groom.handle"
+      "name": "Bagas",
+      "fullName": "Bagas Adiwijaya",
+      "parents": "Putra dari Bapak H. Suryanto & Ibu Hj. Wahyuni",
+      "photo": "https://picsum.photos/seed/groomprada/400/533",
+      "instagram": "@bagas.adiwijaya"
     },
     "bride": {
-      "name": "BRIDE_FIRSTNAME",
-      "fullName": "Full Name Bride",
-      "parents": "Putri Bapak ... & Ibu ...",
-      "photo": "/images/bride.jpg",
-      "instagram": "@bride.handle"
+      "name": "Larasati",
+      "fullName": "Larasati Kusuma Wardani",
+      "parents": "Putri dari Bapak H. Hartono & Ibu Hj. Sulastri",
+      "photo": "https://picsum.photos/seed/brideprada/400/533",
+      "instagram": "@larasati.kusuma"
     },
-    "hashtag": "#GroomBride2026",
-    "quote": "Tulis kutipan atau ayat favorit pasangan di sini."
+    "hashtag": "#BagasLarasati2026",
+    "quote": "Dua hati yang dipertemukan dan disatukan atas kehendak-Nya."
   },
   "events": {
     "akad": {
       "title": "Akad Nikah",
       "day": "Sabtu",
-      "date": "1 Januari 2026",
+      "date": "20 Juni 2026",
       "time": "08.00 – 10.00 WIB",
-      "venue": "Nama Masjid / Tempat Akad",
-      "address": "Jl. Alamat Lengkap, Kota",
-      "mapsUrl": "https://maps.google.com/?q=LAT,LNG",
-      "embedUrl": "https://maps.google.com/maps?q=LAT,LNG&z=16&output=embed",
-      "startISO": "20260101T010000Z",
-      "endISO": "20260101T030000Z"
+      "venue": "Masjid Agung Keraton Surakarta",
+      "address": "Jl. Alun-Alun Utara, Surakarta, Jawa Tengah",
+      "mapsUrl": "https://maps.google.com/?q=Masjid+Agung+Surakarta",
+      "embedUrl": "https://maps.google.com/maps?q=Masjid+Agung+Surakarta&z=16&output=embed",
+      "startISO": "20260620T010000Z",
+      "endISO": "20260620T030000Z"
     },
     "resepsi": {
       "title": "Resepsi",
       "day": "Sabtu",
-      "date": "1 Januari 2026",
+      "date": "20 Juni 2026",
       "time": "11.00 – 15.00 WIB",
-      "venue": "Nama Gedung / Tempat Resepsi",
-      "address": "Jl. Alamat Lengkap, Kota",
-      "mapsUrl": "https://maps.google.com/?q=LAT,LNG",
-      "embedUrl": "https://maps.google.com/maps?q=LAT,LNG&z=16&output=embed",
-      "startISO": "20260101T040000Z",
-      "endISO": "20260101T080000Z"
+      "venue": "Pendhapa Ageng Sasana Sewaka",
+      "address": "Jl. Slamet Riyadi No. 275, Surakarta, Jawa Tengah",
+      "mapsUrl": "https://maps.google.com/?q=Keraton+Surakarta",
+      "embedUrl": "https://maps.google.com/maps?q=Keraton+Surakarta&z=16&output=embed",
+      "startISO": "20260620T040000Z",
+      "endISO": "20260620T080000Z"
     }
   },
-  "weddingDate": "2026-01-01T08:00:00",
+  "weddingDate": "2026-06-20T08:00:00",
   "gallery": [
     { "src": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80", "alt": "Foto 1" },
     { "src": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=600&q=80", "alt": "Foto 2" },
@@ -52,45 +52,45 @@
     { "src": "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=600&q=80", "alt": "Foto 5" }
   ],
   "bankAccounts": [
-    { "bank": "BCA", "name": "Nama Penerima", "number": "1234 5678 9012" },
-    { "bank": "Mandiri", "name": "Nama Penerima", "number": "9876 5432 1098" }
+    { "bank": "BCA", "name": "Bagas Adiwijaya", "number": "1234 5678 9012" },
+    { "bank": "Mandiri", "name": "Larasati Kusuma Wardani", "number": "9876 5432 1098" }
   ],
   "loveStory": [
     {
       "chapter": "Awal Bertemu",
-      "year": "20XX",
-      "description": "Cerita singkat tentang pertemuan pertama.",
+      "year": "2019",
+      "description": "Dipertemukan di sebuah acara kampus, berbagi cerita hingga larut.",
       "image": "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=600&q=80"
     },
     {
       "chapter": "Jatuh Cinta",
-      "year": "20XX",
-      "description": "Momen ketika perasaan itu mulai tumbuh.",
+      "year": "2021",
+      "description": "Kedekatan tumbuh menjadi rasa yang tak lagi bisa disembunyikan.",
       "image": "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=600&q=80"
     },
     {
       "chapter": "Bersama",
-      "year": "20XX",
-      "description": "Perjalanan indah yang dilalui berdua.",
+      "year": "2023",
+      "description": "Melangkah beriringan melewati suka dan duka, saling menguatkan.",
       "image": "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80"
     },
     {
       "chapter": "Lamaran",
-      "year": "20XX",
-      "description": "Momen ia berkata iya.",
+      "year": "2025",
+      "description": "Dengan restu kedua keluarga, ia berkata iya untuk selamanya.",
       "image": "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=600&q=80"
     }
   ],
   "dressCode": {
-    "theme": "Nama Tema Dress Code",
-    "description": "Deskripsi singkat panduan busana untuk tamu undangan.",
+    "theme": "Sogan & Prada Emas",
+    "description": "Kenakan busana batik atau adat Jawa bernuansa sogan dengan aksen emas.",
     "colors": [
-      { "hex": "#FFFFFF", "name": "Warna 1" },
-      { "hex": "#CCCCCC", "name": "Warna 2" },
-      { "hex": "#999999", "name": "Warna 3" },
-      { "hex": "#666666", "name": "Warna 4" }
+      { "hex": "#2A1D12", "name": "Sogan" },
+      { "hex": "#4A3524", "name": "Kayu Jati" },
+      { "hex": "#C9A227", "name": "Prada" },
+      { "hex": "#F3E9D2", "name": "Gading" }
     ],
-    "avoid": ["Warna yang dihindari 1", "Warna yang dihindari 2"]
+    "avoid": ["Putih polos", "Warna neon terang"]
   },
   "theme": {
     "colors": {
