@@ -132,10 +132,10 @@ export default function KelirScene({
         />
       ))}
 
-      {/* 5 — Tumpal (hem bawah, diam). 404 tersembunyi sampai Fase 2. */}
+      {/* 5 — Hem (tumpal/sulur/melati/kawung per preset, diam). 404 tersembunyi. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={asset("TumpalBand")}
+        src={asset(preset.hem ?? "TumpalBand")}
         alt=""
         aria-hidden="true"
         onError={hide}

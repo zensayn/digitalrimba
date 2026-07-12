@@ -19,19 +19,21 @@ export interface KelirPreset {
   blencongBright: number;
   /** Basename bingkai foto opsional, mis. "BingkaiGebyok". */
   frame?: string;
+  /** Basename hem band di tepi bawah, mis. "HemSulur". Kosong → "TumpalBand". */
+  hem?: string;
 }
 
 export const KELIR: Record<string, KelirPreset> = {
   cover:     { actor: "AktorGunungan",    actorScale: 1.0,                 blencongY: "38%", blencongBright: 0.9 },
-  greeting:  { actor: "CeplokSulur",      actorScale: 0.55, actorY: "26%", blencongY: "30%", blencongBright: 0.35 },
-  couple:    { actor: "CeplokMelati",     actorScale: 0.42, actorY: "4%",  blencongY: "28%", blencongBright: 0.50, frame: "BingkaiGebyok" },
-  lovestory: { actor: "CeplokKawung",     actorScale: 0.50, actorY: "18%", blencongY: "24%", blencongBright: 0.40, frame: "BingkaiTumpal" },
+  greeting:  { actor: "CeplokSulur",      actorScale: 0.55, actorY: "26%", blencongY: "30%", blencongBright: 0.35, hem: "HemSulur" },
+  couple:    { actor: "CeplokMelati",     actorScale: 0.42, actorY: "4%",  blencongY: "28%", blencongBright: 0.50, frame: "BingkaiGebyok", hem: "HemMelati" },
+  lovestory: { actor: "CeplokKawung",     actorScale: 0.50, actorY: "18%", blencongY: "24%", blencongBright: 0.40, frame: "BingkaiTumpal", hem: "HemKawung" },
   akad:      { actor: "AktorCandiBentar", actorScale: 1.0,                 blencongY: "44%", blencongBright: 0.75 },
   resepsi:   { actor: "AktorPaduraksa",   actorScale: 1.0,                 blencongY: "42%", blencongBright: 0.75 },
-  dresscode: { actor: "CeplokKawung",     actorScale: 0.62, actorY: "30%", blencongY: "32%", blencongBright: 0.40 },
-  gallery:   { actor: "MelatiSprig",      actorScale: 0.40, actorCorners: true, blencongY: "30%", blencongBright: 0.35, frame: "BingkaiTumpal" },
-  rsvp:      { actor: "CeplokSulur",      actorScale: 0.66, actorY: "24%", blencongY: "28%", blencongBright: 0.40 },
-  gift:      { actor: "CeplokMelati",     actorScale: 0.58, actorY: "28%", blencongY: "30%", blencongBright: 0.40 },
+  dresscode: { actor: "CeplokKawung",     actorScale: 0.62, actorY: "30%", blencongY: "32%", blencongBright: 0.40, hem: "HemKawung" },
+  gallery:   { actor: "MelatiSprig",      actorScale: 0.40, actorCorners: true, blencongY: "30%", blencongBright: 0.35, frame: "BingkaiTumpal", hem: "HemMelati" },
+  rsvp:      { actor: "CeplokSulur",      actorScale: 0.66, actorY: "24%", blencongY: "28%", blencongBright: 0.40, hem: "HemSulur" },
+  gift:      { actor: "CeplokMelati",     actorScale: 0.58, actorY: "28%", blencongY: "30%", blencongBright: 0.40, hem: "HemMelati" },
   closing:   { actor: "AktorKayon",       actorScale: 1.0,                 blencongY: "88%", blencongBright: 1.0 },
 };
 
