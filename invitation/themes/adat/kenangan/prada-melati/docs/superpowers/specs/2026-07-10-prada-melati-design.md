@@ -398,6 +398,10 @@ Javanese keraton wedding ornament in the manner of prada cloth and wayang beber.
 Javanese keraton wedding ornament in the manner of prada cloth and wayang beber. Flat gold-leaf silhouette: burnished gold #C9A227, fine crackle, visible fabric grain. Uniform line weight, hard-edged contours, no tapering strokes, no gradient shading. Interiors filled with dense isen-isen — cecek dots and sawut hatching. Ceremonial, hieratic, still. No perspective, no cast shadows, no depth, no volumetric light. No people, no text, no lettering, no numbers, no logos. Subject: a row of tumpal — isosceles triangles standing on the bottom edge, tips pointing up, each filled with a pucuk rebung (bamboo shoot) motif and cecek dots. The triangles are identical, evenly spaced, their bases touching. Above their tips the canvas is empty. Gold leaf only, on a fully transparent background (PNG with alpha) — no cloth, no backdrop, no ground, no cast shadow. Wide composition, 1800x360, seamless on the left and right edges.
 ```
 
+> **Perluasan 2026-07-12:** hem tak lagi selalu `TumpalBand`. Tiga hem alternatif
+> (`HemSulur`, `HemMelati`, `HemKawung`) berima dengan motif aktor per section —
+> lihat `2026-07-12-prada-melati-hem-variasi-design.md`.
+
 ### 6d. Prompt — Aktor
 
 **`AktorGunungan.webp`** — 1200×1800, transparan
