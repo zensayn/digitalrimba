@@ -17,7 +17,7 @@ export default function Page() {
 
   return (
     <>
-      <MusicPlayer />
+      {config.music && <MusicPlayer music={config.music} />}
       <GoldDust />
       <div className="app-shell">
         <DesktopCover couple={config.couple} weddingDate={config.weddingDate} />

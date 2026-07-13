@@ -109,6 +109,12 @@
       "bodyFont":    "Lora"
     }
   },
+  "music": {
+    "src": "/music/prada-melati.mp3",
+    "coverArt": "/images/vinyl-label.png",
+    "title": "Judul Lagu",
+    "artist": "Nama Artis"
+  },
   "sections": {
     "order": ["cover", "greeting", "couple", "lovestory", "akad", "resepsi", "dresscode", "gallery", "rsvp", "gift", "closing"],
     "enabled": {

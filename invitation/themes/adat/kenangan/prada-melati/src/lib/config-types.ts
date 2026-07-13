@@ -67,6 +67,13 @@ export interface InvitationTheme {
   typography: ThemeTypography;
 }
 
+export interface MusicConfig {
+  src: string;
+  coverArt: string;
+  title: string;
+  artist: string;
+}
+
 export interface InvitationConfig {
   couple: {
     groom: PersonConfig;
@@ -89,6 +96,7 @@ export interface InvitationConfig {
     avoid: string[];
   };
   theme: InvitationTheme;
+  music?: MusicConfig;
   sections: {
     order: string[];
     enabled: Record<string, boolean>;
