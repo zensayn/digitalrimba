@@ -76,7 +76,14 @@ export default function MusicPlayer({ music }: MusicPlayerProps) {
             <div
               className="relative cursor-pointer select-none h-[72px] w-[72px] md:h-20 md:w-20"
               onClick={toggle}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  toggle();
+                }
+              }}
               role="button"
+              tabIndex={0}
               aria-label={playing ? "Jeda musik" : "Putar musik"}
               title={playing ? "Jeda" : "Putar"}
             >
@@ -90,7 +97,7 @@ export default function MusicPlayer({ music }: MusicPlayerProps) {
                 {/* Tonearm base */}
                 <div
                   className="absolute top-0 right-0 w-3 h-3 rounded-full shadow-md transform translate-x-1/2 -translate-y-1/2 z-10"
-                  style={{ background: "var(--gold-dim)", border: "2px solid var(--surface2)" }}
+                  style={{ background: "var(--gold-dim)", border: "2px solid var(--surface-2)" }}
                 />
                 {/* Tonearm stick & needle */}
                 <div
@@ -137,7 +144,7 @@ export default function MusicPlayer({ music }: MusicPlayerProps) {
                 {/* Center label + hole */}
                 <div
                   className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3 rounded-full shadow-inner flex items-center justify-center"
-                  style={{ background: "var(--surface2)", border: "1px solid var(--gold)" }}
+                  style={{ background: "var(--surface-2)", border: "1px solid var(--gold)" }}
                 >
                   <div
                     className="w-1.5 h-1.5 rounded-full"
