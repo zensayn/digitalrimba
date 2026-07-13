@@ -107,18 +107,45 @@ export default function MusicPlayer({ music }: MusicPlayerProps) {
                 boxShadow: "0 3px 14px rgba(20,12,6,0.35)",
               }}
             >
-              {/* Center label */}
+              {/* Foto sebagai muka piringan (picture disc). Kalau coverArt
+                  kosong/404, layer ini transparan → gradient vinyl tampil. */}
+              {music.coverArt && (
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    borderRadius: "50%",
+                    backgroundImage: `url(${music.coverArt})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                />
+              )}
+              {/* Alur & vignette tepi supaya tetap terbaca sebagai piringan */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  borderRadius: "50%",
+                  pointerEvents: "none",
+                  background:
+                    "radial-gradient(closest-side circle at center, transparent 60%, rgba(0,0,0,0.28) 78%, transparent 80%)",
+                  boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.35), inset 0 2px 6px rgba(0,0,0,0.35)",
+                }}
+              />
+              {/* Hub label tengah */}
               <div
                 style={{
                   position: "absolute",
                   top: "50%",
                   left: "50%",
                   transform: "translate(-50%, -50%)",
-                  width: 18,
-                  height: 18,
+                  width: 16,
+                  height: 16,
                   borderRadius: "50%",
                   background: "var(--surface-2)",
                   border: "1px solid var(--gold-dim)",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
                 }}
               />
               {/* Spindle dot — indikator play */}
