@@ -243,25 +243,6 @@ textarea.input-gold { resize: none; line-height: 1.6; }
 .btn-gold:hover::before { transform: scaleX(1); }
 .btn-gold:hover { color: var(--bg); }
 
-/* ─── Music player bar ───────────────────────────────────────────────────── */
-.music-player-bar {
-  position: fixed;
-  bottom: calc(24px + env(safe-area-inset-bottom));
-  right: 20px;
-  left: auto;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 20px;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  white-space: nowrap;
-}
-
 /* ─── RSVP scrollable area ───────────────────────────────────────────────── */
 .overflow-y-auto::-webkit-scrollbar { display: none; }
 .overflow-y-auto { -ms-overflow-style: none; scrollbar-width: none; }
