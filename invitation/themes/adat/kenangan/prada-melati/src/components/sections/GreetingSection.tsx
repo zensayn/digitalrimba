@@ -9,8 +9,13 @@ export default function GreetingSection() {
     <section className="snap-section">
       <KelirScene preset={preset} kain="KainBadan">
         <SceneContent align="bottom" maxWidth={300}>
-          <p className="font-label text-xs uppercase tracking-[0.28em] text-[var(--text-dim)]">
-            Bismillahirrahmanirrahim
+          <p
+            className="font-display text-[var(--gold)]"
+            dir="rtl"
+            lang="ar"
+            style={{ fontSize: "clamp(24px, 8vw, 38px)", lineHeight: 1.7, textShadow: "0 2px 16px rgba(0,0,0,0.7)" }}
+          >
+            بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
           </p>
           <div className="gold-divider mx-auto my-4" />
           <p

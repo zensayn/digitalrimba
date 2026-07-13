@@ -11,6 +11,7 @@ import type { WheelEvent } from "react";
 import KelirScene from "./KelirScene";
 import RonceanMelati from "./RonceanMelati";
 import SceneContent from "./SceneContent";
+import Countdown from "./Countdown";
 import { kelirFor } from "./sceneKelir";
 import GuestName from "@/components/GuestName";
 import type { InvitationConfig } from "@/lib/config-types";
@@ -52,6 +53,9 @@ export default function DesktopCover({
           </h1>
           <div className="gold-divider mx-auto my-5" />
           <p className="font-body text-[var(--text-muted)]">{dateStr}</p>
+          <div className="mt-6">
+            <Countdown targetDate={weddingDate} />
+          </div>
 
           <div className="mt-9 flex flex-col items-center gap-1.5">
             <p className="font-label text-[10px] uppercase tracking-[0.25em] text-[var(--text-dim)]">
