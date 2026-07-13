@@ -7,7 +7,7 @@ import { hideOnError } from "@/lib/assets";
 import type { InvitationConfig } from "@/lib/config-types";
 
 export default function GallerySection({ gallery }: { gallery: InvitationConfig["gallery"] }) {
-  const preset = kelirFor("gallery")!;
+  const preset = kelirFor("gallery");
 
   return (
     <section className="snap-section">

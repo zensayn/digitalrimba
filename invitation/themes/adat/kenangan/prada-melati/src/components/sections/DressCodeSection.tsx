@@ -4,7 +4,7 @@ import { kelirFor } from "@/components/shared/sceneKelir";
 import type { InvitationConfig } from "@/lib/config-types";
 
 export default function DressCodeSection({ dressCode }: { dressCode: InvitationConfig["dressCode"] }) {
-  const preset = kelirFor("dresscode")!;
+  const preset = kelirFor("dresscode");
 
   return (
     <section className="snap-section">

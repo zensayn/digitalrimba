@@ -23,7 +23,7 @@ export default function DesktopCover({
   couple: InvitationConfig["couple"];
   weddingDate: string;
 }) {
-  const preset = kelirFor("cover")!;
+  const preset = kelirFor("cover");
   const dateStr = new Date(weddingDate).toLocaleDateString("id-ID", {
     weekday: "long",
     day: "numeric",

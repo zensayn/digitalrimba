@@ -6,7 +6,8 @@ import {
   useReducedMotion,
   type MotionValue,
 } from "framer-motion";
-import type { CSSProperties, SyntheticEvent } from "react";
+import type { CSSProperties } from "react";
+import { hideOnError } from "@/lib/assets";
 
 const SWEEP_ANGLE = 105; // deg, tetap (spec §5.1)
 
@@ -18,10 +19,6 @@ export interface GiltSweepProps {
   className?: string;
   style?: CSSProperties;
   imgStyle?: CSSProperties;
-}
-
-function hide(e: SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
 }
 
 export default function GiltSweep({ src, progress, className, style, imgStyle }: GiltSweepProps) {
@@ -39,7 +36,7 @@ export default function GiltSweep({ src, progress, className, style, imgStyle }:
         aria-hidden="true"
         draggable={false}
         decoding="async"
-        onError={hide}
+        onError={hideOnError}
         style={{ display: "block", width: "100%", height: "100%", objectFit: "contain", ...imgStyle }}
       />
       <motion.div

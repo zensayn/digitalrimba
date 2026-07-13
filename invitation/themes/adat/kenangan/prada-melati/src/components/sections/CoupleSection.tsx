@@ -52,7 +52,7 @@ function Person({
 }
 
 export default function CoupleSection({ couple }: { couple: InvitationConfig["couple"] }) {
-  const preset = kelirFor("couple")!;
+  const preset = kelirFor("couple");
 
   return (
     <section className="snap-section">

@@ -19,7 +19,7 @@ export default function EventSection({
   index: number;
   sectionId: string;
 }) {
-  const preset = kelirFor(sectionId)!;
+  const preset = kelirFor(sectionId);
   const isAkad = index === 0;
   const [mapOn, setMapOn] = useState(false);
   const [dNum, dMonth, dYear] = event.date.split(" ");
@@ -87,7 +87,12 @@ export default function EventSection({
                 role="button"
                 tabIndex={0}
                 aria-label="Aktifkan peta"
-                onKeyDown={(e) => e.key === "Enter" && setMapOn(true)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setMapOn(true);
+                  }
+                }}
                 style={{ position: "absolute", inset: 0, cursor: "pointer", display: "flex", alignItems: "flex-end", justifyContent: "center", paddingBottom: 10 }}
               >
                 <span className="font-label" style={{ fontSize: 9, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--text)", background: "rgba(20,12,6,0.85)", padding: "4px 10px" }}>

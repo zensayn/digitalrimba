@@ -7,7 +7,7 @@ import { hideOnError } from "@/lib/assets";
 import type { InvitationConfig } from "@/lib/config-types";
 
 export default function LoveStorySection({ loveStory }: { loveStory: InvitationConfig["loveStory"] }) {
-  const preset = kelirFor("lovestory")!;
+  const preset = kelirFor("lovestory");
 
   return (
     <section className="snap-section">

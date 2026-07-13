@@ -4,7 +4,7 @@ import { kelirFor } from "@/components/shared/sceneKelir";
 import type { InvitationConfig } from "@/lib/config-types";
 
 export default function ClosingSection({ couple }: { couple: InvitationConfig["couple"] }) {
-  const preset = kelirFor("closing")!;
+  const preset = kelirFor("closing");
 
   return (
     <section className="snap-section">

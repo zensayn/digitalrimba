@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Copy, Check } from "lucide-react";
 
 import KelirScene from "@/components/shared/KelirScene";
@@ -9,14 +9,18 @@ import { kelirFor } from "@/components/shared/sceneKelir";
 import type { InvitationConfig } from "@/lib/config-types";
 
 export default function GiftSection({ bankAccounts }: { bankAccounts: InvitationConfig["bankAccounts"] }) {
-  const preset = kelirFor("gift")!;
+  const preset = kelirFor("gift");
   const [copied, setCopied] = useState<number | null>(null);
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const copy = (num: string, i: number) => {
     const clean = num.replace(/\s/g, "");
-    navigator.clipboard?.writeText(clean);
+    // Optional chaining pendek-sirkuit: kalau clipboard tak ada, .catch tak dipanggil.
+    navigator.clipboard?.writeText(clean).catch(() => {});
     setCopied(i);
-    setTimeout(() => setCopied(null), 2000);
+    // Reset satu timer saja — salin cepat antar-rekening tak saling memotong.
+    if (resetTimer.current) clearTimeout(resetTimer.current);
+    resetTimer.current = setTimeout(() => setCopied(null), 2000);
   };
 
   return (

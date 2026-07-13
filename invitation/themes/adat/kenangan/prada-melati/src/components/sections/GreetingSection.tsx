@@ -3,7 +3,7 @@ import SceneContent from "@/components/shared/SceneContent";
 import { kelirFor } from "@/components/shared/sceneKelir";
 
 export default function GreetingSection() {
-  const preset = kelirFor("greeting")!;
+  const preset = kelirFor("greeting");
 
   return (
     <section className="snap-section">

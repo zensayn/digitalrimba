@@ -39,6 +39,8 @@ export const KELIR: Record<string, KelirPreset> = {
   closing:   { actor: "AktorKayon",       actorScale: 1.0, actorFromTop: true, blencongY: "88%", blencongBright: 1.0 },
 };
 
-export function kelirFor(id: string): KelirPreset | undefined {
-  return KELIR[id];
+export function kelirFor(id: string): KelirPreset {
+  const preset = KELIR[id];
+  if (!preset) throw new Error(`kelirFor: preset Kelir tidak dikenal "${id}"`);
+  return preset;
 }

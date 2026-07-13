@@ -8,7 +8,7 @@ import SceneContent from "@/components/shared/SceneContent";
 import { kelirFor } from "@/components/shared/sceneKelir";
 
 export default function RSVPSection() {
-  const preset = kelirFor("rsvp")!;
+  const preset = kelirFor("rsvp");
   const [name, setName] = useState("");
   const [attendance, setAttendance] = useState<"hadir" | "tidak_hadir" | null>(null);
   const [pax, setPax] = useState(1);

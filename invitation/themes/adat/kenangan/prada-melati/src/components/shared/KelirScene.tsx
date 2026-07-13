@@ -1,16 +1,12 @@
 "use client";
 
-import { useRef, type ReactNode, type SyntheticEvent } from "react";
+import { useRef, type ReactNode } from "react";
 import { motion, useScroll, useInView, useReducedMotion } from "framer-motion";
 
-import { asset } from "@/lib/assets";
+import { asset, hideOnError } from "@/lib/assets";
 import { useScrollContainer } from "./scroll-context";
 import GiltSweep from "./GiltSweep";
 import type { KelirPreset } from "./sceneKelir";
-
-function hide(e: SyntheticEvent<HTMLImageElement>) {
-  e.currentTarget.style.display = "none";
-}
 
 export default function KelirScene({
   preset,
@@ -55,7 +51,7 @@ export default function KelirScene({
           src={asset(kain)}
           alt=""
           aria-hidden="true"
-          onError={hide}
+          onError={hideOnError}
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }}
         />
       ) : (
@@ -123,7 +119,7 @@ export default function KelirScene({
           src={asset("PinggiranTile")}
           alt=""
           aria-hidden="true"
-          onError={hide}
+          onError={hideOnError}
           style={{
             position: "absolute",
             top: 0,
@@ -144,7 +140,7 @@ export default function KelirScene({
         src={asset(preset.hem ?? "TumpalBand")}
         alt=""
         aria-hidden="true"
-        onError={hide}
+        onError={hideOnError}
         style={{ position: "absolute", left: 0, right: 0, bottom: 0, width: "100%", zIndex: 4, pointerEvents: "none" }}
       />
 
