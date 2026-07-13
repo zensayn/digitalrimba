@@ -27,7 +27,7 @@ export default function MusicPlayer({ music }: MusicPlayerProps) {
 
     // Autoplay saat EnvelopeOverlay dispatch event "invitation-open"
     const onOpen = () => {
-      audioRef.current?.play().then(() => setPlaying(true)).catch(() => {});
+      audioRef.current?.play().then(() => { setPlaying(true); setReady(true); }).catch(() => {});
     };
     document.addEventListener("invitation-open", onOpen);
 
@@ -45,7 +45,7 @@ export default function MusicPlayer({ music }: MusicPlayerProps) {
       audio.pause();
       setPlaying(false);
     } else {
-      audio.play().then(() => setPlaying(true)).catch(() => {});
+      audio.play().then(() => { setPlaying(true); setReady(true); }).catch(() => {});
     }
   };
 
@@ -56,7 +56,7 @@ export default function MusicPlayer({ music }: MusicPlayerProps) {
         src={music.src}
         loop
         preload="metadata"
-        onCanPlayThrough={() => setReady(true)}
+        onCanPlay={() => setReady(true)}
         className="hidden"
       />
 
@@ -92,8 +92,8 @@ export default function MusicPlayer({ music }: MusicPlayerProps) {
                 width: 52,
                 height: 52,
                 borderRadius: "50%",
-                cursor: ready ? "pointer" : "default",
-                opacity: ready ? 1 : 0.45,
+                cursor: ready || playing ? "pointer" : "default",
+                opacity: ready || playing ? 1 : 0.45,
                 position: "relative",
                 animationDuration: "4s",
                 animationPlayState: playing ? "running" : "paused",
