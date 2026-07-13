@@ -28,13 +28,15 @@ export default function SceneContent({
       data-prevent-snap={scroll ? "true" : undefined}
       style={{
         width: "100%",
-        height: "100%",
+        flex: "1 0 auto",
+        minHeight: "100dvh",
         display: "flex",
         flexDirection: "column",
-        justifyContent: scroll ? "flex-start" : align === "bottom" ? "flex-end" : "center",
+        justifyContent: scroll ? "center" : align === "bottom" ? "flex-end" : "center",
         alignItems: "center",
         textAlign: "center",
-        overflowY: scroll ? "auto" : "visible",
+        // Konten mengalir & menumbuhkan section — tak ada scroll di dalam section.
+        overflowY: "visible",
         padding: "clamp(84px, 15svh, 150px) clamp(46px, 13vw, 82px) clamp(96px, 16svh, 148px)",
       }}
     >

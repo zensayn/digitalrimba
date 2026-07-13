@@ -43,7 +43,11 @@ export default function KelirScene({
   const start = reduced ? { opacity: 0 } : { opacity: 0, y: "-8%", rotate: 3 };
 
   return (
-    <div ref={sceneRef} className="absolute inset-0 overflow-hidden">
+    <div
+      ref={sceneRef}
+      className="relative w-full overflow-hidden"
+      style={{ flex: "1 0 auto", minHeight: "100dvh", display: "flex", flexDirection: "column" }}
+    >
       {/* 1 — KainBadan (diam, tanpa kilau). Kosong → --bg rata. */}
       {kain ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -92,8 +96,10 @@ export default function KelirScene({
             pointerEvents: "none",
             // Aktor duduk di zona ATAS (spec §4): hero besar di sumbu, ceplok di
             // actorY. Safe-zone teks ada di bawahnya, diatur oleh section.
+            // Ukuran/anchor aktor pakai svh (viewport), bukan % section — supaya
+            // di section yang tumbuh panjang aktor tetap di zona atas & tak membesar.
             ...(isHero
-              ? { top: preset.actorFromTop ? "0%" : "5%", height: "56%", aspectRatio: "2 / 3" }
+              ? { top: preset.actorFromTop ? "0svh" : "5svh", height: "56svh", aspectRatio: "2 / 3" }
               : { top: preset.actorY, width: `${(preset.actorScale ?? 0.6) * 100}%`, aspectRatio: "1 / 1" }),
           }}
         >
@@ -151,7 +157,7 @@ export default function KelirScene({
           display: "flex",
           flexDirection: "column",
           width: "100%",
-          height: "100%",
+          flex: "1 0 auto",
         }}
       >
         {children}
