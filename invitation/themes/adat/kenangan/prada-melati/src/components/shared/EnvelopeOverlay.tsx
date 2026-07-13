@@ -152,7 +152,7 @@ export default function EnvelopeOverlay() {
               }}
             >
               <img
-                src={`${BASE}/AmplopFlap.webp`}
+                src={`${BASE}/PradaAmplopFlap.webp`}
                 alt=""
                 aria-hidden="true"
                 onError={hideOnError}
@@ -185,7 +185,7 @@ export default function EnvelopeOverlay() {
           }}
         >
           <img
-            src={`${BASE}/StempelPrada.webp`}
+            src={`${BASE}/PradaStempel.webp`}
             alt=""
             aria-hidden="true"
             onError={hideOnError}
