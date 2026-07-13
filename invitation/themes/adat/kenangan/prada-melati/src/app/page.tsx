@@ -2,6 +2,8 @@
 // Server-first: baca config, render section yang enabled lewat RenderSection.
 // Desktop: panel cover kelir kiri + kolom undangan kanan (.app-shell).
 
+import MotionProvider from "@/components/shared/MotionProvider";
+import EnvelopeOverlay from "@/components/shared/EnvelopeOverlay";
 import MusicPlayer from "@/components/MusicPlayer";
 import GoldDust from "@/components/shared/GoldDust";
 import DesktopCover from "@/components/shared/DesktopCover";
@@ -16,7 +18,8 @@ export default function Page() {
   const sectionIds = config.sections.order.filter((id) => config.sections.enabled[id]);
 
   return (
-    <>
+    <MotionProvider>
+      <EnvelopeOverlay />
       {config.music && <MusicPlayer music={config.music} />}
       <GoldDust />
       <div className="app-shell">
@@ -25,6 +28,6 @@ export default function Page() {
           {sectionIds.map((id) => renderSection(id, config))}
         </SnapContainer>
       </div>
-    </>
+    </MotionProvider>
   );
 }
