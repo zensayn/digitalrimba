@@ -21,29 +21,29 @@
     "akad": {
       "title": "Akad Nikah",
       "day": "Sabtu",
-      "date": "20 Juni 2026",
+      "date": "19 Juni 2027",
       "time": "08.00 – 10.00 WIB",
       "venue": "Masjid Agung Keraton Surakarta",
       "address": "Jl. Alun-Alun Utara, Surakarta, Jawa Tengah",
       "mapsUrl": "https://maps.google.com/?q=Masjid+Agung+Surakarta",
       "embedUrl": "https://maps.google.com/maps?q=Masjid+Agung+Surakarta&z=16&output=embed",
-      "startISO": "20260620T010000Z",
-      "endISO": "20260620T030000Z"
+      "startISO": "20270619T010000Z",
+      "endISO": "20270619T030000Z"
     },
     "resepsi": {
       "title": "Resepsi",
       "day": "Sabtu",
-      "date": "20 Juni 2026",
+      "date": "19 Juni 2027",
       "time": "11.00 – 15.00 WIB",
       "venue": "Pendhapa Ageng Sasana Sewaka",
       "address": "Jl. Slamet Riyadi No. 275, Surakarta, Jawa Tengah",
       "mapsUrl": "https://maps.google.com/?q=Keraton+Surakarta",
       "embedUrl": "https://maps.google.com/maps?q=Keraton+Surakarta&z=16&output=embed",
-      "startISO": "20260620T040000Z",
-      "endISO": "20260620T080000Z"
+      "startISO": "20270619T040000Z",
+      "endISO": "20270619T080000Z"
     }
   },
-  "weddingDate": "2026-06-20T08:00:00",
+  "weddingDate": "2027-06-19T08:00:00",
   "gallery": [
     { "src": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80", "alt": "Foto 1" },
     { "src": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=600&q=80", "alt": "Foto 2" },
