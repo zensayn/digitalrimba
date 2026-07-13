@@ -110,6 +110,42 @@ export default function KelirScene({
         </motion.div>
       )}
 
+      {/* 3b — Aktor sudut (gallery): sprig kecil dikilau di empat sudut, bukan
+             satu aktor tengah (spec §6f: MelatiSprig ×4 sudut). Tiap sudut
+             diputar 90° agar sprig menjuntai ke arah dalam. 404 tersembunyi. */}
+      {preset.actor && preset.actorCorners && (
+        <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none" }}>
+          {(
+            [
+              { top: 0, left: 0, rotate: 0 },
+              { top: 0, right: 0, rotate: 90 },
+              { bottom: 0, right: 0, rotate: 180 },
+              { bottom: 0, left: 0, rotate: 270 },
+            ] as const
+          ).map(({ rotate, ...anchor }, i) => (
+            <div
+              key={i}
+              style={{
+                position: "absolute",
+                ...anchor,
+                width: `${(preset.actorScale ?? 0.4) * 100}%`,
+                aspectRatio: "1 / 1",
+                transform: `rotate(${rotate}deg)`,
+                transformOrigin: "center",
+              }}
+            >
+              <GiltSweep
+                src={asset(preset.actor!)}
+                progress={scrollYProgress}
+                style={{ width: "100%", height: "100%" }}
+                // Selaras dengan aktor tengah: redam sedikit ke sogan-emas.
+                imgStyle={{ filter: "saturate(0.82) brightness(0.92)" }}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* 4 — Pinggiran kiri & kanan (diam). Sisi kanan diputar 180°, bukan flip
              (spec §6a) — melestarikan arah lereng parang. 404 tersembunyi. */}
       {(["left", "right"] as const).map((side) => (

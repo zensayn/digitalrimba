@@ -198,7 +198,7 @@ tertukar pada ukuran thumbnail.
 Tabel `depth` `0.04 / 0.12 / 0.22` dibuang seluruhnya. Kain tidak punya
 kedalaman, jadi tidak ada angka kedalaman. Yang menggantikannya adalah peran.
 
-```
+```text
 ┌────────────────────┐
 │▚│   ((  ◉  ))   │▞│  blencong bernapas
 │▚│      ╱╲       │▞│  di balik kain

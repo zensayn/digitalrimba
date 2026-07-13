@@ -15,19 +15,19 @@
 //
 // Setiap section:
 //   - Default sebagai Server Component tanpa "use client"
-//   - Mengambil data via: import { useInvitationConfig } from "@/components/RimbaConfigProvider"
+//   - Menerima potongan config (serializable) lewat typed props — bukan hook.
+//     RenderSection yang memilih slice dari config & meneruskannya sebagai props.
 //   - Wajib punya className="snap-section" pada root element
 //   - Beri id sesuai key section: id="cover", id="greeting", dst.
 //
 // Contoh minimal:
 //   // Tambahkan "use client" hanya jika section memakai state/event/browser API.
-//   import { useInvitationConfig } from "@/components/RimbaConfigProvider";
+//   import type { InvitationConfig } from "@/lib/config-types";
 //
-//   export default function CoverSection() {
-//     const config = useInvitationConfig();
+//   export default function CoverSection({ couple }: { couple: InvitationConfig["couple"] }) {
 //     return (
 //       <section id="cover" className="snap-section">
-//         <h1>{config.couple.groom.name} & {config.couple.bride.name}</h1>
+//         <h1>{couple.groom.name} & {couple.bride.name}</h1>
 //       </section>
 //     );
 //   }
