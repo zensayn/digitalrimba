@@ -50,7 +50,7 @@ export default function SceneContent({
           }}
         />
       )}
-      <div className="relative w-full" style={{ maxWidth }}>
+      <div className="scene-reveal relative w-full" style={{ maxWidth }}>
         {children}
       </div>
     </div>

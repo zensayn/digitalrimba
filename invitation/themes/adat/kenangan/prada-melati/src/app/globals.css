@@ -278,8 +278,35 @@ textarea.input-gold { resize: none; line-height: 1.6; }
 }
 .gilt-idle { animation: giltIdle 4.5s ease-in-out infinite; }
 
+/* ─── Reveal konten section (Rise) ───────────────────────────────────────────
+   Anak langsung wrapper .scene-reveal (kicker → judul → divider → teks) naik +
+   memudar masuk, bertahap. Ditahan (paused) sampai RevealController menandai
+   scope-nya [data-inview]. Pakai `translate` (independen dari transform) agar
+   tak bentrok dengan gerak framer-motion di layer scene. */
+.scene-reveal > * {
+  animation: sceneRise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-play-state: paused;
+}
+.scene-reveal[data-inview="true"] > * { animation-play-state: running; }
+
+.scene-reveal > *:nth-child(1) { animation-delay: 0s; }
+.scene-reveal > *:nth-child(2) { animation-delay: 0.08s; }
+.scene-reveal > *:nth-child(3) { animation-delay: 0.16s; }
+.scene-reveal > *:nth-child(4) { animation-delay: 0.24s; }
+.scene-reveal > *:nth-child(5) { animation-delay: 0.32s; }
+.scene-reveal > *:nth-child(6) { animation-delay: 0.40s; }
+.scene-reveal > *:nth-child(7) { animation-delay: 0.48s; }
+.scene-reveal > *:nth-child(n + 8) { animation-delay: 0.56s; }
+
+@keyframes sceneRise {
+  from { opacity: 0; translate: 0 16px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ronce { animation: none; }
   .gold-dust { display: none; }
   .gilt-idle { animation: none; }
+  /* Reveal: tampil utuh tanpa animasi. */
+  .scene-reveal > * { animation: none; opacity: 1; translate: 0 0; }
 }
