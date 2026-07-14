@@ -92,6 +92,26 @@
     ],
     "avoid": ["Putih polos", "Warna neon terang"]
   },
+  "rundown": {
+    "akad": [
+      { "time": "07.30", "title": "Kedatangan tamu & registrasi" },
+      { "time": "08.00", "title": "Ijab kabul" },
+      { "time": "09.00", "title": "Sungkeman & doa" },
+      { "time": "09.30", "title": "Sesi foto keluarga" }
+    ],
+    "resepsi": [
+      { "time": "11.00", "title": "Pembukaan & tari gambyong" },
+      { "time": "11.30", "title": "Kirab pengantin" },
+      { "time": "12.00", "title": "Ramah tamah & santap siang" },
+      { "time": "13.30", "title": "Sesi foto bersama tamu" }
+    ]
+  },
+  "turutMengundang": [
+    { "name": "Kel. Bapak H. Soerjono & Ibu Hj. Wardani", "note": "Sahabat Ayahanda" },
+    { "name": "Kel. Bapak Prawoto Widagdo", "note": "Kerabat Keluarga" },
+    { "name": "Kel. Ibu Dra. Sri Wulandari", "note": "Rekan Keluarga" },
+    { "name": "Keluarga Besar Trah Notokusumo", "note": "Surakarta" }
+  ],
   "theme": {
     "colors": {
       "bg":          "#2A1D12",
@@ -116,7 +136,7 @@
     "artist": "Stephanie Poetri"
   },
   "sections": {
-    "order": ["cover", "greeting", "couple", "lovestory", "akad", "resepsi", "dresscode", "gallery", "rsvp", "gift", "closing"],
+    "order": ["cover", "greeting", "couple", "lovestory", "akad", "resepsi", "dresscode", "gallery", "rsvp", "gift", "rundown", "turut", "closing"],
     "enabled": {
       "cover":     true,
       "greeting":  true,
@@ -128,6 +148,8 @@
       "gallery":   true,
       "rsvp":      true,
       "gift":      true,
+      "rundown":   true,
+      "turut":     true,
       "closing":   true
     }
   }

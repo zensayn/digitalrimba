@@ -6,10 +6,10 @@ const src = readFileSync(new URL("../../src/components/shared/sceneKelir.ts", im
 
 const SECTION_IDS = [
   "cover", "greeting", "couple", "lovestory", "akad", "resepsi",
-  "dresscode", "gallery", "rsvp", "gift", "closing",
+  "dresscode", "gallery", "rsvp", "gift", "rundown", "turut", "closing",
 ];
 
-test("KELIR memuat kesebelas id section (spec §10)", () => {
+test("KELIR memuat semua id section (spec §10 + rundown/turut)", () => {
   for (const id of SECTION_IDS) {
     assert.match(src, new RegExp(`\\b${id}\\s*:`), `preset '${id}' hilang dari KELIR`);
   }
@@ -44,6 +44,8 @@ const HEM = {
   gallery: "HemMelati",
   rsvp: "HemSulur",
   gift: "HemMelati",
+  rundown: "HemKawung",
+  turut: "HemSulur",
 };
 
 for (const [id, hem] of Object.entries(HEM)) {

@@ -7,6 +7,8 @@ import DressCodeSection from "@/components/sections/DressCodeSection";
 import GallerySection from "@/components/sections/GallerySection";
 import RSVPSection from "@/components/sections/RSVPSection";
 import GiftSection from "@/components/sections/GiftSection";
+import RundownSection from "@/components/sections/RundownSection";
+import TurutMengundangSection from "@/components/sections/TurutMengundangSection";
 import ClosingSection from "@/components/sections/ClosingSection";
 import type { InvitationConfig } from "@/lib/config-types";
 
@@ -34,6 +36,10 @@ export function renderSection(id: string, config: InvitationConfig) {
       return <RSVPSection key="rsvp" />;
     case "gift":
       return <GiftSection key="gift" bankAccounts={config.bankAccounts} />;
+    case "rundown":
+      return <RundownSection key="rundown" rundown={config.rundown} />;
+    case "turut":
+      return <TurutMengundangSection key="turut" turutMengundang={config.turutMengundang} />;
     case "closing":
       return <ClosingSection key="closing" couple={config.couple} />;
     default:

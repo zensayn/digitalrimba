@@ -36,6 +36,8 @@ export const KELIR: Record<string, KelirPreset> = {
   gallery:   { actor: "MelatiSprig",      actorScale: 0.40, actorCorners: true, blencongY: "30%", blencongBright: 0.35, frame: "BingkaiTumpal", hem: "HemMelati" },
   rsvp:      { actor: "CeplokSulur",      actorScale: 0.66, actorY: "24%", blencongY: "28%", blencongBright: 0.40, hem: "HemSulur" },
   gift:      { actor: "CeplokMelati",     actorScale: 0.58, actorY: "28%", blencongY: "30%", blencongBright: 0.40, hem: "HemMelati" },
+  rundown:   { actor: "CeplokKawung",     actorScale: 0.50, actorY: "26%", blencongY: "30%", blencongBright: 0.42, hem: "HemKawung" },
+  turut:     { actor: "CeplokSulur",      actorScale: 0.60, actorY: "24%", blencongY: "30%", blencongBright: 0.40, hem: "HemSulur" },
   closing:   { actor: "AktorKayon",       actorScale: 1.0, actorFromTop: true, blencongY: "88%", blencongBright: 1.0 },
 };
 

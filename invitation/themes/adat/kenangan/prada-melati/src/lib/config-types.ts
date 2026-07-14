@@ -45,6 +45,16 @@ export interface DressCodeColor {
   name: string;
 }
 
+export interface RundownItem {
+  time: string;
+  title: string;
+}
+
+export interface TurutMengundangItem {
+  name: string;
+  note: string;
+}
+
 export interface ThemeColors {
   bg: string;
   surface: string;
@@ -95,6 +105,11 @@ export interface InvitationConfig {
     colors: DressCodeColor[];
     avoid: string[];
   };
+  rundown: {
+    akad: RundownItem[];
+    resepsi: RundownItem[];
+  };
+  turutMengundang: TurutMengundangItem[];
   theme: InvitationTheme;
   music?: MusicConfig;
   sections: {
