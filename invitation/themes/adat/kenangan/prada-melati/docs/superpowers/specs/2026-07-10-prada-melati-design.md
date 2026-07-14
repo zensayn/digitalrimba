@@ -622,6 +622,11 @@ milik Kisah, `dresscode` milik Warisan; ketiganya dimatikan lewat
 `sections.enabled` saat undangan dijual sebagai Kenangan. Wedding Wish tidak
 punya id sendiri — ia field "Ucapan (opsional)" di dalam `RSVPSection.tsx`.
 
+**Pembaruan 2026-07-14:** ditambah dua id lintas-tier — `rundown` dan `turut`
+(Turut Mengundang) — sehingga `RenderSection.tsx` kini mengenali tiga belas id.
+Keduanya milik entitlement Warisan, dimatikan `sections.enabled` bila dijual
+sebagai Kenangan. Detail skema & preset: `2026-07-14-prada-melati-rundown-turut-design.md`.
+
 Lihat `2026-07-10-adat-kenangan-tier-spec-design.md` §2.1.
 
 ---

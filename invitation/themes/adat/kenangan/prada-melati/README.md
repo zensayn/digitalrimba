@@ -131,11 +131,15 @@ invitation.config.json
 
 ---
 
-## File yang TIDAK PERNAH perlu diubah
+## File yang biasanya tidak perlu diubah
 
-- `src/lib/config-types.ts`
+Inti bersama antar-tema. Ubah **hanya** bila kontrak datanya memang berubah —
+mis. `config-types.ts` diperluas saat menambah section/data baru (seperti
+`rundown` & `turut`), dan `invitation.ts` ikut bila kontraknya berubah.
+
+- `src/lib/config-types.ts` — kontrak data; perluas saat menambah section/data baru
 - `src/lib/css-vars.ts`
-- `src/data/invitation.ts`
+- `src/data/invitation.ts` — typed re-export; ikut bila kontrak berubah
 - `tsconfig.json`
 - `postcss.config.mjs`
 - `eslint.config.mjs`
