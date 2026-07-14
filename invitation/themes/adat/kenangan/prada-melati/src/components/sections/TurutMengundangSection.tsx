@@ -16,7 +16,7 @@ export default function TurutMengundangSection({
         <SceneContent maxWidth={340}>
           <p className="font-label text-xs uppercase tracking-[0.3em] text-[var(--gold)]">Turut Mengundang</p>
           <h2 className="font-display mt-2 text-[var(--text)]" style={{ fontSize: "clamp(26px, 7.5vw, 38px)" }}>
-            Turut Mengundang
+            Keluarga &amp; Kerabat
           </h2>
           <div className="gold-divider mx-auto my-4" />
           <p className="font-body mb-7 leading-relaxed text-[var(--text-muted)]" style={{ fontSize: "clamp(12px, 3vw, 14px)" }}>
