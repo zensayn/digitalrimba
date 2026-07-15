@@ -2,6 +2,7 @@
 
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
+import GiltDivider from "@/components/shared/GiltDivider";
 import { kelirFor } from "@/components/shared/sceneKelir";
 import { hideOnError } from "@/lib/assets";
 import type { InvitationConfig } from "@/lib/config-types";
@@ -17,7 +18,7 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
           <h2 className="font-display mt-2 text-[var(--text)]" style={{ fontSize: "clamp(28px, 8.5vw, 44px)" }}>
             Momen
           </h2>
-          <div className="gold-divider mx-auto my-4" />
+          <GiltDivider className="my-4" />
           <div className="grid w-full grid-cols-2 gap-2">
             {gallery.map((item, i) => (
               <div

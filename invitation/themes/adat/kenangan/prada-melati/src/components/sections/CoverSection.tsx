@@ -1,6 +1,7 @@
 import KelirScene from "@/components/shared/KelirScene";
 import RonceanMelati from "@/components/shared/RonceanMelati";
 import SceneContent from "@/components/shared/SceneContent";
+import GiltDivider from "@/components/shared/GiltDivider";
 import Countdown from "@/components/shared/Countdown";
 import { kelirFor } from "@/components/shared/sceneKelir";
 import type { InvitationConfig } from "@/lib/config-types";
@@ -34,7 +35,7 @@ export default function CoverSection({
           >
             {couple.groom.name} &amp; {couple.bride.name}
           </h1>
-          <div className="gold-divider mx-auto my-4" />
+          <GiltDivider className="my-4" />
           <p className="font-body text-[var(--text-muted)]">{dateStr}</p>
           <div className="mt-6">
             <Countdown targetDate={weddingDate} />

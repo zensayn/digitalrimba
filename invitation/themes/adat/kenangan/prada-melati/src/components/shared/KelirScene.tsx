@@ -5,6 +5,7 @@ import { motion, useScroll, useInView, useReducedMotion } from "framer-motion";
 
 import { asset, hideOnError } from "@/lib/assets";
 import { useScrollContainer } from "./scroll-context";
+import { SceneProgressContext } from "./scene-progress";
 import GiltSweep from "./GiltSweep";
 import type { KelirPreset } from "./sceneKelir";
 
@@ -192,7 +193,9 @@ export default function KelirScene({
           flex: "1 0 auto",
         }}
       >
-        {children}
+        <SceneProgressContext.Provider value={scrollYProgress}>
+          {children}
+        </SceneProgressContext.Provider>
       </div>
     </div>
   );

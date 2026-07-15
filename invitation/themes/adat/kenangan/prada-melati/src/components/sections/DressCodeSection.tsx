@@ -1,5 +1,6 @@
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
+import GiltDivider from "@/components/shared/GiltDivider";
 import { kelirFor } from "@/components/shared/sceneKelir";
 import type { InvitationConfig } from "@/lib/config-types";
 
@@ -14,7 +15,7 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
           <h2 className="font-display mt-2 text-[var(--text)]" style={{ fontSize: "clamp(26px, 8vw, 40px)", lineHeight: 1.15 }}>
             {dressCode.theme}
           </h2>
-          <div className="gold-divider mx-auto my-4" />
+          <GiltDivider className="my-4" />
           <p className="font-body leading-relaxed text-[var(--text-muted)]" style={{ fontSize: "clamp(12px, 3vw, 14px)" }}>
             {dressCode.description}
           </p>

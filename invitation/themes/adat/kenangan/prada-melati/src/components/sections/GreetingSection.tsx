@@ -1,5 +1,6 @@
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
+import GiltDivider from "@/components/shared/GiltDivider";
 import { kelirFor } from "@/components/shared/sceneKelir";
 
 export default function GreetingSection() {
@@ -17,7 +18,7 @@ export default function GreetingSection() {
           >
             بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
           </p>
-          <div className="gold-divider mx-auto my-4" />
+          <GiltDivider className="my-4" />
           <p
             className="font-body leading-relaxed text-[var(--text-muted)]"
             style={{ textShadow: "0 2px 16px rgba(0,0,0,0.65)" }}

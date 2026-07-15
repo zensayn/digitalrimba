@@ -5,6 +5,7 @@ import { Copy, Check } from "lucide-react";
 
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
+import GiltDivider from "@/components/shared/GiltDivider";
 import { kelirFor } from "@/components/shared/sceneKelir";
 import type { InvitationConfig } from "@/lib/config-types";
 
@@ -31,7 +32,7 @@ export default function GiftSection({ bankAccounts }: { bankAccounts: Invitation
           <h2 className="font-display mt-2 text-[var(--text)]" style={{ fontSize: "clamp(30px, 8.5vw, 44px)" }}>
             Hadiah
           </h2>
-          <div className="gold-divider mx-auto my-4" />
+          <GiltDivider className="my-4" />
           <p className="font-body mb-6 leading-relaxed text-[var(--text-muted)]" style={{ fontSize: "clamp(12px, 3vw, 14px)" }}>
             Doa dan kehadiran Anda adalah hadiah terbesar bagi kami. Namun jika
             Anda ingin memberi tanda kasih, berikut rekening kami.

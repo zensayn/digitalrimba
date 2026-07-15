@@ -2,6 +2,7 @@
 
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
+import GiltDivider from "@/components/shared/GiltDivider";
 import { kelirFor } from "@/components/shared/sceneKelir";
 import { hideOnError } from "@/lib/assets";
 import type { InvitationConfig } from "@/lib/config-types";
@@ -17,7 +18,7 @@ export default function LoveStorySection({ loveStory }: { loveStory: InvitationC
           <h2 className="font-display mt-2 text-[var(--text)]" style={{ fontSize: "clamp(28px, 8.5vw, 44px)" }}>
             Kisah Kami
           </h2>
-          <div className="gold-divider mx-auto my-4" />
+          <GiltDivider className="my-4" variant="truntum" />
           <div className="flex w-full flex-col gap-5 text-left">
             {loveStory.map((ch, i) => (
               <div key={i} className="flex items-center gap-3">
