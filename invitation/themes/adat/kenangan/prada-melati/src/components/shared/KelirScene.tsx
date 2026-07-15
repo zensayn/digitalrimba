@@ -7,6 +7,7 @@ import { asset, hideOnError } from "@/lib/assets";
 import { useScrollContainer } from "./scroll-context";
 import { SceneProgressContext } from "./scene-progress";
 import GiltSweep from "./GiltSweep";
+import PojokKelir from "./PojokKelir";
 import type { KelirPreset } from "./sceneKelir";
 
 export default function KelirScene({
@@ -146,6 +147,9 @@ export default function KelirScene({
           ))}
         </div>
       )}
+
+      {/* 3c — Pojok ambient (sulur/praba) dicermin 4 sudut, di bawah pinggiran. */}
+      {preset.pojok && <PojokKelir variant={preset.pojok} progress={scrollYProgress} />}
 
       {/* 4 — Pinggiran kiri & kanan (diam). Sisi kanan diputar 180°, bukan flip
              (spec §6a) — melestarikan arah lereng parang. 404 tersembunyi. */}

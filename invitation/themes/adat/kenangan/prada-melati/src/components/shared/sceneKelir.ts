@@ -23,22 +23,25 @@ export interface KelirPreset {
   hem?: string;
   /** Aktor hero menggantung dari tepi atas (Kayon terbalik) → anchor top:0, bukan 5%. */
   actorFromTop?: boolean;
+  /** Ornamen sudut ambient (PojokKelir): "sulur" | "praba", dicermin 4 sudut.
+   *  Kosong → tak ada. Dilewati di section hero & yang sudah ramai sudutnya. */
+  pojok?: "sulur" | "praba";
 }
 
 export const KELIR: Record<string, KelirPreset> = {
   cover:     { actor: "AktorGunungan",    actorScale: 1.0,                 blencongY: "38%", blencongBright: 0.9 },
-  greeting:  { actor: "CeplokSulur",      actorScale: 0.55, actorY: "26%", blencongY: "30%", blencongBright: 0.35, hem: "HemSulur" },
-  couple:    { actor: "CeplokMelati",     actorScale: 0.42, actorY: "4%",  blencongY: "28%", blencongBright: 0.50, frame: "BingkaiGebyok", hem: "HemMelati" },
-  lovestory: { actor: "CeplokKawung",     actorScale: 0.50, actorY: "18%", blencongY: "24%", blencongBright: 0.40, frame: "BingkaiTumpal", hem: "HemKawung" },
+  greeting:  { actor: "CeplokSulur",      actorScale: 0.55, actorY: "26%", blencongY: "30%", blencongBright: 0.35, hem: "HemSulur", pojok: "praba" },
+  couple:    { actor: "CeplokMelati",     actorScale: 0.42, actorY: "4%",  blencongY: "28%", blencongBright: 0.50, frame: "BingkaiGebyok", hem: "HemMelati", pojok: "sulur" },
+  lovestory: { actor: "CeplokKawung",     actorScale: 0.50, actorY: "18%", blencongY: "24%", blencongBright: 0.40, frame: "BingkaiTumpal", hem: "HemKawung", pojok: "praba" },
   akad:      { actor: "AktorCandiBentar", actorScale: 1.0,                 blencongY: "44%", blencongBright: 0.75 },
   resepsi:   { actor: "AktorPaduraksa",   actorScale: 1.0,                 blencongY: "42%", blencongBright: 0.75 },
-  dresscode: { actor: "CeplokKawung",     actorScale: 0.62, actorY: "30%", blencongY: "32%", blencongBright: 0.40, hem: "HemKawung" },
+  dresscode: { actor: "CeplokKawung",     actorScale: 0.62, actorY: "30%", blencongY: "32%", blencongBright: 0.40, hem: "HemKawung", pojok: "sulur" },
   gallery:   { actor: "MelatiSprig",      actorScale: 0.40, actorCorners: true, blencongY: "30%", blencongBright: 0.35, frame: "BingkaiTumpal", hem: "HemMelati" },
-  rsvp:      { actor: "CeplokSulur",      actorScale: 0.66, actorY: "24%", blencongY: "28%", blencongBright: 0.40, hem: "HemSulur" },
-  gift:      { actor: "CeplokMelati",     actorScale: 0.58, actorY: "28%", blencongY: "30%", blencongBright: 0.40, hem: "HemMelati" },
-  rundown:   { actor: "CeplokKawung",     actorScale: 0.50, actorY: "26%", blencongY: "30%", blencongBright: 0.42, hem: "HemKawung" },
-  turut:     { actor: "CeplokSulur",      actorScale: 0.60, actorY: "24%", blencongY: "30%", blencongBright: 0.40, hem: "HemSulur" },
-  closing:   { actor: "AktorKayon",       actorScale: 1.0, actorFromTop: true, blencongY: "88%", blencongBright: 1.0 },
+  rsvp:      { actor: "CeplokSulur",      actorScale: 0.66, actorY: "24%", blencongY: "28%", blencongBright: 0.40, hem: "HemSulur", pojok: "sulur" },
+  gift:      { actor: "CeplokMelati",     actorScale: 0.58, actorY: "28%", blencongY: "30%", blencongBright: 0.40, hem: "HemMelati", pojok: "praba" },
+  rundown:   { actor: "CeplokKawung",     actorScale: 0.50, actorY: "26%", blencongY: "30%", blencongBright: 0.42, hem: "HemKawung", pojok: "praba" },
+  turut:     { actor: "CeplokSulur",      actorScale: 0.60, actorY: "24%", blencongY: "30%", blencongBright: 0.40, hem: "HemSulur", pojok: "sulur" },
+  closing:   { actor: "AktorKayon",       actorScale: 1.0, actorFromTop: true, blencongY: "88%", blencongBright: 1.0, pojok: "praba" },
 };
 
 export function kelirFor(id: string): KelirPreset {
