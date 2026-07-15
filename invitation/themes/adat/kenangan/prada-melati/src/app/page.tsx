@@ -6,6 +6,7 @@ import MotionProvider from "@/components/shared/MotionProvider";
 import EnvelopeOverlay from "@/components/shared/EnvelopeOverlay";
 import MusicPlayer from "@/components/MusicPlayer";
 import GoldDust from "@/components/shared/GoldDust";
+import KupuAmbient from "@/components/shared/KupuAmbient";
 import RevealController from "@/components/shared/RevealController";
 import DesktopCover from "@/components/shared/DesktopCover";
 import SnapContainer from "@/components/shared/SnapContainer";
@@ -23,6 +24,7 @@ export default function Page() {
       <EnvelopeOverlay />
       {config.music && <MusicPlayer music={config.music} />}
       <GoldDust />
+      <KupuAmbient />
       <RevealController />
       <div className="app-shell">
         <DesktopCover couple={config.couple} weddingDate={config.weddingDate} />

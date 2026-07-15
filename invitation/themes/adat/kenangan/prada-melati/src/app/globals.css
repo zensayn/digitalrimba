@@ -271,6 +271,34 @@ textarea.input-gold { resize: none; line-height: 1.6; }
   opacity: 0;
 }
 
+/* ─── Kupu emas ambient (melintas lambat, sayap mengepak) ─────────────────── */
+.kupu-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.kupu-drift {
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: kupuDrift 30s linear infinite;
+  will-change: transform, opacity;
+}
+.kupu-flap { animation: kupuFlap 0.9s ease-in-out infinite; }
+
+@keyframes kupuDrift {
+  0%   { transform: translate3d(-12vw, 88vh, 0) rotate(-8deg);  opacity: 0; }
+  12%  { opacity: 0.5; }
+  50%  { transform: translate3d(52vw, 42vh, 0) rotate(6deg); }
+  88%  { opacity: 0.5; }
+  100% { transform: translate3d(112vw, 6vh, 0) rotate(-4deg);  opacity: 0; }
+}
+@keyframes kupuFlap {
+  0%, 100% { transform: scaleX(1); }
+  50%      { transform: scaleX(0.66); }
+}
+
 /* ─── Kilau idle (logam berdenyut saat diam) ─────────────────────────────── */
 @keyframes giltIdle {
   0%, 100% { opacity: 0.6; }
@@ -306,6 +334,7 @@ textarea.input-gold { resize: none; line-height: 1.6; }
 @media (prefers-reduced-motion: reduce) {
   .ronce { animation: none; }
   .gold-dust { display: none; }
+  .kupu-layer { display: none; }
   .gilt-idle { animation: none; }
   /* Reveal: tampil utuh tanpa animasi. */
   .scene-reveal > * { animation: none; opacity: 1; translate: 0 0; }
