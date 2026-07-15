@@ -3,6 +3,7 @@
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
 import GiltDivider from "@/components/shared/GiltDivider";
+import GiltTitle from "@/components/shared/GiltTitle";
 import { kelirFor } from "@/components/shared/sceneKelir";
 import type { InvitationConfig, PersonConfig } from "@/lib/config-types";
 
@@ -59,7 +60,9 @@ export default function CoupleSection({ couple }: { couple: InvitationConfig["co
     <section className="snap-section">
       <KelirScene preset={preset} kain="KainBadan">
         <SceneContent scroll maxWidth={360}>
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-[var(--gold)]">Kedua Mempelai</p>
+          <GiltTitle>
+            <span className="font-label text-xs uppercase tracking-[0.3em] text-[var(--gold)]">Kedua Mempelai</span>
+          </GiltTitle>
           <GiltDivider className="my-4" variant="truntum" />
           <div className="flex w-full flex-col gap-6">
             <Person person={couple.groom} label="Mempelai Pria" />

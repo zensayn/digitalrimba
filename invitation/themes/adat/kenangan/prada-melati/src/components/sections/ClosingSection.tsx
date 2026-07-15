@@ -1,5 +1,6 @@
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
+import GiltTitle from "@/components/shared/GiltTitle";
 import { kelirFor } from "@/components/shared/sceneKelir";
 import type { InvitationConfig } from "@/lib/config-types";
 
@@ -10,7 +11,9 @@ export default function ClosingSection({ couple }: { couple: InvitationConfig["c
     <section className="snap-section">
       <KelirScene preset={preset} kain="KainBadan">
         <SceneContent maxWidth={340}>
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-[var(--gold)]">Terima Kasih</p>
+          <GiltTitle>
+            <span className="font-label text-xs uppercase tracking-[0.3em] text-[var(--gold)]">Terima Kasih</span>
+          </GiltTitle>
           <h2
             className="font-display text-gold-gradient mt-4"
             style={{ fontSize: "clamp(40px, 12vw, 66px)", lineHeight: 1.05 }}

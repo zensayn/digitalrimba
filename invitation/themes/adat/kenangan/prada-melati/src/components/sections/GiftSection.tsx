@@ -6,6 +6,7 @@ import { Copy, Check } from "lucide-react";
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
 import GiltDivider from "@/components/shared/GiltDivider";
+import GiltTitle from "@/components/shared/GiltTitle";
 import { kelirFor } from "@/components/shared/sceneKelir";
 import type { InvitationConfig } from "@/lib/config-types";
 
@@ -28,7 +29,9 @@ export default function GiftSection({ bankAccounts }: { bankAccounts: Invitation
     <section className="snap-section">
       <KelirScene preset={preset} kain="KainBadan">
         <SceneContent maxWidth={340}>
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-[var(--gold)]">Amplop Digital</p>
+          <GiltTitle>
+            <span className="font-label text-xs uppercase tracking-[0.3em] text-[var(--gold)]">Amplop Digital</span>
+          </GiltTitle>
           <h2 className="font-display mt-2 text-[var(--text)]" style={{ fontSize: "clamp(30px, 8.5vw, 44px)" }}>
             Hadiah
           </h2>
