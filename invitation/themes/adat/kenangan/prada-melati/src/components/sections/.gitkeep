@@ -1,0 +1,35 @@
+// src/components/sections/.gitkeep
+// ─── TEMPLATE: Isi folder ini dengan section components sesuai tema ──────────
+//
+// Konvensi penamaan file:
+//   CoverSection.tsx
+//   GreetingSection.tsx
+//   CoupleSection.tsx
+//   LoveStorySection.tsx
+//   EventSection.tsx
+//   DressCodeSection.tsx
+//   GallerySection.tsx
+//   RSVPSection.tsx
+//   GiftSection.tsx
+//   RundownSection.tsx
+//   TurutMengundangSection.tsx
+//   ClosingSection.tsx
+//
+// Setiap section:
+//   - Default sebagai Server Component tanpa "use client"
+//   - Menerima potongan config (serializable) lewat typed props — bukan hook.
+//     RenderSection yang memilih slice dari config & meneruskannya sebagai props.
+//   - Wajib punya className="snap-section" pada root element
+//   - Beri id sesuai key section: id="cover", id="greeting", dst.
+//
+// Contoh minimal:
+//   // Tambahkan "use client" hanya jika section memakai state/event/browser API.
+//   import type { InvitationConfig } from "@/lib/config-types";
+//
+//   export default function CoverSection({ couple }: { couple: InvitationConfig["couple"] }) {
+//     return (
+//       <section id="cover" className="snap-section">
+//         <h1>{couple.groom.name} & {couple.bride.name}</h1>
+//       </section>
+//     );
+//   }

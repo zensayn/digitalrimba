@@ -1,0 +1,341 @@
+/* Font dimuat lewat next/font/google di layout.tsx, bukan @import. next/font
+   mendaftarkan tiap font di bawah nama yang ia generate sendiri, jadi rujuk
+   selalu --font-marcellus / --font-lora / --font-inter — BUKAN --font-display
+   atau --font-body, yang berisi nama literal dan tidak akan pernah resolve. */
+
+@import "tailwindcss";
+
+/* ─── Design Tokens ──────────────────────────────────────────────────────────
+ * Sembilan token di bawah adalah FALLBACK. buildCssVars() menimpanya saat
+ * runtime dari theme.colors pada invitation.config.json, jadi ubah nilainya
+ * di sana — kalau tidak, contrast-contract.test.mjs tidak akan melihat
+ * perubahanmu.
+ * ───────────────────────────────────────────────────────────────────────── */
+:root {
+  --bg:          #2A1D12;
+  --surface:     #3A2A1B;
+  --surface-2:   #4A3524;
+  --gold:        #C9A227;
+  --gold-light:  #E3C766;
+  --gold-dim:    #A68430;
+  --text:        #F3E9D2;
+  --text-muted:  #C9BCA1;
+  --text-dim:    #B3AA9D;
+
+  /* Statik — tidak ditimpa buildCssVars. */
+  --border:       rgba(201, 162, 39, 0.22);
+  --fabric-grain: rgba(243, 233, 210, 0.03);
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-lora), Georgia, serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ─── Typography helpers ─────────────────────────────────────────────────── */
+.font-display { font-family: var(--font-marcellus), Georgia, serif; }
+.font-body    { font-family: var(--font-lora), Georgia, serif; }
+.font-label   { font-family: var(--font-inter), sans-serif; }
+
+/* ─── Snap Scroll Container ──────────────────────────────────────────────── */
+.snap-container {
+  height: 100dvh;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  /* Snap dihandle JS controller, bukan CSS snap */
+}
+
+.snap-container::-webkit-scrollbar { width: 2px; }
+.snap-container::-webkit-scrollbar-track { background: var(--bg); }
+.snap-container::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+/* ─── Layout shell (desktop 2-panel) ─────────────────────────────────────── */
+.app-shell { width: 100%; }
+.desktop-cover { display: none; }
+
+@media (min-width: 1024px) {
+  .app-shell {
+    display: flex;
+    justify-content: flex-start;
+  }
+  .desktop-cover {
+    display: block;
+    position: relative;
+    flex: 1 1 auto;
+    height: 100dvh;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+  }
+  .snap-container {
+    flex: 0 0 clamp(360px, 46vw, 420px);
+    max-width: 420px;
+    box-shadow: -24px 0 48px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.snap-section {
+  /* min-height (bukan height tetap) → section tumbuh mengikuti konten, jadi satu
+     halaman menerus tanpa scroll di dalam section (konsep warm-narrative/soft-bloom). */
+  min-height: 100dvh;
+  width: 100%;
+  position: relative;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Safe area untuk notch/home bar */
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: env(safe-area-inset-top);
+}
+
+/* ─── Accent gradient text ───────────────────────────────────────────────── */
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 40%, var(--gold) 70%, var(--gold-dim) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* Perluas kotak cat agar descender (mis. 'g') tak terpotong background-clip:text. */
+  padding-bottom: 0.15em;
+}
+
+/* ─── Shimmer animation ──────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.text-gold-shimmer {
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 25%, var(--gold) 50%, var(--gold-light) 75%, var(--gold) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+/* ─── Dividers ───────────────────────────────────────────────────────────── */
+.gold-divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.gold-divider-full {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.3;
+}
+
+/* ─── Noise overlay ──────────────────────────────────────────────────────── */
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: overlay;
+}
+
+/* ─── Vignette ───────────────────────────────────────────────────────────── */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes pulse-accent {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+  50%       { box-shadow: 0 0 20px 6px rgba(0,0,0,0.1); }
+}
+
+/* ─── Ornament line ──────────────────────────────────────────────────────── */
+.ornament-line {
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+  flex-shrink: 0;
+}
+
+/* ─── Form elements ──────────────────────────────────────────────────────── */
+.input-gold {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 0;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input-gold::placeholder { color: var(--text-dim); letter-spacing: 0.05em; }
+.input-gold:focus { border-bottom-color: var(--gold); }
+
+textarea.input-gold { resize: none; line-height: 1.6; }
+
+/* ─── Button ─────────────────────────────────────────────────────────────── */
+.btn-gold {
+  position: relative;
+  padding: 12px 40px;
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold-light);
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.btn-gold::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+.btn-gold:hover::before { transform: scaleX(1); }
+.btn-gold:hover { color: var(--bg); }
+
+/* ─── RSVP scrollable area ───────────────────────────────────────────────── */
+.overflow-y-auto::-webkit-scrollbar { display: none; }
+.overflow-y-auto { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ─── Roncean melati (sway) ──────────────────────────────────────────────── */
+@keyframes ronce-sway {
+  0%, 100% { transform: rotate(-1.1deg); }
+  50%      { transform: rotate(1.1deg); }
+}
+
+.ronce { animation: ronce-sway 7.5s ease-in-out infinite; }
+.ronce-paused { animation-play-state: paused; }
+
+/* ─── Debu emas (naik seperti bara pelita) ───────────────────────────────── */
+.gold-dust {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.gold-dust-mote {
+  position: absolute;
+  top: 100%;
+  opacity: 0;
+}
+
+/* ─── Kupu emas ambient (melintas lambat, sayap mengepak) ─────────────────── */
+.kupu-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.kupu-drift {
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: kupuDrift 30s linear infinite;
+  will-change: transform, opacity;
+}
+.kupu-flap { animation: kupuFlap 0.9s ease-in-out infinite; }
+
+@keyframes kupuDrift {
+  0%   { transform: translate3d(-12vw, 88vh, 0) rotate(-8deg);  opacity: 0; }
+  12%  { opacity: 0.5; }
+  50%  { transform: translate3d(52vw, 42vh, 0) rotate(6deg); }
+  88%  { opacity: 0.5; }
+  100% { transform: translate3d(112vw, 6vh, 0) rotate(-4deg);  opacity: 0; }
+}
+@keyframes kupuFlap {
+  0%, 100% { transform: scaleX(1); }
+  50%      { transform: scaleX(0.66); }
+}
+
+/* ─── Kilau idle (logam berdenyut saat diam) ─────────────────────────────── */
+@keyframes giltIdle {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+.gilt-idle { animation: giltIdle 4.5s ease-in-out infinite; }
+
+/* ─── Reveal konten section (Rise) ───────────────────────────────────────────
+   Anak langsung wrapper .scene-reveal (kicker → judul → divider → teks) naik +
+   memudar masuk, bertahap. Ditahan (paused) sampai RevealController menandai
+   scope-nya [data-inview]. Pakai `translate` (independen dari transform) agar
+   tak bentrok dengan gerak framer-motion di layer scene. */
+.scene-reveal > * {
+  animation: sceneRise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-play-state: paused;
+}
+.scene-reveal[data-inview="true"] > * { animation-play-state: running; }
+
+.scene-reveal > *:nth-child(1) { animation-delay: 0s; }
+.scene-reveal > *:nth-child(2) { animation-delay: 0.08s; }
+.scene-reveal > *:nth-child(3) { animation-delay: 0.16s; }
+.scene-reveal > *:nth-child(4) { animation-delay: 0.24s; }
+.scene-reveal > *:nth-child(5) { animation-delay: 0.32s; }
+.scene-reveal > *:nth-child(6) { animation-delay: 0.40s; }
+.scene-reveal > *:nth-child(7) { animation-delay: 0.48s; }
+.scene-reveal > *:nth-child(n + 8) { animation-delay: 0.56s; }
+
+@keyframes sceneRise {
+  from { opacity: 0; translate: 0 16px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ronce { animation: none; }
+  .gold-dust { display: none; }
+  .kupu-layer { display: none; }
+  .gilt-idle { animation: none; }
+  /* Reveal: tampil utuh tanpa animasi. */
+  .scene-reveal > * { animation: none; opacity: 1; translate: 0 0; }
+}
