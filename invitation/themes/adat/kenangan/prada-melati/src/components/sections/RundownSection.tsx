@@ -1,7 +1,6 @@
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
-import GiltDivider from "@/components/shared/GiltDivider";
-import GiltTitle from "@/components/shared/GiltTitle";
+import SectionHeader from "@/components/shared/SectionHeader";
 import { kelirFor } from "@/components/shared/sceneKelir";
 import type { InvitationConfig, RundownItem } from "@/lib/config-types";
 
@@ -43,14 +42,8 @@ export default function RundownSection({ rundown }: { rundown: InvitationConfig[
     <section className="snap-section">
       <KelirScene preset={preset} kain="KainBadan">
         <SceneContent maxWidth={360}>
-          <GiltTitle>
-            <span className="font-label text-xs uppercase tracking-[0.3em] text-[var(--gold)]">Rundown Acara</span>
-          </GiltTitle>
-          <h2 className="font-display mt-2 text-[var(--text)]" style={{ fontSize: "clamp(28px, 8vw, 42px)" }}>
-            Susunan Acara
-          </h2>
-          <GiltDivider className="my-4" variant="modang" />
-          <div className="w-full">
+          <SectionHeader eyebrow="Rundown Acara" title="Susunan Acara" divider="modang" />
+          <div className="mt-6 w-full">
             <Timeline title="Akad" items={rundown.akad} />
             <Timeline title="Resepsi" items={rundown.resepsi} />
           </div>

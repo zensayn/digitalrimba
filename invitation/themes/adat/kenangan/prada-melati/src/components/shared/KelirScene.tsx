@@ -195,6 +195,12 @@ export default function KelirScene({
           flexDirection: "column",
           width: "100%",
           flex: "1 0 auto",
+          // Zona aman atas (spec tata-letak §2.2): dorong konten turun ke bawah
+          // aktor solid. Ceplok/medallion mengisi svh dari preset; hero-arch &
+          // section bottom-align pakai fallback kecil → align yang menegakkan.
+          ["--kelir-safe-top" as string]: preset.safeTopSvh
+            ? `${preset.safeTopSvh}svh`
+            : "clamp(20px, 5svh, 40px)",
         }}
       >
         <SceneProgressContext.Provider value={scrollYProgress}>

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 const src = readFileSync(new URL("../../src/components/shared/sceneKelir.ts", import.meta.url), "utf8");
 
@@ -72,4 +72,60 @@ test("KelirScene merender hem dari preset (spec hem §3)", () => {
     /asset\(preset\.hem \?\? "TumpalBand"\)/,
     "KelirScene harus memakai preset.hem ?? \"TumpalBand\"",
   );
+});
+
+// ─── Pembatas antar-section: hem per-section ────────────────────────────────
+// Keputusan desain: hem tiap KelirScene jadi satu-satunya pembatas antar-section.
+// TumpalSeam yang dulu menstraddle batas dihapus karena bertumpuk dengan hem
+// (dua pita ornamen di garis yang sama → ramai, tak ada keindahan).
+const page = readFileSync(new URL("../../src/app/page.tsx", import.meta.url), "utf8");
+
+// ─── GebyokCard bingkai foto (spec pengayaan §6/§10) ─────────────────────────
+const gebyokUrl = new URL("../../src/components/shared/GebyokCard.tsx", import.meta.url);
+const coupleSection = readFileSync(new URL("../../src/components/sections/CoupleSection.tsx", import.meta.url), "utf8");
+
+test("GebyokCard tersedia sebagai komponen shared", () => {
+  assert.ok(existsSync(gebyokUrl), "GebyokCard.tsx harus dibuat");
+});
+
+test("GebyokCard menyediakan tiga varian bingkai", () => {
+  assert.ok(existsSync(gebyokUrl), "GebyokCard.tsx harus dibuat sebelum kontraknya diperiksa");
+  const gebyok = readFileSync(gebyokUrl, "utf8");
+  assert.match(gebyok, /BingkaiGebyok/, "varian bingkai Gebyok harus ada");
+  assert.match(gebyok, /BingkaiPraba/, "varian bingkai Praba harus ada");
+  assert.match(gebyok, /BingkaiTumpal/, "varian bingkai Tumpal harus ada");
+  assert.match(gebyok, /RonceanSudut/, "RonceanSudut gading harus tersedia");
+  assert.match(gebyok, /corners/, "RonceanSudut harus opsional via prop corners");
+});
+
+test("GebyokCard: bingkai emas via GiltSweep, foto background-image", () => {
+  assert.ok(existsSync(gebyokUrl), "GebyokCard.tsx harus dibuat sebelum kontraknya diperiksa");
+  const gebyok = readFileSync(gebyokUrl, "utf8");
+  assert.match(gebyok, /<GiltSweep\b/, "bingkai emas should render via GiltSweep");
+  assert.match(gebyok, /backgroundImage/, "foto sebagai background-image");
+  assert.match(gebyok, /onError=\{hideOnError\}/, "frame harus aman bila aset 404");
+  assert.match(gebyok, /hidden/, "elemen dekoratif harus aria-hidden");
+});
+
+test("CoupleSection: person photo difframe from preset", () => {
+  assert.match(
+    coupleSection,
+    /import GebyokCard from "@\/components\/shared\/GebyokCard"/,
+    "CoupleSection harus mengimpor GebyokCard",
+  );
+  assert.match(
+    coupleSection,
+    /\<GebyokCard\b/,
+    "CoupleSection harus memakai GebyokCard untuk foto mempelai",
+  );
+  assert.match(
+    coupleSection,
+    /kelirFor\("couple"\)/,
+    "CoupleSection harus mengambil preset couple",
+  );
+});
+
+test("page tidak lagi memasang TumpalSeam antar-section (hem jadi pembatas)", () => {
+  assert.doesNotMatch(page, /TumpalSeam/, "TumpalSeam sudah dihapus, tak boleh dirujuk di page");
+  assert.match(page, /renderSection\(id, config\)/, "section tetap dirender");
 });

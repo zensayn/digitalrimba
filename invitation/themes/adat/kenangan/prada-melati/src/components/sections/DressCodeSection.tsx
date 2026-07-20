@@ -1,7 +1,6 @@
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
-import GiltDivider from "@/components/shared/GiltDivider";
-import GiltTitle from "@/components/shared/GiltTitle";
+import SectionHeader from "@/components/shared/SectionHeader";
 import { kelirFor } from "@/components/shared/sceneKelir";
 import type { InvitationConfig } from "@/lib/config-types";
 
@@ -12,14 +11,8 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
     <section className="snap-section">
       <KelirScene preset={preset} kain="KainBadan">
         <SceneContent maxWidth={340}>
-          <GiltTitle>
-            <span className="font-label text-xs uppercase tracking-[0.3em] text-[var(--gold)]">Dress Code</span>
-          </GiltTitle>
-          <h2 className="font-display mt-2 text-[var(--text)]" style={{ fontSize: "clamp(26px, 8vw, 40px)", lineHeight: 1.15 }}>
-            {dressCode.theme}
-          </h2>
-          <GiltDivider className="my-4" />
-          <p className="font-body leading-relaxed text-[var(--text-muted)]" style={{ fontSize: "clamp(12px, 3vw, 14px)" }}>
+          <SectionHeader eyebrow="Dress Code" title={dressCode.theme} />
+          <p className="font-body mt-5 leading-relaxed text-[var(--text-muted)]" style={{ fontSize: "clamp(12px, 3vw, 14px)" }}>
             {dressCode.description}
           </p>
 
