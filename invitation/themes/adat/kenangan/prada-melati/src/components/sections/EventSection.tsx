@@ -5,7 +5,7 @@ import { ExternalLink, X } from "lucide-react";
 
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
-import GiltDivider from "@/components/shared/GiltDivider";
+import SectionHeader from "@/components/shared/SectionHeader";
 import { kelirFor } from "@/components/shared/sceneKelir";
 import type { EventConfig, InvitationConfig } from "@/lib/config-types";
 
@@ -39,21 +39,24 @@ export default function EventSection({
   return (
     <section className="snap-section">
       <KelirScene preset={preset} kain="KainBadan">
-        <SceneContent scroll maxWidth={360}>
-          <p className="font-display" style={{ color: "var(--gold)", fontSize: "clamp(26px, 7.5vw, 40px)", lineHeight: 1.1 }}>
-            {isAkad ? "Akad Nikah" : "Resepsi"}
-          </p>
-          <GiltDivider className="my-3" variant="modang" width={110} />
+        <SceneContent scroll maxWidth={360} scrim>
+          <SectionHeader
+            eyebrow={event.day}
+            title={isAkad ? "Akad Nikah" : "Resepsi"}
+            divider="modang"
+          />
 
-          <p className="font-body italic" style={{ color: "var(--text-muted)", fontSize: "clamp(13px, 3.5vw, 16px)", letterSpacing: "0.12em" }}>
-            {event.day}
-          </p>
-          <span className="font-display text-gold-gradient" style={{ fontSize: "clamp(54px, 16vw, 84px)", lineHeight: 0.95, display: "block" }}>
-            {dNum}
-          </span>
-          <p className="font-display" style={{ color: "var(--gold-dim)", fontSize: "clamp(11px, 3vw, 14px)", letterSpacing: "0.26em", textTransform: "uppercase" }}>
-            {dMonth} · {dYear}
-          </p>
+          {/* Numeral tanggal sebagai blok terstruktur (spec §5): dNum jadi elemen
+              terbesar section (di atas judul ≤38px), diapit halo — bukan lompat
+              kasar dari judul langsung ke angka raksasa. */}
+          <div className="mt-5 flex flex-col items-center">
+            <span className="font-display text-gold-gradient" style={{ fontSize: "clamp(52px, 15vw, 80px)", lineHeight: 0.95 }}>
+              {dNum}
+            </span>
+            <p className="font-display text-halo" style={{ color: "var(--gold-dim)", fontSize: "clamp(11px, 3vw, 14px)", letterSpacing: "0.26em", textTransform: "uppercase" }}>
+              {dMonth} · {dYear}
+            </p>
+          </div>
 
           {/* Venue */}
           <div

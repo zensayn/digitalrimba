@@ -5,8 +5,7 @@ import { Check } from "lucide-react";
 
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
-import GiltDivider from "@/components/shared/GiltDivider";
-import GiltTitle from "@/components/shared/GiltTitle";
+import SectionHeader from "@/components/shared/SectionHeader";
 import { kelirFor } from "@/components/shared/sceneKelir";
 
 export default function RSVPSection() {
@@ -33,16 +32,10 @@ export default function RSVPSection() {
     <section className="snap-section">
       <KelirScene preset={preset} kain="KainBadan">
         <SceneContent scroll maxWidth={340}>
-          <GiltTitle>
-            <span className="font-label text-xs uppercase tracking-[0.3em] text-[var(--gold)]">Konfirmasi Kehadiran</span>
-          </GiltTitle>
-          <h2 className="font-display mt-2 text-[var(--text)]" style={{ fontSize: "clamp(30px, 9vw, 44px)" }}>
-            RSVP
-          </h2>
-          <GiltDivider className="my-4" />
+          <SectionHeader eyebrow="Konfirmasi Kehadiran" title="RSVP" />
 
           {submitted ? (
-            <div className="flex flex-col items-center gap-4 py-6">
+            <div className="mt-4 flex flex-col items-center gap-4 py-6">
               <span
                 style={{ width: 52, height: 52, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--gold)" }}
               >
@@ -54,7 +47,7 @@ export default function RSVPSection() {
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex w-full flex-col gap-5 text-left">
+            <form onSubmit={handleSubmit} className="mt-6 flex w-full flex-col gap-5 text-left">
               <div className="flex flex-col gap-1">
                 <label className="font-label" style={{ color: "var(--text-muted)", fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase" }}>
                   Nama Tamu

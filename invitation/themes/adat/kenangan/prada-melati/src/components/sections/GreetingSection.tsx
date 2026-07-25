@@ -9,7 +9,7 @@ export default function GreetingSection() {
   return (
     <section className="snap-section">
       <KelirScene preset={preset} kain="KainBadan">
-        <SceneContent align="bottom" maxWidth={300}>
+        <SceneContent align="top" maxWidth={300}>
           <p
             className="font-display text-[var(--gold)]"
             dir="rtl"

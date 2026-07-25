@@ -26,7 +26,7 @@ export default function CoverSection({
       <KelirScene preset={preset} kain="KainBadan">
         <RonceanMelati zIndex={3} />
         <SceneContent align="bottom">
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-[var(--text-dim)]">
+          <p className="font-label text-halo text-xs uppercase tracking-[0.3em] text-[var(--text-dim)]">
             Undangan Pernikahan
           </p>
           <h1
@@ -36,7 +36,7 @@ export default function CoverSection({
             {couple.groom.name} &amp; {couple.bride.name}
           </h1>
           <GiltDivider className="my-4" />
-          <p className="font-body text-[var(--text-muted)]">{dateStr}</p>
+          <p className="font-body text-halo text-[var(--text-muted)]">{dateStr}</p>
           <div className="mt-6">
             <Countdown targetDate={weddingDate} />
           </div>

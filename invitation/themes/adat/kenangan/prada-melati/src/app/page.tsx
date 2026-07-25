@@ -2,6 +2,8 @@
 // Server-first: baca config, render section yang enabled lewat RenderSection.
 // Desktop: panel cover kelir kiri + kolom undangan kanan (.app-shell).
 
+import { Fragment } from "react";
+
 import MotionProvider from "@/components/shared/MotionProvider";
 import EnvelopeOverlay from "@/components/shared/EnvelopeOverlay";
 import MusicPlayer from "@/components/MusicPlayer";
@@ -29,7 +31,9 @@ export default function Page() {
       <div className="app-shell">
         <DesktopCover couple={config.couple} weddingDate={config.weddingDate} />
         <SnapContainer>
-          {sectionIds.map((id) => renderSection(id, config))}
+          {sectionIds.map((id) => (
+            <Fragment key={id}>{renderSection(id, config)}</Fragment>
+          ))}
         </SnapContainer>
       </div>
     </MotionProvider>

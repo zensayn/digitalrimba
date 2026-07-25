@@ -11,12 +11,27 @@ import GiltSweep from "./GiltSweep";
 // bawah pinggiran/hem/konten, jadi flourish menyelinap di bawah selvedge.
 export type PojokVariant = "sulur" | "praba";
 
-const CORNERS = [
-  { pos: { top: 0, left: 0 }, flip: undefined },
-  { pos: { top: 0, right: 0 }, flip: "scaleX(-1)" },
-  { pos: { bottom: 0, right: 0 }, flip: "scaleX(-1) scaleY(-1)" },
-  { pos: { bottom: 0, left: 0 }, flip: "scaleY(-1)" },
+const POS = [
+  { top: -3, left: -7 },
+  { top: -3, right: -7 },
+  { bottom: 0, right: -7 },
+  { bottom: 0, left: -7 },
 ] as const;
+
+// Orientasi per varian, urut kiri-atas → kanan-atas → kanan-bawah → kiri-bawah.
+// - sulur: dicermin dari aset kiri-atas.
+// - praba: base kiri-atas diputar 90° (terbukti pas), lalu DICERMIN ke sudut lain
+//   — kanan = flip horizontal (scaleX), bawah = flip vertikal (scaleY). scale di
+//   depan rotate: mencermin hasil-akhir kiri-atas, bukan asetnya.
+const TRANSFORMS: Record<PojokVariant, readonly (string | undefined)[]> = {
+  sulur: [undefined, "scaleX(-1)", "scaleX(-1) scaleY(-1)", "scaleY(-1)"],
+  praba: [
+    "rotate(90deg)",                       // kiri-atas (base)
+    "scaleX(-1) rotate(90deg)",            // kanan-atas  = flip H dari kiri-atas
+    "scaleX(-1) scaleY(-1) rotate(90deg)", // kanan-bawah = flip H dari kiri-bawah
+    "scaleY(-1) rotate(90deg)",            // kiri-bawah  = flip V dari kiri-atas
+  ],
+};
 
 export default function PojokKelir({
   variant,
@@ -33,8 +48,8 @@ export default function PojokKelir({
 
   return (
     <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none" }}>
-      {CORNERS.map((c, i) => (
-        <div key={i} style={{ position: "absolute", ...c.pos, width: size, aspectRatio: "1 / 1", transform: c.flip }}>
+      {POS.map((pos, i) => (
+        <div key={i} style={{ position: "absolute", ...pos, width: size, aspectRatio: "1 / 1", transform: TRANSFORMS[variant][i] }}>
           {/* Mirror di div luar; sway (rotate) di div dalam → transform tak bentrok. */}
           <motion.div
             style={{ width: "100%", height: "100%" }}

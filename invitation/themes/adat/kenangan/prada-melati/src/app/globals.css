@@ -146,6 +146,21 @@ body {
   opacity: 0.3;
 }
 
+/* ─── Legibility lokal (spec tata-letak §4) ──────────────────────────────────
+   Pengganti scrim gumpalan gelap SceneContent. Tema gelap (teks terang di atas
+   emas ramai) → plate gelap KETAT ke konten + halo bayangan, bukan blob menutup
+   seluruh kolom. */
+.kelir-plate {
+  background: radial-gradient(closest-side,
+    rgba(20, 12, 6, 0.72) 0%, rgba(20, 12, 6, 0.42) 68%, transparent 100%);
+  border-radius: 16px;
+  padding: 10px 14px;
+}
+
+.text-halo {
+  text-shadow: 0 1px 6px rgba(20, 12, 6, 0.7), 0 0 3px rgba(20, 12, 6, 0.6);
+}
+
 /* ─── Noise overlay ──────────────────────────────────────────────────────── */
 .noise-overlay {
   position: absolute;

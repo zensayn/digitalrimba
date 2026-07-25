@@ -12,7 +12,7 @@ export default function ClosingSection({ couple }: { couple: InvitationConfig["c
       <KelirScene preset={preset} kain="KainBadan">
         <SceneContent maxWidth={340}>
           <GiltTitle>
-            <span className="font-label text-xs uppercase tracking-[0.3em] text-[var(--gold)]">Terima Kasih</span>
+            <span className="font-label text-halo text-xs uppercase tracking-[0.3em] text-[var(--gold)]">Terima Kasih</span>
           </GiltTitle>
           <h2
             className="font-display text-gold-gradient mt-4"
@@ -32,7 +32,7 @@ export default function ClosingSection({ couple }: { couple: InvitationConfig["c
             {couple.bride.name}
           </h2>
           <p
-            className="font-body mx-auto mt-6 italic leading-relaxed text-[var(--text-muted)]"
+            className="font-body text-halo mx-auto mt-6 italic leading-relaxed text-[var(--text-muted)]"
             style={{ fontSize: "clamp(12px, 3.2vw, 14px)", maxWidth: 300 }}
           >
             &ldquo;Dan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan
@@ -43,7 +43,7 @@ export default function ClosingSection({ couple }: { couple: InvitationConfig["c
             </span>
           </p>
           <div className="gold-divider-full mx-auto mt-8" style={{ maxWidth: 220 }} />
-          <p className="font-label mt-4" style={{ color: "var(--gold)", fontSize: 12, letterSpacing: "0.2em", textTransform: "uppercase" }}>
+          <p className="font-label text-halo mt-4" style={{ color: "var(--gold)", fontSize: 12, letterSpacing: "0.2em", textTransform: "uppercase" }}>
             {couple.hashtag}
           </p>
         </SceneContent>

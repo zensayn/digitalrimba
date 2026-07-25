@@ -2,8 +2,7 @@
 
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
-import GiltDivider from "@/components/shared/GiltDivider";
-import GiltTitle from "@/components/shared/GiltTitle";
+import SectionHeader from "@/components/shared/SectionHeader";
 import { kelirFor } from "@/components/shared/sceneKelir";
 import { hideOnError } from "@/lib/assets";
 import type { InvitationConfig } from "@/lib/config-types";
@@ -15,14 +14,8 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
     <section className="snap-section">
       <KelirScene preset={preset} kain="KainBadan">
         <SceneContent scroll maxWidth={360}>
-          <GiltTitle>
-            <span className="font-label text-xs uppercase tracking-[0.3em] text-[var(--gold)]">Galeri</span>
-          </GiltTitle>
-          <h2 className="font-display mt-2 text-[var(--text)]" style={{ fontSize: "clamp(28px, 8.5vw, 44px)" }}>
-            Momen
-          </h2>
-          <GiltDivider className="my-4" />
-          <div className="grid w-full grid-cols-2 gap-2">
+          <SectionHeader eyebrow="Galeri" title="Momen" />
+          <div className="mt-6 grid w-full grid-cols-2 gap-2">
             {gallery.map((item, i) => (
               <div
                 key={i}
