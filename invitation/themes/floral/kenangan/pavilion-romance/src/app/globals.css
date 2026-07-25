@@ -1,0 +1,643 @@
+@import "tailwindcss";
+
+/* ─── Tipografi "mahal" ────────────────────────────────────────────────────────
+   Font dimuat & di-selfhost oleh next/font (layout.tsx) → var(--font-*). Tanpa
+   @import remote (yang bisa di-strip Tailwind/Turbopack → jatuh ke Comic Sans). */
+
+/* ─── Design Tokens — Pavilion Romance (Garden Storybook) ───────────────────── */
+:root {
+  --bg:          #F8F2E7;
+  --surface:     #FFF9EF;
+  --surface-2:   #EFE4D2;
+  --accent:      #7A2940;
+  --accent-soft: #C98F8D;
+  --leaf:        #7D9274;
+  --gold:        #B8955E;
+  --text:        #3E3328;
+  --text-muted:  #6C5F53;
+  --text-dim:    #948779;
+  --border:      rgba(122, 41, 64, 0.22);
+
+  /* Warna wash dekoratif (statis) */
+  --lilac:   #C98F8D;
+  --butter:  #B8955E;
+  --sky:     #7D9274;
+  --peach:   #E7B5A8;
+
+  --shadow-soft: 0 14px 36px rgba(62, 51, 40, 0.12);
+  --shadow-card: 0 8px 24px rgba(62, 51, 40, 0.08);
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ─── Typography helpers ─────────────────────────────────────────────────────── */
+.font-display { font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif; }
+.font-body    { font-family: var(--font-body), 'Jost', system-ui, sans-serif; }
+.font-label   { font-family: var(--font-body), 'Jost', system-ui, sans-serif; }
+.font-script  { font-family: var(--font-script), 'Imperial Script', cursive; }
+
+/* ─── Peran tipografi — SATU sumber ukuran & kapitalisasi ─────────────────────
+   Semua section memakai kelas ini (bukan nilai inline masing-masing) supaya
+   besar-kecil huruf konsisten di seluruh undangan:
+   - eyebrow : penanda section  — kapital, tracking lebar, warna aksen
+   - label   : label form/data  — kapital, tracking sedang, abu tua
+   - title   : judul section    — serif italic, ukuran seragam
+   - caption : keterangan kecil — tanpa kapital paksa                           */
+.type-eyebrow {
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.type-label {
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.type-title {
+  font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(28px, 8.5vw, 40px);
+  font-weight: 500;
+  font-style: italic;
+  color: var(--text);
+}
+.type-caption {
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Highlight kertas tipis di belakang judul/eyebrow section (mirip pita jahitan
+   antar-section) — supaya teks tetap terbaca saat duduk di atas dedaunan.
+   Dipakai FloralTitle `plate` dan eyebrow "Dress Code"/"Galeri". */
+.title-plate {
+  background: radial-gradient(78% 150% at 50% 50%,
+    rgba(248, 242, 231, 0.94) 0%,
+    rgba(248, 242, 231, 0.55) 56%,
+    rgba(248, 242, 231, 0) 80%);
+  padding: 5px 26px;
+  border-radius: 999px;
+}
+
+/* Panel kertas untuk blok teks/form di atas dekorasi ramai (dipakai RSVP) */
+.bloom-panel {
+  width: 100%;
+  background: rgba(255, 249, 239, 0.88);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* ─── Scroll Container ──────────────────────────────────────────────────────── */
+.snap-container { width: 100%; position: relative; }
+
+/* Latar kertas menerus di belakang semua section → transisi tak terputus */
+.paper-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+/* Kabut pucat menyatukan tekstur kertas supaya tetap lembut & terang */
+.paper-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(253,252,250,0.55), rgba(253,252,250,0.35) 40%, rgba(253,252,250,0.55));
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent-soft); border-radius: 2px; }
+
+.snap-section {
+  min-height: 100dvh;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: env(safe-area-inset-top);
+  /* Tepi atas & bawah section dilarutkan TRANSPARAN (mask) → PaperBackdrop
+     menerus + pita jahitan (SectionSeam, z0) mengintip dari BAWAH aset section;
+     aset memudar lembut di tepi, bukan terpotong garis keras. Fade 40px < padding
+     section terkecil → konten (selalu ber-padding) tak ikut terpotong. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+}
+/* Cover: tepi ATAS tetap utuh (kanopi tak terpotong) */
+section.snap-section:first-of-type {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 40px), transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 40px), transparent 100%);
+}
+/* Closing: tepi BAWAH tetap utuh (watermark/footer tak terpotong) */
+section.snap-section:last-of-type {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 40px, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 40px, #000 100%);
+}
+
+/* Section isi mengalir mengikuti konten. Cover/closing tetap memakai full viewport,
+   sementara bagian tengah tidak lagi terasa "menempel" ke satu layar penuh. */
+.flow-section {
+  min-height: auto;
+  justify-content: flex-start;
+  padding-top: clamp(56px, 10vh, 92px);
+  padding-bottom: calc(clamp(56px, 10vh, 92px) + env(safe-area-inset-bottom));
+}
+
+/* ─── Mood latar per-section — tint transparan di atas kertas menerus ─────────── */
+/* Tiap section punya suasana warna berbeda (tak ada dua berdampingan yang sama),
+   tapi tetap transparan supaya latar kertas mengalir menembus → tetap menyatu.
+   Tepi atas/bawah sengaja lebih bening agar berbaur ke section tetangga. */
+.mood-paper,
+.mood-mist,
+.mood-sky,
+.mood-meadow,
+.mood-blush,
+.mood-butter {
+  background-color: transparent;
+}
+.mood-paper  { background-image: radial-gradient(120% 78% at 50% 42%, rgba(255,249,239,0.74), rgba(255,249,239,0) 76%); }
+.mood-mist   { background-image: radial-gradient(120% 78% at 50% 42%, rgba(125,146,116,0.16), rgba(125,146,116,0) 74%); }
+.mood-sky    { background-image: radial-gradient(120% 78% at 50% 42%, rgba(184,149,94,0.16), rgba(184,149,94,0) 74%); }
+.mood-meadow { background-image: radial-gradient(120% 80% at 50% 60%, rgba(125,146,116,0.20), rgba(125,146,116,0) 74%); }
+.mood-blush  { background-image: radial-gradient(120% 78% at 50% 44%, rgba(201,143,141,0.18), rgba(201,143,141,0) 74%); }
+.mood-butter { background-image: radial-gradient(120% 78% at 50% 42%, rgba(184,149,94,0.18), rgba(184,149,94,0) 74%); }
+
+/* ─── Soft pastel background wash — pure CSS, tanpa gambar ───────────────────── */
+.soft-wash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(38% 32% at 16% 10%, rgba(201, 143, 141, 0.18), transparent 70%),
+    radial-gradient(34% 28% at 84% 20%, rgba(184, 149, 94, 0.14), transparent 70%),
+    radial-gradient(46% 40% at 62% 94%, rgba(125, 146, 116, 0.16), transparent 72%);
+}
+
+/* ─── Botanical specimen card — crisp, bukan glassy-rounded ──────────────────── */
+/* Latar cukup pekat + blur: kartu (countdown) bisa duduk di atas padang bunga
+   yang rapat tanpa angkanya tertelan flora di belakangnya. */
+.specimen-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* Kartu botani (dipakai BotanicalCard) — panel kertas halus; ornamen bunga
+   datang dari juntaian CardVines di sudut atasnya. */
+.botanical-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(247,245,241,0.86));
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(142,121,168,0.12);
+}
+
+/* ─── Dividers ───────────────────────────────────────────────────────────────── */
+.leaf-divider {
+  width: 56px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--leaf), transparent);
+  opacity: 0.7;
+}
+
+.leaf-divider-full {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
+  opacity: 0.4;
+}
+
+/* ─── Ambient motion ─────────────────────────────────────────────────────────── */
+/* Gerak halus terus-menerus supaya halaman terasa "hidup", bukan diam.
+   Teknik "tertiup angin": rotasi murni dengan transform-origin di PANGKAL
+   (batang/akar diam, ujung/kelopak bergoyang). Tiap elemen beda durasi → organik. */
+@keyframes sway {
+  from { transform: rotate(-3deg); }
+  to   { transform: rotate(3deg); }
+}
+@keyframes swayAlt {
+  from { transform: rotate(2.4deg); }
+  to   { transform: rotate(-2.4deg); }
+}
+@keyframes swaySoft {
+  from { transform: rotate(-4.5deg); }
+  to   { transform: rotate(4.5deg); }
+}
+@keyframes swayFrame {
+  from { transform: rotate(-1deg); }
+  to   { transform: rotate(1deg); }
+}
+@keyframes birdBob {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50%      { transform: translateY(-3px) rotate(1.5deg); }
+}
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-7px); }
+}
+/* Melayang untuk elemen besar (pilar taman): amplitudo lebih lebar dari
+   floatSlow (-7px terlalu halus untuk massa sebesar pilar) tapi tetap pelan. */
+@keyframes pillarFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-13px); }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.035); }
+}
+@keyframes wingflap {
+  0%, 100% { transform: scaleX(1); }
+  50%      { transform: scaleX(0.6); }
+}
+@keyframes disc-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* keyframes petalFall & butterfly-fly di-generate inline per-elemen */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─── Entrance reveals — arah muncul mengikuti POSISI elemen ─────────────────── */
+/* Elemen di TENGAH mekar dari kecil → besar di tempatnya (grow/soft). Pembatas
+   TEPI muncul dari sisinya: atas turun, bawah naik, samping masuk dari samping,
+   sudut menyerong dari sudutnya — semuanya tetap diberi sedikit scale supaya
+   terasa "mekar", bukan meluncur kaku. Sengaja pakai properti `translate`/`scale`
+   yang INDEPENDEN dari `transform` → tak bentrok dengan goyangan ambient (pakai
+   `transform`) maupun mirror wrapper (scaleX/scaleY — translate dihitung di
+   ruang luar, jadi arahnya tidak ikut terbalik oleh mirror). Animasi ditahan
+   (paused) sampai section/jahitan-nya masuk viewport → ditandai [data-inview]
+   oleh RevealController. Fallback aman: reduced-motion tampil utuh. */
+[data-enter] {
+  animation-duration: 1.7s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation-fill-mode: both;
+  animation-play-state: paused;
+}
+[data-enter="top"]    { animation-name: enterTop; }
+[data-enter="bottom"] { animation-name: enterBottom; animation-delay: 0.18s; }
+[data-enter="left"]   { animation-name: enterLeft;  animation-delay: 0.12s; }
+[data-enter="right"]  { animation-name: enterRight; animation-delay: 0.12s; }
+[data-enter="tl"]     { animation-name: enterTL; animation-delay: 0.16s; }
+[data-enter="tr"]     { animation-name: enterTR; animation-delay: 0.16s; }
+[data-enter="bl"]     { animation-name: enterBL; animation-delay: 0.24s; }
+[data-enter="br"]     { animation-name: enterBR; animation-delay: 0.24s; }
+[data-enter="drop"]   { animation-name: enterDrop; animation-delay: 0.32s; }
+[data-enter="frame"]  { animation-name: enterFrame; }
+[data-enter="soft"]   { animation-name: enterSoft; }
+[data-enter="grow"]   { animation-name: enterGrow; }
+
+/* Lepas tahanan begitu scope-nya tampil → semua anak [data-enter] muncul */
+.reveal-scope[data-inview="true"] [data-enter] { animation-play-state: running; }
+
+/* Pembatas tepi: offset dari sisinya + scale ringan */
+@keyframes enterTop    { from { opacity: 0; translate: 0 -44px;    scale: 0.85; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterBottom { from { opacity: 0; translate: 0 48px;     scale: 0.85; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterLeft   { from { opacity: 0; translate: -52px 0;    scale: 0.85; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterRight  { from { opacity: 0; translate: 52px 0;     scale: 0.85; } to { opacity: 1; translate: 0 0; scale: 1; } }
+/* Ornamen sudut: menyerong halus dari sudutnya sambil mekar */
+@keyframes enterTL     { from { opacity: 0; translate: -26px -28px; scale: 0.7; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterTR     { from { opacity: 0; translate: 26px -28px;  scale: 0.7; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterBL     { from { opacity: 0; translate: -26px 30px;  scale: 0.7; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterBR     { from { opacity: 0; translate: 26px 30px;   scale: 0.7; } to { opacity: 1; translate: 0 0; scale: 1; } }
+/* Menjuntai dari atas kartu */
+@keyframes enterDrop   { from { opacity: 0; translate: 0 -26px;     scale: 0.8; } to { opacity: 1; translate: 0 0; scale: 1; } }
+/* Bingkai penuh: merapat dari luar tepi viewport */
+@keyframes enterFrame  { from { opacity: 0; scale: 1.06; } to { opacity: 1; scale: 1; } }
+/* Elemen tengah: murni mekar dari kecil di tempatnya */
+@keyframes enterSoft   { from { opacity: 0; scale: 0.75; } to { opacity: 1; scale: 1; } }
+@keyframes enterGrow   { from { opacity: 0; scale: 0.6; }  to { opacity: 1; scale: 1; } }
+
+/* ─── Form elements ──────────────────────────────────────────────────────────── */
+.input-bloom {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(122, 41, 64, 0.38);
+  color: var(--text);
+  padding: 10px 0;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 300;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input-bloom::placeholder { color: var(--text-dim); }
+.input-bloom:focus { border-bottom-color: var(--accent); }
+
+textarea.input-bloom { resize: none; line-height: 1.7; }
+
+/* ─── Button ─────────────────────────────────────────────────────────────────── */
+.btn-bloom {
+  position: relative;
+  padding: 13px 42px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  color: var(--accent);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 180ms cubic-bezier(0.23, 1, 0.32, 1), border-color 180ms cubic-bezier(0.23, 1, 0.32, 1), transform 140ms cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+}
+
+.btn-bloom::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1);
+  z-index: -1;
+}
+
+.btn-bloom:hover::before { transform: scaleX(1); }
+.btn-bloom:hover { color: var(--bg); }
+.btn-bloom:active { transform: scale(0.97); }
+
+.opening-cta-button {
+  position: relative;
+  min-width: 176px;
+  min-height: 40px;
+  padding: 11px 24px 10px;
+  border: 1px solid rgba(122, 41, 64, 0.46);
+  border-radius: 5px;
+  background: rgba(248, 242, 231, 0.82);
+  color: var(--accent);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(58, 58, 54, 0.06);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  transition: background-color 220ms ease, border-color 220ms ease, color 220ms ease, transform 220ms ease;
+}
+
+.opening-cta-button:hover,
+.opening-cta-button:focus-visible {
+  background: rgba(122, 41, 64, 0.92);
+  border-color: rgba(122, 41, 64, 0.92);
+  color: var(--bg);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.opening-cta-button:active {
+  transform: scale(0.97);
+}
+
+/* ─── Native invitation controls ────────────────────────────────────────────── */
+/* Putaran piringan MusicPlayer vinyl — play-state dikontrol inline per status */
+@keyframes discSpin {
+  to { transform: rotate(360deg); }
+}
+
+.music-toggle-vinyl:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+
+.music-toggle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--accent-soft) 22%, white);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  box-shadow: var(--shadow-soft);
+  color: var(--accent);
+}
+
+.music-toggle:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.music-toggle:focus-visible,
+.map-preview-trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.map-preview-trigger {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+/* ─── RSVP form ────────────────────────────────────────────────────────────── */
+.rsvp-honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.rsvp-attendance-fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.rsvp-attendance-option {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.rsvp-attendance-option.is-selected {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(122, 41, 64, 0.08);
+}
+
+.rsvp-attendance-option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.rsvp-attendance-option:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ─── Video poster-first player ─────────────────────────────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ─── Watermark penutup ──────────────────────────────────────────────────────── */
+/* Bilah penuh di kaki section Closing (seragam dengan soft-bloom) — menggantikan
+   pil mengambang kecil yang dulu nyaris tak terbaca di atas semak taman. */
+.closing-brand-footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 12;
+  min-height: calc(54px + env(safe-area-inset-bottom));
+  padding: 8px 18px calc(8px + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.closing-brand-footer span {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(20px, 5.6vw, 28px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.closing-brand-footer img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  /* Monogram gelap → dipaksa putih agar kontras di atas bilah aksen */
+  filter: brightness(0) invert(1);
+}
+
+/* ─── RSVP scrollable area ───────────────────────────────────────────────────── */
+.overflow-y-auto::-webkit-scrollbar { display: none; }
+.overflow-y-auto { -ms-overflow-style: none; scrollbar-width: none; }
+
+.event-action-link:hover { color: var(--accent) !important; }
+
+/* ─── Layout desktop (split) ─────────────────────────────────────────────────── */
+/* Desain tetap fokus HP. Di layar lebar, undangan tampil sebagai kolom sempit di
+   kanan (seperti di HP) dan sisi kiri diisi panel cover dekoratif. */
+.app-shell { width: 100%; }
+.desktop-cover { display: none; }
+
+@media (min-width: 1024px) {
+  /* Window yang menggulir (bukan kolom ber-overflow) + panel kiri sticky.
+     Dulu html/body dikunci overflow:hidden dan hanya .content-scroll yang bisa
+     digulir → roda mouse mati bila kursor di atas panel kiri, terasa "nyangkut".
+     Dengan window scroll, gulir bekerja di mana pun kursor berada. */
+  .app-shell {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .desktop-cover {
+    display: block;
+    position: sticky;
+    top: 0;
+    flex: 1 1 auto;
+    height: 100vh;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+  }
+
+  .content-scroll {
+    flex: 0 0 clamp(420px, 33vw, 500px);
+    background: var(--bg);
+    box-shadow: -10px 0 44px rgba(58, 58, 54, 0.07);
+  }
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ambient-anim,
+  .ambient-anim * {
+    animation: none !important;
+  }
+  /* Entrance dimatikan → elemen langsung di posisi rest, tetap terlihat utuh */
+  [data-enter] {
+    animation: none !important;
+    opacity: 1 !important;
+    translate: 0 0 !important;
+    scale: 1 !important;
+  }
+  .music-toggle,
+  .map-preview-trigger {
+    transition-duration: 0ms !important;
+  }
+  html { scroll-behavior: auto; }
+}

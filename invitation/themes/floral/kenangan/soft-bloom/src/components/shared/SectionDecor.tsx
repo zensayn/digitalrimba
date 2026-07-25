@@ -35,7 +35,7 @@ const DUR = [6, 4.4, 5.4, 4.8];
 export default function SectionDecor({
   corners = ["tl", "br"],
   file = "SudutBunga.webp",
-  size = "clamp(120px, 34vw, 230px)",
+  size = "clamp(138px, 38vw, 260px)",
   opacity = 1,
   zIndex = 1,
 }: {

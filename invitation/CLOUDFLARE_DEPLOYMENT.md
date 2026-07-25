@@ -28,6 +28,7 @@ Jangan deploy langsung setelah hanya menjalankan `bun dev`. `bun run preview` di
 | Sacred Luxe | `themes/adat/kenangan/sacred-luxe` | `rimba-sacred-luxe` | [sacred-luxe.rimba.io](https://sacred-luxe.rimba.io) | Live |
 | Sinema Kisah | `themes/adat/kisah/sinema-kisah` | `rimba-sinema-kisah` | [sinema-kisah.rimba.io](https://sinema-kisah.rimba.io) | Live |
 | Soft Bloom | `themes/floral/kenangan/soft-bloom` | `rimba-soft-bloom` | [soft-bloom.rimba.io](https://soft-bloom.rimba.io) | Live |
+| Pavilion Romance | `themes/floral/kenangan/pavilion-romance` | `rimba-pavilion-romance` | [pavilion-romance.rimba.io](https://pavilion-romance.rimba.io) | Live |
 
 Perbarui tabel ini setelah Worker atau domain baru diaktifkan.
 
@@ -69,6 +70,7 @@ Contoh tema lain:
 Set-Location themes\adat\kenangan\sacred-luxe
 Set-Location themes\adat\kisah\sinema-kisah
 Set-Location themes\floral\kenangan\soft-bloom
+Set-Location themes\floral\kenangan\pavilion-romance
 ```
 
 Semua perintah berikut dijalankan dari folder tema yang sedang dikerjakan.
@@ -245,7 +247,7 @@ NEXT_PUBLIC_THEMES_CDN=https://assets-themes.rimba.io
 NEXT_PUBLIC_PHOTOS_CDN=https://assets-invitations.rimba.io
 ```
 
-Soft Bloom hanya memakai `NEXT_PUBLIC_THEMES_CDN`; tanpa nilai tersebut, tema ini fallback ke `public/images` saat development (lihat `src/lib/assets.ts`).
+Soft Bloom hanya memakai `NEXT_PUBLIC_THEMES_CDN`; tanpa nilai tersebut, tema ini fallback ke `public/images` saat development (lihat `src/lib/assets.ts`). Pavilion Romance memakai kedua nilai, dengan fallback langsung ke domain CDN production bila env kosong.
 
 ### Aturan penting untuk `NEXT_PUBLIC_*`
 
@@ -307,6 +309,46 @@ Konfigurasi production Warm Narrative secara sengaja menggunakan:
 ```
 
 Dengan demikian aplikasi hanya dapat diakses melalui custom domain production. Jangan mengubah nilai tersebut tanpa alasan operasional yang jelas.
+
+## Cloudflare D1 (tema dengan RSVP)
+
+Pavilion Romance menyimpan RSVP ke D1 melalui `POST /api/rsvp`. Binding
+didefinisikan di `wrangler.jsonc` (`d1_databases`, binding `DB`) dan skema di
+folder `migrations/`.
+
+Menyiapkan database untuk Worker baru:
+
+```powershell
+bunx wrangler d1 create rimba-<nama-tema>
+```
+
+Salin `database_id` hasil perintah tersebut ke `wrangler.jsonc`, lalu terapkan
+migrasi:
+
+```powershell
+bun run db:migrate:remote   # database production
+bun run db:migrate:local    # simulasi lokal untuk dev/preview
+```
+
+Catatan penting:
+
+- Simulasi D1 lokal diidentifikasi berdasarkan `database_id`. Setiap kali nilai
+  itu berubah (misalnya dari placeholder ke ID asli), simulasi lokal dianggap
+  database baru yang kosong — jalankan ulang `bun run db:migrate:local`,
+  jika tidak, `bun run preview` akan mengembalikan HTTP 500 pada endpoint RSVP.
+- Route API yang memakai `getCloudflareContext()` TIDAK boleh mendeklarasikan
+  `export const runtime = "edge"`. OpenNext menjalankan seluruh aplikasi di
+  workerd melalui `nodejs_compat`; deklarasi edge runtime justru menggagalkan
+  `opennextjs-cloudflare build` dengan error "cannot use the edge runtime".
+- Uji endpoint setelah preview dan setelah deploy:
+
+```powershell
+Invoke-RestMethod -Method Post -Uri "https://pavilion-romance.rimba.io/api/rsvp" `
+  -ContentType "application/json" `
+  -Body '{"name":"Tamu Uji","attendance":"hadir","pax":1,"message":"tes"}'
+```
+
+Respons sukses adalah `{"ok":true}` dengan HTTP 201.
 
 ## Logs dan monitoring
 

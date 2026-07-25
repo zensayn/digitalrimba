@@ -1,14 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import FallingFlowers from "@/components/shared/FallingFlowers";
 import Butterflies from "@/components/shared/Butterflies";
 import SceneBackground from "@/components/shared/SceneBackground";
 import FloralDivider from "@/components/shared/FloralDivider";
 import FloralTitle from "@/components/shared/FloralTitle";
 import FullFrame from "@/components/shared/FullFrame";
-import { asset } from "@/lib/assets";
-import { hideBrokenImageContainer } from "@/lib/image-fallback";
+import { hideBrokenImage } from "@/lib/image-fallback";
 import type { InvitationConfig } from "@/lib/config-types";
 
 export default function ClosingSection({ couple }: { couple: InvitationConfig["couple"] }) {
@@ -27,10 +27,10 @@ export default function ClosingSection({ couple }: { couple: InvitationConfig["c
       <FallingFlowers count={10} zIndex={3} />
 
       <div
-        className="relative z-10 flex flex-col items-center text-center w-full max-w-xs mx-auto px-6"
+        className="relative z-10 flex flex-col items-center text-center w-full max-w-sm mx-auto px-7"
         style={{
-          paddingTop: "clamp(40px, 8vh, 72px)",
-          paddingBottom: "calc(150px + env(safe-area-inset-bottom))",
+          paddingTop: "clamp(48px, 9vh, 84px)",
+          paddingBottom: "calc(166px + env(safe-area-inset-bottom))",
           // Sapuan kertas lembut di belakang teks — kutipan tetap terbaca di
           // atas padang bunga tanpa panel kotak yang memotong bingkai penuh.
           background: "radial-gradient(75% 62% at 50% 46%, rgba(253,252,250,0.88), rgba(253,252,250,0.55) 62%, rgba(253,252,250,0) 100%)",
@@ -54,14 +54,14 @@ export default function ClosingSection({ couple }: { couple: InvitationConfig["c
           viewport={{ once: true, margin: "-15%" }}
           transition={{ delay: 0.15, duration: 1, ease: "easeOut" }}
           className="font-display leading-tight"
-          style={{ fontSize: "clamp(44px, 13vw, 74px)", fontWeight: 500, color: "var(--text)" }}
+          style={{ fontSize: "clamp(52px, 14.5vw, 88px)", fontWeight: 500, color: "var(--text)" }}
         >
           {couple.groom.name}
           <span className="font-script" style={{ display: "block", fontSize: "0.7em", color: "var(--accent)", margin: "-4px 0" }}>&amp;</span>
           {couple.bride.name}
         </motion.h2>
 
-        <FloralDivider width="70vw" maxWidth={320} style={{ margin: "clamp(18px, 4vh, 28px) 0" }} />
+        <FloralDivider width="76vw" maxWidth={380} style={{ margin: "clamp(20px, 4.5vh, 32px) 0" }} />
 
         <motion.p
           variants={fadeUp}
@@ -70,7 +70,7 @@ export default function ClosingSection({ couple }: { couple: InvitationConfig["c
           viewport={{ once: true, margin: "-15%" }}
           transition={{ delay: 0.4, duration: 1, ease: "easeOut" }}
           className="font-display"
-          style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "clamp(13px, 3.5vw, 15px)", lineHeight: 1.85, padding: "0 6px" }}
+          style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "clamp(15px, 4vw, 18px)", lineHeight: 1.85, padding: "0 6px" }}
         >
           Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila
           Bapak / Ibu / Saudara/i berkenan hadir untuk memberikan doa restu.
@@ -89,29 +89,10 @@ export default function ClosingSection({ couple }: { couple: InvitationConfig["c
         </motion.p>
       </div>
 
-      {/* Footer brand — logo Rimba dari R2 (floral/kenangan/soft-bloom/LogoRimba.webp).
-          Aset aslinya persegi dengan latar hutan gelap penuh (tidak transparan),
-          jadi di-crop ke band tengah (tempat wordmark) dan ditampilkan sebagai
-          badge kecil membulat agar tidak jadi kotak gelap besar di atas pastel. */}
-      <div className="absolute left-0 right-0 flex flex-col items-center z-10" style={{ bottom: "calc(30px + env(safe-area-inset-bottom))" }}>
-        <div
-          style={{
-            width: 148,
-            aspectRatio: "16 / 7",
-            borderRadius: 10,
-            overflow: "hidden",
-            boxShadow: "0 6px 18px rgba(58,58,54,0.2)",
-          }}
-        >
-          <img
-            src={asset("LogoRimba.webp")}
-            alt="Rimba Digital"
-            loading="lazy"
-            onError={hideBrokenImageContainer}
-            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-          />
-        </div>
-      </div>
+      <footer className="closing-brand-footer" aria-label="Dibuat oleh Rimba Digital">
+        <span>Dibuat oleh</span>
+        <Image src="/icon.png" alt="Rimba Digital" width={34} height={34} loading="lazy" onError={hideBrokenImage} />
+      </footer>
     </section>
   );
 }

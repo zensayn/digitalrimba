@@ -1,0 +1,156 @@
+{
+  "media": {
+    "slug": "pavilion-romance",
+    "socialImage": "pavilion-romance/social/og.webp"
+  },
+  "couple": {
+    "groom": {
+      "name": "Andra",
+      "fullName": "Andra Pradipta",
+      "parents": "Putra Bapak Arman Pradipta & Ibu Nirmala",
+      "photo": "invitations/pasangan/LakiLakiIndividu.webp",
+      "instagram": "@andra.pradipta"
+    },
+    "bride": {
+      "name": "Mishel",
+      "fullName": "Mishel Anindita",
+      "parents": "Putri Bapak Surya Anindita & Ibu Larasati",
+      "photo": "invitations/pasangan/WanitaIndividu.webp",
+      "instagram": "@mishel.anin"
+    },
+    "hashtag": "#AndraMishelMenikah",
+    "quote": "\"Dari dua cerita yang berbeda, kami memilih untuk pulang ke rumah yang sama.\""
+  },
+  "events": {
+    "akad": {
+      "title": "Akad Nikah",
+      "day": "Rabu",
+      "date": "07 Juli 2027",
+      "time": "09.00 - 10.30 WIB",
+      "venue": "Paviliun Puspa Laras",
+      "address": "Jl. Taman Sari No. 17, Yogyakarta",
+      "mapsUrl": "https://maps.google.com/?q=-7.8101,110.3592",
+      "embedUrl": "https://maps.google.com/maps?q=-7.8101,110.3592&z=16&output=embed",
+      "startISO": "20270707T020000Z",
+      "endISO": "20270707T033000Z"
+    },
+    "resepsi": {
+      "title": "Resepsi",
+      "day": "Rabu",
+      "date": "07 Juli 2027",
+      "time": "11.30 - 15.00 WIB",
+      "venue": "Taman Pavilion Garden",
+      "address": "Jl. Kaliurang KM 8, Sleman, Yogyakarta",
+      "mapsUrl": "https://maps.google.com/?q=-7.7372,110.4115",
+      "embedUrl": "https://maps.google.com/maps?q=-7.7372,110.4115&z=16&output=embed",
+      "startISO": "20270707T043000Z",
+      "endISO": "20270707T080000Z"
+    }
+  },
+  "weddingDate": "2027-07-07T09:00:00",
+  "music": {
+    "file": "canon-in-d-piano-3cc37d5b.mp3",
+    "title": "Canon in D",
+    "artist": "Pachelbel · Piano",
+    "cover": "invitations/pasangan/Pasangan.webp"
+  },
+  "gallery": [
+    { "src": "invitations/pasangan/Pasangan.webp", "alt": "Pertemuan" },
+    { "src": "invitations/pasangan/LakiLakiIndividu.webp", "alt": "Langkah Pertama" },
+    { "src": "invitations/pasangan/WanitaIndividu.webp", "alt": "Janji Kecil" },
+    { "src": "invitations/pasangan/Pasangan.webp", "alt": "Bersama" },
+    { "src": "invitations/pasangan/WanitaIndividu.webp", "alt": "Senyum" },
+    { "src": "invitations/pasangan/LakiLakiIndividu.webp", "alt": "Kisah Kami" }
+  ],
+  "loveStory": [
+    {
+      "chapter": "Pertemuan Pertama",
+      "year": "2021",
+      "description": "Kami bertemu di sebuah acara komunitas fotografi di Yogyakarta. Obrolan singkat tentang cahaya senja ternyata jadi awal segalanya.",
+      "image": "invitations/pasangan/Pasangan.webp"
+    },
+    {
+      "chapter": "Tumbuh Bersama",
+      "year": "2023",
+      "description": "Dari teman berbagi cerita menjadi rumah untuk pulang. Kami belajar saling mengerti di setiap musim yang berganti.",
+      "image": "invitations/pasangan/LakiLakiIndividu.webp"
+    },
+    {
+      "chapter": "Lamaran",
+      "year": "2026",
+      "description": "Di taman tempat kami pertama berjalan berdua, Andra berlutut dan Mishel menjawab dengan air mata bahagia.",
+      "image": "invitations/pasangan/WanitaIndividu.webp"
+    }
+  ],
+  "rundown": {
+    "akad": [
+      { "time": "08.30", "title": "Kedatangan tamu & keluarga" },
+      { "time": "09.00", "title": "Prosesi akad nikah" },
+      { "time": "10.00", "title": "Doa bersama & sungkeman" }
+    ],
+    "resepsi": [
+      { "time": "11.30", "title": "Pembukaan resepsi" },
+      { "time": "12.00", "title": "Penyambutan kedua mempelai" },
+      { "time": "13.00", "title": "Ramah tamah & santap siang" },
+      { "time": "14.30", "title": "Sesi foto bersama" }
+    ]
+  },
+  "turutMengundang": [
+    { "name": "Kel. Besar Pradipta", "note": "Yogyakarta" },
+    { "name": "Kel. Besar Anindita", "note": "Sleman" },
+    { "name": "Ir. Bambang Wicaksono & Keluarga", "note": "Rekan Bapak Arman" },
+    { "name": "dr. Ratna Kusuma & Keluarga", "note": "Sahabat keluarga" }
+  ],
+  "bankAccounts": [
+    { "bank": "BCA", "name": "Andra Pradipta", "number": "1357 2468 9012" },
+    { "bank": "Mandiri", "name": "Mishel Anindita", "number": "1440 0099 8877 6" }
+  ],
+  "dressCode": {
+    "theme": "Garden Formal",
+    "description": "Nuansa ivory, sage, dusty rose, dan antique gold akan menyatu dengan suasana paviliun taman.",
+    "colors": [
+      { "hex": "#F8F2E7", "name": "Ivory" },
+      { "hex": "#7D9274", "name": "Sage" },
+      { "hex": "#C98F8D", "name": "Dusty Rose" },
+      { "hex": "#B8955E", "name": "Antique Gold" },
+      { "hex": "#7A2940", "name": "Burgundy" }
+    ],
+    "avoid": ["Neon", "Motif terlalu ramai"]
+  },
+  "theme": {
+    "colors": {
+      "bg": "#F8F2E7",
+      "surface": "#FFF9EF",
+      "surface2": "#EFE4D2",
+      "accent": "#7A2940",
+      "accentSoft": "#C98F8D",
+      "leaf": "#7D9274",
+      "text": "#3E3328",
+      "textMuted": "#6C5F53",
+      "textDim": "#948779"
+    },
+    "typography": {
+      "displayFont": "Cormorant Garamond",
+      "bodyFont": "Jost",
+      "scriptFont": "Imperial Script"
+    }
+  },
+  "sections": {
+    "order": ["cover", "greeting", "couple", "lovestory", "akad", "resepsi", "dresscode", "gallery", "rsvp", "gift", "rundown", "turut", "closing"],
+    "enabled": {
+      "cover": true,
+      "greeting": true,
+      "couple": true,
+      "lovestory": true,
+      "akad": true,
+      "resepsi": true,
+      "dresscode": true,
+      "gallery": true,
+      "rsvp": true,
+      "gift": true,
+      "rundown": true,
+      "turut": true,
+      "closing": true
+    }
+  }
+}

@@ -1,0 +1,183 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { motion } from "framer-motion";
+import { MapPin, ExternalLink, Calendar, X } from "lucide-react";
+import TwilightTitle from "@/components/shared/TwilightTitle";
+import SectionCastleDecor from "@/components/shared/SectionCastleDecor";
+import Stardust from "@/components/shared/Stardust";
+import SceneBackground from "@/components/shared/SceneBackground";
+import type { InvitationConfig } from "@/lib/config-types";
+
+interface EventSectionProps {
+  couple: InvitationConfig["couple"];
+  event: InvitationConfig["events"]["akad"];
+  index: number;
+  sectionId: string;
+}
+
+export default function EventSection({ couple, event, index, sectionId }: EventSectionProps) {
+  const isAkad = index === 0;
+  const [mapOpen, setMapOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [dateNum, dateMonth, dateYear] = event.date.split(" ");
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  const calendarUrl = (() => {
+    const params = new URLSearchParams({
+      action: "TEMPLATE",
+      text: `${event.title} — ${couple.groom.name} & ${couple.bride.name}`,
+      dates: `${event.startISO}/${event.endISO}`,
+      details: `Anda diundang ke ${event.title} pernikahan ${couple.groom.name} & ${couple.bride.name}.\n\n${event.time}`,
+      location: `${event.venue}, ${event.address}`,
+    });
+    return `https://calendar.google.com/calendar/render?${params.toString()}`;
+  })();
+
+  // Reveal saat scroll dinonaktifkan — konten tampil langsung.
+  const fade = (_delay?: number) => ({
+    hidden: { opacity: 1, y: 0 },
+    visible: { opacity: 1, y: 0 },
+  });
+
+  const mapModal = mapOpen && mounted
+    ? createPortal(
+        <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", flexDirection: "column", background: "var(--bg)" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "14px 16px",
+              borderBottom: "1px solid var(--border)",
+              background: "var(--surface)",
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <MapPin size={13} color="var(--accent)" />
+              <span className="type-label" style={{ fontSize: "13px" }}>
+                {event.venue}
+              </span>
+            </div>
+            <button
+              onClick={() => setMapOpen(false)}
+              aria-label="Tutup peta"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                background: "rgba(212,175,55,0.10)",
+                border: "1px solid var(--border)",
+                cursor: "pointer",
+                color: "var(--text-muted)",
+              }}
+            >
+              <X size={14} />
+            </button>
+          </div>
+          <iframe
+            src={event.embedUrl}
+            width="100%"
+            style={{ flex: 1, border: 0, display: "block" }}
+            allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
+            title={`Lokasi ${event.title}`}
+          />
+        </div>,
+        document.body
+      )
+    : null;
+
+  return (
+    <section id={sectionId} className="snap-section flow-section reveal-scope">
+      {mapModal}
+      <SceneBackground file="LatarSenja.webp" scrim={0.52} edgeFade />
+      <Stardust count={18} />
+      <SectionCastleDecor torches />
+
+      <div
+        className="relative z-10 flex flex-col items-center w-full max-w-sm mx-auto px-8"
+        style={{ gap: "clamp(14px, 3.4vh, 26px)", paddingTop: "clamp(92px, 14vh, 132px)", paddingBottom: "calc(clamp(28px, 5vh, 44px) + 72px)" }}
+      >
+        {/* Label */}
+        <motion.div variants={fade(0)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} className="flex flex-col items-center gap-2">
+          <TwilightTitle>{isAkad ? "Akad Nikah" : "Resepsi"}</TwilightTitle>
+        </motion.div>
+
+        {/* Date hero */}
+        <motion.div variants={fade(0.1)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} className="flex flex-col items-center">
+          <p className="font-display" style={{ color: "var(--text-muted)", fontSize: "clamp(16px, 4vw, 20px)", fontStyle: "italic", letterSpacing: "0.08em", marginBottom: 2 }}>{event.day}</p>
+          <p className="font-display" style={{ fontSize: "clamp(88px, 25vw, 128px)", fontWeight: 500, lineHeight: 0.9, color: "var(--gold-light)" }}>{dateNum}</p>
+          <p className="font-display" style={{ color: "var(--accent)", fontSize: "clamp(14px, 3.8vw, 18px)", letterSpacing: "0.16em", textTransform: "uppercase", marginTop: 8 }}>{dateMonth} · {dateYear}</p>
+        </motion.div>
+
+        {/* Pembatas emas */}
+        <motion.div variants={fade(0.18)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} className="flex items-center w-full" style={{ gap: 10 }}>
+          <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, var(--accent))", opacity: 0.5 }} />
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--gold-light)", flexShrink: 0 }} />
+          <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, var(--accent), transparent)", opacity: 0.5 }} />
+        </motion.div>
+
+        {/* Venue card — panel gelap twilight */}
+        <motion.div
+          variants={fade(0.3)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}
+          className="flex flex-col items-center text-center w-full"
+          style={{ position: "relative", gap: 12, padding: "clamp(20px, 4.6vh, 28px) clamp(20px, 6vw, 30px)", borderRadius: 5, background: "var(--surface)", border: "1px solid var(--border)", boxShadow: "var(--shadow-card)" }}
+        >
+          <p className="type-label" style={{ borderBottom: "1px solid var(--border)", paddingBottom: 8, width: "100%" }}>{event.time}</p>
+          <p className="font-display" style={{ color: "var(--text)", fontSize: "clamp(20px, 5.4vw, 27px)", fontWeight: 500, fontStyle: "italic", lineHeight: 1.2 }}>{event.venue}</p>
+          <div className="flex items-start justify-center gap-2" style={{ marginTop: 2 }}>
+            <MapPin size={16} color="var(--accent)" style={{ flexShrink: 0, marginTop: 3 }} />
+            <p className="type-caption" style={{ textAlign: "left" }}>{event.address}</p>
+          </div>
+        </motion.div>
+
+        {/* Map tap-to-open */}
+        <motion.div
+          variants={fade(0.4)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}
+          className="w-full"
+          style={{ border: "1px solid var(--border)", borderRadius: 5, position: "relative", overflow: "hidden" }}
+        >
+          <iframe
+            src={event.embedUrl}
+            width="100%"
+            height="170"
+            style={{ border: 0, display: "block", filter: "saturate(0.85) brightness(0.92)", pointerEvents: "none" }}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title={`Preview lokasi ${event.title}`}
+          />
+          <div
+            onClick={() => setMapOpen(true)}
+            role="button"
+            aria-label="Buka peta interaktif"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === "Enter" && setMapOpen(true)}
+            style={{ position: "absolute", inset: 0, zIndex: 20, cursor: "pointer" }}
+          />
+        </motion.div>
+
+        {/* Action links */}
+        <motion.div variants={fade(0.5)} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} className="flex items-center justify-center">
+          <a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="event-action-link type-label flex items-center gap-2 transition-colors duration-300" style={{ padding: "6px 16px", borderRight: "1px solid var(--border)" }}>
+            <ExternalLink size={14} />
+            Maps
+          </a>
+          <a href={calendarUrl} target="_blank" rel="noopener noreferrer" className="event-action-link type-label flex items-center gap-2 transition-colors duration-300" style={{ padding: "6px 16px" }}>
+            <Calendar size={14} />
+            Kalender
+          </a>
+        </motion.div>
+      </div>
+    </section>
+  );
+}

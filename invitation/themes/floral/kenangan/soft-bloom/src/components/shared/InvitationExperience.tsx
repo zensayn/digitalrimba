@@ -2,7 +2,7 @@
 
 import { Fragment, useState } from "react";
 import MusicPlayer from "@/components/shared/MusicPlayer";
-import OpeningGate from "@/components/shared/OpeningGate";
+import EnvelopeOverlay from "@/components/shared/EnvelopeOverlay";
 import DesktopCover from "@/components/shared/DesktopCover";
 import PaperBackdrop from "@/components/shared/PaperBackdrop";
 import RevealController from "@/components/shared/RevealController";
@@ -10,20 +10,23 @@ import SectionSeam from "@/components/shared/SectionSeam";
 import CoverSection from "@/components/sections/CoverSection";
 import GreetingSection from "@/components/sections/GreetingSection";
 import CoupleSection from "@/components/sections/CoupleSection";
+import LoveStorySection from "@/components/sections/LoveStorySection";
 import EventSection from "@/components/sections/EventSection";
 import DressCodeSection from "@/components/sections/DressCodeSection";
 import GallerySection from "@/components/sections/GallerySection";
 import RSVPSection from "@/components/sections/RSVPSection";
 import GiftSection from "@/components/sections/GiftSection";
+import RundownSection from "@/components/sections/RundownSection";
+import TurutMengundangSection from "@/components/sections/TurutMengundangSection";
 import ClosingSection from "@/components/sections/ClosingSection";
 import type { InvitationConfig } from "@/lib/config-types";
 
-// Section ids this theme ships. Studio drafts carry the full editor order
-// (incl. lovestory, which soft-bloom doesn't have) — unknown ids must be
-// skipped here, or they'd render as empty slots with doubled seams.
+// Section ids this theme ships. Studio drafts may carry ids from other
+// templates — unknown ids must be skipped here, or they'd render as empty
+// slots with doubled seams.
 const KNOWN_SECTIONS = new Set([
-  "cover", "greeting", "couple", "akad", "resepsi",
-  "dresscode", "gallery", "rsvp", "gift", "closing",
+  "cover", "greeting", "couple", "lovestory", "akad", "resepsi",
+  "dresscode", "gallery", "rsvp", "gift", "rundown", "turut", "closing",
 ]);
 
 export default function InvitationExperience({
@@ -35,8 +38,26 @@ export default function InvitationExperience({
   initiallyOpen?: boolean;
 }) {
   const [gateClosed, setGateClosed] = useState(!initiallyOpen);
+
+  // Tiga section terbaru (lovestory/rundown/turut) belum ada di draft studio
+  // lama: id-nya bisa aktif sementara datanya kosong. Saring DI SINI, bukan
+  // dengan me-return null di renderSection — jumlah sectionIds yang menentukan
+  // jahitan antar-section, jadi slot kosong akan meninggalkan seam dobel.
+  const hasContent = (id: string) => {
+    switch (id) {
+      case "lovestory":
+        return (config.loveStory?.length ?? 0) > 0;
+      case "rundown":
+        return (config.rundown?.akad.length ?? 0) + (config.rundown?.resepsi.length ?? 0) > 0;
+      case "turut":
+        return (config.turutMengundang?.length ?? 0) > 0;
+      default:
+        return true;
+    }
+  };
+
   const sectionIds = config.sections.order.filter(
-    (id) => KNOWN_SECTIONS.has(id) && config.sections.enabled[id],
+    (id) => KNOWN_SECTIONS.has(id) && config.sections.enabled[id] && hasContent(id),
   );
 
   function renderSection(id: string) {
@@ -47,6 +68,8 @@ export default function InvitationExperience({
         return <GreetingSection key="greeting" couple={config.couple} />;
       case "couple":
         return <CoupleSection key="couple" couple={config.couple} />;
+      case "lovestory":
+        return <LoveStorySection key="lovestory" loveStory={config.loveStory ?? []} />;
       case "akad":
         return <EventSection key="akad" couple={config.couple} event={config.events.akad} index={0} sectionId="akad" />;
       case "resepsi":
@@ -59,6 +82,10 @@ export default function InvitationExperience({
         return <RSVPSection key="rsvp" />;
       case "gift":
         return <GiftSection key="gift" bankAccounts={config.bankAccounts} />;
+      case "rundown":
+        return <RundownSection key="rundown" rundown={config.rundown ?? { akad: [], resepsi: [] }} />;
+      case "turut":
+        return <TurutMengundangSection key="turut" turutMengundang={config.turutMengundang ?? []} />;
       case "closing":
         return <ClosingSection key="closing" couple={config.couple} />;
       default:
@@ -68,9 +95,11 @@ export default function InvitationExperience({
 
   return (
     <div className="app-shell">
-      {/* Gerbang pembuka: sapaan tamu + tombol "Buka Undangan" → klik = gesture
-          yang mengizinkan musik autoplay (event `invitation-open`) */}
-      <OpeningGate couple={config.couple} open={gateClosed} onOpen={() => setGateClosed(false)} />
+      {/* Amplop pembuka: ketuk untuk membuka → gesture yang mengizinkan musik
+          autoplay (event `invitation-open`); lifecycle animasinya mandiri,
+          onOpen hanya melepas inert/aria-hidden konten. Studio /preview
+          (initiallyOpen) tidak merender amplop sama sekali. */}
+      {!initiallyOpen && <EnvelopeOverlay onOpen={() => setGateClosed(false)} />}
 
       <div
         id="invitation-content"
@@ -83,13 +112,7 @@ export default function InvitationExperience({
 
         {/* Undangan: kolom sempit fokus-HP; di desktop discroll di sisi kanan */}
         <main className="content-scroll">
-          <MusicPlayer
-            src={config.music?.src}
-            title={config.music?.title}
-            artist={config.music?.artist}
-            start={config.music?.startSec}
-            end={config.music?.endSec}
-          />
+          <MusicPlayer music={config.music} />
           <div className="snap-container">
             {/* Latar kertas menerus — menyatukan seluruh section jadi satu dunia */}
             <PaperBackdrop />

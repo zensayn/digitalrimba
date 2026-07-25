@@ -13,7 +13,7 @@ const CONF: { side: "left" | "right"; flip: boolean; anim: string; dur: number }
 
 export default function BottomClusters({
   file = "SudutBawah.webp",
-  size = "clamp(150px, 42vw, 300px)",
+  size = "clamp(170px, 48vw, 340px)",
   opacity = 1,
   zIndex = 1,
 }: {

@@ -31,6 +31,24 @@ export interface BankAccount {
   number: string;
 }
 
+export interface LoveStoryChapter {
+  chapter: string;
+  year: string;
+  description: string;
+  /** URL penuh atau path CDN foto undangan (dilewatkan invitationPhoto). */
+  image: string;
+}
+
+export interface RundownItem {
+  time: string;
+  title: string;
+}
+
+export interface TurutMengundangItem {
+  name: string;
+  note: string;
+}
+
 export interface DressCodeColor {
   hex: string;
   name: string;
@@ -78,24 +96,39 @@ export interface InvitationConfig {
     resepsi: EventConfig;
   };
   weddingDate: string;
+  // Musik latar: config demo mengisi file katalog + cover; overlay studio
+  // (pilih/unggah lagu) mengganti key ini dengan src + jendela trim
+  // startSec/endSec (playback mulai di startSec, loop kembali ke sana
+  // setelah endSec); title/artist/trackId adalah data tampilan studio.
+  music: {
+    /** Nama file di katalog R2 `rimba-invitations/music/catalog/` (atau URL penuh).
+        Kosong = fallback file lokal `/music/theme.mp3`. */
+    file?: string;
+    title?: string;
+    artist?: string;
+    /** Foto label piringan — foto mempelai atau foto apa pun (URL/path CDN). */
+    cover?: string;
+    /** Overlay studio: URL langsung hasil pilih/unggah — menang atas `file`. */
+    src?: string;
+    trackId?: string;
+    startSec?: number;
+    endSec?: number;
+  };
   gallery: GalleryItem[];
   bankAccounts: BankAccount[];
+  // Opsional: draft studio yang dibuat sebelum tiga section ini ada tidak
+  // memuatnya sama sekali, jadi tiap pemakaian wajib menoleransi undefined
+  // (InvitationExperience melewati section yang datanya kosong).
+  loveStory?: LoveStoryChapter[];
+  rundown?: {
+    akad: RundownItem[];
+    resepsi: RundownItem[];
+  };
+  turutMengundang?: TurutMengundangItem[];
   dressCode: DressCodeConfig;
   theme: InvitationTheme;
   sections: {
     order: string[];
     enabled: Record<string, boolean>;
-  };
-  // Optional per-invitation background music (studio catalog pick or upload).
-  // Themes read src + the startSec/endSec trim window (playback starts at
-  // startSec and loops back there after endSec); title/artist/trackId are
-  // studio display data.
-  music?: {
-    src: string;
-    title?: string;
-    artist?: string;
-    trackId?: string;
-    startSec?: number;
-    endSec?: number;
   };
 }

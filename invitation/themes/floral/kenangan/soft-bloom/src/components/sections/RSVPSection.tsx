@@ -47,12 +47,12 @@ export default function RSVPSection() {
         ref={ref}
         className="relative z-10 w-full mx-auto px-6"
         style={{
-          maxWidth: "356px",
-          paddingTop: "clamp(40px, 8vh, 80px)",
-          paddingBottom: "clamp(40px, 8vh, 80px)",
+          maxWidth: "396px",
+          paddingTop: "clamp(48px, 9vh, 92px)",
+          paddingBottom: "clamp(48px, 9vh, 92px)",
         }}
       >
-        <div className="bloom-panel flex flex-col items-center text-center" style={{ padding: "clamp(24px, 7vw, 32px)" }}>
+        <div className="bloom-panel flex flex-col items-center text-center" style={{ padding: "clamp(30px, 8vw, 40px)" }}>
           <motion.p
             custom={0}
             variants={fadeUp}
@@ -76,11 +76,11 @@ export default function RSVPSection() {
 
           {submitted ? (
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-4 py-8">
-              <div style={{ width: 52, height: 52, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--accent)" }}>
-                <Check size={20} color="var(--accent)" strokeWidth={1.5} />
+              <div style={{ width: 62, height: 62, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--accent)" }}>
+                <Check size={24} color="var(--accent)" strokeWidth={1.5} />
               </div>
-              <p className="font-display" style={{ color: "var(--text)", fontSize: "clamp(18px, 5vw, 22px)", fontWeight: 500, fontStyle: "italic" }}>Terima Kasih</p>
-              <p className="font-body" style={{ color: "var(--text-muted)", fontSize: "13px", lineHeight: 1.8, fontWeight: 300 }}>
+              <p className="font-display" style={{ color: "var(--text)", fontSize: "clamp(22px, 5.8vw, 28px)", fontWeight: 500, fontStyle: "italic" }}>Terima Kasih</p>
+              <p className="font-body" style={{ color: "var(--text-muted)", fontSize: "15px", lineHeight: 1.8, fontWeight: 300 }}>
                 Konfirmasi Anda telah kami terima.<br />
                 Kami menantikan kehadiran Anda.
               </p>
@@ -116,7 +116,7 @@ export default function RSVPSection() {
                         borderRadius: 4,
                         color: attendance === opt ? "var(--accent)" : "var(--text-muted)",
                         background: attendance === opt ? "rgba(126,105,150,0.08)" : "transparent",
-                        fontSize: "10px",
+                        fontSize: "13px",
                         fontWeight: 500,
                         letterSpacing: "0.15em",
                         textTransform: "uppercase",
@@ -134,9 +134,9 @@ export default function RSVPSection() {
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="flex flex-col gap-2">
                   <label className="type-label">Jumlah Tamu</label>
                   <div className="flex items-center gap-4">
-                    <button type="button" onClick={() => setPax(Math.max(1, pax - 1))} style={{ width: 34, height: 34, borderRadius: "50%", border: "1px solid var(--border)", color: "var(--text-muted)", background: "transparent", cursor: "pointer", fontSize: 18 }}>−</button>
-                    <span className="font-display" style={{ color: "var(--accent)", fontWeight: 500, fontSize: "clamp(20px, 5vw, 26px)", minWidth: "1.5ch", textAlign: "center" }}>{pax}</span>
-                    <button type="button" onClick={() => setPax(Math.min(5, pax + 1))} style={{ width: 34, height: 34, borderRadius: "50%", border: "1px solid var(--border)", color: "var(--text-muted)", background: "transparent", cursor: "pointer", fontSize: 18 }}>+</button>
+                    <button type="button" onClick={() => setPax(Math.max(1, pax - 1))} style={{ width: 40, height: 40, borderRadius: "50%", border: "1px solid var(--border)", color: "var(--text-muted)", background: "transparent", cursor: "pointer", fontSize: 22 }}>−</button>
+                    <span className="font-display" style={{ color: "var(--accent)", fontWeight: 500, fontSize: "clamp(24px, 6vw, 32px)", minWidth: "1.5ch", textAlign: "center" }}>{pax}</span>
+                    <button type="button" onClick={() => setPax(Math.min(5, pax + 1))} style={{ width: 40, height: 40, borderRadius: "50%", border: "1px solid var(--border)", color: "var(--text-muted)", background: "transparent", cursor: "pointer", fontSize: 22 }}>+</button>
                   </div>
                 </motion.div>
               )}

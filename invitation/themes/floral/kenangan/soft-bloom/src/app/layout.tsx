@@ -30,6 +30,11 @@ const fontVars = `${fontDisplay.variable} ${fontBody.variable} ${fontScript.vari
 export const metadata: Metadata = {
   title: `${couple.groom.name} & ${couple.bride.name} — The Wedding | Rimba Digital`,
   description: `Kami mengundang Anda untuk berbagi kebahagiaan di hari pernikahan ${couple.groom.name} & ${couple.bride.name}.`,
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
+  },
   openGraph: {
     title: `${couple.groom.name} & ${couple.bride.name} — The Wedding`,
     description: `Undangan pernikahan bertema bunga liar pastel yang segar.`,

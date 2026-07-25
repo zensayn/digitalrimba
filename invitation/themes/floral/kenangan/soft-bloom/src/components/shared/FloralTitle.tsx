@@ -15,7 +15,7 @@ export default function FloralTitle({
   serif = false,
   size,
   glow = false,
-  flowerSize = "clamp(20px, 5.5vw, 28px)",
+  flowerSize = "clamp(24px, 6.2vw, 34px)",
   style,
 }: {
   children: React.ReactNode;
@@ -54,7 +54,7 @@ export default function FloralTitle({
           serif
             ? { textShadow: glow ? glowShadow : undefined }
             : {
-                fontSize: size ?? "clamp(30px, 8.5vw, 40px)",
+                fontSize: size ?? "clamp(36px, 9.8vw, 52px)",
                 color: "var(--accent)",
                 lineHeight: 1.25,
                 textAlign: "center",

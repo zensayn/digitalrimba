@@ -15,7 +15,7 @@ const CONF = {
 
 export default function CardVines({
   file = "RantingSamping.webp",
-  width = "clamp(52px, 15vw, 80px)",
+  width = "clamp(62px, 17vw, 96px)",
   top = -24,
   inset = -16,
   zIndex = 4,

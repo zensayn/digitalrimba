@@ -26,12 +26,12 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
       style={{ paddingTop: "clamp(130px, 20vh, 170px)" }}
     >
       <div className="soft-wash" />
-      <TopFrame maxWidth={500} opacity={0.85} zIndex={1} />
-      <SectionDecor corners={["bl", "br"]} size="clamp(100px, 27vw, 180px)" opacity={0.88} />
+      <TopFrame maxWidth={560} opacity={0.85} zIndex={1} />
+      <SectionDecor corners={["bl", "br"]} size="clamp(120px, 32vw, 220px)" opacity={0.88} />
 
       <div
-        className="relative z-10 flex flex-col items-center text-center w-full max-w-xs mx-auto px-6"
-        style={{ gap: "clamp(10px, 2.5vh, 18px)" }}
+        className="relative z-10 flex flex-col items-center text-center w-full max-w-sm mx-auto px-7"
+        style={{ gap: "clamp(14px, 3vh, 24px)" }}
       >
         <motion.p
           variants={fade}
@@ -53,7 +53,7 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
           whileInView="visible"
           viewport={{ once: true, margin: "-15%" }}
           className="font-body"
-          style={{ color: "var(--text-muted)", fontSize: "clamp(11px, 2.8vw, 13px)", lineHeight: 1.9, fontWeight: 300, maxWidth: "34ch" }}
+          style={{ color: "var(--text-muted)", fontSize: "clamp(14px, 3.6vw, 17px)", lineHeight: 1.85, fontWeight: 300, maxWidth: "36ch" }}
         >
           {dressCode.description}
         </motion.p>
@@ -65,14 +65,14 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
           whileInView="visible"
           viewport={{ once: true, margin: "-15%" }}
           className="flex flex-wrap justify-center"
-          style={{ gap: "clamp(12px, 4vw, 18px)", marginTop: "clamp(4px, 1.5vh, 10px)" }}
+          style={{ gap: "clamp(16px, 5vw, 24px)", marginTop: "clamp(6px, 2vh, 12px)" }}
         >
           {dressCode.colors.map((color) => (
             <div key={color.hex} className="flex flex-col items-center" style={{ gap: 6 }}>
               <div
                 style={{
-                  width: "clamp(36px, 10vw, 46px)",
-                  height: "clamp(36px, 10vw, 46px)",
+                  width: "clamp(46px, 12vw, 58px)",
+                  height: "clamp(46px, 12vw, 58px)",
                   borderRadius: "50%",
                   background: color.hex,
                   border: "1px solid var(--border)",
@@ -80,14 +80,14 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
                   flexShrink: 0,
                 }}
               />
-              <span className="type-label" style={{ fontSize: "9px", letterSpacing: "0.1em" }}>
+              <span className="type-label" style={{ fontSize: "12px", letterSpacing: "0.08em" }}>
                 {color.name}
               </span>
             </div>
           ))}
         </motion.div>
 
-        <FloralDivider width="52vw" maxWidth={230} style={{ margin: "clamp(6px, 1.5vh, 12px) 0 2px" }} />
+        <FloralDivider width="60vw" maxWidth={290} style={{ margin: "clamp(8px, 2vh, 14px) 0 4px" }} />
 
         {/* Hindari */}
         <motion.div
@@ -98,7 +98,7 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
           className="flex flex-col items-center"
           style={{ gap: 8 }}
         >
-          <p className="type-label" style={{ letterSpacing: "0.25em", fontSize: "9px" }}>
+          <p className="type-label" style={{ letterSpacing: "0.18em", fontSize: "12px" }}>
             Mohon Hindari
           </p>
           <div className="flex gap-2 flex-wrap justify-center">
@@ -107,9 +107,9 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
                 key={item}
                 className="font-label"
                 style={{
-                  fontSize: "clamp(10px, 2.6vw, 11px)",
+                  fontSize: "clamp(13px, 3.4vw, 15px)",
                   color: "var(--text-muted)",
-                  padding: "5px 14px",
+                  padding: "7px 16px",
                   borderRadius: 999,
                   border: "1px solid var(--border)",
                   background: "rgba(255,255,255,0.55)",

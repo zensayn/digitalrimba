@@ -22,11 +22,11 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
       style={{ justifyContent: "flex-start", paddingTop: "clamp(124px, 22vh, 188px)", paddingBottom: "clamp(40px, 9vh, 72px)" }}
     >
       <SceneBackground file="LatarBokeh.webp" scrim={0.5} edgeFade />
-      <TopFrame maxWidth={408} opacity={0.85} zIndex={1} />
+      <TopFrame maxWidth={500} opacity={0.85} zIndex={1} />
       <Butterflies count={2} zIndex={2} />
       <FallingFlowers count={6} zIndex={3} />
 
-      <div className="relative z-10 flex flex-col items-center w-full max-w-md px-6" style={{ gap: "clamp(14px, 3vh, 24px)" }}>
+      <div className="relative z-10 flex flex-col items-center w-full max-w-lg px-6" style={{ gap: "clamp(16px, 3.5vh, 28px)" }}>
         <p className="type-eyebrow">
           Galeri
         </p>
@@ -35,9 +35,9 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
           Kenangan Kami
         </FloralTitle>
 
-        <FloralDivider width="60vw" maxWidth={280} style={{ marginBottom: 6 }} />
+        <FloralDivider width="66vw" maxWidth={340} style={{ marginBottom: 8 }} />
 
-        <div className="grid grid-cols-2 w-full" style={{ gap: "clamp(13px, 3.6vw, 18px)", maxWidth: 350 }}>
+        <div className="grid grid-cols-2 w-full" style={{ gap: "clamp(15px, 4vw, 22px)", maxWidth: 420 }}>
           {gallery.map((item, i) => {
             // Bento berirama: foto pembuka (dan penutup bila jumlah genap) melebar
             // dua kolom, sisanya persegi seragam → baris selalu rata, tanpa lubang.
@@ -64,7 +64,7 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
                 <div
                   style={{
                     background: "rgba(255,255,255,0.94)",
-                    padding: "7px 7px 4px",
+                    padding: "9px 9px 5px",
                     borderRadius: 3,
                     border: "1px solid var(--border)",
                     boxShadow: "0 10px 26px rgba(58,58,54,0.10)",
@@ -82,9 +82,9 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
                     className="font-script"
                     style={{
                       textAlign: "center",
-                      fontSize: isWide ? "clamp(19px, 5vw, 23px)" : "clamp(16px, 4.4vw, 19px)",
+                      fontSize: isWide ? "clamp(23px, 5.8vw, 29px)" : "clamp(20px, 5vw, 24px)",
                       color: "var(--accent)",
-                      padding: "8px 4px 4px",
+                      padding: "10px 4px 5px",
                       lineHeight: 1,
                       whiteSpace: "nowrap",
                       overflow: "hidden",
@@ -103,7 +103,7 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
                   style={{
                     position: "absolute",
                     ...corner.pos,
-                    width: "clamp(38px, 11vw, 54px)",
+                    width: "clamp(48px, 13vw, 68px)",
                     pointerEvents: "none",
                     zIndex: 2,
                   }}
@@ -133,7 +133,7 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
                     position: "absolute",
                     bottom: -8,
                     ...(onLeft ? { left: -10 } : { right: -10 }),
-                    width: "clamp(22px, 6.5vw, 30px)",
+                    width: "clamp(28px, 8vw, 38px)",
                     pointerEvents: "none",
                     zIndex: 2,
                   }}
@@ -158,7 +158,7 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
         </div>
 
         {/* Penutup grid — pembatas bunga dibalik, menggemakan pembuka */}
-        <FloralDivider width="60vw" maxWidth={280} style={{ marginTop: 6, transform: "scaleY(-1)" }} />
+        <FloralDivider width="66vw" maxWidth={340} style={{ marginTop: 8, transform: "scaleY(-1)" }} />
       </div>
     </section>
   );

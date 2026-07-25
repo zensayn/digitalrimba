@@ -5,13 +5,15 @@ export const demoConfig = configJson as InvitationConfig;
 
 // Top-level keys the studio owns. `theme` (colors/typography) always comes
 // from the bundled demo config — it belongs to the template, not the user.
-// (No loveStory: soft-bloom doesn't ship that section.)
 export const EDITABLE_KEYS = [
   "couple",
   "events",
   "weddingDate",
   "gallery",
   "bankAccounts",
+  "loveStory",
+  "rundown",
+  "turutMengundang",
   "dressCode",
   "sections",
   "music",

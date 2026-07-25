@@ -18,8 +18,8 @@ function Person({ person }: { person: PersonConfig }) {
       <div
         style={{
           position: "relative",
-          width: "clamp(168px, 46vw, 214px)",
-          height: "clamp(168px, 46vw, 214px)",
+          width: "clamp(198px, 54vw, 260px)",
+          height: "clamp(198px, 54vw, 260px)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -30,8 +30,8 @@ function Person({ person }: { person: PersonConfig }) {
         <div
           style={{
             position: "absolute",
-            width: "64%",
-            height: "64%",
+            width: "66%",
+            height: "66%",
             borderRadius: "50%",
             overflow: "hidden",
             background: "var(--surface-2)",
@@ -42,7 +42,7 @@ function Person({ person }: { person: PersonConfig }) {
         >
           <span
             className="font-display"
-            style={{ position: "absolute", color: "var(--accent-soft)", fontSize: "clamp(28px, 8vw, 38px)", fontWeight: 500 }}
+            style={{ position: "absolute", color: "var(--accent-soft)", fontSize: "clamp(34px, 9vw, 46px)", fontWeight: 500 }}
           >
             {person.name[0]}
           </span>
@@ -65,19 +65,19 @@ function Person({ person }: { person: PersonConfig }) {
 
       <h2
         className="font-display"
-        style={{ color: "var(--text)", fontWeight: 500, fontStyle: "italic", fontSize: "clamp(18px, 5.2vw, 24px)", marginBottom: 4 }}
+        style={{ color: "var(--text)", fontWeight: 500, fontStyle: "italic", fontSize: "clamp(22px, 6vw, 30px)", marginBottom: 5 }}
       >
         {person.fullName}
       </h2>
       <p
         className="font-body"
-        style={{ color: "var(--text-muted)", fontSize: "clamp(11px, 2.8vw, 13px)", lineHeight: 1.6, fontWeight: 300 }}
+        style={{ color: "var(--text-muted)", fontSize: "clamp(14px, 3.6vw, 17px)", lineHeight: 1.75, fontWeight: 300 }}
       >
         {person.parents}
       </p>
       <p
         className="font-label"
-        style={{ color: "var(--accent)", fontSize: "11px", fontWeight: 500, letterSpacing: "0.08em", marginTop: 6 }}
+        style={{ color: "var(--accent)", fontSize: "14px", fontWeight: 500, letterSpacing: "0.08em", marginTop: 7 }}
       >
         {person.instagram}
       </p>
@@ -93,12 +93,12 @@ export default function CoupleSection({ couple }: { couple: InvitationConfig["co
       style={{ justifyContent: "flex-start", paddingTop: "clamp(140px, 22vh, 190px)", paddingBottom: "clamp(40px, 9vh, 72px)" }}
     >
       <SceneBackground file="LatarDaun.webp" scrim={0.5} edgeFade />
-      <TopFrame maxWidth={520} opacity={0.92} zIndex={1} />
-      <SectionDecor corners={["bl", "br"]} size="clamp(104px, 28vw, 190px)" opacity={0.9} />
-      <Bird size="clamp(66px, 18vw, 104px)" style={{ top: "13%", left: "5%" }} zIndex={3} />
+      <TopFrame maxWidth={580} opacity={0.92} zIndex={1} />
+      <SectionDecor corners={["bl", "br"]} size="clamp(124px, 32vw, 220px)" opacity={0.9} />
+      <Bird size="clamp(78px, 21vw, 124px)" style={{ top: "13%", left: "5%" }} zIndex={3} />
       <Butterflies count={1} zIndex={3} />
 
-      <div className="relative z-10 flex flex-col items-center text-center px-8 w-full max-w-sm mx-auto">
+      <div className="relative z-10 flex flex-col items-center text-center px-8 w-full max-w-md mx-auto">
         <FloralTitle style={{ marginBottom: "clamp(20px, 5vh, 36px)" }}>
           Mempelai
         </FloralTitle>
@@ -107,21 +107,21 @@ export default function CoupleSection({ couple }: { couple: InvitationConfig["co
 
         <span
           className="font-script"
-          style={{ color: "var(--accent)", fontSize: "clamp(40px, 11vw, 56px)", lineHeight: 1, margin: "clamp(10px, 3vh, 22px) 0" }}
+          style={{ color: "var(--accent)", fontSize: "clamp(50px, 13vw, 68px)", lineHeight: 1, margin: "clamp(12px, 3.4vh, 24px) 0" }}
         >
           &amp;
         </span>
 
         <Person person={couple.bride} />
 
-        <FloralDivider width="58vw" maxWidth={260} style={{ marginTop: "clamp(24px, 6vh, 40px)" }} />
+        <FloralDivider width="64vw" maxWidth={320} style={{ marginTop: "clamp(28px, 6vh, 44px)" }} />
 
         <p
           className="font-display"
           style={{
             color: "var(--text-muted)",
             fontStyle: "italic",
-            fontSize: "clamp(12px, 3.2vw, 15px)",
+            fontSize: "clamp(15px, 3.8vw, 18px)",
             lineHeight: 1.8,
             marginTop: "clamp(16px, 4vh, 26px)",
           }}

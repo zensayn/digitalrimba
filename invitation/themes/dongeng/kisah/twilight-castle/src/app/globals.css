@@ -1,0 +1,538 @@
+@import "tailwindcss";
+
+/* ─── Tipografi "mahal" ────────────────────────────────────────────────────────
+   Font dimuat & di-selfhost oleh next/font (layout.tsx) → var(--font-*). Tanpa
+   @import remote (yang bisa di-strip Tailwind/Turbopack → jatuh ke Comic Sans). */
+
+/* ─── Design Tokens — Soft Bloom (Wildflower Pastel) ─────────────────────────── */
+:root {
+  --bg:          #FDFCFA;
+  --surface:     #F7F5F1;
+  --surface-2:   #EFEBE4;
+  --accent:      #7E6996;   /* deep lilac — ≥4.5:1 di atas kertas putih */
+  --accent-soft: #C9B8DA;   /* lilac lavender */
+  --leaf:        #7E956E;   /* meadow green readable */
+  --text:        #3A3A36;
+  --text-muted:  #6F6F67;   /* ±5:1 — aman untuk teks kecil */
+  --text-dim:    #8C8C83;   /* hanya placeholder/caption non-esensial */
+  --border:      rgba(212, 175, 55, 0.22);
+
+  /* Warna wash dekoratif (statis) */
+  --lilac:   #C9B8DA;
+  --butter:  #F0E2A8;
+  --sky:     #BCD0DB;
+  --peach:   #E9C4B4;
+
+  --shadow-soft: 0 6px 28px rgba(142, 121, 168, 0.10);
+  --shadow-card: 0 6px 28px rgba(0, 0, 0, 0.45);
+}
+
+/* ─── Twilight Royal — token & utility tambahan ─────────────────────────────
+   --bg/--surface/--accent dst. datang dari invitation.config.json (buildCssVars).
+   Di sini token ekstra khas twilight + utility latar. */
+:root {
+  --gold-light: #e8c874; /* candlelight — highlight emas */
+  --glow: #c97b84;       /* rose horizon */
+  --star: #f0ead6;       /* starlight */
+}
+
+/* Gradien langit senja — dasar/fallback sebelum foto latar ada */
+.twilight-sky {
+  background:
+    radial-gradient(70% 40% at 50% 100%, rgba(201, 123, 132, 0.28), transparent 72%),
+    linear-gradient(to bottom, #141024 0%, #1f1838 60%, #241c42 100%);
+}
+
+/* Scrim keterbacaan di atas foto latar */
+.readability-scrim {
+  background: linear-gradient(to bottom, rgba(20, 16, 36, 0.15), rgba(20, 16, 36, 0.55));
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overscroll-behavior-y: none;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body), 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ─── Typography helpers ─────────────────────────────────────────────────────── */
+.font-display { font-family: var(--font-display), 'Cinzel', Georgia, serif; }
+.font-body    { font-family: var(--font-body), 'Plus Jakarta Sans', system-ui, sans-serif; }
+.font-label   { font-family: var(--font-body), 'Plus Jakarta Sans', system-ui, sans-serif; }
+.font-script  { font-family: var(--font-script), 'Cormorant Garamond', Georgia, serif; }
+
+/* ─── Peran tipografi — SATU sumber ukuran & kapitalisasi ─────────────────────
+   Semua section memakai kelas ini (bukan nilai inline masing-masing) supaya
+   besar-kecil huruf konsisten di seluruh undangan:
+   - eyebrow : penanda section  — kapital, tracking lebar, warna aksen
+   - label   : label form/data  — kapital, tracking sedang, abu tua
+   - title   : judul section    — serif italic, ukuran seragam
+   - caption : keterangan kecil — tanpa kapital paksa                           */
+.type-eyebrow {
+  /* Sub-judul/penanda section → Cormorant Garamond (peran sub-judul). Semibold
+     supaya kapital ber-tracking lebar tetap tegas di ukuran kecil. */
+  font-family: var(--font-script), 'Cormorant Garamond', Georgia, serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.type-label {
+  font-family: var(--font-body), 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.type-title {
+  font-family: var(--font-display), 'Cinzel', Georgia, serif;
+  font-size: clamp(34px, 9.5vw, 48px);
+  font-weight: 500;
+  font-style: italic;
+  color: var(--text);
+}
+.type-caption {
+  font-family: var(--font-body), 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+  line-height: 1.75;
+}
+
+/* Panel kertas untuk blok teks/form di atas dekorasi ramai (dipakai RSVP) */
+.bloom-panel {
+  width: 100%;
+  background: rgba(31, 24, 56, 0.82);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* ─── Scroll Container ──────────────────────────────────────────────────────── */
+.snap-container {
+  width: 100%;
+  position: relative;
+  overflow-anchor: none;
+}
+
+/* Latar kertas menerus di belakang semua section → transisi tak terputus */
+.paper-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+/* Kabut pucat menyatukan tekstur kertas supaya tetap lembut & terang */
+.paper-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(20,16,36,0.55), rgba(20,16,36,0.35) 40%, rgba(20,16,36,0.55));
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent-soft); border-radius: 2px; }
+
+.snap-section {
+  min-height: 100vh;
+  min-height: 100svh;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Section isi mengalir mengikuti konten. Cover/closing tetap memakai full viewport,
+   sementara bagian tengah tidak lagi terasa "menempel" ke satu layar penuh. */
+.flow-section {
+  min-height: auto;
+  justify-content: flex-start;
+  padding-top: clamp(64px, 11vh, 104px);
+  padding-bottom: calc(clamp(64px, 11vh, 104px) + env(safe-area-inset-bottom));
+}
+
+/* ─── Mood latar per-section — tint transparan di atas kertas menerus ─────────── */
+/* Tiap section punya suasana warna berbeda (tak ada dua berdampingan yang sama),
+   tapi tetap transparan supaya latar kertas mengalir menembus → tetap menyatu.
+   Tepi atas/bawah sengaja lebih bening agar berbaur ke section tetangga. */
+.mood-paper,
+.mood-mist,
+.mood-sky,
+.mood-meadow,
+.mood-blush,
+.mood-butter {
+  background-color: transparent;
+}
+.mood-paper  { background-image: radial-gradient(120% 78% at 50% 42%, rgba(247,245,241,0.72), rgba(247,245,241,0) 76%); }
+.mood-mist   { background-image: radial-gradient(120% 78% at 50% 42%, rgba(201,184,218,0.20), rgba(201,184,218,0) 74%); }
+.mood-sky    { background-image: radial-gradient(120% 78% at 50% 42%, rgba(188,208,219,0.22), rgba(188,208,219,0) 74%); }
+.mood-meadow { background-image: radial-gradient(120% 80% at 50% 60%, rgba(155,176,138,0.20), rgba(155,176,138,0) 74%); }
+.mood-blush  { background-image: radial-gradient(120% 78% at 50% 44%, rgba(233,196,180,0.20), rgba(233,196,180,0) 74%); }
+.mood-butter { background-image: radial-gradient(120% 78% at 50% 42%, rgba(240,226,168,0.22), rgba(240,226,168,0) 74%); }
+
+/* ─── Soft pastel background wash — pure CSS, tanpa gambar ───────────────────── */
+.soft-wash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(45% 40% at 50% 0%, rgba(36, 28, 66, 0.55), transparent 70%),   /* dusk    */
+    radial-gradient(60% 45% at 50% 100%, rgba(201, 123, 132, 0.18), transparent 72%); /* horizon */
+}
+
+/* ─── Botanical specimen card — crisp, bukan glassy-rounded ──────────────────── */
+/* Latar cukup pekat + blur: kartu (countdown) bisa duduk di atas padang bunga
+   yang rapat tanpa angkanya tertelan flora di belakangnya. */
+.specimen-card {
+  position: relative;
+  background: rgba(31, 24, 56, 0.86);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* Kartu botani (dipakai BotanicalCard) — panel bunga `KartuBunga` mengisi kartu.
+   Warna & box-shadow di sini jadi fallback bila gambar panel belum termuat. */
+.botanical-card {
+  background: linear-gradient(180deg, rgba(36,28,66,0.92), rgba(20,16,36,0.88));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+}
+
+/* ─── Dividers ───────────────────────────────────────────────────────────────── */
+.leaf-divider {
+  width: 56px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--leaf), transparent);
+  opacity: 0.7;
+}
+
+.leaf-divider-full {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
+  opacity: 0.4;
+}
+
+/* ─── Ambient motion ─────────────────────────────────────────────────────────── */
+/* Gerak halus terus-menerus supaya halaman terasa "hidup", bukan diam.
+   Teknik "tertiup angin": rotasi murni dengan transform-origin di PANGKAL
+   (batang/akar diam, ujung/kelopak bergoyang). Tiap elemen beda durasi → organik. */
+@keyframes sway {
+  from { transform: rotate(-3deg); }
+  to   { transform: rotate(3deg); }
+}
+@keyframes swayAlt {
+  from { transform: rotate(2.4deg); }
+  to   { transform: rotate(-2.4deg); }
+}
+@keyframes swaySoft {
+  from { transform: rotate(-4.5deg); }
+  to   { transform: rotate(4.5deg); }
+}
+@keyframes swayFrame {
+  from { transform: rotate(-1deg); }
+  to   { transform: rotate(1deg); }
+}
+@keyframes birdBob {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50%      { transform: translateY(-3px) rotate(1.5deg); }
+}
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-7px); }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.035); }
+}
+@keyframes wingflap {
+  0%, 100% { transform: scaleX(1); }
+  50%      { transform: scaleX(0.6); }
+}
+@keyframes disc-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+/* Api obor berkedip — sedikit denyut opacity + skala */
+@keyframes flicker {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  45%      { opacity: 0.84; transform: scale(0.975); }
+  70%      { opacity: 0.94; transform: scale(1.01); }
+}
+/* Panji/bendera berkibar — miring bergantian dari pangkal atas */
+@keyframes flutter {
+  from { transform: rotate(-2.2deg) skewX(2deg); }
+  to   { transform: rotate(2.2deg) skewX(-2deg); }
+}
+
+.music-toggle-vinyl:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+
+/* keyframes petalFall & butterfly-fly di-generate inline per-elemen */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─── Entrance reveals — arah muncul mengikuti POSISI elemen ─────────────────── */
+/* Elemen di TENGAH mekar dari kecil → besar di tempatnya (grow/soft). Pembatas
+   TEPI muncul dari sisinya: atas turun, bawah naik, samping masuk dari samping,
+   sudut menyerong dari sudutnya — semuanya tetap diberi sedikit scale supaya
+   terasa "mekar", bukan meluncur kaku. Sengaja pakai properti `translate`/`scale`
+   yang INDEPENDEN dari `transform` → tak bentrok dengan goyangan ambient (pakai
+   `transform`) maupun mirror wrapper (scaleX/scaleY — translate dihitung di
+   ruang luar, jadi arahnya tidak ikut terbalik oleh mirror). Animasi ditahan
+   (paused) sampai section/jahitan-nya masuk viewport → ditandai [data-inview]
+   oleh RevealController. Fallback aman: reduced-motion tampil utuh. */
+[data-enter] {
+  animation-duration: 1.7s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation-fill-mode: both;
+  animation-play-state: paused;
+}
+[data-enter="top"]    { animation-name: enterTop; }
+[data-enter="bottom"] { animation-name: enterBottom; animation-delay: 0.18s; }
+[data-enter="left"]   { animation-name: enterLeft;  animation-delay: 0.12s; }
+[data-enter="right"]  { animation-name: enterRight; animation-delay: 0.12s; }
+[data-enter="tl"]     { animation-name: enterTL; animation-delay: 0.16s; }
+[data-enter="tr"]     { animation-name: enterTR; animation-delay: 0.16s; }
+[data-enter="bl"]     { animation-name: enterBL; animation-delay: 0.24s; }
+[data-enter="br"]     { animation-name: enterBR; animation-delay: 0.24s; }
+[data-enter="drop"]   { animation-name: enterDrop; animation-delay: 0.32s; }
+[data-enter="frame"]  { animation-name: enterFrame; }
+[data-enter="soft"]   { animation-name: enterSoft; }
+[data-enter="grow"]   { animation-name: enterGrow; }
+
+/* Lepas tahanan begitu scope-nya tampil → semua anak [data-enter] muncul */
+.reveal-scope[data-inview="true"] [data-enter] { animation-play-state: running; }
+
+/* Pembatas tepi: offset dari sisinya + scale ringan */
+@keyframes enterTop    { from { opacity: 0; translate: 0 -44px;    scale: 0.85; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterBottom { from { opacity: 0; translate: 0 48px;     scale: 0.85; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterLeft   { from { opacity: 0; translate: -52px 0;    scale: 0.85; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterRight  { from { opacity: 0; translate: 52px 0;     scale: 0.85; } to { opacity: 1; translate: 0 0; scale: 1; } }
+/* Ornamen sudut: menyerong halus dari sudutnya sambil mekar */
+@keyframes enterTL     { from { opacity: 0; translate: -26px -28px; scale: 0.7; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterTR     { from { opacity: 0; translate: 26px -28px;  scale: 0.7; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterBL     { from { opacity: 0; translate: -26px 30px;  scale: 0.7; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterBR     { from { opacity: 0; translate: 26px 30px;   scale: 0.7; } to { opacity: 1; translate: 0 0; scale: 1; } }
+/* Menjuntai dari atas kartu */
+@keyframes enterDrop   { from { opacity: 0; translate: 0 -26px;     scale: 0.8; } to { opacity: 1; translate: 0 0; scale: 1; } }
+/* Bingkai penuh: merapat dari luar tepi viewport */
+@keyframes enterFrame  { from { opacity: 0; scale: 1.06; } to { opacity: 1; scale: 1; } }
+/* Elemen tengah: murni mekar dari kecil di tempatnya */
+@keyframes enterSoft   { from { opacity: 0; scale: 0.75; } to { opacity: 1; scale: 1; } }
+@keyframes enterGrow   { from { opacity: 0; scale: 0.6; }  to { opacity: 1; scale: 1; } }
+
+/* ─── Form elements ──────────────────────────────────────────────────────────── */
+.input-bloom {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(126, 105, 150, 0.38);
+  color: var(--text);
+  padding: 12px 0;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input-bloom::placeholder { color: var(--text-dim); }
+.input-bloom:focus { border-bottom-color: var(--accent); }
+
+textarea.input-bloom { resize: none; line-height: 1.7; }
+
+/* ─── Button ─────────────────────────────────────────────────────────────────── */
+.btn-bloom {
+  position: relative;
+  padding: 15px 44px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  color: var(--accent);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.btn-bloom::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+.btn-bloom:hover::before { transform: scaleX(1); }
+.btn-bloom:hover { color: var(--bg); }
+
+.opening-cta-button {
+  position: relative;
+  min-width: 196px;
+  min-height: 46px;
+  padding: 13px 28px 12px;
+  border: 1px solid rgba(126, 105, 150, 0.46);
+  border-radius: 5px;
+  background: rgba(253, 252, 250, 0.82);
+  color: var(--accent);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(58, 58, 54, 0.06);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  transition: background-color 220ms ease, border-color 220ms ease, color 220ms ease, transform 220ms ease;
+}
+
+.opening-cta-button:hover,
+.opening-cta-button:focus-visible {
+  background: rgba(126, 105, 150, 0.92);
+  border-color: rgba(126, 105, 150, 0.92);
+  color: var(--bg);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.opening-cta-button:active {
+  transform: translateY(0);
+}
+
+.closing-brand-footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 12;
+  min-height: calc(54px + env(safe-area-inset-bottom));
+  padding: 8px 18px calc(8px + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.closing-brand-footer span {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(20px, 5.6vw, 28px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.closing-brand-footer img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+/* ─── RSVP scrollable area ───────────────────────────────────────────────────── */
+.overflow-y-auto::-webkit-scrollbar { display: none; }
+.overflow-y-auto { -ms-overflow-style: none; scrollbar-width: none; }
+
+.event-action-link:hover { color: var(--accent) !important; }
+
+/* ─── Layout desktop (split) ─────────────────────────────────────────────────── */
+/* Desain tetap fokus HP. Di layar lebar, undangan tampil sebagai kolom sempit di
+   kanan (seperti di HP) dan sisi kiri diisi panel cover dekoratif. */
+.app-shell { width: 100%; }
+.desktop-cover { display: none; }
+
+@media (min-width: 1024px) {
+  /* Window yang menggulir (bukan kolom ber-overflow) + panel kiri sticky.
+     Dulu html/body dikunci overflow:hidden dan hanya .content-scroll yang bisa
+     digulir → roda mouse mati bila kursor di atas panel kiri, terasa "nyangkut".
+     Dengan window scroll, gulir bekerja di mana pun kursor berada. */
+  .app-shell {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .desktop-cover {
+    display: block;
+    position: sticky;
+    top: 0;
+    flex: 1 1 auto;
+    height: 100vh;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+  }
+
+  .content-scroll {
+    flex: 0 0 clamp(420px, 33vw, 500px);
+    background: var(--bg);
+    box-shadow: -10px 0 44px rgba(58, 58, 54, 0.07);
+  }
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ambient-anim,
+  .ambient-anim * {
+    animation: none !important;
+  }
+  /* Entrance dimatikan → elemen langsung di posisi rest, tetap terlihat utuh */
+  [data-enter] {
+    animation: none !important;
+    opacity: 1 !important;
+    translate: 0 0 !important;
+    scale: 1 !important;
+  }
+  html { scroll-behavior: auto; }
+}

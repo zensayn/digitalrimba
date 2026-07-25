@@ -8,7 +8,7 @@ import { hideBrokenImage } from "@/lib/image-fallback";
 
 export default function Bird({
   file = "Burung.webp",
-  size = "clamp(78px, 22vw, 128px)",
+  size = "clamp(92px, 25vw, 148px)",
   flip = false,
   zIndex = 3,
   style,

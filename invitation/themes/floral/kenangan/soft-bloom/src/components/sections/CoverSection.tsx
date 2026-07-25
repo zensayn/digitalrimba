@@ -59,7 +59,7 @@ function Countdown({ targetDateString }: { targetDateString: string }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay: 1.2 }}
-      style={{ display: "flex", gap: "12px" }}
+      style={{ display: "flex", gap: "14px" }}
     >
       {[
         { key: "d", label: "Hari" },
@@ -75,11 +75,11 @@ function Countdown({ targetDateString }: { targetDateString: string }) {
             flexDirection: "column",
             alignItems: "center",
             gap: 3,
-            minWidth: 52,
-            padding: "12px 8px",
+            minWidth: 58,
+            padding: "14px 9px",
           }}
         >
-          <span data-cd={key} className="font-display" style={{ fontSize: "clamp(22px, 6vw, 32px)", fontWeight: 500, color: "var(--accent)", lineHeight: 1 }}>
+          <span data-cd={key} className="font-display" style={{ fontSize: "clamp(26px, 6.8vw, 38px)", fontWeight: 500, color: "var(--accent)", lineHeight: 1 }}>
             00
           </span>
           <span className="type-label" style={{ letterSpacing: "0.16em" }}>
@@ -142,7 +142,7 @@ export default function CoverSection({
       {bgLoaded && (
         <>
           <Meadow sprigs={7} zIndex={1} />
-          <BottomClusters size="clamp(150px, 44vw, 300px)" zIndex={1} />
+          <BottomClusters size="clamp(170px, 48vw, 340px)" zIndex={1} />
           <Butterflies count={2} zIndex={4} />
         </>
       )}
@@ -180,7 +180,7 @@ export default function CoverSection({
           flexDirection: "column",
           alignItems: "center",
           textAlign: "center",
-          padding: "min(30vw, 200px) 32px clamp(28px, 5vh, 52px)",
+          padding: "min(32vw, 220px) 32px clamp(34px, 6vh, 64px)",
           width: "100%",
         }}
       >
@@ -191,8 +191,8 @@ export default function CoverSection({
           transition={{ duration: 1.0, delay: 0.2 }}
           style={{
             position: "relative",
-            width: "clamp(134px, 38vw, 184px)",
-            height: "clamp(134px, 38vw, 184px)",
+            width: "clamp(150px, 41vw, 210px)",
+            height: "clamp(150px, 41vw, 210px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -216,7 +216,7 @@ export default function CoverSection({
           />
           <span
             className="font-script"
-            style={{ fontSize: "clamp(30px, 9vw, 44px)", color: "var(--accent)", lineHeight: 1, paddingBottom: 6 }}
+            style={{ fontSize: "clamp(34px, 9.8vw, 52px)", color: "var(--accent)", lineHeight: 1, paddingBottom: 6 }}
           >
             {groom.name[0]}&nbsp;&amp;&nbsp;{bride.name[0]}
           </span>
@@ -230,7 +230,7 @@ export default function CoverSection({
           transition={{ duration: 0.7, delay: 0.35 }}
           style={{ marginBottom: "14px" }}
         >
-          <FloralTitle as="p" glow size="clamp(21px, 6vw, 27px)" flowerSize="clamp(15px, 4vw, 20px)">
+          <FloralTitle as="p" glow size="clamp(24px, 6.6vw, 32px)" flowerSize="clamp(18px, 4.8vw, 24px)">
             Undangan Pernikahan
           </FloralTitle>
         </motion.div>
@@ -242,7 +242,7 @@ export default function CoverSection({
           transition={{ duration: 1.0, delay: 0.5 }}
           className="font-display"
           style={{
-            fontSize: "clamp(40px, 12vw, 72px)",
+            fontSize: "clamp(46px, 13vw, 82px)",
             fontWeight: 400,
             lineHeight: 1.05,
             color: "var(--text)",
@@ -273,7 +273,7 @@ export default function CoverSection({
           transition={{ duration: 0.7, delay: 1.05 }}
           className="font-body"
           style={{
-            fontSize: "13px",
+            fontSize: "15px",
             color: "var(--text-muted)",
             letterSpacing: "0.04em",
             marginBottom: "30px",

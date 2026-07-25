@@ -30,7 +30,7 @@ export default function BotanicalCard({
           onError={hideBrokenImage}
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "fill", zIndex: 0, pointerEvents: "none" }}
         />
-        <div style={{ position: "relative", zIndex: 1, padding: "clamp(30px, 11%, 54px) clamp(30px, 13%, 52px)" }}>
+        <div style={{ position: "relative", zIndex: 1, padding: "clamp(34px, 12%, 60px) clamp(32px, 14%, 58px)" }}>
           {children}
         </div>
       </div>

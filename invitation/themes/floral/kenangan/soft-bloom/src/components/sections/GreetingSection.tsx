@@ -33,10 +33,10 @@ export default function GreetingSection({ couple }: GreetingSectionProps) {
       <div className="soft-wash" />
       {/* Bingkai DI BELAKANG konten (dulu zIndex 11 > konten → teks salam
           tertimpa bunga dan tak terbaca — temuan QA). */}
-      <TopFrame maxWidth={500} opacity={0.9} zIndex={1} />
-      <SectionDecor corners={["bl", "br"]} size="clamp(104px, 28vw, 190px)" opacity={0.9} />
+      <TopFrame maxWidth={560} opacity={0.9} zIndex={1} />
+      <SectionDecor corners={["bl", "br"]} size="clamp(124px, 32vw, 220px)" opacity={0.9} />
 
-      <div className="relative z-10 flex flex-col items-center text-center w-full max-w-sm px-8">
+      <div className="relative z-10 flex flex-col items-center text-center w-full max-w-md px-8">
         <motion.div
           variants={fade(0)}
           initial="hidden"
@@ -62,7 +62,7 @@ export default function GreetingSection({ couple }: GreetingSectionProps) {
             <p className="type-label" style={{ marginBottom: 8 }}>
               Kepada Yth.
             </p>
-            <p className="font-script" style={{ fontSize: "clamp(30px, 9vw, 40px)", color: "var(--accent)", lineHeight: 1.1, marginBottom: 18 }}>
+            <p className="font-script" style={{ fontSize: "clamp(36px, 10vw, 50px)", color: "var(--accent)", lineHeight: 1.1, marginBottom: 20 }}>
               <Suspense fallback="Tamu Undangan">
                 <GuestName />
               </Suspense>
@@ -70,13 +70,13 @@ export default function GreetingSection({ couple }: GreetingSectionProps) {
 
             <div style={{ width: 30, height: 1, background: "var(--leaf)", opacity: 0.5, margin: "0 auto 18px" }} />
 
-            <p className="font-body" style={{ fontSize: "clamp(12px, 3vw, 14px)", color: "var(--text-muted)", lineHeight: 1.95, fontWeight: 300 }}>
+            <p className="font-body" style={{ fontSize: "clamp(14px, 3.6vw, 17px)", color: "var(--text-muted)", lineHeight: 1.9, fontWeight: 300 }}>
               Dengan penuh sukacita, kami mengundang Bapak / Ibu / Saudara/i untuk hadir
               dan turut berbahagia di hari pernikahan kami. Sebuah hari yang kami nanti,
               akan terasa lebih indah dengan kehadiran serta doa Anda.
             </p>
 
-            <p className="font-display" style={{ marginTop: 22, fontSize: "clamp(16px, 4.5vw, 20px)", fontStyle: "italic", color: "var(--text)" }}>
+            <p className="font-display" style={{ marginTop: 24, fontSize: "clamp(20px, 5.2vw, 26px)", fontStyle: "italic", color: "var(--text)" }}>
               {couple.groom.name} <span className="font-script" style={{ color: "var(--accent)", fontStyle: "normal" }}>&amp;</span> {couple.bride.name}
             </p>
           </BotanicalCard>
