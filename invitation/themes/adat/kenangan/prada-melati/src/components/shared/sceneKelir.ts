@@ -26,31 +26,38 @@ export interface KelirPreset {
   /** Ornamen sudut ambient (PojokKelir): "sulur" | "praba", dicermin 4 sudut.
    *  Kosong → tak ada. Dilewati di section hero & yang sudah ramai sudutnya. */
   pojok?: "sulur" | "praba";
+  /** Lewati dua sudut atas PojokKelir — mis. closing yang zona atasnya dibiarkan
+   *  lengang. Sudut bawah tetap tampil. */
+  pojokSkipTop?: boolean;
   /** Tinggi zona aman atas (svh) yang harus dilewati konten agar tak menimpa
    *  aktor solid (spec tata-letak §2.1). Diisi hanya untuk ceplok/medallion
    *  yang menutupi tengah-atas. Hero-arch (akad/resepsi) & section bottom-align
    *  (cover/greeting/closing) dibiarkan kosong → fallback padding kecil
    *  SceneContent + align yang menegakkan zonanya. Rumus: actorY + tinggi ceplok. */
   safeTopSvh?: number;
+  /** Sepasang ornamen tegak yang mengapit aktor di zona atas (kiri + kanan
+   *  dicermin), mis. "MayangPrada" (kembar mayang). Kosong → tak ada. Duduk di
+   *  zona atas jadi safeTopSvh harus melewatinya. */
+  flank?: string;
 }
 
 export const KELIR: Record<string, KelirPreset> = {
   cover:     { actor: "AktorGunungan",    actorScale: 1.0,                 blencongY: "38%", blencongBright: 0.9 },
   greeting:  { actor: "CeplokSulur",      actorScale: 0.44, actorY: "10%", blencongY: "30%", blencongBright: 0.35, hem: "HemSulur", pojok: "praba", safeTopSvh: 36 },
-  couple:    { actor: "CeplokMelati",     actorScale: 0.34, actorY: "3%",  blencongY: "28%", blencongBright: 0.50, frame: "BingkaiGebyok", hem: "HemMelati", pojok: "sulur", safeTopSvh: 20 },
+  couple:    { actor: "CeplokTruntum",    actorScale: 0.34, actorY: "3%",  blencongY: "28%", blencongBright: 0.50, frame: "BingkaiGebyok", hem: "HemMelati", pojok: "sulur", flank: "MayangPrada", safeTopSvh: 26 },
   lovestory: { actor: "CeplokKawung",     actorScale: 0.42, actorY: "9%",  blencongY: "24%", blencongBright: 0.40, frame: "BingkaiTumpal", hem: "HemKawung", pojok: "praba", safeTopSvh: 34 },
-  akad:      { actor: "AktorCandiBentar", actorScale: 1.0,                 blencongY: "44%", blencongBright: 0.75 },
-  resepsi:   { actor: "AktorPaduraksa",   actorScale: 1.0,                 blencongY: "42%", blencongBright: 0.75 },
+  akad:      { actor: "AktorCandiBentar", actorScale: 1.0,                 blencongY: "44%", blencongBright: 0.75, safeTopSvh: 62 },
+  resepsi:   { actor: "AktorPaduraksa",   actorScale: 1.0,                 blencongY: "42%", blencongBright: 0.75, safeTopSvh: 62 },
   dresscode: { actor: "CeplokKawung",     actorScale: 0.44, actorY: "10%", blencongY: "32%", blencongBright: 0.40, hem: "HemKawung", pojok: "sulur", safeTopSvh: 36 },
-  gallery:   { actor: "MelatiSprig",      actorScale: 0.40, actorCorners: true, blencongY: "30%", blencongBright: 0.35, frame: "BingkaiTumpal", hem: "HemMelati" },
+  gallery:   { actor: "MelatiSprig",      actorScale: 0.24, actorCorners: true, blencongY: "30%", blencongBright: 0.35, frame: "BingkaiTumpal", hem: "HemMelati" },
   rsvp:      { actor: "CeplokSulur",      actorScale: 0.44, actorY: "10%", blencongY: "28%", blencongBright: 0.40, hem: "HemSulur", pojok: "sulur", safeTopSvh: 36 },
-  gift:      { actor: "CeplokMelati",     actorScale: 0.44, actorY: "10%", blencongY: "30%", blencongBright: 0.40, hem: "HemMelati", pojok: "praba", safeTopSvh: 36 },
-  rundown:   { actor: "CeplokKawung",     actorScale: 0.44, actorY: "10%", blencongY: "30%", blencongBright: 0.42, hem: "HemKawung", pojok: "praba", safeTopSvh: 36 },
+  gift:      { actor: "CeplokPadma",      actorScale: 0.44, actorY: "10%", blencongY: "30%", blencongBright: 0.40, hem: "HemMelati", pojok: "praba", safeTopSvh: 36 },
+  rundown:   { actor: "GongPrada",        actorScale: 0.46, actorY: "0%",  blencongY: "30%", blencongBright: 0.42, hem: "HemKawung", pojok: "praba", safeTopSvh: 30 },
   turut:     { actor: "CeplokSulur",      actorScale: 0.44, actorY: "10%", blencongY: "30%", blencongBright: 0.40, hem: "HemSulur", pojok: "sulur", safeTopSvh: 36 },
   // AktorKayon hero menggantung dari atas (top:0, height 56svh). safeTopSvh 56
   // mendorong konten ke bawah tip-nya supaya nama/quote/hashtag tak tertimpa &
   // terbaca (spec tata-letak §2). Section tumbuh menampung; scroll tipis di akhir.
-  closing:   { actor: "AktorKayon",       actorScale: 1.0, actorFromTop: true, blencongY: "88%", blencongBright: 1.0, pojok: "praba", safeTopSvh: 56 },
+  closing:   { actor: "AktorKayon",       actorScale: 1.0, actorFromTop: true, blencongY: "88%", blencongBright: 1.0, pojok: "praba", pojokSkipTop: true, safeTopSvh: 42 },
 };
 
 export function kelirFor(id: string): KelirPreset {

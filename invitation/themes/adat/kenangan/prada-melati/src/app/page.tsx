@@ -27,13 +27,14 @@ export default function Page() {
       {config.music && <MusicPlayer music={config.music} />}
       <GoldDust />
       <KupuAmbient />
-      <RevealController />
       <div className="app-shell">
         <DesktopCover couple={config.couple} weddingDate={config.weddingDate} />
         <SnapContainer>
           {sectionIds.map((id) => (
             <Fragment key={id}>{renderSection(id, config)}</Fragment>
           ))}
+          {/* RevealController di dalam SnapContainer agar dapat ScrollContext */}
+          <RevealController />
         </SnapContainer>
       </div>
     </MotionProvider>

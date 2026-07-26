@@ -35,7 +35,7 @@ export default function RonceanMelati({ zIndex = 3 }: { zIndex?: number }) {
             position: "absolute",
             top: 0,
             [s.side]: 0,
-            height: "58vh",
+            height: "38vh",
             transformOrigin: "top center",
             animationDelay: s.delay,
           }}

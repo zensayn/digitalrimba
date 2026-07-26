@@ -12,34 +12,84 @@ export default function DressCodeSection({ dressCode }: { dressCode: InvitationC
       <KelirScene preset={preset} kain="KainBadan">
         <SceneContent maxWidth={340}>
           <SectionHeader eyebrow="Dress Code" title={dressCode.theme} />
-          <p className="font-body mt-5 leading-relaxed text-[var(--text-muted)]" style={{ fontSize: "clamp(12px, 3vw, 14px)" }}>
+          <p
+            className="font-body mt-5 italic leading-relaxed text-[var(--text-muted)]"
+            style={{ fontSize: "clamp(12px, 3vw, 14px)", lineHeight: 1.85, maxWidth: "32ch", textAlign: "center", margin: "8px auto 0" }}
+          >
             {dressCode.description}
           </p>
 
-          <div className="mt-7 flex items-start justify-center gap-4">
+          {/* Swatch kain — pola warm-narrative: blok persegi opak + plate nama & hex
+              di bawahnya, tersusun grid. Tiap swatch berdiri sendiri (blok opak +
+              plate gelap) jadi tegak di atas batik tanpa kartu besar pembungkus.
+              Hairline emas di dalam blok menjaga swatch gelap (Sogan/Kayu Jati)
+              tetap kelihatan bentuknya di latar yang senada. */}
+          <div className="flex flex-wrap justify-center" style={{ gap: "clamp(10px, 2.5vw, 14px)", marginTop: 36 }}>
             {dressCode.colors.map((c, i) => (
-              <div key={i} className="flex flex-col items-center gap-2">
-                <span
+              <div key={i} style={{ display: "flex", flexDirection: "column", width: 72 }}>
+                {/* Blok warna */}
+                <div
                   style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: "50%",
+                    width: 72,
+                    height: 80,
                     background: c.hex,
-                    border: "1px solid var(--border)",
-                    boxShadow: "inset 0 0 0 2px rgba(20,12,6,0.35)",
+                    boxShadow: "inset 0 0 0 1px rgba(227,199,102,0.22), 0 4px 14px rgba(0,0,0,0.35)",
                   }}
                 />
-                <span className="font-label" style={{ color: "var(--text-muted)", fontSize: 9, letterSpacing: "0.08em" }}>
-                  {c.name}
-                </span>
+                {/* Plate nama + hex */}
+                <div
+                  style={{
+                    padding: "5px 6px 6px",
+                    border: "1px solid var(--border)",
+                    borderTop: "none",
+                    background: "rgba(20,12,6,0.6)",
+                  }}
+                >
+                  <p
+                    className="font-label"
+                    style={{ fontSize: 8, color: "var(--text-muted)", letterSpacing: "0.05em", textTransform: "uppercase", lineHeight: 1.3, marginBottom: 2 }}
+                  >
+                    {c.name}
+                  </p>
+                  <p
+                    className="font-label"
+                    style={{ fontSize: 7, color: "var(--gold-dim)", letterSpacing: "0.04em", opacity: 0.85 }}
+                  >
+                    {c.hex}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
 
+          {/* Hindari — pola warm-narrative: label + chip bergaris-coret. */}
           {dressCode.avoid.length > 0 && (
-            <p className="font-label mx-auto mt-7" style={{ color: "var(--text-dim)", fontSize: 11, letterSpacing: "0.06em", lineHeight: 1.6, maxWidth: 280 }}>
-              Mohon hindari: {dressCode.avoid.join(", ")}
-            </p>
+            <div className="flex flex-col items-center" style={{ gap: 8, marginTop: 48 }}>
+              <p
+                className="font-label"
+                style={{ color: "var(--gold)", fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase" }}
+              >
+                Hindari
+              </p>
+              <div className="flex flex-wrap justify-center gap-3">
+                {dressCode.avoid.map((item) => (
+                  <span
+                    key={item}
+                    className="font-label"
+                    style={{
+                      fontSize: "clamp(10px, 2.8vw, 12px)",
+                      color: "var(--text-muted)",
+                      padding: "4px 12px",
+                      border: "1px solid var(--border)",
+                      background: "rgba(20,12,6,0.6)",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
           )}
         </SceneContent>
       </KelirScene>

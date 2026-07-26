@@ -39,29 +39,55 @@ export default function DesktopCover({
 
   return (
     <aside className="desktop-cover" aria-hidden="true" onWheel={forwardWheel}>
-      <KelirScene preset={preset} kain="KainBadan">
+      {/* Hero cover dikecilkan (46svh, default 56) supaya ada pita gelap cukup di
+          bawah gunungan untuk kicker + nama + tanggal + countdown + blok tamu —
+          di layar desktop pendek konten tak lagi tertindih gunungan/hem. */}
+      <KelirScene preset={preset} kain="KainBadan" heroSvh={46}>
         <RonceanMelati zIndex={3} />
-        <SceneContent align="center" maxWidth={460}>
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-[var(--text-dim)]">
+        <SceneContent
+          align="center"
+          maxWidth={620}
+          padTop="38svh"
+          padBottom="clamp(80px, 12svh, 120px)"
+        >
+          {/* JARAK antar-baris = angka `marginTop` inline (px) pada tiap elemen di
+              bawahnya. JANGAN pakai class margin Tailwind (mt- dsb) di sini — tak
+              ter-generate di proyek ini, jadi tak ada efek. Ubah angkanya: makin
+              besar makin renggang. */}
+
+          {/* Kicker — baris pertama, tak butuh marginTop */}
+          <p className="font-label text-halo text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">
             Undangan Pernikahan
           </p>
+
+          {/* Nama — marginTop = jarak KICKER → NAMA */}
           <h1
-            className="font-display mt-5 text-[var(--text)]"
-            style={{ fontSize: "clamp(40px, 4vw, 68px)", lineHeight: 1.08, textShadow: "0 2px 20px rgba(0,0,0,0.7)" }}
+            className="font-display text-[var(--text)]"
+            style={{ marginTop: 1, fontSize: "clamp(38px, 3.4vw, 58px)", lineHeight: 1.08, textShadow: "0 2px 20px rgba(0,0,0,0.7)" }}
           >
             {couple.groom.name} &amp; {couple.bride.name}
           </h1>
-          <div className="gold-divider mx-auto my-5" />
-          <p className="font-body text-[var(--text-muted)]">{dateStr}</p>
-          <div className="mt-6">
+
+          {/* Garis emas — marginTop = jarak NAMA → GARIS. Tetap center via margin auto. */}
+          <div className="gold-divider" style={{ marginTop: 1, marginLeft: "auto", marginRight: "auto" }} />
+
+          {/* Tanggal — marginTop = jarak GARIS → TANGGAL */}
+          <p className="font-body text-halo text-[var(--text-muted)]" style={{ marginTop: 2 }}>
+            {dateStr}
+          </p>
+
+          {/* Countdown — marginTop = jarak TANGGAL → COUNTDOWN */}
+          <div style={{ marginTop: 3 }}>
             <Countdown targetDate={weddingDate} />
           </div>
 
-          <div className="mt-9 flex flex-col items-center gap-1.5">
-            <p className="font-label text-[10px] uppercase tracking-[0.25em] text-[var(--text-dim)]">
+          {/* Blok tamu — marginTop = jarak COUNTDOWN → "Kepada Yth.";
+              gap = jarak "Kepada Yth." → nama tamu */}
+          <div className="flex flex-col items-center" style={{ marginTop: 5, gap: 2 }}>
+            <p className="font-label text-halo text-[10px] uppercase tracking-[0.25em] text-[var(--text-muted)]">
               Kepada Yth.
             </p>
-            <p className="font-display text-[var(--gold)]" style={{ fontSize: "clamp(20px, 1.9vw, 30px)" }}>
+            <p className="font-display text-halo text-[var(--text)]" style={{ fontSize: "clamp(20px, 1.9vw, 30px)" }}>
               <Suspense fallback={null}>
                 <GuestName />
               </Suspense>

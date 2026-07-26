@@ -10,14 +10,48 @@ import GiltSweep from "./GiltSweep";
 import PojokKelir from "./PojokKelir";
 import type { KelirPreset } from "./sceneKelir";
 
+/** Lebar pinggiran kiri/kanan. Dipakai bersama: lebar gambar PinggiranTile DAN
+ *  batas clip hem, supaya hem selalu berhenti pas di tepi dalam pinggiran dan
+ *  keduanya tak pernah terlihat bertumpuk di sudut bawah — di lebar layar mana
+ *  pun. Sengaja konstanta di file ini (bukan CSS var lintas-file): `width` yang
+ *  gagal resolve akan jatuh ke `auto` dan gambar melar ke ukuran intrinsiknya. */
+const PINGGIRAN_W = "clamp(18px, 4vw, 32px)";
+
+/** Tinggi TINTA pita hem sebagai rasio terhadap LEBAR scene — bukan tinggi
+ *  kotak gambarnya. Aset hem punya ruang transparan cukup besar di atas motif
+ *  (HemSulur 67% kosong, HemMelati 65%, HemKawung 47%, TumpalBand 13%), jadi
+ *  memakai tinggi kotak akan mendorong ornamen lain jauh ke atas dan menyisakan
+ *  celah kosong. Nilai = (naturalHeight − barisTintaPertama) / naturalWidth,
+ *  diukur dari alpha channel tiap aset.
+ *  Kalau aset hem diganti, ukur ulang: baris pertama dengan alpha > 12. */
+const HEM_INK_RATIO: Record<string, number> = {
+  TumpalBand: (495 - 66) / 2467,  // 0.1739
+  HemSulur:   (724 - 488) / 2172, // 0.1087
+  HemMelati:  (724 - 470) / 2172, // 0.1169
+  HemKawung:  (724 - 343) / 2172, // 0.1754
+};
+const DEFAULT_HEM = "TumpalBand";
+
+/** Garis atas motif hem dalam `cqw` (1cqw = 1% lebar container query). Scene
+ *  memasang `container-type: inline-size`, jadi satuan ini ikut lebar scene di
+ *  layar mana pun — termasuk kolom desktop yang dibatasi max-width. Perlu cqw,
+ *  bukan %, karena inset bawah `clip-path` mengacu TINGGI kotak sedangkan hem
+ *  tingginya turunan LEBAR. */
+const hemBandH = (hem: string | undefined) =>
+  `${((HEM_INK_RATIO[hem ?? DEFAULT_HEM] ?? HEM_INK_RATIO[DEFAULT_HEM]) * 100).toFixed(3)}cqw`;
+
 export default function KelirScene({
   preset,
   kain,
+  heroSvh = 56,
   children,
 }: {
   preset: KelirPreset;
   /** Nama berkas KainBadan; kosong → latar --bg rata (Fase 1). */
   kain?: string;
+  /** Tinggi aktor hero (svh). Default 56. Cover desktop mengecilkannya agar ada
+   *  pita gelap cukup di bawah gunungan untuk kicker + nama + tamu. */
+  heroSvh?: number;
   children?: ReactNode;
 }) {
   const container = useScrollContainer();
@@ -25,7 +59,7 @@ export default function KelirScene({
 
   const sceneRef = useRef<HTMLDivElement>(null);
   const actorRef = useRef<HTMLDivElement>(null);
-  const actorIn = useInView(actorRef, { once: false, margin: "-10% 0px -10% 0px" });
+  const actorIn = useInView(actorRef, { once: true, margin: "-10% 0px -10% 0px" });
 
   // Progres section terhadap kontainer scroll nyata (spec §5.1).
   const { scrollYProgress } = useScroll({
@@ -44,7 +78,17 @@ export default function KelirScene({
     <div
       ref={sceneRef}
       className="relative w-full overflow-hidden"
-      style={{ flex: "1 0 auto", minHeight: "100dvh", display: "flex", flexDirection: "column" }}
+      style={{
+        flex: "1 0 auto",
+        minHeight: "100dvh",
+        display: "flex",
+        flexDirection: "column",
+        // Jadi container query supaya ornamen di dalamnya bisa memotong diri
+        // pakai `cqw` (= % lebar scene). Hanya inline-size: tinggi tetap bebas
+        // tumbuh mengikuti konten, dan scene sudah `position: relative` jadi
+        // containing block untuk anak absolut tidak berubah.
+        containerType: "inline-size",
+      }}
     >
       {/* 1 — KainBadan (diam, tanpa kilau). Kosong → --bg rata. */}
       {kain ? (
@@ -97,7 +141,7 @@ export default function KelirScene({
             // Ukuran/anchor aktor pakai svh (viewport), bukan % section — supaya
             // di section yang tumbuh panjang aktor tetap di zona atas & tak membesar.
             ...(isHero
-              ? { top: preset.actorFromTop ? "0svh" : "5svh", height: "56svh", aspectRatio: "2 / 3" }
+              ? { top: preset.actorFromTop ? "0svh" : "5svh", height: `${heroSvh}svh`, aspectRatio: "2 / 3" }
               : { top: preset.actorY, width: `${(preset.actorScale ?? 0.6) * 100}%`, aspectRatio: "1 / 1" }),
           }}
         >
@@ -113,27 +157,42 @@ export default function KelirScene({
       )}
 
       {/* 3b — Aktor sudut (gallery): sprig kecil dikilau di empat sudut, bukan
-             satu aktor tengah (spec §6f: MelatiSprig ×4 sudut). Tiap sudut
-             diputar 90° agar sprig menjuntai ke arah dalam. 404 tersembunyi. */}
+             satu aktor tengah (spec §6f: MelatiSprig ×4 sudut). Logika mirror
+             SAMA dengan PojokKelir: satu aset (kiri-atas) dicermin ke sudut lain
+             via scaleX/scaleY — kanan = flip H, bawah = flip V. Gampang disetel
+             per sudut tanpa memutar aset. Urut: kiri-atas → kanan-atas →
+             kanan-bawah → kiri-bawah. 404 tersembunyi. */}
       {preset.actor && preset.actorCorners && (
-        <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none" }}>
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 2,
+            pointerEvents: "none",
+            // Sprig sudut berhenti di tepi dalam pinggiran & garis atas hem,
+            // jadi tak menyelinap di bawah dua ornamen itu (sama seperti pojok).
+            clipPath: `inset(0 ${PINGGIRAN_W} ${hemBandH(preset.hem)} ${PINGGIRAN_W})`,
+          }}
+        >
           {(
             [
-              { top: 0, left: 0, rotate: 0 },
-              { top: 0, right: 0, rotate: 90 },
-              { bottom: 0, right: 0, rotate: 180 },
-              { bottom: 0, left: 0, rotate: 270 },
+              { pos: { top: 0, left: 0 },  transform: "scaleY(-1)" },
+              { pos: { top: 0, right: 0 }, transform: "scaleX(-1) scaleY(-1)" },
+              // Sudut bawah: garis dasarnya atas hem, bukan dasar scene —
+              // `bottom: 0` membuat sprig (±94px) tenggelam utuh di pita hem.
+              { pos: { bottom: hemBandH(preset.hem), right: 0 }, transform: "scaleX(-1)" },
+              { pos: { bottom: hemBandH(preset.hem), left: 0 },  transform: undefined },
             ] as const
-          ).map(({ rotate, ...anchor }, i) => (
+          ).map(({ pos, transform }, i) => (
             <div
               key={i}
               style={{
                 position: "absolute",
-                ...anchor,
+                ...pos,
                 width: `${(preset.actorScale ?? 0.4) * 100}%`,
                 aspectRatio: "1 / 1",
-                transform: `rotate(${rotate}deg)`,
-                transformOrigin: "center",
+                transform,
               }}
             >
               <GiltSweep
@@ -141,15 +200,56 @@ export default function KelirScene({
                 progress={scrollYProgress}
                 style={{ width: "100%", height: "100%" }}
                 // Selaras dengan aktor tengah: redam sedikit ke sogan-emas.
-                imgStyle={{ filter: "saturate(0.82) brightness(0.92)" }}
+                // Opacity rendah → sprig sudut jadi aksen halus, tak merebut foto.
+                imgStyle={{ filter: "saturate(0.82) brightness(0.92)", opacity: 0.55 }}
               />
             </div>
           ))}
         </div>
       )}
 
-      {/* 3c — Pojok ambient (sulur/praba) dicermin 4 sudut, di bawah pinggiran. */}
-      {preset.pojok && <PojokKelir variant={preset.pojok} progress={scrollYProgress} />}
+      {/* 3c — Pojok ambient (sulur/praba) dicermin 4 sudut, di bawah pinggiran.
+             `bottomInset` memotongnya di garis atas hem: sudut bawah tak lagi
+             beradu pola dengan pita hem (hem tetap utuh sebagai pembatas). */}
+      {preset.pojok && (
+        <PojokKelir
+          variant={preset.pojok}
+          progress={scrollYProgress}
+          skipTop={preset.pojokSkipTop}
+          bottomInset={hemBandH(preset.hem)}
+        />
+      )}
+
+      {/* 3d — Flank: sepasang ornamen tegak mengapit aktor di zona atas (kembar
+             mayang). Kanan dicermin scaleX(-1). Duduk di svh viewport (bukan %
+             section) agar tetap di zona atas walau section tumbuh panjang. */}
+      {preset.flank &&
+        (["left", "right"] as const).map((side) => (
+          <div
+            key={side}
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              top: "1svh",
+              // Jarak diukur dari tepi DALAM pinggiran, bukan tepi scene — dulu
+              // "6%" (≈23px di 390) cuma menyisakan ~5px dari selvedge dan ikut
+              // menyempit di layar kecil. Sekarang jaraknya selalu 8px bersih.
+              [side]: `calc(${PINGGIRAN_W} + 8px)`,
+              width: "22%",
+              aspectRatio: "2 / 3",
+              zIndex: 2,
+              pointerEvents: "none",
+              transform: side === "right" ? "scaleX(-1)" : undefined,
+            }}
+          >
+            <GiltSweep
+              src={asset(preset.flank!)}
+              progress={scrollYProgress}
+              style={{ width: "100%", height: "100%" }}
+              imgStyle={{ filter: "saturate(0.82) brightness(0.92)", opacity: 0.9 }}
+            />
+          </div>
+        ))}
 
       {/* 4 — Pinggiran kiri & kanan (diam). Sisi kanan diputar 180°, bukan flip
              (spec §6a) — melestarikan arah lereng parang. 404 tersembunyi. */}
@@ -165,7 +265,10 @@ export default function KelirScene({
             position: "absolute",
             top: 0,
             [side]: 0,
-            width: "clamp(24px, 6vw, 56px)",
+            // Ramping (dulu 6vw/56px lalu 5vw/40px masih gemuk — sisa jarak ke teks
+            // cuma ~16px di kolom 420px). Padding konten SceneContent selalu
+            // melewatinya dengan ~24px jarak bersih ke ornamen.
+            width: PINGGIRAN_W,
             height: "100%",
             zIndex: 4,
             pointerEvents: "none",
@@ -175,14 +278,28 @@ export default function KelirScene({
         />
       ))}
 
-      {/* 5 — Hem (tumpal/sulur/melati/kawung per preset, diam). 404 tersembunyi. */}
+      {/* 5 — Hem (tumpal/sulur/melati/kawung per preset, diam). Hem digambar
+             sesudah pinggiran pada zIndex sama → ia yang di depan, jadi ia yang
+             dipotong: clip inset selebar PINGGIRAN_W di kiri & kanan membuatnya
+             berhenti pas di tepi dalam pinggiran (skala pita tetap, ujungnya
+             saja yang hilang). Menggantikan nudge manual `left: 18` yang cuma
+             menambal sisi kiri. 404 tersembunyi. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={asset(preset.hem ?? "TumpalBand")}
         alt=""
         aria-hidden="true"
         onError={hideOnError}
-        style={{ position: "absolute", left: 0, right: 0, bottom: 0, width: "100%", zIndex: 4, pointerEvents: "none" }}
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: "100%",
+          zIndex: 4,
+          pointerEvents: "none",
+          clipPath: `inset(0 ${PINGGIRAN_W} 0 ${PINGGIRAN_W})`,
+        }}
       />
 
       {/* 6 — Konten section. Flex kolom penuh: section menaruh kontennya di

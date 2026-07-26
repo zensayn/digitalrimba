@@ -39,7 +39,7 @@ export default function EventSection({
   return (
     <section className="snap-section">
       <KelirScene preset={preset} kain="KainBadan">
-        <SceneContent scroll maxWidth={360} scrim>
+        <SceneContent scroll align="top" maxWidth={360} scrim>
           <SectionHeader
             eyebrow={event.day}
             title={isAkad ? "Akad Nikah" : "Resepsi"}

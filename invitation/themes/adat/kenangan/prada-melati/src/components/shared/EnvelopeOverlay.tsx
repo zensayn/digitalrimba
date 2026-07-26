@@ -201,7 +201,7 @@ export default function EnvelopeOverlay() {
 
       <motion.span
         className="font-label"
-        animate={{ opacity: opened ? 0 : [0, 0.7, 0] }}
+        animate={{ opacity: opened ? 0 : [0.35, 0.95, 0.35] }}
         transition={
           opened
             ? { duration: 0.3 }
@@ -216,7 +216,11 @@ export default function EnvelopeOverlay() {
           fontSize: "10px",
           letterSpacing: "0.25em",
           textTransform: "uppercase",
-          color: "var(--gold)",
+          // Amplop = satu-satunya permukaan TERANG (kraft krem); teks emas di
+          // atasnya lenyap. Pakai tinta sogan gelap + halo krem tipis agar
+          // instruksi ketuk terbaca — tanpa ini tamu tak tahu cara membuka.
+          color: "#2A1D12",
+          textShadow: "0 1px 2px rgba(250, 244, 230, 0.75), 0 0 6px rgba(250, 244, 230, 0.5)",
           pointerEvents: "none",
           zIndex: 3,
         }}

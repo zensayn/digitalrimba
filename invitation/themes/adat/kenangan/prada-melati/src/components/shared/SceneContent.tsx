@@ -21,12 +21,21 @@ export default function SceneContent({
   scroll = false,
   maxWidth = 360,
   scrim = false,
+  padBottom,
+  padTop,
 }: {
   children: ReactNode;
   align?: "center" | "top" | "bottom" | "lower";
   scroll?: boolean;
   maxWidth?: number;
   scrim?: boolean;
+  /** Override padding bawah. Untuk align "bottom" nilai lebih besar mengangkat
+   *  seluruh blok naik dari hem (mis. cover desktop). Kosong → default per align. */
+  padBottom?: number | string;
+  /** Override padding atas (mengganti --kelir-safe-top). Dipakai cover desktop:
+   *  align "center" + padTop di bawah dasar gunungan → blok memusat di pita gelap,
+   *  terangkat dari hem di layar tinggi tapi tetap aman di laptop pendek. */
+  padTop?: number | string;
 }) {
   const justifyContent =
     align === "bottom" || align === "lower" ? "flex-end" : align === "top" ? "flex-start" : "center";
@@ -48,10 +57,14 @@ export default function SceneContent({
         overflowY: "visible",
         // Atas: zona aman aktor dari KelirScene. Samping: ciut (26–44px) — lebar
         // nyata dipatok maxWidth. Bawah: bebaskan hem, lebih tebal untuk "lower".
-        paddingTop: "var(--kelir-safe-top, clamp(20px, 5svh, 40px))",
-        paddingLeft: "clamp(26px, 7vw, 44px)",
-        paddingRight: "clamp(26px, 7vw, 44px)",
-        paddingBottom: align === "lower" ? "clamp(96px, 16svh, 148px)" : "clamp(72px, 12svh, 120px)",
+        paddingTop: padTop ?? "var(--kelir-safe-top, clamp(20px, 5svh, 40px))",
+        // Samping: selalu > pinggiran (clamp 18–32px) dengan ~24px jarak bersih, agar
+        // konten — terutama kartu lebar-penuh bertepi keras (venue/peta, kartu bank,
+        // grid galeri) — tak mepet ke ornamen batik. Lebar nyata tetap dipatok maxWidth.
+        paddingLeft: "clamp(42px, 9vw, 58px)",
+        paddingRight: "clamp(42px, 9vw, 58px)",
+        paddingBottom:
+          padBottom ?? (align === "lower" ? "clamp(96px, 16svh, 148px)" : "clamp(88px, 14svh, 132px)"),
       }}
     >
       {scrim && (

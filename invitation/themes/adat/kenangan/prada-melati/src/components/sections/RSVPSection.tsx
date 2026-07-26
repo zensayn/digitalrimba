@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
@@ -62,30 +62,43 @@ export default function RSVPSection() {
                 />
               </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="font-label" style={{ color: "var(--text-muted)", fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase" }}>
-                  Konfirmasi
+              <div className="flex flex-col gap-2.5">
+                <label className="font-label" style={{ color: "var(--text-muted)", fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase" }}>
+                  Konfirmasi Kehadiran
                 </label>
-                <div className="flex gap-2">
-                  {(["hadir", "tidak_hadir"] as const).map((opt) => (
-                    <button
-                      key={opt}
-                      type="button"
-                      onClick={() => setAttendance(opt)}
-                      className="font-label flex-1 py-2.5 text-center"
-                      style={{
-                        border: `1px solid ${attendance === opt ? "var(--gold)" : "var(--border)"}`,
-                        color: attendance === opt ? "var(--gold)" : "var(--text-muted)",
-                        background: attendance === opt ? "rgba(201,162,39,0.1)" : "transparent",
-                        fontSize: 10,
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase",
-                        cursor: "pointer",
-                      }}
-                    >
-                      {opt === "hadir" ? "Hadir" : "Tidak Hadir"}
-                    </button>
-                  ))}
+                {/* Diperbesar (spec revisi): ini pilihan paling penting di form,
+                    dulu setara tombol kecil lain — sekarang jelas jadi fokus. */}
+                <div className="flex gap-2.5">
+                  {(["hadir", "tidak_hadir"] as const).map((opt) => {
+                    const active = attendance === opt;
+                    const Icon = opt === "hadir" ? Check : X;
+                    return (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={() => setAttendance(opt)}
+                        className="font-label flex flex-1 items-center justify-center gap-1.5 text-center"
+                        style={{
+                          border: `1px solid ${active ? "var(--gold)" : "var(--border)"}`,
+                          color: active ? "var(--gold)" : "var(--text-muted)",
+                          background: active ? "rgba(201,162,39,0.12)" : "transparent",
+                          // Kotak lebih ringkas (dulu 16px 12px terlalu tinggi).
+                          padding: "11px 8px",
+                          // Teks responsif + nowrap: "Tidak Hadir" tak lagi
+                          // menumpuk/pecah dua baris di layar HP sempit.
+                          fontSize: "clamp(11px, 3vw, 13px)",
+                          letterSpacing: "0.04em",
+                          whiteSpace: "nowrap",
+                          textTransform: "uppercase",
+                          cursor: "pointer",
+                          transition: "border-color 0.2s ease, background 0.2s ease, color 0.2s ease",
+                        }}
+                      >
+                        <Icon size={14} strokeWidth={2} aria-hidden="true" className="shrink-0" />
+                        {opt === "hadir" ? "Hadir" : "Tidak Hadir"}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

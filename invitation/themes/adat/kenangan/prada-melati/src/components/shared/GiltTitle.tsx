@@ -47,12 +47,16 @@ export default function GiltTitle({
   return (
     <div
       className={className}
-      style={{ display: "flex", alignItems: "center", justifyContent: "center", gap, ...style }}
+      // maxWidth 100%: pengapit + teks tak pernah melebihi kolom konten. Tanpa ini,
+      // judul panjang (mis. "Keluarga & Kerabat") yang disuap SectionHeader meluber
+      // melewati pinggiran batik — teks jadi mepet/menembus ornamen.
+      style={{ display: "flex", alignItems: "center", justifyContent: "center", gap, maxWidth: "100%", ...style }}
     >
       {flank(false)}
-      {/* nowrap: kicker tetap satu baris agar pengapit selalu memeluk seluruh
-          teks, tak terdampar di baris pertama saat kicker dua kata. */}
-      <span style={{ whiteSpace: "nowrap" }}>{children}</span>
+      {/* Kicker pendek tetap satu baris (ruang cukup); judul panjang boleh wrap
+          agar muat di kolom. minWidth:0 mengizinkan flex item menyusut & membungkus
+          alih-alih memaksa satu baris yang meluber. */}
+      <span style={{ minWidth: 0 }}>{children}</span>
       {flank(true)}
     </div>
   );

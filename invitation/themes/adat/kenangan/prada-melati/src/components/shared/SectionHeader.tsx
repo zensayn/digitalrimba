@@ -79,7 +79,7 @@ export default function SectionHeader({
         {flanked ? <GiltTitle>{titleNode}</GiltTitle> : titleNode}
       </div>
 
-      {divider && <GiltDivider variant={divider} width={100} style={{ marginTop: 14, marginBottom: intro ? 10 : 0 }} />}
+      {divider && <GiltDivider variant={divider} width={100} style={{ marginTop: 0.1, marginBottom: intro ? 1 : 0 }} />}
 
       {intro && (
         <p
@@ -88,7 +88,7 @@ export default function SectionHeader({
             color: "var(--text-muted)",
             fontStyle: "italic",
             fontSize: "clamp(12px, 3.2vw, 14px)",
-            lineHeight: 1.7,
+            lineHeight: 1.8,
             maxWidth: 300,
             marginTop: divider ? 0 : 10,
             textShadow: HALO,

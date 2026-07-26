@@ -22,11 +22,14 @@ export default function CoverSection({
   });
 
   return (
-    <section className="snap-section">
+    // cover-in-scroll: disembunyikan >=1024px (globals.css) — di layar desktop
+    // cover sudah ditampilkan statis oleh DesktopCover di panel kiri; dobel di
+    // kolom scroll kanan bikin cover "muncul dua kali" (spec revisi).
+    <section className="snap-section cover-in-scroll">
       <KelirScene preset={preset} kain="KainBadan">
         <RonceanMelati zIndex={3} />
         <SceneContent align="bottom">
-          <p className="font-label text-halo text-xs uppercase tracking-[0.3em] text-[var(--text-dim)]">
+          <p className="font-label text-halo text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">
             Undangan Pernikahan
           </p>
           <h1

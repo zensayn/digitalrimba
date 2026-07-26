@@ -1,5 +1,7 @@
 "use client";
 
+import { AtSign } from "lucide-react";
+
 import KelirScene from "@/components/shared/KelirScene";
 import SceneContent from "@/components/shared/SceneContent";
 import SectionHeader from "@/components/shared/SectionHeader";
@@ -7,28 +9,34 @@ import GebyokCard from "@/components/shared/GebyokCard";
 import { kelirFor } from "@/components/shared/sceneKelir";
 import type { InvitationConfig, PersonConfig } from "@/lib/config-types";
 
+// Foto di atas, identitas di bawah (spec revisi: keluhan tata letak lama —
+// foto & teks berdampingan sempit). Pria/wanita dibedakan lewat teks label saja
+// — tetap satu palet emas.
 function Person({
   person,
   label,
-  reverse = false,
 }: {
   person: PersonConfig;
   label: string;
-  reverse?: boolean;
 }) {
   return (
-    <div className="flex items-center gap-3" style={{ flexDirection: reverse ? "row-reverse" : "row" }}>
+    <div className="flex w-full flex-col items-center">
+      {/* variant "none": gerbang gebyok besar dinilai terlalu ramai membingkai
+          foto — tepi tipis + sulur sudut kecil (corners) sudah cukup. */}
       <GebyokCard
-        variant="gebyok"
+        variant="none"
         photo={person.photo}
         alt={person.name}
         aspectRatio="3 / 4"
         corners
-        style={{ width: "55%", flexShrink: 0 }}
+        style={{ width: "56%" }}
       />
       {/* Plate lokal (spec §4): tegakkan teks di atas kain & sulur, tanpa blob. */}
-      <div className="kelir-plate" style={{ flex: 1, minWidth: 0, textAlign: reverse ? "right" : "left" }}>
-        <span className="font-label text-halo" style={{ color: "var(--gold-dim)", fontSize: "clamp(9.5px, 2.5vw, 11px)", letterSpacing: "0.2em", textTransform: "uppercase" }}>
+      <div className="kelir-plate mt-4 text-center" style={{ maxWidth: 280 }}>
+        <span
+          className="font-label text-halo"
+          style={{ color: "var(--gold-dim)", fontSize: "clamp(9.5px, 2.5vw, 11px)", letterSpacing: "0.2em", textTransform: "uppercase" }}
+        >
           {label}
         </span>
         <h3 className="font-display text-halo" style={{ color: "var(--text)", fontSize: "clamp(18px, 5.4vw, 24px)", lineHeight: 1.1, margin: "5px 0 7px" }}>
@@ -37,8 +45,12 @@ function Person({
         <p className="font-body text-halo" style={{ color: "var(--text-muted)", fontSize: "clamp(10.5px, 2.7vw, 12px)", lineHeight: 1.55 }}>
           {person.parents}
         </p>
-        <p className="font-label text-halo" style={{ color: "var(--gold)", fontSize: 11, letterSpacing: "0.05em", marginTop: 6 }}>
-          {person.instagram}
+        <p
+          className="font-label text-halo inline-flex items-center justify-center gap-1"
+          style={{ color: "var(--gold)", fontSize: 11, letterSpacing: "0.05em", marginTop: 6 }}
+        >
+          <AtSign size={11} strokeWidth={2} aria-hidden="true" />
+          {person.instagram.replace(/^@/, "")}
         </p>
       </div>
     </div>
@@ -58,14 +70,14 @@ export default function CoupleSection({ couple }: { couple: InvitationConfig["co
             intro="Dua insan, satu kisah baru yang dimulai."
             divider="truntum"
           />
-          <div className="mt-6 flex w-full flex-col gap-6">
+          <div className="flex w-full flex-col items-center gap-7" style={{ marginTop: 32 }}>
             <Person person={couple.groom} label="Mempelai Pria" />
             <div className="flex items-center justify-center gap-3">
               <div className="gold-divider" style={{ width: 40, opacity: 0.6 }} />
               <span className="font-display text-halo" style={{ color: "var(--gold)", fontSize: 26 }}>&amp;</span>
               <div className="gold-divider" style={{ width: 40, opacity: 0.6 }} />
             </div>
-            <Person person={couple.bride} label="Mempelai Wanita" reverse />
+            <Person person={couple.bride} label="Mempelai Wanita" />
           </div>
           <p
             className="kelir-plate font-body mx-auto mt-7 italic text-[var(--text-muted)]"

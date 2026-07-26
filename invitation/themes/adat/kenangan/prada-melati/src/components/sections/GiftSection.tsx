@@ -29,7 +29,7 @@ export default function GiftSection({ bankAccounts }: { bankAccounts: Invitation
       <KelirScene preset={preset} kain="KainBadan">
         <SceneContent maxWidth={340}>
           <SectionHeader eyebrow="Amplop Digital" title="Hadiah" />
-          <p className="font-body mb-6 mt-5 leading-relaxed text-[var(--text-muted)]" style={{ fontSize: "clamp(12px, 3vw, 14px)" }}>
+          <p className="font-body mt-5 leading-relaxed text-[var(--text-muted)]" style={{ fontSize: "clamp(12px, 3vw, 14px)", marginBottom: 40 }}>
             Doa dan kehadiran Anda adalah hadiah terbesar bagi kami. Namun jika
             Anda ingin memberi tanda kasih, berikut rekening kami.
           </p>

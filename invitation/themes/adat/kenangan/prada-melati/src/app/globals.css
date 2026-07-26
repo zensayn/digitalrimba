@@ -89,6 +89,15 @@ body {
     max-width: 420px;
     box-shadow: -24px 0 48px rgba(0, 0, 0, 0.35);
   }
+  /* Cover TETAP tampil di kolom scroll kanan desktop (slide pertama).
+     ── GESER POSISI VERTIKAL cover kanan (desktop saja) ──
+     Ubah angka translateY di bawah:
+       negatif (mis. -40px) = blok teks NAIK
+       positif (mis.  40px) = blok teks TURUN
+     Ini hanya memindah blok TEKS (kicker/nama/tanggal/countdown), bukan gunungan.
+     Tidak memengaruhi tampilan HP (<1024px). */
+  .cover-in-scroll { display: flex; }
+  .cover-in-scroll .scene-reveal { transform: translateY(30px); }
 }
 
 .snap-section {
@@ -322,24 +331,30 @@ textarea.input-gold { resize: none; line-height: 1.6; }
 .gilt-idle { animation: giltIdle 4.5s ease-in-out infinite; }
 
 /* ─── Reveal konten section (Rise) ───────────────────────────────────────────
-   Anak langsung wrapper .scene-reveal (kicker → judul → divider → teks) naik +
-   memudar masuk, bertahap. Ditahan (paused) sampai RevealController menandai
-   scope-nya [data-inview]. Pakai `translate` (independen dari transform) agar
-   tak bentrok dengan gerak framer-motion di layer scene. */
-.scene-reveal > * {
-  animation: sceneRise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-play-state: paused;
-}
-.scene-reveal[data-inview="true"] > * { animation-play-state: running; }
+   Pendekatan bersih: TIDAK pakai animation-play-state (buggy — bisa bikin
+   animasi ngeloop saat toggle paused↔running). Sebelum reveal, elemen cukup
+   invisible. Animasi sceneRise HANYA ditambahkan saat data-inview="true"
+   sudah diset oleh RevealController → sekali jalan, selesai, berhenti. */
 
-.scene-reveal > *:nth-child(1) { animation-delay: 0s; }
-.scene-reveal > *:nth-child(2) { animation-delay: 0.08s; }
-.scene-reveal > *:nth-child(3) { animation-delay: 0.16s; }
-.scene-reveal > *:nth-child(4) { animation-delay: 0.24s; }
-.scene-reveal > *:nth-child(5) { animation-delay: 0.32s; }
-.scene-reveal > *:nth-child(6) { animation-delay: 0.40s; }
-.scene-reveal > *:nth-child(7) { animation-delay: 0.48s; }
-.scene-reveal > *:nth-child(n + 8) { animation-delay: 0.56s; }
+/* Sebelum reveal: tersembunyi, tanpa animasi */
+.scene-reveal > * {
+  opacity: 0;
+  translate: 0 16px;
+}
+
+/* Setelah reveal: animasi masuk satu kali, lalu kunci di state akhir (forwards) */
+.scene-reveal[data-inview="true"] > * {
+  animation: sceneRise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.scene-reveal[data-inview="true"] > *:nth-child(1) { animation-delay: 0s; }
+.scene-reveal[data-inview="true"] > *:nth-child(2) { animation-delay: 0.08s; }
+.scene-reveal[data-inview="true"] > *:nth-child(3) { animation-delay: 0.16s; }
+.scene-reveal[data-inview="true"] > *:nth-child(4) { animation-delay: 0.24s; }
+.scene-reveal[data-inview="true"] > *:nth-child(5) { animation-delay: 0.32s; }
+.scene-reveal[data-inview="true"] > *:nth-child(6) { animation-delay: 0.40s; }
+.scene-reveal[data-inview="true"] > *:nth-child(7) { animation-delay: 0.48s; }
+.scene-reveal[data-inview="true"] > *:nth-child(n + 8) { animation-delay: 0.56s; }
 
 @keyframes sceneRise {
   from { opacity: 0; translate: 0 16px; }
@@ -351,6 +366,6 @@ textarea.input-gold { resize: none; line-height: 1.6; }
   .gold-dust { display: none; }
   .kupu-layer { display: none; }
   .gilt-idle { animation: none; }
-  /* Reveal: tampil utuh tanpa animasi. */
-  .scene-reveal > * { animation: none; opacity: 1; translate: 0 0; }
+  /* Reveal: tampil utuh tanpa animasi — override opacity & translate. */
+  .scene-reveal > * { opacity: 1; translate: 0 0; animation: none; }
 }
