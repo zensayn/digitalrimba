@@ -93,12 +93,12 @@ export default function DesktopCover({
           {bride.name}
         </h1>
 
-        <div className="leaf-divider" style={{ margin: "20px 0 16px" }} />
+        <div className="divider" style={{ margin: "20px 0 16px" }} />
 
         {/* Blok tanggal + tamu duduk di atas padang bunga terpadat → panel kertas
             (glow teks saja tidak cukup melawan flora serapat itu). */}
         <div
-          className="bloom-panel"
+          className="panel"
           style={{ width: "auto", padding: "14px 32px 16px", borderRadius: 14, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}
         >
           <p className="font-body" style={{ fontSize: 17, color: "var(--text-muted)", letterSpacing: "0.04em", marginBottom: 8 }}>

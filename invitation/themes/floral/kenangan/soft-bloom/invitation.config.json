@@ -123,7 +123,12 @@
       "leaf":       "#7E956E",
       "text":       "#3A3A36",
       "textMuted":  "#6F6F67",
-      "textDim":    "#8C8C83"
+      "textDim":    "#8C8C83",
+      "wash1":      "#C9B8DA",
+      "wash2":      "#F0E2A8",
+      "wash3":      "#BCD0DB",
+      "wash4":      "#E9C4B4",
+      "wash5":      "#9BB08A"
     },
     "typography": {
       "displayFont": "Cormorant Garamond",

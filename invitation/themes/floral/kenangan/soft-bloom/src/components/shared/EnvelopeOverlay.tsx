@@ -126,10 +126,10 @@ export default function EnvelopeOverlay({ onOpen }: { onOpen?: () => void }) {
       >
         {/* Triangle Cards forming the envelope flaps with explicit zIndex stacking and customized opening order (Above, Below, Right, Left) */}
         {[
-          { id: 1, rotation: 0, zIndex: 11, delay: 0.9, shadow: "0px 8px 12px rgba(0, 0, 0, 0.18)" },
-          { id: 2, rotation: 90, zIndex: 13, delay: 0.3, shadow: "8px 0px 12px rgba(0, 0, 0, 0.18)" },
-          { id: 3, rotation: 180, zIndex: 12, delay: 0.7, shadow: "0px -8px 12px rgba(0, 0, 0, 0.18)" },
-          { id: 4, rotation: 270, zIndex: 14, delay: 0.5, shadow: "-8px 0px 12px rgba(0, 0, 0, 0.18)" },
+          { id: 1, rotation: 0, zIndex: 11, delay: 0.9, shadow: "0px 8px 12px var(--flap-shadow)" },
+          { id: 2, rotation: 90, zIndex: 13, delay: 0.3, shadow: "8px 0px 12px var(--flap-shadow)" },
+          { id: 3, rotation: 180, zIndex: 12, delay: 0.7, shadow: "0px -8px 12px var(--flap-shadow)" },
+          { id: 4, rotation: 270, zIndex: 14, delay: 0.5, shadow: "-8px 0px 12px var(--flap-shadow)" },
         ].map(({ id, rotation, zIndex, delay, shadow }) => (
           <div
             key={id}
@@ -203,7 +203,7 @@ export default function EnvelopeOverlay({ onOpen }: { onOpen?: () => void }) {
               display: "block",
               width: "100%",
               height: "auto",
-              filter: "drop-shadow(0 3px 6px rgba(15, 10, 25, 0.3)) drop-shadow(0 1px 3px rgba(15, 10, 25, 0.2))",
+              filter: "drop-shadow(0 3px 6px var(--seal-shadow)) drop-shadow(0 1px 3px var(--seal-shadow-soft))",
             }}
           />
         </div>

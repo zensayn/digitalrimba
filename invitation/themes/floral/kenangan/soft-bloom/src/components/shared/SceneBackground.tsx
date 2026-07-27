@@ -42,8 +42,8 @@ export default function SceneBackground({
             position: "absolute",
             inset: 0,
             background: `linear-gradient(to bottom,
-              var(--bg) 0%, rgba(253,252,250,0) 16%,
-              rgba(253,252,250,0) 84%, var(--bg) 100%)`,
+              var(--bg) 0%, var(--paper-clear) 16%,
+              var(--paper-clear) 84%, var(--bg) 100%)`,
           }}
         />
       )}

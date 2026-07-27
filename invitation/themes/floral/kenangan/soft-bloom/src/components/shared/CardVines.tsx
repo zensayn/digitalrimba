@@ -19,7 +19,7 @@ export default function CardVines({
   top = -24,
   inset = -16,
   zIndex = 4,
-  dropShadow = "drop-shadow(0 5px 10px rgba(58,58,54,0.06))",
+  dropShadow = "var(--drop-md)",
   sides = ["left", "right"] as ("left" | "right")[],
 }: {
   file?: string;

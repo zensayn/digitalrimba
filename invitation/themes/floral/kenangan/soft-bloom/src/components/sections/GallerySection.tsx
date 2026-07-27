@@ -9,6 +9,7 @@ import FloralDivider from "@/components/shared/FloralDivider";
 import SceneBackground from "@/components/shared/SceneBackground";
 import { asset } from "@/lib/assets";
 import { hideBrokenImage } from "@/lib/image-fallback";
+import { rhythmVars } from "@/lib/rhythm";
 import type { InvitationConfig } from "@/lib/config-types";
 
 // Kemiringan polaroid selang-seling → terasa scrapbook tertempel, bukan grid kaku.
@@ -19,25 +20,28 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
     <section
       id="gallery"
       className="snap-section flow-section reveal-scope"
-      style={{ justifyContent: "flex-start", paddingTop: "clamp(124px, 22vh, 188px)", paddingBottom: "clamp(40px, 9vh, 72px)" }}
+      style={rhythmVars("gallery")}
     >
       <SceneBackground file="LatarBokeh.webp" scrim={0.5} edgeFade />
-      <TopFrame maxWidth={500} opacity={0.85} zIndex={1} />
+      <TopFrame opacity={0.85} zIndex={1} />
       <Butterflies count={2} zIndex={2} />
       <FallingFlowers count={6} zIndex={3} />
 
-      <div className="relative z-10 flex flex-col items-center w-full max-w-lg px-6" style={{ gap: "clamp(16px, 3.5vh, 28px)" }}>
+      <div className="section-shell">
         <p className="type-eyebrow">
           Galeri
         </p>
 
-        <FloralTitle serif style={{ marginBottom: 4 }}>
+        <FloralTitle serif>
           Kenangan Kami
         </FloralTitle>
 
-        <FloralDivider width="66vw" maxWidth={340} style={{ marginBottom: 8 }} />
+        <FloralDivider width="66vw" maxWidth={340} />
 
-        <div className="grid grid-cols-2 w-full" style={{ gap: "clamp(15px, 4vw, 22px)", maxWidth: 420 }}>
+        {/* Grid polaroid — gutter-nya --space-md supaya sama dengan jarak
+            antar-kartu di section lain; lebarnya boleh melebihi --content-max
+            (lihat width:"wide" di rhythm.ts) karena ini grid, bukan kolom teks. */}
+        <div className="grid w-full grid-cols-2" style={{ gap: "var(--space-md)" }}>
           {gallery.map((item, i) => {
             // Bento berirama: foto pembuka (dan penutup bila jumlah genap) melebar
             // dua kolom, sisanya persegi seragam → baris selalu rata, tanpa lubang.
@@ -60,17 +64,11 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
                 transition={{ duration: 0.8, ease: [0.34, 1.45, 0.5, 1], delay: Math.min(i * 0.09, 0.36) }}
                 style={{ position: "relative", gridColumn: isWide ? "1 / -1" : undefined }}
               >
-                {/* Polaroid: pigura putih + caption script di strip bawah */}
-                <div
-                  style={{
-                    background: "rgba(255,255,255,0.94)",
-                    padding: "9px 9px 5px",
-                    borderRadius: 3,
-                    border: "1px solid var(--border)",
-                    boxShadow: "0 10px 26px rgba(58,58,54,0.10)",
-                  }}
-                >
-                  <div style={{ aspectRatio: isWide ? "16 / 10" : "1 / 1", overflow: "hidden", borderRadius: 2, background: "var(--surface)" }}>
+                {/* Polaroid: pigura putih + caption script di strip bawah.
+                    Caption dulu punya dua ukuran (lebar vs persegi) — satu
+                    ukuran saja, sesuai peran, supaya semua strip terbaca sama. */}
+                <div className="polaroid">
+                  <div className="polaroid-photo" style={{ aspectRatio: isWide ? "16 / 10" : "1 / 1" }}>
                     <img
                       src={item.src}
                       alt={item.alt}
@@ -78,21 +76,7 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
                       style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                     />
                   </div>
-                  <p
-                    className="font-script"
-                    style={{
-                      textAlign: "center",
-                      fontSize: isWide ? "clamp(23px, 5.8vw, 29px)" : "clamp(20px, 5vw, 24px)",
-                      color: "var(--accent)",
-                      padding: "10px 4px 5px",
-                      lineHeight: 1,
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {item.alt}
-                  </p>
+                  <p className="type-photo-caption">{item.alt}</p>
                 </div>
 
                 {/* Bingkai bunga di ujung foto — mekar dari kecil lalu bergoyang halus.
@@ -120,7 +104,7 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
                       transform: corner.flip ? "scaleX(-1)" : "none",
                       transformOrigin: corner.origin,
                       animation: `${onLeft ? "sway" : "swayAlt"} ${(5 + (i % 3)).toFixed(1)}s ease-in-out infinite alternate`,
-                      filter: "drop-shadow(0 4px 9px rgba(58,58,54,0.08))",
+                      filter: "var(--drop-sm)",
                     }}
                   />
                 </div>
@@ -148,7 +132,7 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
                       width: "100%",
                       height: "auto",
                       animation: `floatSlow ${(4.5 + (i % 3)).toFixed(1)}s ease-in-out ${(i * 0.4).toFixed(1)}s infinite alternate`,
-                      filter: "drop-shadow(0 3px 6px rgba(58,58,54,0.10))",
+                      filter: "var(--drop-sm)",
                     }}
                   />
                 </div>
@@ -158,7 +142,7 @@ export default function GallerySection({ gallery }: { gallery: InvitationConfig[
         </div>
 
         {/* Penutup grid — pembatas bunga dibalik, menggemakan pembuka */}
-        <FloralDivider width="66vw" maxWidth={340} style={{ marginTop: 8, transform: "scaleY(-1)" }} />
+        <FloralDivider width="66vw" maxWidth={340} style={{ transform: "scaleY(-1)" }} />
       </div>
     </section>
   );

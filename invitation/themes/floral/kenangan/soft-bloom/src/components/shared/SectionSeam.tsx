@@ -42,10 +42,10 @@ export default function SectionSeam({ index = 0, zIndex = 6 }: { index?: number;
           height: 96,
           transform: "translateY(-50%)",
           background: `linear-gradient(to bottom,
-            rgba(253,252,250,0) 0%,
-            rgba(253,252,250,0.85) 40%,
-            rgba(253,252,250,0.85) 60%,
-            rgba(253,252,250,0) 100%)`,
+            var(--paper-clear) 0%,
+            var(--paper) 40%,
+            var(--paper) 60%,
+            var(--paper-clear) 100%)`,
         }}
       />
 
@@ -73,7 +73,7 @@ export default function SectionSeam({ index = 0, zIndex = 6 }: { index?: number;
             transform: v.flip ? "scaleX(-1)" : "none",
             transformOrigin: "50% 50%",
             animation: `${v.anim} ${v.dur}s ease-in-out infinite alternate`,
-            filter: "drop-shadow(0 6px 14px rgba(58,58,54,0.06))",
+            filter: "var(--drop-md)",
           }}
         />
       </div>

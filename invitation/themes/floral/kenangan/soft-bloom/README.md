@@ -7,6 +7,9 @@
 Undangan Next.js mandiri. Sengaja dibuat **berbeda total** dari `warm-narrative`
 (adat) yang bernuansa mawar-emas-blush. Lihat `DESIGN_SPEC.md` & `ASSET_PROMPTS.md`.
 
+> **Menyalin tema ini?** Baca `TEMPLATE.md` — daftar apa yang wajib diganti dan
+> apa yang haram disentuh. Kontraknya dijaga `bun run test`.
+
 ---
 
 ## Menjalankan

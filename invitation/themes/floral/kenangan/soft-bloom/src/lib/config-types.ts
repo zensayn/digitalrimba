@@ -71,6 +71,13 @@ export interface ThemeColors {
   text: string;
   textMuted: string;
   textDim: string;
+  /** Lima warna wash dekoratif (.mood-* dan .soft-wash). Dinomori supaya tema
+      turunan bebas memakai warna apa pun tanpa nama yang menyesatkan. */
+  wash1: string;
+  wash2: string;
+  wash3: string;
+  wash4: string;
+  wash5: string;
 }
 
 export interface ThemeTypography {
@@ -79,6 +86,11 @@ export interface ThemeTypography {
   scriptFont?: string;
 }
 
+/** Palet PRIMITIF + tipografi saja. Turunannya (border, bayangan, permukaan
+ *  tembus pandang, halo, efek) tinggal di globals.css dan dihitung dari palet
+ *  ini lewat color-mix — lihat blok "WARNA TURUNAN & EFEK" di sana. `border`
+ *  dan `shadows` dulu ada di sini dan harus disetel ulang manual tiap kali
+ *  palet berubah; sekarang ikut sendiri. */
 export interface InvitationTheme {
   colors: ThemeColors;
   typography: ThemeTypography;

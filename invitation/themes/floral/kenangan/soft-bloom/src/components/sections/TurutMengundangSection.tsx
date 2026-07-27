@@ -11,6 +11,7 @@ import TopFrame from "@/components/shared/TopFrame";
 import SectionDecor from "@/components/shared/SectionDecor";
 import FloralDivider from "@/components/shared/FloralDivider";
 import FloralTitle from "@/components/shared/FloralTitle";
+import { rhythmVars } from "@/lib/rhythm";
 import type { InvitationConfig } from "@/lib/config-types";
 
 export default function TurutMengundangSection({
@@ -28,16 +29,13 @@ export default function TurutMengundangSection({
     <section
       id="turut"
       className="snap-section flow-section mood-meadow reveal-scope"
-      style={{ paddingTop: "clamp(130px, 20vh, 170px)" }}
+      style={rhythmVars("turut")}
     >
       <div className="soft-wash" />
-      <TopFrame maxWidth={560} opacity={0.85} zIndex={1} />
+      <TopFrame opacity={0.85} zIndex={1} />
       <SectionDecor corners={["bl", "br"]} size="clamp(120px, 32vw, 220px)" opacity={0.88} />
 
-      <div
-        className="relative z-10 flex flex-col items-center text-center w-full max-w-sm mx-auto px-7"
-        style={{ gap: "clamp(14px, 3vh, 24px)" }}
-      >
+      <div className="section-shell">
         <motion.p
           variants={fade}
           initial="hidden"
@@ -57,8 +55,8 @@ export default function TurutMengundangSection({
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-15%" }}
-          className="font-body"
-          style={{ color: "var(--text-muted)", fontSize: "clamp(14px, 3.6vw, 17px)", lineHeight: 1.85, fontWeight: 300, maxWidth: "36ch" }}
+          className="type-body"
+          style={{ maxWidth: "36ch" }}
         >
           Terima kasih kepada keluarga dan kerabat yang turut mengundang serta
           mendoakan kebahagiaan kami.
@@ -70,22 +68,17 @@ export default function TurutMengundangSection({
           whileInView="visible"
           viewport={{ once: true, margin: "-15%" }}
           className="flex w-full flex-col items-center"
-          style={{ gap: "clamp(18px, 4vh, 26px)", marginTop: "clamp(6px, 2vh, 12px)" }}
+          style={{ gap: "var(--space-group)" }}
         >
           {turutMengundang.map((item, i) => (
-            <div key={i} className="flex flex-col items-center" style={{ gap: 4 }}>
-              <span
-                className="font-display"
-                style={{ color: "var(--text)", fontStyle: "italic", fontWeight: 500, fontSize: "clamp(19px, 5vw, 23px)", lineHeight: 1.25 }}
-              >
-                {item.name}
-              </span>
+            <div key={i} className="flex flex-col items-center" style={{ gap: "var(--space-2xs)" }}>
+              <span className="type-name">{item.name}</span>
               {item.note && <span className="type-caption">{item.note}</span>}
             </div>
           ))}
         </motion.div>
 
-        <FloralDivider width="60vw" maxWidth={290} style={{ marginTop: "clamp(6px, 2vh, 12px)" }} />
+        <FloralDivider width="60vw" maxWidth={290} />
       </div>
     </section>
   );

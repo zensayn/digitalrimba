@@ -9,6 +9,7 @@ import SceneBackground from "@/components/shared/SceneBackground";
 import Bird from "@/components/shared/Bird";
 import { asset } from "@/lib/assets";
 import { hideBrokenImage } from "@/lib/image-fallback";
+import { rhythmVars } from "@/lib/rhythm";
 import type { InvitationConfig, PersonConfig } from "@/lib/config-types";
 
 function Person({ person }: { person: PersonConfig }) {
@@ -23,29 +24,20 @@ function Person({ person }: { person: PersonConfig }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          marginBottom: "clamp(10px, 2.5vh, 18px)",
+          marginBottom: "var(--space-md)",
         }}
       >
-        {/* Foto (lingkaran di tengah wreath) */}
+        {/* Foto (lingkaran di tengah wreath). Tanpa .avatar: tepinya sudah
+            dibingkai wreath, garis tipis tambahan akan terbaca dobel. */}
         <div
+          className="photo-well"
           style={{
             position: "absolute",
             width: "66%",
             height: "66%",
-            borderRadius: "50%",
-            overflow: "hidden",
-            background: "var(--surface-2)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
           }}
         >
-          <span
-            className="font-display"
-            style={{ position: "absolute", color: "var(--accent-soft)", fontSize: "clamp(34px, 9vw, 46px)", fontWeight: 500 }}
-          >
-            {person.name[0]}
-          </span>
+          <span className="photo-initial">{person.name[0]}</span>
           <img
             src={person.photo}
             alt=""
@@ -63,22 +55,12 @@ function Person({ person }: { person: PersonConfig }) {
         />
       </div>
 
-      <h2
-        className="font-display"
-        style={{ color: "var(--text)", fontWeight: 500, fontStyle: "italic", fontSize: "clamp(22px, 6vw, 30px)", marginBottom: 5 }}
-      >
+      <h2 className="type-heading" style={{ marginBottom: "var(--space-2xs)" }}>
         {person.fullName}
       </h2>
-      <p
-        className="font-body"
-        style={{ color: "var(--text-muted)", fontSize: "clamp(14px, 3.6vw, 17px)", lineHeight: 1.75, fontWeight: 300 }}
-      >
-        {person.parents}
-      </p>
-      <p
-        className="font-label"
-        style={{ color: "var(--accent)", fontSize: "14px", fontWeight: 500, letterSpacing: "0.08em", marginTop: 7 }}
-      >
+      {/* text-on-scene: section ini berlatar foto LatarDaun, bukan kertas */}
+      <p className="type-body text-on-scene">{person.parents}</p>
+      <p className="type-meta" style={{ marginTop: "var(--space-xs)" }}>
         {person.instagram}
       </p>
     </div>
@@ -90,44 +72,28 @@ export default function CoupleSection({ couple }: { couple: InvitationConfig["co
     <section
       id="couple"
       className="snap-section flow-section reveal-scope"
-      style={{ justifyContent: "flex-start", paddingTop: "clamp(140px, 22vh, 190px)", paddingBottom: "clamp(40px, 9vh, 72px)" }}
+      style={rhythmVars("couple")}
     >
       <SceneBackground file="LatarDaun.webp" scrim={0.5} edgeFade />
-      <TopFrame maxWidth={580} opacity={0.92} zIndex={1} />
+      <TopFrame opacity={0.92} zIndex={1} />
       <SectionDecor corners={["bl", "br"]} size="clamp(124px, 32vw, 220px)" opacity={0.9} />
       <Bird size="clamp(78px, 21vw, 124px)" style={{ top: "13%", left: "5%" }} zIndex={3} />
       <Butterflies count={1} zIndex={3} />
 
-      <div className="relative z-10 flex flex-col items-center text-center px-8 w-full max-w-md mx-auto">
-        <FloralTitle style={{ marginBottom: "clamp(20px, 5vh, 36px)" }}>
-          Mempelai
-        </FloralTitle>
+      {/* Mempelai pria & wanita adalah dua KELOMPOK, bukan dua item berurutan —
+          jaraknya dinaikkan ke --space-group lewat --shell-gap. */}
+      <div className="section-shell" style={{ "--shell-gap": "var(--space-group)" } as React.CSSProperties}>
+        <FloralTitle>Mempelai</FloralTitle>
 
         <Person person={couple.groom} />
 
-        <span
-          className="font-script"
-          style={{ color: "var(--accent)", fontSize: "clamp(50px, 13vw, 68px)", lineHeight: 1, margin: "clamp(12px, 3.4vh, 24px) 0" }}
-        >
-          &amp;
-        </span>
+        <span className="type-ampersand">&amp;</span>
 
         <Person person={couple.bride} />
 
-        <FloralDivider width="64vw" maxWidth={320} style={{ marginTop: "clamp(28px, 6vh, 44px)" }} />
+        <FloralDivider width="64vw" maxWidth={320} />
 
-        <p
-          className="font-display"
-          style={{
-            color: "var(--text-muted)",
-            fontStyle: "italic",
-            fontSize: "clamp(15px, 3.8vw, 18px)",
-            lineHeight: 1.8,
-            marginTop: "clamp(16px, 4vh, 26px)",
-          }}
-        >
-          {couple.quote}
-        </p>
+        <p className="type-lead text-on-scene">{couple.quote}</p>
       </div>
     </section>
   );

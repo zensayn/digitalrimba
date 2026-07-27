@@ -9,12 +9,16 @@ import { hideBrokenImage } from "@/lib/image-fallback";
 export default function TopFrame({
   file = "BingkaiAtas.webp",
   opacity = 1,
-  maxWidth = 560,
+  maxWidth = "var(--frame-max)",
   zIndex = 2,
 }: {
   file?: string;
   opacity?: number;
-  maxWidth?: number;
+  /** Bawaan: token --frame-max yang disuntik rhythmVars() di <section>. Rumus
+   *  zona aman atas (--section-pad-top) membaca token yang SAMA, jadi lebar
+   *  bingkai dan ruang yang disediakan untuknya tak bisa lagi melenceng
+   *  sendiri-sendiri. Isi manual hanya bila memang ingin memutus ikatan itu. */
+  maxWidth?: number | string;
   zIndex?: number;
 }) {
   return (

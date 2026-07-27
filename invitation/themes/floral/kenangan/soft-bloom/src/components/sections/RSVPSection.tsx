@@ -5,6 +5,7 @@ import { motion, useInView } from "framer-motion";
 import { Check } from "lucide-react";
 import FloralTitle from "@/components/shared/FloralTitle";
 import SideVines from "@/components/shared/SideVines";
+import { rhythmVars } from "@/lib/rhythm";
 
 export default function RSVPSection() {
   const ref = useRef(null);
@@ -33,33 +34,27 @@ export default function RSVPSection() {
   };
 
   return (
-    <section id="rsvp" className="snap-section flow-section mood-mist reveal-scope">
+    <section id="rsvp" className="snap-section flow-section mood-mist reveal-scope" style={rhythmVars("rsvp")}>
       <div className="soft-wash" />
       {/* RantingSamping beraspek 3:1 — pada 72vh lebarnya ±190px per sisi dan
           menutupi hampir seluruh layar HP. Dipendekkan + form diberi panel
-          kertas (bloom-panel) supaya teks tak pernah duduk di atas flora. */}
+          kertas (.panel) supaya teks tak pernah duduk di atas flora. */}
       <SideVines sides={["left", "right"]} height="min(50vh, 400px)" opacity={0.55} zIndex={1} />
 
       {/* Tanpa scroller dalam (overflow-y-auto + maxHeight): dulu ia "menelan"
           gulir halaman sampai mentok → terasa nyangkut seperti magnet di section
           ini. Kini section memanjang alami dan halaman yang menggulir. */}
-      <div
-        ref={ref}
-        className="relative z-10 w-full mx-auto px-6"
-        style={{
-          maxWidth: "396px",
-          paddingTop: "clamp(48px, 9vh, 92px)",
-          paddingBottom: "clamp(48px, 9vh, 92px)",
-        }}
-      >
-        <div className="bloom-panel flex flex-col items-center text-center" style={{ padding: "clamp(30px, 8vw, 40px)" }}>
+      <div ref={ref} className="section-shell">
+        <div
+          className="panel flex w-full flex-col items-center text-center"
+          style={{ padding: "clamp(30px, 8vw, 40px)", gap: "var(--space-block)" }}
+        >
           <motion.p
             custom={0}
             variants={fadeUp}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
             className="type-eyebrow"
-            style={{ marginBottom: 4 }}
           >
             Konfirmasi Kehadiran
           </motion.p>
@@ -69,18 +64,17 @@ export default function RSVPSection() {
             variants={fadeUp}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
-            style={{ marginBottom: "clamp(20px, 5vh, 36px)" }}
           >
             <FloralTitle serif>RSVP</FloralTitle>
           </motion.div>
 
           {submitted ? (
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-4 py-8">
-              <div style={{ width: 62, height: 62, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--accent)" }}>
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center" style={{ gap: "var(--space-md)" }}>
+              <div className="icon-badge icon-badge-accent" style={{ width: 62, height: 62 }}>
                 <Check size={24} color="var(--accent)" strokeWidth={1.5} />
               </div>
-              <p className="font-display" style={{ color: "var(--text)", fontSize: "clamp(22px, 5.8vw, 28px)", fontWeight: 500, fontStyle: "italic" }}>Terima Kasih</p>
-              <p className="font-body" style={{ color: "var(--text-muted)", fontSize: "15px", lineHeight: 1.8, fontWeight: 300 }}>
+              <p className="type-heading">Terima Kasih</p>
+              <p className="type-body">
                 Konfirmasi Anda telah kami terima.<br />
                 Kami menantikan kehadiran Anda.
               </p>
@@ -92,36 +86,34 @@ export default function RSVPSection() {
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
               onSubmit={handleSubmit}
-              className="w-full flex flex-col gap-5 text-left"
+              className="flex w-full flex-col text-left"
+              // 20px antar-field — angka form warm-narrative yang juga dipakai
+              // prada-melati (spec spacing §2.4), di sini lewat --space-lg.
+              style={{ gap: "var(--space-lg)" }}
             >
               {/* Name */}
               <div className="flex flex-col gap-1">
                 <label className="type-label">Nama Tamu</label>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nama lengkap Anda" className="input-bloom" required />
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nama lengkap Anda" className="input-field" required />
               </div>
 
               {/* Attendance */}
               <div className="flex flex-col gap-2">
                 <label className="type-label">Konfirmasi</label>
                 <div className="flex gap-2">
+                  {/* Rupa keadaan terpilih ditentukan CSS lewat [aria-pressed],
+                      jadi atribut aksesibilitas dan tampilan tak bisa berbeda.
+                      Tinggi kotak (padding 11px di .btn-choice) disamakan dengan
+                      prada-melati — jangan diganti utilitas py-* Tailwind:
+                      preflight menyetel padding:0 pada <button> dan utilitasnya
+                      tak ikut ter-generate, dulu tombolnya jadi cuma ~21px. */}
                   {(["hadir", "tidak_hadir"] as const).map((opt) => (
                     <button
                       key={opt}
                       type="button"
                       onClick={() => setAttendance(opt)}
                       aria-pressed={attendance === opt}
-                      className="flex-1 py-2.5 text-center transition-all duration-300 font-label"
-                      style={{
-                        border: `1px solid ${attendance === opt ? "var(--accent)" : "var(--border)"}`,
-                        borderRadius: 4,
-                        color: attendance === opt ? "var(--accent)" : "var(--text-muted)",
-                        background: attendance === opt ? "rgba(126,105,150,0.08)" : "transparent",
-                        fontSize: "13px",
-                        fontWeight: 500,
-                        letterSpacing: "0.15em",
-                        textTransform: "uppercase",
-                        cursor: "pointer",
-                      }}
+                      className="btn-choice"
                     >
                       {opt === "hadir" ? "Hadir" : "Tidak Hadir"}
                     </button>
@@ -133,10 +125,10 @@ export default function RSVPSection() {
               {attendance === "hadir" && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="flex flex-col gap-2">
                   <label className="type-label">Jumlah Tamu</label>
-                  <div className="flex items-center gap-4">
-                    <button type="button" onClick={() => setPax(Math.max(1, pax - 1))} style={{ width: 40, height: 40, borderRadius: "50%", border: "1px solid var(--border)", color: "var(--text-muted)", background: "transparent", cursor: "pointer", fontSize: 22 }}>−</button>
-                    <span className="font-display" style={{ color: "var(--accent)", fontWeight: 500, fontSize: "clamp(24px, 6vw, 32px)", minWidth: "1.5ch", textAlign: "center" }}>{pax}</span>
-                    <button type="button" onClick={() => setPax(Math.min(5, pax + 1))} style={{ width: 40, height: 40, borderRadius: "50%", border: "1px solid var(--border)", color: "var(--text-muted)", background: "transparent", cursor: "pointer", fontSize: 22 }}>+</button>
+                  <div className="flex items-center" style={{ gap: "var(--space-md)" }}>
+                    <button type="button" aria-label="Kurangi jumlah tamu" onClick={() => setPax(Math.max(1, pax - 1))} className="btn-round">−</button>
+                    <span className="type-figure" style={{ minWidth: "1.5ch", textAlign: "center" }}>{pax}</span>
+                    <button type="button" aria-label="Tambah jumlah tamu" onClick={() => setPax(Math.min(5, pax + 1))} className="btn-round">+</button>
                   </div>
                 </motion.div>
               )}
@@ -155,14 +147,14 @@ export default function RSVPSection() {
                     }
                   }}
                   placeholder="Tuliskan ucapan & doa..."
-                  className="input-bloom overflow-hidden resize-none"
+                  className="input-field overflow-hidden resize-none"
                   rows={1}
                   style={{ minHeight: "40px" }}
                 />
               </div>
 
-              <div className="flex justify-center pt-2">
-                <button type="submit" disabled={loading || !name || !attendance} className="btn-bloom" style={{ opacity: (!name || !attendance) ? 0.45 : 1 }}>
+              <div className="flex justify-center">
+                <button type="submit" disabled={loading || !name || !attendance} className="btn-primary">
                   {loading ? "Mengirim..." : "Kirim Konfirmasi"}
                 </button>
               </div>

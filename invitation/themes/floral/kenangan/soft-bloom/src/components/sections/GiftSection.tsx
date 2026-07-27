@@ -7,6 +7,7 @@ import SectionDecor from "@/components/shared/SectionDecor";
 import FloralTitle from "@/components/shared/FloralTitle";
 import TopFrame from "@/components/shared/TopFrame";
 import SceneBackground from "@/components/shared/SceneBackground";
+import { rhythmVars } from "@/lib/rhythm";
 import type { InvitationConfig } from "@/lib/config-types";
 
 export default function GiftSection({ bankAccounts }: { bankAccounts: InvitationConfig["bankAccounts"] }) {
@@ -54,18 +55,19 @@ export default function GiftSection({ bankAccounts }: { bankAccounts: Invitation
   };
 
   return (
-    <section id="gift" className="snap-section flow-section reveal-scope" style={{ paddingTop: "clamp(130px, 20vh, 170px)" }}>
+    <section id="gift" className="snap-section flow-section reveal-scope" style={rhythmVars("gift")}>
       <SceneBackground file="LatarDaun.webp" scrim={0.55} edgeFade />
-      <TopFrame maxWidth={560} opacity={0.85} zIndex={1} />
+      <TopFrame opacity={0.85} zIndex={1} />
       <SectionDecor corners={["bl", "br"]} size="clamp(120px, 32vw, 220px)" opacity={0.88} />
 
-      <div ref={ref} className="relative z-10 flex flex-col items-center text-center w-full max-w-sm mx-auto px-7">
+      <div ref={ref} className="section-shell">
         <motion.div
           custom={0}
           variants={fadeUp}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          style={{ width: 66, height: 66, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border)", background: "rgba(255,255,255,0.6)", color: "var(--accent)", marginBottom: 16 }}
+          className="icon-badge"
+          style={{ width: 66, height: 66 }}
         >
           <Gift size={28} strokeWidth={1.5} />
         </motion.div>
@@ -76,7 +78,6 @@ export default function GiftSection({ bankAccounts }: { bankAccounts: Invitation
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           className="type-eyebrow"
-          style={{ marginBottom: 8 }}
         >
           Amplop Digital
         </motion.p>
@@ -86,7 +87,6 @@ export default function GiftSection({ bankAccounts }: { bankAccounts: Invitation
           variants={fadeUp}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          style={{ marginBottom: 12 }}
         >
           <FloralTitle serif>Tanda Kasih</FloralTitle>
         </motion.div>
@@ -96,15 +96,15 @@ export default function GiftSection({ bankAccounts }: { bankAccounts: Invitation
           variants={fadeUp}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className="font-body"
-          style={{ color: "var(--text-muted)", fontSize: "clamp(14px, 3.6vw, 17px)", lineHeight: 1.85, fontWeight: 300, marginBottom: "clamp(24px, 5.5vh, 42px)" }}
+          className="type-body text-on-scene"
         >
           Doa dan kehadiran Anda adalah hadiah terindah bagi kami. Namun bila ingin
           memberi tanda kasih, berikut rekening kami.
         </motion.p>
 
-        {/* Bank cards */}
-        <div className="flex flex-col gap-4 w-full">
+        {/* Kartu bank — daftar berulang, jaraknya --space-md (sama dgn card grid
+            warm-narrative/prada), bukan gap-4 Tailwind yang kebetulan senilai. */}
+        <div className="flex w-full flex-col" style={{ gap: "var(--space-md)" }}>
           {bankAccounts.map((acc, i) => (
             <motion.div
               key={i}
@@ -112,19 +112,20 @@ export default function GiftSection({ bankAccounts }: { bankAccounts: Invitation
               variants={fadeUp}
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
-              className="flex items-center justify-between"
-              style={{ padding: "22px 24px", borderRadius: 5, border: "1px solid var(--border)", background: "var(--bg)", boxShadow: "var(--shadow-card)" }}
+              className="card-solid bank-card flex items-center justify-between"
             >
-              <div className="flex flex-col items-start gap-1">
-                <span className="type-label" style={{ color: "var(--accent)" }}>{acc.bank}</span>
-                <span className="font-body" style={{ color: "var(--text)", fontSize: "17px", letterSpacing: "0.035em" }}>{acc.number}</span>
+              <div className="flex flex-col items-start" style={{ gap: "var(--space-2xs)" }}>
+                <span className="type-label-accent">{acc.bank}</span>
+                <span className="type-account">{acc.number}</span>
                 <span className="type-caption">a.n. {acc.name}</span>
               </div>
+              {/* Keadaan "tersalin" lewat data-copied → CSS yang menentukan
+                  warnanya, bukan ternary di dalam style inline. */}
               <button
                 onClick={() => handleCopy(acc.number, i)}
                 aria-label="Salin nomor rekening"
-                className="flex items-center gap-1 transition-all duration-300"
-                style={{ padding: "11px 13px", borderRadius: 4, border: "1px solid var(--border)", color: copiedIdx === i ? "var(--accent)" : "var(--text-muted)", background: "transparent", cursor: "pointer" }}
+                className="btn-icon"
+                data-copied={copiedIdx === i}
               >
                 {copiedIdx === i ? <Check size={16} /> : <Copy size={16} />}
               </button>

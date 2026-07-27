@@ -28,7 +28,7 @@ export default function FloralTitle({
   style?: React.CSSProperties;
 }) {
   const glowShadow =
-    "0 1px 3px rgba(253,252,250,0.95), 0 0 18px rgba(253,252,250,0.9), 0 0 34px rgba(253,252,250,0.8)";
+    "0 1px 3px var(--paper-strong), 0 0 18px var(--paper-strong), 0 0 34px var(--paper)";
   const sprig = (flip: boolean) => (
     <img
       src={asset("TangkaiKuncup.webp")}
