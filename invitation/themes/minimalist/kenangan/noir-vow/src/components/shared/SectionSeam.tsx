@@ -1,0 +1,87 @@
+"use client";
+
+// Jahitan antar-section: karangan bunga (GarlandBunga) yang menumpuk di batas dua
+// section — separuh di bawah section atas, separuh di atas section berikutnya —
+// jadi bunga seolah tumbuh menyambung, tidak terpotong garis lurus.
+// Dua lapis supaya batas tertutup SELEBAR kolom (bukan hanya tengah):
+//   1. Pita feather CSS full-width → melarutkan beda warna latar tepat di garis batas.
+//   2. Garland selebar kolom penuh di atasnya.
+// Dulu ada kluster SudutBunga di tepi kiri/kanan, tapi asset itu komposisi sudut
+// KIRI-ATAS — dipakai di kanan jadi mirror yang terlihat janggal, dan offset
+// negatifnya meluber keluar kolom di desktop (feedback owner 2026-07-06) → dihapus.
+// Dirender DI ANTARA section (di luar overflow:hidden) supaya tidak terklip.
+
+// Tiap jahitan bergiliran ganti komposisi supaya batas antar-section tidak seragam.
+const VARIANTS = [
+  { wide: true, flip: false, anim: "swayFrame", dur: 8.5 },
+  { wide: true, flip: true, anim: "sway", dur: 9.5 },
+  { wide: false, flip: false, anim: "swayFrame", dur: 7.5 },
+];
+
+export default function SectionSeam({ index = 0, zIndex = 6 }: { index?: number; zIndex?: number }) {
+  const v = VARIANTS[index % VARIANTS.length];
+  return (
+    <div
+      aria-hidden="true"
+      className="reveal-scope"
+      style={{ position: "relative", height: 0, zIndex, pointerEvents: "none" }}
+    >
+      {/* Pita feather: sapuan kertas lembut selebar kolom, pekat tepat di garis
+          batas lalu memudar ke dua arah → beda warna latar section larut duluan,
+          garland di atasnya tinggal mempermanis. */}
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: 0,
+          height: 96,
+          transform: "translateY(-50%)",
+          background: `linear-gradient(to bottom,
+            var(--paper-clear) 0%,
+            var(--paper) 40%,
+            var(--paper) 60%,
+            var(--paper-clear) 100%)`,
+        }}
+      />
+
+      {/* Garland selebar kolom — menyentuh kedua tepi tanpa meluber keluar */}
+      <div
+        data-enter="soft"
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: 0,
+          transform: "translateY(-50%)",
+          width: "100%",
+        }}
+      >
+        <svg
+          viewBox="0 0 300 20"
+          aria-hidden="true"
+          className="ambient-anim"
+          style={{
+            display: "block",
+            width: "100%",
+            height: "auto",
+            overflow: "visible",
+            transform: v.flip ? "scaleX(-1)" : "none",
+            transformOrigin: "50% 50%",
+            animation: `${v.anim} ${v.dur}s ease-in-out infinite alternate`,
+            filter: "var(--drop-md)",
+          }}
+        >
+          <line x1="0" y1="10" x2="300" y2="10" fill="none" stroke="var(--accent-line)" strokeWidth={1} />
+          {v.wide && (
+            <>
+              <circle cx="95" cy="10" r="2" fill="var(--accent-line)" />
+              <circle cx="205" cy="10" r="2" fill="var(--accent-line)" />
+            </>
+          )}
+          <rect x="147" y="7" width="6" height="6" fill="var(--accent-line)" transform="rotate(45 150 10)" />
+        </svg>
+      </div>
+    </div>
+  );
+}

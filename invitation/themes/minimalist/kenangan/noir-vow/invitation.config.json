@@ -1,0 +1,158 @@
+{
+  "couple": {
+    "groom": {
+      "name": "Raka",
+      "fullName": "Raka Adi Pratama",
+      "parents": "Putra Bapak Bambang Pratama & Ibu Lestari",
+      "photo": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80",
+      "instagram": "@raka.adi"
+    },
+    "bride": {
+      "name": "Kirana",
+      "fullName": "Kirana Maheswari",
+      "parents": "Putri Bapak Hadi Wijaya & Ibu Ratna Dewi",
+      "photo": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+      "instagram": "@kirana.m"
+    },
+    "hashtag": "#RakaKiranaBermekar",
+    "quote": "\"Seperti bunga liar yang tumbuh apa adanya — cinta kami merekah sederhana, namun penuh warna.\""
+  },
+  "events": {
+    "akad": {
+      "title": "Akad Nikah",
+      "day": "Sabtu",
+      "date": "12 Desember 2026",
+      "time": "08.00 – 10.00 WIB",
+      "venue": "Pendopo Taman Sari",
+      "address": "Jl. Tamansari No. 12, Yogyakarta",
+      "mapsUrl": "https://maps.google.com/?q=-7.8101,110.3592",
+      "embedUrl": "https://maps.google.com/maps?q=-7.8101,110.3592&z=16&output=embed",
+      "startISO": "20261212T010000Z",
+      "endISO": "20261212T030000Z"
+    },
+    "resepsi": {
+      "title": "Resepsi",
+      "day": "Sabtu",
+      "date": "12 Desember 2026",
+      "time": "11.00 – 14.00 WIB",
+      "venue": "Greenfield Garden Hall",
+      "address": "Jl. Palagan Tentara No. 88, Sleman",
+      "mapsUrl": "https://maps.google.com/?q=-7.7372,110.4115",
+      "embedUrl": "https://maps.google.com/maps?q=-7.7372,110.4115&z=16&output=embed",
+      "startISO": "20261212T040000Z",
+      "endISO": "20261212T070000Z"
+    }
+  },
+  "weddingDate": "2026-12-12T08:00:00",
+  "music": {
+    "file": "clair-de-lune-5a1d18c8.mp3",
+    "title": "Clair de Lune",
+    "artist": "Debussy",
+    "cover": "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=400&q=80"
+  },
+  "coverVideo": {},
+  "gallery": [
+    { "src": "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1200&q=80", "alt": "Perjalanan cinta" },
+    { "src": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80", "alt": "Momen bersama" },
+    { "src": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=600&q=80", "alt": "Senyum bahagia" },
+    { "src": "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=600&q=80", "alt": "Kasih sayang" },
+    { "src": "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=600&q=80", "alt": "Kenangan indah" },
+    { "src": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80", "alt": "Bersama selamanya" }
+  ],
+  "loveStory": [
+    {
+      "chapter": "Pertemuan Pertama",
+      "year": "2021",
+      "description": "Kami bertemu di sebuah pasar bunga kecil di Yogyakarta. Obrolan tentang bunga liar ternyata jadi awal dari segalanya.",
+      "image": "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      "chapter": "Tumbuh Bersama",
+      "year": "2023",
+      "description": "Dari teman berbagi cerita menjadi rumah untuk pulang. Kami belajar saling mengerti di setiap musim yang berganti.",
+      "image": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      "chapter": "Lamaran",
+      "year": "2026",
+      "description": "Di padang bunga tempat kami pertama berjalan berdua, Raka berlutut dan Kirana menjawab dengan air mata bahagia.",
+      "image": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=400&q=80"
+    }
+  ],
+  "rundown": {
+    "akad": [
+      { "time": "07.30", "title": "Kedatangan tamu & keluarga" },
+      { "time": "08.00", "title": "Prosesi akad nikah" },
+      { "time": "09.00", "title": "Doa bersama & sungkeman" }
+    ],
+    "resepsi": [
+      { "time": "11.00", "title": "Pembukaan resepsi" },
+      { "time": "11.30", "title": "Penyambutan kedua mempelai" },
+      { "time": "12.30", "title": "Ramah tamah & santap siang" },
+      { "time": "13.30", "title": "Sesi foto bersama" }
+    ]
+  },
+  "turutMengundang": [
+    { "name": "Kel. Besar Pratama", "note": "Yogyakarta" },
+    { "name": "Kel. Besar Wijaya", "note": "Sleman" },
+    { "name": "Bapak Sutrisno & Keluarga", "note": "Rekan Bapak Bambang" },
+    { "name": "Ibu Maryati & Keluarga", "note": "Sahabat keluarga" }
+  ],
+  "bankAccounts": [
+    { "bank": "BCA", "name": "Raka Adi Pratama", "number": "1357 2468 9012" },
+    { "bank": "Mandiri", "name": "Kirana Maheswari", "number": "1440 0099 8877 6" }
+  ],
+  "dressCode": {
+    "theme": "Taman Pastel",
+    "description": "Kenakan busana bernuansa pastel lembut — selaras dengan padang bunga liar yang menjadi suasana hari bahagia kami.",
+    "colors": [
+      { "hex": "#C9B8DA", "name": "Lilac" },
+      { "hex": "#F0E2A8", "name": "Butter" },
+      { "hex": "#BCD0DB", "name": "Powder Blue" },
+      { "hex": "#9BB08A", "name": "Sage" },
+      { "hex": "#FDFCFA", "name": "Ivory" }
+    ],
+    "avoid": ["Hitam Pekat", "Merah Menyala"]
+  },
+  "theme": {
+    "colors": {
+      "bg":         "#0A0A0A",
+      "surface":    "#141414",
+      "surface2":   "#1F1F1F",
+      "accent":     "#FFFFFF",
+      "accentSoft": "#CFCFCF",
+      "leaf":       "#B5B5B5",
+      "text":       "#F2F2F2",
+      "textMuted":  "#A8A8A8",
+      "textDim":    "#7A7A7A",
+      "wash1":      "#D9D9D9",
+      "wash2":      "#C2C2C2",
+      "wash3":      "#ABABAB",
+      "wash4":      "#949494",
+      "wash5":      "#7D7D7D"
+    },
+    "typography": {
+      "displayFont": "Bodoni Moda",
+      "bodyFont":    "Jost",
+      "scriptFont":  "Imperial Script"
+    }
+  },
+  "sections": {
+    "order": ["cover", "greeting", "couple", "lovestory", "akad", "resepsi", "dresscode", "gallery", "rsvp", "gift", "rundown", "turut", "closing"],
+    "enabled": {
+      "cover":     true,
+      "greeting":  true,
+      "couple":    true,
+      "lovestory": true,
+      "akad":      true,
+      "resepsi":   true,
+      "dresscode": true,
+      "gallery":   true,
+      "rsvp":      true,
+      "gift":      true,
+      "rundown":   true,
+      "turut":     true,
+      "closing":   true
+    }
+  }
+}

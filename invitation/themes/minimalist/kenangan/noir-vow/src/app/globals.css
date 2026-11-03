@@ -1,0 +1,1154 @@
+@import "tailwindcss";
+
+/* ─── Tipografi "mahal" ────────────────────────────────────────────────────────
+   Font dimuat & di-selfhost oleh next/font (layout.tsx) → var(--font-*). Tanpa
+   @import remote (yang bisa di-strip Tailwind/Turbopack → jatuh ke Comic Sans). */
+
+/* ─── Design Tokens: WARNA BENDA ──────────────────────────────────────────────
+   Palet TEMA tidak didefinisikan di sini. Satu-satunya sumbernya adalah
+   invitation.config.json → buildCssVars() menyuntiknya sebagai
+   <style id="rimba-theme-vars"> di layout.tsx. Menaruh salinannya di sini
+   pernah membuat "sudah ganti config tapi warna tak berubah".
+   Dijaga scripts/__tests__/token-contract.test.mjs.
+
+   Yang boleh tinggal di sini hanya warna BENDA: yang digambar memang punya
+   warna sendiri (piringan hitam, lipatan amplop, lelehan lilin segel), jadi ia
+   SENGAJA tidak ikut berubah saat palet tema diganti. Tetap ditokenkan supaya
+   tak berserak sebagai rgba() mentah di dalam komponen.                       */
+:root {
+  /* Piringan hitam pemutar musik */
+  --vinyl-disc: #1a1720;
+  --vinyl-groove: color-mix(in srgb, black 38%, transparent);
+  --vinyl-edge: color-mix(in srgb, black 50%, transparent);
+  --vinyl-inset: color-mix(in srgb, black 40%, transparent);
+  --vinyl-sheen: color-mix(in srgb, white 35%, transparent);
+  --vinyl-sheen-soft: color-mix(in srgb, white 18%, transparent);
+  /* Amplop pembuka: kedalaman lipatan & bayangan segel lilin */
+  --flap-shadow: color-mix(in srgb, black 18%, transparent);
+  --seal-shadow: color-mix(in srgb, #0f0a19 30%, transparent);
+  --seal-shadow-soft: color-mix(in srgb, #0f0a19 20%, transparent);
+}
+
+/* ─── Design Tokens: WARNA TURUNAN & EFEK ─────────────────────────────────────
+   Palet PRIMITIF ada di invitation.config.json (§ blok di atas). Yang di sini
+   adalah TURUNANNYA: permukaan tembus pandang, kabut kertas, tint aksen,
+   bayangan, halo, dan efek (blur/easing/durasi).
+
+   Kenapa dipisah begini: config menjawab "tema ini warnanya apa", berkas ini
+   menjawab "warna itu dipakai jadi apa". Sebelumnya turunan ditulis sebagai
+   rgba() mentah — 30 literal di globals.css dan 30 lagi di komponen — jadi
+   mengganti `accent` di config meninggalkan belasan `rgba(126,105,150,…)`
+   yang tak ikut berubah. Itu persis perangkap yang dulu diberantas
+   token-contract, cuma satu lapis lebih dalam.
+
+   Karena itu `border` dan `shadows` DIKELUARKAN dari config: keduanya murni
+   turunan (accent 22%, text 5%), dan menaruhnya di config berarti meminta
+   orang menyetel ulang manual tiap kali paletnya berubah — instruksi yang
+   memang sempat tertulis di TEMPLATE.md dan sekarang tak diperlukan lagi.
+   Dijaga scripts/__tests__/color-contract.test.mjs.                          */
+:root {
+  /* ── Permukaan terangkat ──────────────────────────────────────────────────
+     Dulu "putih murni" (warisan Soft Bloom yang temanya terang) — di tema
+     gelap ini itu bikin card jadi terang tembus pandang di atas video gelap,
+     jadi teks/border yang didesain kontras di atas GELAP (--text-muted,
+     --border dari --accent) malah menyatu di card yang TERANG (bug feedback
+     owner 2026-08-01). Sekarang diturunkan dari --surface-2 (gelap, tapi
+     lebih terang dari --bg) dengan opacity tinggi — solid & pekat, bukan
+     overlay tipis, supaya tepi card jelas kontras dengan foto/video di
+     belakangnya sekaligus tetap konsisten gelap dengan seluruh tema. */
+  --surface-card: color-mix(in srgb, var(--surface-2) 96%, transparent);
+  --surface-panel: color-mix(in srgb, var(--surface-2) 94%, transparent);
+  --surface-photo: color-mix(in srgb, var(--surface-2) 98%, transparent);
+  --surface-subtle: color-mix(in srgb, var(--surface-2) 80%, transparent);
+  --surface-faint: color-mix(in srgb, var(--surface-2) 68%, transparent);
+
+  /* ── Kabut kertas — --bg pada beberapa kepekatan ──────────────────────────
+     Dipakai untuk melarutkan tepi section, pita jahitan, dan cahaya di
+     belakang teks yang duduk di atas flora. */
+  --paper-strong: color-mix(in srgb, var(--bg) 95%, transparent);
+  --paper: color-mix(in srgb, var(--bg) 85%, transparent);
+  --paper-soft: color-mix(in srgb, var(--bg) 55%, transparent);
+  --paper-faint: color-mix(in srgb, var(--bg) 35%, transparent);
+  --paper-clear: color-mix(in srgb, var(--bg) 0%, transparent);
+
+  /* ── Aksen turunan ─────────────────────────────────────────────────────────
+     --accent-hairline & --accent-line dinaikkan dari 22%/38% — di atas video
+     gelap keduanya nyaris tak kelihatan sebagai garis (bug feedback owner
+     2026-08-01: border card, tombol, dan garis pemisah "menyatu" dengan
+     latar). --accent sekarang putih murni (bukan ungu Soft Bloom), jadi
+     opacity yang sama menghasilkan garis jauh lebih redup di tema ini. */
+  --accent-tint: color-mix(in srgb, var(--accent) 8%, transparent);
+  --accent-hairline: color-mix(in srgb, var(--accent) 48%, transparent);
+  --accent-line: color-mix(in srgb, var(--accent) 58%, transparent);
+  --accent-strike: color-mix(in srgb, var(--accent) 45%, transparent);
+  --accent-strong: color-mix(in srgb, var(--accent) 92%, transparent);
+  --accent-glow: color-mix(in srgb, var(--accent) 12%, transparent);
+  /* Garis tepi seluruh tema. Dulu literal rgba di config dengan catatan
+     "kalau accent diganti, setel ulang manual" — sekarang ikut sendiri. */
+  --border: var(--accent-hairline);
+
+  /* ── Bayangan — warnanya diturunkan dari --text (ungu dari --accent) ─────── */
+  --shadow-card: 0 2px 14px color-mix(in srgb, var(--text) 5%, transparent);
+  --shadow-lift: 0 10px 26px color-mix(in srgb, var(--text) 10%, transparent);
+  --shadow-float: 0 14px 40px var(--accent-glow);
+  --shadow-rail: -10px 0 44px color-mix(in srgb, var(--text) 7%, transparent);
+  --shadow-cta: 0 3px 8px color-mix(in srgb, var(--text) 6%, transparent);
+  --shadow-swatch: inset 0 -4px 8px color-mix(in srgb, var(--text) 6%, transparent);
+  --drop-sm: drop-shadow(0 3px 6px color-mix(in srgb, var(--text) 10%, transparent));
+  --drop-md: drop-shadow(0 6px 14px color-mix(in srgb, var(--text) 6%, transparent));
+  --drop-lg: drop-shadow(0 8px 15px color-mix(in srgb, var(--text) 18%, transparent));
+
+  /* ── Halo kertas di belakang teks ─────────────────────────────────────────
+     Bukan dekorasi: tanpa ini kontras teks jatuh di bawah ambang WCAG saat
+     mendarat di rumpun gelap sebuah latar foto. */
+  --halo-paper: 0 1px 2px var(--paper-strong), 0 0 7px var(--paper);
+  --halo-paper-strong:
+    0 1px 3px var(--paper-strong),
+    0 0 18px var(--paper),
+    0 0 34px var(--paper-soft);
+
+  /* ── Efek ────────────────────────────────────────────────────────────────── */
+  --blur-card: 3px;
+  --blur-panel: 2px;
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-quick: 220ms;
+  --dur-base: 0.3s;
+  --dur-enter: 1.7s;
+}
+
+/* ─── Design Tokens: RUANG (margin, gutter, ritme) ────────────────────────────
+   SATU-SATUNYA sumber angka jarak di tema ini. Sebelum ada blok ini tiap section
+   menulis clamp()-nya sendiri: 6 nilai padding-atas, 5 padding-bawah, 3 gutter,
+   dan 5 lebar kolom berbeda untuk peran yang sama — "margin atas/bawah tak
+   konsisten" yang sama persis dengan keluhan di prada-melati.
+
+   Pendekatannya menyalin MEKANISME prada-melati (spec 2026-07-21 §2), bukan
+   angkanya mentah-mentah:
+     · bawah — satu nilai untuk semua section lewat pembungkus bersama, jadi
+       "sama" per definisi, tak perlu disetel per berkas;
+     · atas  — satu RUMUS yang diberi makan satu masukan per section
+       (--frame-max, lebar BingkaiAtas), karena tinggi zona aman memang beda
+       per section dan memaksakan satu angka statis akan memunculkan lagi cacat
+       "teks tertimpa ornamen".
+   Dijaga scripts/__tests__/spacing-contract.test.mjs.                        */
+:root {
+  /* Tangga spasi — jarak antar-elemen DI DALAM satu blok */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 20px;
+  --space-xl: 24px;
+
+  /* Jarak antar-BLOK dalam satu section (eyebrow → judul → narasi → kartu) */
+  --space-block: clamp(14px, 3vh, 24px);
+  /* Jarak antar-KELOMPOK (mis. kartu Akad → kartu Resepsi). Selalu > antar-blok,
+     supaya dua kelompok terbaca terpisah, bukan satu daftar panjang. */
+  --space-group: clamp(20px, 4.5vh, 30px);
+
+  /* Kolom konten. Lebar teks dipatok max-width, BUKAN gutter tebal — gutter
+     cuma perlu membebaskan konten dari juntaian RantingSamping di tepi. */
+  --gutter: clamp(26px, 7vw, 32px);
+  --content-max: 384px;
+  --content-max-wide: 460px;
+  /* Dua kenop yang boleh di-override per section (lewat rhythm.ts atau, untuk
+     kasus yang butuh alasan tertulis, langsung di section). Didefinisikan di
+     sini — bukan cuma sebagai nilai fallback var() — supaya keduanya ikut
+     terbaca sebagai token, bukan nama yang muncul entah dari mana. */
+  --shell-max: var(--content-max);
+  --shell-gap: var(--space-block);
+
+  /* Zona aman atas.
+     BingkaiAtas.webp PERSEGI dan dipasang width:100% (dibatasi --frame-max),
+     jadi tinggi lengkungnya mengikuti LEBAR render — bukan tinggi viewport.
+     Karena itu rumusnya memakai min(100%, --frame-max): persentase pada
+     padding dihitung dari lebar containing block, yaitu lebar section yang
+     juga jadi lebar bingkai. Nilai clamp(...vh) yang dipakai sebelumnya justru
+     MENGECIL di layar pendek-lebar, tepat saat bingkainya membesar.
+     --frame-crown 0.34 = seberapa jauh puncak lengkung turun terhadap lebar
+     gambar (diukur dari aset: pita bunga rapat menutup ±1/3 teratas).
+     --frame-breath = napas antara puncak lengkung dan elemen pertama.
+     Section tanpa bingkai atas (--frame-max: 0) jatuh ke --pad-block.
+     RUMUSNYA sendiri ada di .section-shell, bukan di sini — lihat alasannya
+     di sana; menaruhnya di :root membuatnya diam-diam salah. */
+  --frame-max: 0px;
+  --frame-crown: 0.34;
+  --frame-breath: var(--space-group);
+  --pad-block: clamp(56px, 10svh, 88px);
+
+  /* Ruang bawah — angka diadopsi apa adanya dari prada-melati (SceneContent.tsx).
+     Kendalanya setara: di sana hem batik, di sini garland SectionSeam yang
+     menjulur ~separuh tingginya ke ATAS melewati batas section (translateY -50%
+     pada elemen setinggi 0), jadi elemen terakhir butuh clearance tebal. */
+  --section-pad-bottom: clamp(88px, 14svh, 132px);
+}
+
+/* Kolom konten section — pembungkus bersama, sepupu SceneContent prada-melati.
+   Semua section memakai kelas ini; tak ada yang menyetel padding vertikal atau
+   lebar kolomnya sendiri. Yang boleh berbeda per section hanya lewat variabel
+   (--frame-max, --shell-max, dan override --section-pad-*) yang disuntik
+   rhythmVars() dari tabel di src/lib/rhythm.ts. */
+.section-shell {
+  /* Zona aman atas dihitung DI SINI, bukan di :root. var() disubstitusi di
+     elemen tempat custom property-nya DIDEKLARASIKAN: kalau rumusnya tinggal
+     di :root, var(--frame-max) di dalamnya membeku jadi 0px milik :root dan
+     nilai yang disuntik rhythmVars() di <section> tak pernah terbaca. Gejalanya
+     halus — tak ada error, semua section framed cuma diam-diam jatuh ke
+     --pad-block dan judulnya masuk ke dalam bunga. Ditemukan lewat screenshot
+     greeting, bukan lewat tes; karena itu spacing-contract sekarang ikut
+     menguji bahwa .section-shell yang memegang rumusnya. */
+  --frame-safe-top: calc(min(100%, var(--frame-max)) * var(--frame-crown) + var(--frame-breath));
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  margin-inline: auto;
+  max-width: var(--shell-max);
+  padding-inline: var(--gutter);
+  padding-top: max(var(--pad-block), var(--frame-safe-top));
+  padding-bottom: var(--section-pad-bottom);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--shell-gap);
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overscroll-behavior-y: none;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ─── Typography helpers ─────────────────────────────────────────────────────── */
+.font-display { font-family: var(--font-display), 'Bodoni Moda', Georgia, serif; }
+.font-body    { font-family: var(--font-body), 'Jost', system-ui, sans-serif; }
+.font-label   { font-family: var(--font-body), 'Jost', system-ui, sans-serif; }
+.font-script  { font-family: var(--font-script), 'Imperial Script', cursive; }
+
+/* ─── Peran tipografi — SATU sumber ukuran & kapitalisasi ─────────────────────
+   Semua section memakai kelas ini (bukan nilai inline masing-masing) supaya
+   besar-kecil huruf konsisten di seluruh undangan:
+   - eyebrow : penanda section  — kapital, tracking lebar, warna aksen
+   - label   : label form/data  — kapital, tracking sedang, abu tua
+   - title   : judul section    — serif italic, ukuran seragam
+   - caption : keterangan kecil — tanpa kapital paksa                           */
+.type-eyebrow {
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.type-label {
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+/* Label yang menandai isi utama sebuah blok (nama bank, tahun bab, judul
+   linimasa) — sama persis dengan .type-label, hanya beraksen. Sebelumnya
+   ditulis `className="type-label" style={{ color: "var(--accent)" }}` di
+   empat tempat: kelas dipakai untuk sebagian sifat lalu ditambal inline. */
+.type-label-accent {
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.type-title {
+  font-family: var(--font-display), 'Bodoni Moda', Georgia, serif;
+  font-size: clamp(34px, 9.5vw, 48px);
+  font-weight: 500;
+  font-style: italic;
+  color: var(--text);
+}
+.type-caption {
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+  line-height: 1.75;
+}
+
+/* ── Peran teks besar & sedang ─────────────────────────────────────────────────
+   Semua ukuran/berat/warna teks tinggal DI SINI. Section hanya menyebut nama
+   perannya. Sebelum ini, "sub-judul serif italic" ditulis 4× dengan clamp yang
+   berbeda-beda (22/6vw/30, 22/5.8vw/28, 20/5.4vw/27, 20/5.2vw/26) dan "lead
+   italic" 3× — bukan keputusan desain, hanya section yang ditulis di hari
+   berbeda. Mengubah "besar judul section" dulu berarti berburu di 4 berkas.
+   Dijaga scripts/__tests__/style-contract.test.mjs.                          */
+
+/* Nama mempelai berukuran hero (cover & closing) */
+.type-display {
+  font-family: var(--font-display), 'Bodoni Moda', Georgia, serif;
+  font-size: clamp(48px, 13.5vw, 84px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+/* Sub-judul serif italic — nama orang, nama venue, judul di dalam kartu */
+.type-heading {
+  font-family: var(--font-display), 'Bodoni Moda', Georgia, serif;
+  font-size: clamp(20px, 5.6vw, 28px);
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.25;
+  color: var(--text);
+}
+/* Nama item dalam daftar berulang (bab kisah, keluarga turut mengundang) */
+.type-name {
+  font-family: var(--font-display), 'Bodoni Moda', Georgia, serif;
+  font-size: clamp(19px, 5vw, 23px);
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.25;
+  color: var(--text);
+}
+/* Narasi/kutipan italic — kalimat pengantar bernada personal */
+.type-lead {
+  font-family: var(--font-display), 'Bodoni Moda', Georgia, serif;
+  font-size: clamp(15px, 4vw, 18px);
+  font-style: italic;
+  line-height: 1.85;
+  color: var(--text-muted);
+}
+/* Numeral tanggal — elemen terbesar di section acara, sengaja > judul */
+.type-numeral {
+  font-family: var(--font-display), 'Bodoni Moda', Georgia, serif;
+  font-size: clamp(88px, 25vw, 128px);
+  font-weight: 500;
+  line-height: 0.9;
+  color: var(--accent);
+}
+/* Angka di dalam kartu/kontrol (countdown, penghitung tamu) */
+.type-figure {
+  font-family: var(--font-display), 'Bodoni Moda', Georgia, serif;
+  font-size: clamp(24px, 6.5vw, 34px);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--accent);
+}
+/* Deret angka yang harus dibaca & disalin (nomor rekening) */
+.type-account {
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-size: 17px;
+  letter-spacing: 0.035em;
+  color: var(--text);
+}
+/* Meta kecil beraksen — jam acara, handle Instagram */
+.type-meta {
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  color: var(--accent);
+}
+/* Tulisan tangan besar — monogram, nama tamu */
+.type-script {
+  font-family: var(--font-script), 'Imperial Script', cursive;
+  font-size: clamp(34px, 9.8vw, 50px);
+  line-height: 1.15;
+  color: var(--accent);
+}
+/* Ampersand raksasa antar-mempelai */
+.type-ampersand {
+  font-family: var(--font-script), 'Imperial Script', cursive;
+  font-size: clamp(44px, 12vw, 64px);
+  line-height: 1;
+  color: var(--accent);
+}
+/* Caption tulisan tangan di strip bawah polaroid */
+.type-photo-caption {
+  font-family: var(--font-script), 'Imperial Script', cursive;
+  font-size: clamp(20px, 5.2vw, 26px);
+  line-height: 1;
+  color: var(--accent);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Peran teks isi ──────────────────────────────────────────────────────────── */
+/* Narasi/lead section — paragraf pengantar di bawah judul. Empat section dulu
+   menuliskan tiga properti yang sama persis secara inline; sekali salah salin,
+   satu section jadi lebih rapat dari tetangganya tanpa alasan. */
+.type-body {
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-size: clamp(14px, 3.6vw, 17px);
+  font-weight: 300;
+  line-height: 1.85;
+  color: var(--text-muted);
+}
+/* Body kecil — keterangan di bawah nama, deskripsi bab */
+.type-body-sm {
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-size: clamp(13px, 3.3vw, 15px);
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+/* Baris daftar — isi utama sebuah baris, jadi warnanya --text bukan --text-muted */
+.type-list {
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-size: clamp(14px, 3.5vw, 16px);
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+/* Cahaya kertas di belakang teks yang duduk DI ATAS flora (cover, closing).
+   Bukan dekorasi: tanpa ini kontras teks jatuh di bawah ambang WCAG saat
+   kebetulan mendarat di pita bukit LatarPadang. */
+.text-halo {
+  text-shadow: var(--halo-paper);
+}
+.text-halo-strong {
+  text-shadow: var(--halo-paper-strong);
+}
+
+/* Teks sekunder yang duduk di atas latar FOTO (SceneBackground), bukan kertas.
+   --text-muted aman di atas kertas (4.94:1) tapi jatuh ke 2.37:1 di atas rumpun
+   daun gelap LatarDaun — jauh di bawah ambang WCAG 4.5:1, dan itulah yang
+   membuat kutipan Mempelai "kurang terlihat warnanya" (laporan pemilik
+   2026-07-27). Naikkan ke --text plus halo kertas: terukur 5.33:1 di titik
+   tergelap dan 9.16:1 di titik terang, bahkan sebelum halo ikut menolong.
+   Dipasang BERDAMPINGAN dengan peran teksnya (`type-lead text-on-scene`),
+   bukan menggantinya — suaranya tetap sekunder, hanya cukup kontras. */
+.text-on-scene {
+  color: var(--text);
+  text-shadow: var(--halo-paper);
+}
+
+/* Panel kertas untuk blok teks/form di atas dekorasi ramai (dipakai RSVP) */
+.panel {
+  width: 100%;
+  background: var(--surface-panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(var(--blur-panel));
+  -webkit-backdrop-filter: blur(var(--blur-panel));
+}
+
+/* ─── Scroll Container ──────────────────────────────────────────────────────── */
+.snap-container {
+  width: 100%;
+  position: relative;
+  overflow-anchor: none;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent-soft); border-radius: 2px; }
+
+.snap-section {
+  min-height: 100vh;
+  min-height: 100svh;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Section isi mengalir mengikuti konten. Cover/closing tetap memakai full viewport,
+   sementara bagian tengah tidak lagi terasa "menempel" ke satu layar penuh.
+   Ruang vertikalnya dipegang .section-shell (token --section-pad-*), BUKAN di
+   sini: dulu padding section dan padding kolom saling menumpuk sehingga ruang
+   atas Event ±2× ruang atas tetangganya tanpa ada yang memaksudkannya. */
+.flow-section {
+  min-height: auto;
+  justify-content: flex-start;
+}
+
+/* ─── Mood latar per-section — tint transparan di atas kertas menerus ─────────── */
+/* Tiap section punya suasana warna berbeda (tak ada dua berdampingan yang sama),
+   tapi tetap transparan supaya latar kertas mengalir menembus → tetap menyatu.
+   Tepi atas/bawah sengaja lebih bening agar berbaur ke section tetangga. */
+.mood-paper,
+.mood-mist,
+.mood-sky,
+.mood-meadow,
+.mood-blush,
+.mood-butter {
+  background-color: transparent;
+}
+/* Warna awal tiap gradien diturunkan dari token wash lewat color-mix — nilainya
+   identik dengan rgba(c, n) yang dulu ditulis manual. Titik henti akhir cukup
+   `transparent`: gradien CSS diinterpolasi dengan alpha premultiplied, jadi
+   hue di titik alpha-nol tak berpengaruh pada warna di antaranya. (Bentuk
+   color-mix(… 0%, transparent) TIDAK mempertahankan hue — ia tetap menghasilkan
+   hitam transparan, jadi tak ada gunanya ditulis panjang.) */
+.mood-paper  { background-image: radial-gradient(120% 78% at 50% 42%, color-mix(in srgb, var(--surface) 72%, transparent), transparent 76%); }
+.mood-mist   { background-image: radial-gradient(120% 78% at 50% 42%, color-mix(in srgb, var(--wash-1) 20%, transparent), transparent 74%); }
+.mood-sky    { background-image: radial-gradient(120% 78% at 50% 42%, color-mix(in srgb, var(--wash-3) 22%, transparent), transparent 74%); }
+.mood-meadow { background-image: radial-gradient(120% 80% at 50% 60%, color-mix(in srgb, var(--wash-5) 20%, transparent), transparent 74%); }
+.mood-blush  { background-image: radial-gradient(120% 78% at 50% 44%, color-mix(in srgb, var(--wash-4) 20%, transparent), transparent 74%); }
+.mood-butter { background-image: radial-gradient(120% 78% at 50% 42%, color-mix(in srgb, var(--wash-2) 22%, transparent), transparent 74%); }
+
+/* ─── Soft pastel background wash — pure CSS, tanpa gambar ───────────────────── */
+.soft-wash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(38% 32% at 16% 10%, color-mix(in srgb, var(--wash-1) 18%, transparent), transparent 70%), /* lilac  */
+    radial-gradient(34% 28% at 84% 20%, color-mix(in srgb, var(--wash-2) 16%, transparent), transparent 70%), /* butter */
+    radial-gradient(46% 40% at 62% 94%, color-mix(in srgb, var(--wash-3) 16%, transparent), transparent 72%); /* sky    */
+}
+
+/* ─── Kartu — crisp, bukan glassy-rounded ────────────────────────────────────── */
+/* Latar cukup pekat + blur: kartu (countdown) bisa duduk di atas padang bunga
+   yang rapat tanpa angkanya tertelan flora di belakangnya. */
+.card {
+  position: relative;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+}
+
+/* Kartu buram — dipakai saat kartu duduk di atas latar FOTO (Gift di LatarDaun,
+   Rundown). Kartu tembus pandang di sana membuat teksnya beradu dengan daun. */
+.card-solid {
+  position: relative;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  box-shadow: var(--shadow-card);
+}
+
+/* Kartu botani (dipakai BotanicalCard) — panel gradasi surface + border tipis. */
+.botanical-card {
+  background: linear-gradient(180deg, var(--surface-photo), var(--surface-panel));
+  border: 1px solid var(--accent-line);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 14px 40px var(--accent-glow);
+}
+
+/* Pigura polaroid galeri — bayangannya lebih tegas dari .card supaya foto
+   terasa tertempel di atas kertas, bukan menyatu dengannya. */
+.polaroid {
+  background: var(--surface-photo);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--text) 10%, transparent);
+  padding: 9px 9px 5px;
+}
+.polaroid-photo {
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--surface);
+}
+
+/* Foto bundar berbingkai tipis — potret bab kisah & mempelai */
+.avatar {
+  overflow: hidden;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-card);
+}
+
+/* Ring tipis di atas foto pasangan (CoupleSection) — pengganti wreath Soft Bloom. */
+.photo-ring {
+  border-radius: 50%;
+  border: 1px solid var(--accent-line);
+}
+
+/* Titik aksen kecil (GallerySection) — pengganti aksen bunga jatuh Soft Bloom. */
+.accent-dot {
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Lingkaran ikon — penanda section (Gift) & konfirmasi berhasil (RSVP) */
+.icon-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface-subtle);
+  color: var(--accent);
+}
+.icon-badge-accent {
+  border-color: var(--accent);
+  background: transparent;
+}
+
+/* Pil bertepi — daftar warna yang dihindari di Dress Code */
+.chip {
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-size: clamp(13px, 3.4vw, 15px);
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 7px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-faint);
+}
+.chip-struck {
+  text-decoration: line-through;
+  text-decoration-color: var(--accent-strike);
+}
+
+/* Kelopak warna Dress Code. Warnanya DATA (dari config), bukan keputusan gaya —
+   masuk lewat --swatch, jadi kontrak "tak ada properti visual inline" tetap
+   utuh sementara warnanya tetap bisa datang dari config. */
+.swatch {
+  /* Nilai bawaan, bukan formalitas: kalau sebuah warna di config tak punya hex,
+     kelopaknya tetap tampil sebagai permukaan netral, bukan lingkaran hitam. */
+  --swatch: var(--surface-2);
+  width: clamp(46px, 12vw, 58px);
+  height: clamp(46px, 12vw, 58px);
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--swatch);
+  box-shadow:
+    inset 0 -4px 8px color-mix(in srgb, var(--text) 6%, transparent),
+    0 5px 14px color-mix(in srgb, var(--swatch) 33%, transparent);
+}
+
+/* Garis memudar yang mengapit ornamen di tengah (motif tangkai kuncup Event).
+   Arahnya PENTING: garis paling pekat tepat di sisi ornamen lalu memudar ke
+   tepi kolom, sehingga mata tertarik ke tengah. Sempat disederhanakan jadi satu
+   gradien simetris — hasilnya garis justru paling pucat di titik pertemuannya
+   dengan ornamen dan motifnya nyaris hilang. Jadi tetap dua arah. */
+.rule-fade {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-soft));
+  /* 0.5 (warisan tema terang) nyaris tak kelihatan di atas video gelap —
+     feedback owner 2026-08-01. */
+  opacity: 0.85;
+}
+.rule-fade-flip { background: linear-gradient(90deg, var(--accent-soft), transparent); }
+
+/* Diamond kecil di antara dua .rule-fade (EventSection) — pengganti motif tangkai. */
+.rule-diamond {
+  width: 4px;
+  height: 4px;
+  background: var(--accent-line);
+}
+
+/* Pita pelarut tepi bawah cover — melarutkan padang + kluster sudut ke warna
+   kertas supaya batas ke section berikutnya tak berupa garis potong lurus. */
+.edge-dissolve {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(120px, 22vh, 210px);
+  background: linear-gradient(to bottom,
+    var(--paper-clear) 0%, var(--paper-soft) 55%, var(--bg) 92%);
+  pointer-events: none;
+}
+
+/* Garis vertikal petunjuk gulir di cover */
+.scroll-hint-line {
+  width: 1px;
+  height: 30px;
+  background: linear-gradient(to bottom, var(--leaf), transparent);
+}
+
+/* ─── Komposisi khas section ─────────────────────────────────────────────────
+   Kelas yang hanya dipakai satu section. Tetap di sini, bukan inline: begitu
+   satu properti visual boleh tinggal di JSX, kontraknya bocor dan duplikasi
+   tumbuh lagi. Jarak memakai token --space-* yang sama dengan section lain.  */
+
+/* Cover — tanggal duduk tepat di atas pita bukit LatarPadang, titik paling
+   gelap di lukisan. Dengan --text-muted + berat 300 bawaan body kontrasnya
+   cuma 3.55:1 di atas bukit; --text + berat 400 + .text-halo → ~10:1. */
+.cover-date {
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  font-size: clamp(15px, 4vw, 16px);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: var(--text);
+}
+
+/* Ampersand script di antara dua nama. `em` → ikut mengecil/membesar bersama
+   nama di sebelahnya, tak perlu clamp sendiri yang bisa melenceng. */
+.amp-stacked {
+  display: block;
+  font-family: var(--font-script), 'Imperial Script', cursive;
+  font-size: 0.66em;
+  font-weight: 400;
+  color: var(--accent);
+  margin: -3px 0;
+}
+.amp-inline {
+  font-family: var(--font-script), 'Imperial Script', cursive;
+  font-style: normal;
+  color: var(--accent);
+}
+
+/* Couple — sumur foto di dalam wreath (tanpa tepi: wreath sudah membingkainya) */
+.photo-well {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--surface-2);
+}
+.photo-initial {
+  position: absolute;
+  font-family: var(--font-display), 'Bodoni Moda', Georgia, serif;
+  font-size: clamp(34px, 9vw, 46px);
+  font-weight: 500;
+  color: var(--accent-soft);
+}
+
+/* Event — ekor tanggal (BULAN · TAHUN) di bawah numeral */
+.event-date-tail {
+  font-family: var(--font-display), 'Bodoni Moda', Georgia, serif;
+  font-size: clamp(14px, 3.8vw, 18px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+/* Event — kartu venue & garis bawah jam acara */
+.venue-card {
+  gap: var(--space-sm);
+  padding: clamp(20px, 4.6vh, 28px) clamp(20px, 6vw, 30px);
+}
+.venue-card-time {
+  width: 100%;
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--border);
+}
+.event-action-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 6px 16px;
+  transition: color var(--dur-base) ease;
+}
+.event-action-link:not(:last-child) { border-right: 1px solid var(--border); }
+
+/* Rundown — kartu linimasa & barisnya */
+.rundown-card { padding: var(--space-lg) var(--space-xl) var(--space-sm); }
+.rundown-row { gap: var(--space-lg); padding: var(--space-sm) 0; }
+.rundown-row:not(:first-child) { border-top: 1px solid var(--border); }
+.rundown-time { min-width: 54px; flex-shrink: 0; }
+
+/* Gift — kartu rekening */
+.bank-card { padding: var(--space-xl) var(--space-xl); }
+
+/* ─── Dividers ───────────────────────────────────────────────────────────────── */
+.divider {
+  width: 56px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--leaf), transparent);
+  opacity: 0.7;
+}
+
+/* ─── Ambient motion ─────────────────────────────────────────────────────────── */
+/* Gerak halus terus-menerus supaya halaman terasa "hidup", bukan diam.
+   Teknik "tertiup angin": rotasi murni dengan transform-origin di PANGKAL
+   (batang/akar diam, ujung/kelopak bergoyang). Tiap elemen beda durasi → organik. */
+@keyframes sway {
+  from { transform: rotate(-3deg); }
+  to   { transform: rotate(3deg); }
+}
+@keyframes swayAlt {
+  from { transform: rotate(2.4deg); }
+  to   { transform: rotate(-2.4deg); }
+}
+@keyframes swaySoft {
+  from { transform: rotate(-4.5deg); }
+  to   { transform: rotate(4.5deg); }
+}
+@keyframes swayFrame {
+  from { transform: rotate(-1deg); }
+  to   { transform: rotate(1deg); }
+}
+@keyframes birdBob {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50%      { transform: translateY(-3px) rotate(1.5deg); }
+}
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-7px); }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.035); }
+}
+@keyframes emberPulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.9); }
+  50%      { opacity: 1;    transform: scale(1.1); }
+}
+@keyframes disc-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.music-toggle-vinyl:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+
+/* keyframes petalFall & butterfly-fly di-generate inline per-elemen */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─── Entrance reveals — arah muncul mengikuti POSISI elemen ─────────────────── */
+/* Elemen di TENGAH mekar dari kecil → besar di tempatnya (grow/soft). Pembatas
+   TEPI muncul dari sisinya: atas turun, bawah naik, samping masuk dari samping,
+   sudut menyerong dari sudutnya — semuanya tetap diberi sedikit scale supaya
+   terasa "mekar", bukan meluncur kaku. Sengaja pakai properti `translate`/`scale`
+   yang INDEPENDEN dari `transform` → tak bentrok dengan goyangan ambient (pakai
+   `transform`) maupun mirror wrapper (scaleX/scaleY — translate dihitung di
+   ruang luar, jadi arahnya tidak ikut terbalik oleh mirror). Animasi ditahan
+   (paused) sampai section/jahitan-nya masuk viewport → ditandai [data-inview]
+   oleh RevealController. Fallback aman: reduced-motion tampil utuh. */
+[data-enter] {
+  animation-duration: var(--dur-enter);
+  animation-timing-function: var(--ease-soft);
+  animation-fill-mode: both;
+  animation-play-state: paused;
+}
+[data-enter="top"]    { animation-name: enterTop; }
+[data-enter="bottom"] { animation-name: enterBottom; animation-delay: 0.18s; }
+[data-enter="left"]   { animation-name: enterLeft;  animation-delay: 0.12s; }
+[data-enter="right"]  { animation-name: enterRight; animation-delay: 0.12s; }
+[data-enter="tl"]     { animation-name: enterTL; animation-delay: 0.16s; }
+[data-enter="tr"]     { animation-name: enterTR; animation-delay: 0.16s; }
+[data-enter="bl"]     { animation-name: enterBL; animation-delay: 0.24s; }
+[data-enter="br"]     { animation-name: enterBR; animation-delay: 0.24s; }
+[data-enter="drop"]   { animation-name: enterDrop; animation-delay: 0.32s; }
+[data-enter="frame"]  { animation-name: enterFrame; }
+[data-enter="soft"]   { animation-name: enterSoft; }
+[data-enter="grow"]   { animation-name: enterGrow; }
+
+/* Lepas tahanan begitu scope-nya tampil → semua anak [data-enter] muncul */
+.reveal-scope[data-inview="true"] [data-enter] { animation-play-state: running; }
+
+/* Pembatas tepi: offset dari sisinya + scale ringan */
+@keyframes enterTop    { from { opacity: 0; translate: 0 -44px;    scale: 0.85; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterBottom { from { opacity: 0; translate: 0 48px;     scale: 0.85; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterLeft   { from { opacity: 0; translate: -52px 0;    scale: 0.85; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterRight  { from { opacity: 0; translate: 52px 0;     scale: 0.85; } to { opacity: 1; translate: 0 0; scale: 1; } }
+/* Ornamen sudut: menyerong halus dari sudutnya sambil mekar */
+@keyframes enterTL     { from { opacity: 0; translate: -26px -28px; scale: 0.7; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterTR     { from { opacity: 0; translate: 26px -28px;  scale: 0.7; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterBL     { from { opacity: 0; translate: -26px 30px;  scale: 0.7; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes enterBR     { from { opacity: 0; translate: 26px 30px;   scale: 0.7; } to { opacity: 1; translate: 0 0; scale: 1; } }
+/* Menjuntai dari atas kartu */
+@keyframes enterDrop   { from { opacity: 0; translate: 0 -26px;     scale: 0.8; } to { opacity: 1; translate: 0 0; scale: 1; } }
+/* Bingkai penuh: merapat dari luar tepi viewport */
+@keyframes enterFrame  { from { opacity: 0; scale: 1.06; } to { opacity: 1; scale: 1; } }
+/* Elemen tengah: murni mekar dari kecil di tempatnya */
+@keyframes enterSoft   { from { opacity: 0; scale: 0.75; } to { opacity: 1; scale: 1; } }
+@keyframes enterGrow   { from { opacity: 0; scale: 0.6; }  to { opacity: 1; scale: 1; } }
+
+/* ─── Form elements ──────────────────────────────────────────────────────────── */
+.input-field {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--accent-line);
+  color: var(--text);
+  padding: 12px 0;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  outline: none;
+  transition: border-color var(--dur-base) ease;
+}
+
+/* text-dim (dulu di sini) kontrasnya cuma ~4.6:1 di atas --bg — cukup untuk
+   teks biasa tapi placeholder butuh margin lebih supaya "boleh redup, jangan
+   sampai nyaris tak kelihatan" (feedback owner 2026-08-01). */
+.input-field::placeholder { color: var(--text-muted); }
+.input-field:focus { border-bottom-color: var(--accent); }
+
+textarea.input-field { resize: none; line-height: 1.7; }
+
+/* ─── Button ─────────────────────────────────────────────────────────────────── */
+.btn-primary {
+  position: relative;
+  padding: 15px 44px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  color: var(--accent);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--dur-base) ease;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-base) ease;
+  z-index: -1;
+}
+
+.btn-primary:hover::before { transform: scaleX(1); }
+.btn-primary:hover { color: var(--bg); }
+/* Keadaan tak-bisa-dikirim ikut :disabled yang memang sudah disetel JSX —
+   dulu opacity-nya dihitung ulang sebagai ekspresi di style inline. */
+.btn-primary:disabled { opacity: 0.45; cursor: default; }
+.btn-primary:disabled:hover::before { transform: scaleX(0); }
+.btn-primary:disabled:hover { color: var(--accent); }
+
+/* Tombol pilihan Hadir / Tidak Hadir. Keadaan terpilih dulu berupa tiga ekspresi
+   ternary di dalam style inline (border, color, background) — logika tampilan
+   yang tercecer di JSX. Kini JSX cukup menyetel aria-pressed (yang memang wajib
+   untuk aksesibilitas) dan CSS yang memutuskan rupanya. */
+.btn-choice {
+  flex: 1;
+  text-align: center;
+  padding: 11px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-body), 'Jost', system-ui, sans-serif;
+  /* Teks responsif + nowrap: "Tidak Hadir" tak pecah dua baris di HP sempit
+     (yang membuat tingginya jadi dobel dari tombol sebelahnya). */
+  font-size: clamp(11px, 3vw, 13px);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color var(--dur-base) ease, color var(--dur-base) ease, background-color var(--dur-base) ease;
+}
+.btn-choice[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-tint);
+}
+
+/* Tombol bundar penambah/pengurang jumlah tamu */
+.btn-round {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* Tombol ikon bertepi — salin nomor rekening, tutup peta. Keadaan "tersalin"
+   lewat data-copied, bukan ternary warna di dalam style inline. */
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--dur-base) ease, border-color var(--dur-base) ease;
+}
+.btn-icon[data-copied="true"] { color: var(--accent); border-color: var(--accent); }
+.btn-icon-round { border-radius: 50%; padding: 0; width: 32px; height: 32px; background: var(--accent-tint); }
+
+/* Peta: bingkai pratinjau di dalam kolom, dan lembar penuh saat diketuk */
+.map-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+}
+.map-frame iframe { display: block; border: 0; filter: saturate(0.9) brightness(1.02); pointer-events: none; }
+.map-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+.map-sheet iframe { flex: 1; display: block; border: 0; }
+.map-sheet-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.opening-cta-button {
+  position: relative;
+  min-width: 196px;
+  min-height: 46px;
+  padding: 13px 28px 12px;
+  border: 1px solid var(--accent-line);
+  border-radius: 5px;
+  background: var(--paper);
+  color: var(--accent);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--text) 6%, transparent);
+  backdrop-filter: blur(var(--blur-panel));
+  -webkit-backdrop-filter: blur(var(--blur-panel));
+  transition: background-color var(--dur-quick) ease, border-color var(--dur-quick) ease, color var(--dur-quick) ease, transform var(--dur-quick) ease;
+}
+
+.opening-cta-button:hover,
+.opening-cta-button:focus-visible {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: var(--bg);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.opening-cta-button:active {
+  transform: translateY(0);
+}
+
+.closing-brand-footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 12;
+  min-height: calc(54px + env(safe-area-inset-bottom));
+  padding: 8px 18px calc(8px + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.closing-brand-footer span {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(20px, 5.6vw, 28px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.closing-brand-footer img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+/* ─── RSVP scrollable area ───────────────────────────────────────────────────── */
+.overflow-y-auto::-webkit-scrollbar { display: none; }
+.overflow-y-auto { -ms-overflow-style: none; scrollbar-width: none; }
+
+.event-action-link:hover { color: var(--accent) !important; }
+
+/* ─── Layout desktop (split) ─────────────────────────────────────────────────── */
+/* Desain tetap fokus HP. Di layar lebar, undangan tampil sebagai kolom sempit di
+   kanan (seperti di HP) dan sisi kiri diisi panel cover dekoratif. */
+.app-shell { width: 100%; }
+.desktop-cover { display: none; }
+
+@media (min-width: 1024px) {
+  /* Window yang menggulir (bukan kolom ber-overflow) + panel kiri sticky.
+     Dulu html/body dikunci overflow:hidden dan hanya .content-scroll yang bisa
+     digulir → roda mouse mati bila kursor di atas panel kiri, terasa "nyangkut".
+     Dengan window scroll, gulir bekerja di mana pun kursor berada. */
+  .app-shell {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .desktop-cover {
+    display: block;
+    position: sticky;
+    top: 0;
+    flex: 1 1 auto;
+    height: 100vh;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+  }
+
+  .content-scroll {
+    flex: 0 0 clamp(420px, 33vw, 500px);
+    /* transparan — VideoBackdrop (position:fixed, satu video global) tembus
+       di belakang kolom ini, bukan warna solid. */
+    background: transparent;
+    box-shadow: -10px 0 44px color-mix(in srgb, var(--text) 7%, transparent);
+  }
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ambient-anim,
+  .ambient-anim * {
+    animation: none !important;
+  }
+  /* Entrance dimatikan → elemen langsung di posisi rest, tetap terlihat utuh */
+  [data-enter] {
+    animation: none !important;
+    opacity: 1 !important;
+    translate: 0 0 !important;
+    scale: 1 !important;
+  }
+  html { scroll-behavior: auto; }
+}
